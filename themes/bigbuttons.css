@@ -1,0 +1,6 @@
+/* wpStoreCart CSS Theme */
+.wpsc-button {font-family:Segoe UI, Verdana, Serif;font-size:130%;font-variant:small-caps;padding:2px 5px 2px 5px;}
+#wpsc-checkout {font-size:140%;font-weight:bold;float:right;}
+.wpsc-product-img {float:left;margin:10px 10px 10px 10px; border:1px solid #555;}
+.wpsc-hide {display:inline;}
+/* END wpStoreCart */
