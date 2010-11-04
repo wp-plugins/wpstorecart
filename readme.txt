@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.2
-Version: 2.0.2
+Stable tag: 2.0.3
+Version: 2.0.3
 
 == Description ==
 
@@ -45,10 +45,15 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 2.0.3 =
+* Fixed some CSS issues
+
 = 2.0.2 =
 * Disabled error reporting in wpsc-config.php
 * Tons of stuff added to the display settings
 * Fixed shipping error
+* Added new category settings
+* Now keeping track of the database schema via version numbering
 
 = 2.0.1 =
 * Added version information to the wpStoreCart overview

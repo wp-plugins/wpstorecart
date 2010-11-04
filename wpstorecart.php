@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.2
+Version: 2.0.3
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.2';
+$wpstorecart_version = '2.0.3';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -2988,6 +2988,7 @@ if (!class_exists("wpStoreCart")) {
                                                             }
                                                             $output .= '</div>';
                                                     }
+                                                    $output .= '<div class="wpsc-clear"></div>';
                                             }
                                         } else { // This is for products:
                                             if(isset($results)) {
@@ -3034,6 +3035,7 @@ if (!class_exists("wpStoreCart")) {
 
                                                             $output .= '</div>';
                                                     }
+                                                    $output .= '<div class="wpsc-clear"></div>';
                                             }
                                         }
                                     } else {
