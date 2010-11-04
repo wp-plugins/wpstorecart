@@ -1,0 +1,110 @@
+<?php
+
+error_reporting(0);
+if (!function_exists('add_action'))
+{
+    require_once("../../../../wp-config.php");
+}
+
+global $current_user,$wpdb;
+
+wp_get_current_user();
+if ( 0 == $current_user->ID ) {
+    // Not logged in.
+} else {
+
+    //Give actual path here
+    if(isset($_GET['file']) && is_numeric($_GET['file'])){
+        $file = $_GET['file'];
+    }
+
+    $file_real = NULL;
+
+    // Logged in.
+    $table_name3 = $wpdb->prefix . "wpstorecart_orders";
+    $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='{$current_user->ID}'  ORDER BY `date` DESC;";
+    $results = $wpdb->get_results( $sql , ARRAY_A );
+    if(isset($results)) {
+        foreach ($results as $result) {
+            if ($result['orderstatus']=='Completed') {
+                
+                $specific_items = explode(",", $result['cartcontents']);
+                foreach($specific_items as $specific_item) {
+                    if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
+                        $current_item = explode('*', $specific_item);
+                        
+                        if(isset($current_item[0]) && $current_item[0]==$file) { // If the customer has purchased the product that is being requested for download
+                            $table_name4 = $wpdb->prefix . "wpstorecart_products";
+                            $sql2 = "SELECT * FROM `{$table_name4}` WHERE `primkey`='{$current_item[0]}';";
+                            $results2 = $wpdb->get_results( $sql2 , ARRAY_A );
+                            if(isset($results2)) {
+                                foreach ($results2 as $result2) {
+                                    if($result2['download']!='') {
+                                        $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
+                                        $file_real = $secretPath.$result2['download'];
+                                        $productDownloadName =  $result2['name']. '_' .rand(0,999).$current_user->user_login. substr($result2['download'], -5);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        echo("Unauthorized access");
+        die();
+    }
+
+    if (file_exists($file_real)){
+                // Get extension of requested file
+                echo $extension = strtolower(substr(strrchr($file, "."), 1));
+                // Determine correct MIME type
+
+                switch($extension){
+                    case "avi": $type = "video/x-msvideo"; break;
+                    case "exe": $type = "application/octet-stream"; break;
+                    case "mov": $type = "video/quicktime"; break;
+                    case "mp3": $type = "audio/mpeg"; break;
+                    case "mpg": $type = "video/mpeg"; break;
+                    case "mpeg": $type = "video/mpeg"; break;
+                    case "rar": $type = "encoding/x-compress"; break;
+                    case "txt": $type = "text/plain"; break;
+                    case "wav": $type = "audio/wav"; break;
+                    case "wma": $type = "audio/x-ms-wma"; break;
+                    case "wmv": $type = "video/x-ms-wmv"; break;
+                    case "zip": $type = "application/x-zip-compressed"; break;
+                    case "7z": $type = "application/x-zip-compressed"; break;
+                    case "asf": $type = "video/x-ms-asf"; break;
+                    default: $type = "application/force-download"; break;
+                }
+    // Fix IE bug [0]
+    $header_file = (strstr($_SERVER['HTTP_USER_AGENT'], 'MSIE')) ? preg_replace('/\./', '%2e', $productDownloadName, substr_count($productDownloadName, '.') - 1) : $productDownloadName;
+    // Prepare headers
+    header("Pragma: public");
+    header("Expires: 0");
+    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    header("Cache-Control: public", false);
+    header("Content-Description: File Transfer");
+    header("Content-Type: " . $type);
+    header("Accept-Ranges: bytes");
+    header("Content-Disposition: attachment; filename=\"" . $header_file . "\";");
+    header("Content-Transfer-Encoding: binary");
+    header("Content-Length: " . filesize($file_real));
+    // Send file for download
+    if ($stream = fopen($file_real, 'rb')){
+    while(!feof($stream) && connection_status() == 0){
+    //reset time limit for big files
+    set_time_limit(0);
+    print(fread($stream,1024*8));
+    flush();
+    }
+    fclose($stream);
+    }
+    }else{
+    // Requested file does not exist (File not found)
+    echo("Unathorized Access.");
+    die();
+    }
+}
+?>
