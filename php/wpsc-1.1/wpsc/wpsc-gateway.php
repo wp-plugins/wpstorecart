@@ -147,6 +147,16 @@ else
 			$myPaypal->addField('amount_' . $paypal_count, $item['price']);
 			$myPaypal->addField('item_number_' . $paypal_count, $paypal_count);
 			$myPaypal->addField('quantity_' . $paypal_count, $item['qty']);
+
+                        $table_name = $wpdb->prefix . "wpstorecart_products";
+                        $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                        if(isset($results)) {
+                            if($results[0]['shipping']!='0.00') {
+                                $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
+                            }
+                        }
+
+                        
                         if(@!isset($_SESSION)) {
                                 @session_start();
                         }

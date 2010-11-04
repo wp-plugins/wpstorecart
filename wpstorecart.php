@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.0
+Version: 2.0.2
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.0';
-$wpstorecart_db_version = '2.0.0';
+$wpstorecart_version = '2.0.2';
+$wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
 // Pre-2.6 compatibility, which is actually frivilous since we use the 2.8+ widget technique
@@ -61,6 +61,16 @@ if (!class_exists("wpStoreCart")) {
 		
         function wpStoreCart() { //constructor
             global $wpdb;
+
+            $devOptions = $this->getAdminOptions();
+
+            // Upgrade the database schema if they're running 2.0.2 or below:
+            if($devOptions['database_version']==NULL) {
+                $table_name = $wpdb->prefix . "wpstorecart_categories";
+                $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
+                $results = $wpdb->query( $sql );
+                $devOptions['database_version'] = $wpstorecart_db_version;
+            }
 
             // This increments the add to cart counter for the product statistics
             if(isset($_POST['my-item-id'])) {
@@ -218,7 +228,16 @@ if (!class_exists("wpStoreCart")) {
                                     'wpStoreCartwidth' => '100',
                                     'showproductthumbnail' => 'true',
                                     'showproductdescription' => 'true',
-                                    'wpscCss' => '',
+                                    'wpscCss' => 'bigbuttons.css',
+                                    'frontpageDisplays' => 'List all products',
+                                    'displayThumb' => 'true',
+                                    'displayTitle' => 'true',
+                                    'displayintroDesc' => 'true',
+                                    'displayFullDesc' => 'false',
+                                    'displayType' => 'grid',
+                                    'displayAddToCart' => 'true',
+                                    'displayBuyNow' => 'true',
+                                    'displayPrice' => 'true',
                                     'allowpaypal' => 'true',
                                     'paypalemail' => get_bloginfo('admin_email'),
                                     'paypaltestmode' => 'false',
@@ -246,7 +265,8 @@ if (!class_exists("wpStoreCart")) {
                                     'failed_text' => 'Dear [customername], thanks for your recent order from [sitename].  However, we encountered problems with your order and are unable to fulfill it at this time.  Please contact us for more information.',
                                     'add_to_cart' => 'Add to Cart',
                                     'out_of_stock' => 'Out of Stock!',
-                                    'ga_trackingnum' => ''
+                                    'ga_trackingnum' => '',
+                                    'database_version' => NULL
                                     );
 
             $devOptions = get_option($this->adminOptionsName);
@@ -291,6 +311,35 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['wpscCss'])) {
 					$devOptions['wpscCss'] = $wpdb->escape($_POST['wpscCss']);
 				}
+
+				if (isset($_POST['frontpageDisplays'])) {
+					$devOptions['frontpageDisplays'] = $wpdb->escape($_POST['frontpageDisplays']);
+				}
+				if (isset($_POST['displayThumb'])) {
+					$devOptions['displayThumb'] = $wpdb->escape($_POST['displayThumb']);
+				}
+				if (isset($_POST['displayTitle'])) {
+					$devOptions['displayTitle'] = $wpdb->escape($_POST['displayTitle']);
+				}
+				if (isset($_POST['displayintroDesc'])) {
+					$devOptions['displayintroDesc'] = $wpdb->escape($_POST['displayintroDesc']);
+				}
+				if (isset($_POST['displayFullDesc'])) {
+					$devOptions['displayFullDesc'] = $wpdb->escape($_POST['displayFullDesc']);
+				}
+				if (isset($_POST['displayType'])) {
+					$devOptions['displayType'] = $wpdb->escape($_POST['displayType']);
+				}
+				if (isset($_POST['displayAddToCart'])) {
+					$devOptions['displayAddToCart'] = $wpdb->escape($_POST['displayAddToCart']);
+				}
+				if (isset($_POST['displayBuyNow'])) {
+					$devOptions['displayBuyNow'] = $wpdb->escape($_POST['displayBuyNow']);
+				}
+				if (isset($_POST['displayPrice'])) {
+					$devOptions['displayPrice'] = $wpdb->escape($_POST['displayPrice']);
+				}
+
 				if (isset($_POST['wpStoreCartheight'])) {
 					$devOptions['wpStoreCartheight'] = $wpdb->escape($_POST['wpStoreCartheight']);
 				}		
@@ -637,14 +686,80 @@ if (!class_exists("wpStoreCart")) {
 			<td>Width: <input type="text" name="wpStoreCartwidth" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartwidth']), 'wpStoreCart'); echo'" />  <br />Height: <input type="text" name="wpStoreCartheight" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartheight']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			<tr><td><h3>Display thumbnail under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">This effects the product short tag (and thus, the default product pages as well.)  If set to yes, the products thumbnail will be displayed underneath the product.</div></h3></td>
+			<tr><td><h3>(Product Page) Display thumbnail under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">This effects the product short tag (and thus, the default product pages as well.)  If set to yes, the products thumbnail will be displayed underneath the product.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the thumbnail for the product will be displayed underneath the product itself</p></td>
 			<td><p><label for="showproductthumbnail"><input type="radio" id="showproductthumbnail_yes" name="showproductthumbnail" value="true" '; if ($devOptions['showproductthumbnail'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="showproductthumbnail_no"><input type="radio" id="showproductthumbnail_no" name="showproductthumbnail" value="false" '; if ($devOptions['showproductthumbnail'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
 			</td></tr>
 
-			<tr><td><h3>Display description under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">This also effects the product short tag (including the default product pages.)  If set to yes, the products description will be written underneath the product thumbnail (if its enabled.)</div></h3></td>
+			<tr><td><h3>(Product Page) Display description under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">This also effects the product short tag (including the default product pages.)  If set to yes, the products description will be written underneath the product thumbnail (if its enabled.)</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the description for the product is written underneath the product, after the thumbnail.</p></td>
 			<td><p><label for="showproductdescription"><input type="radio" id="showproductdescription_yes" name="showproductdescription" value="true" '; if ($devOptions['showproductdescription'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="showproductdescription_no"><input type="radio" id="showproductdescription_no" name="showproductdescription" value="false" '; if ($devOptions['showproductdescription'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+
+			<tr><td><h3>(Main Page) Content of the Main Page <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6999" /><div class="tooltip-content" id="example-content-6999">The main page of your store can either list products, or the categories of the site.  It can also display the products either by newest first, or most popular first.</div></h3></td>
+			<td class="tableDescription"><p>Changing this will effect what is displayed on the main page of your store.</p></td>
+			<td>
+                        <select name="frontpageDisplays">
+';
+
+                        $theOptions[0] = 'List all products';
+                        $theOptions[1] = 'List all categories';
+                        $theOptions[2] = 'List newest products';
+                        $theOptions[3] = 'List most popular products';
+                        foreach ($theOptions as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['frontpageDisplays']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOption;
+				$option .= '</option>';
+				echo $option;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>(Main Page) Display thumbnails on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554" /><div class="tooltip-content" id="example-content-5554">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category thumbnails will be displayed on the Main Page/Category page.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, the thumbnail for the products or categories will be displayed on the Main Page and Category pages.</p></td>
+			<td><p><label for="displayThumb"><input type="radio" id="displayThumb_yes" name="displayThumb" value="true" '; if ($devOptions['displayThumb'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayThumb_no"><input type="radio" id="displayThumb_no" name="displayThumb" value="false" '; if ($devOptions['displayThumb'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>(Main Page) Display titles on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55544" /><div class="tooltip-content" id="example-content-55544">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category title will be displayed on the Main Page/Category page.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, the title of the products or categories will be displayed on the Main Page and Category pages.</p></td>
+			<td><p><label for="displayTitle"><input type="radio" id="displayTitle_yes" name="displayTitle" value="true" '; if ($devOptions['displayTitle'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayTitle_no"><input type="radio" id="displayTitle_no" name="displayTitle" value="false" '; if ($devOptions['displayTitle'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>(Main Page) Display small descriptions on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55545" /><div class="tooltip-content" id="example-content-55545">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to yes, the product or category introductory description will be displayed on the Main Page/Category page.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, the introductory description of the products or categories will be displayed on the Main Page and Category pages.</p></td>
+			<td><p><label for="displayintroDesc"><input type="radio" id="displayintroDesc_yes" name="displayintroDesc" value="true" '; if ($devOptions['displayintroDesc'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayintroDesc_no"><input type="radio" id="displayintroDesc_no" name="displayintroDesc" value="false" '; if ($devOptions['displayintroDesc'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>(Main Page) Display Type <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7999" /><div class="tooltip-content" id="example-content-7999">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to grid, the product or category will be displayed within a grid format, or if it\'s set to list, they will be presented in a top down, one at a time list view on the Main Page/Category page.</div></h3></td>
+			<td class="tableDescription"><p>If set to grid, will display products or categories in a grid format, if set to list, will display them in an ordered list.</p></td>
+			<td>
+                        <select name="displayType">
+';
+
+                        $theOptionz[0] = 'grid';
+                        $theOptionz[1] = 'list';
+                        foreach ($theOptionz as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['displayType']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOption;
+				$option .= '</option>';
+				echo $option;
+                        }
+
+   			echo '
+			</select>
 			</td></tr>
 			</table>
 			<br style="clear:both;" /><br />
@@ -2459,7 +2574,7 @@ if (!class_exists("wpStoreCart")) {
 		
 		// Dashboard widget code=======================================================================
 		function wpstorecart_main_dashboard_widget_function() {
-			global $wpdb;
+			global $wpdb, $wpstorecart_version;
 			
 			$devOptions = $this->getAdminOptions();
 			
@@ -2500,6 +2615,7 @@ if (!class_exists("wpStoreCart")) {
 			$lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 			
 			echo '<ul>';
+                        echo '<li>wpStoreCart version '.$wpstorecart_version.'</li>';
 			echo '<li><strong>wpStoreCart main page:</strong> <a href="'.$permalink.'" target="_blank">here</a> </li>';
 			echo "<li><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <span class=\"inlinepie\">{$totalrecordsordercompleted},{$totalrecordsorder}</span> </li>";
 			echo "<li><strong>Number of Products:</strong> {$totalrecords} </li>";
@@ -2611,8 +2727,11 @@ if (!class_exists("wpStoreCart")) {
 				CREATE TABLE `{$table_name}` (
 				`primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 				`parent` INT NOT NULL ,
-				`category` VARCHAR( 255 ) NOT NULL
-				);
+				`category` VARCHAR( 255 ) NOT NULL,
+                                `thumbnail` VARCHAR( 512 ) NOT NULL,
+                                `description` TEXT NOT NULL,
+                                `postid` INT NOT NULL
+                                );
 				";
 			  
 
@@ -2827,18 +2946,95 @@ if (!class_exists("wpStoreCart")) {
 					break;
                                 default: // Default shortcode
                                     if(!isset($_GET['wpsc'])) {
-                                        $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, 10;";
+                                        if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, 10;";
+                                        }
+                                        if($devOptions['frontpageDisplays']=='List most popular products') {
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, 10;";
+                                        }
+                                        if($devOptions['frontpageDisplays']=='List all categories') {
+                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_orders` WHERE `parent`=0 DESC LIMIT 0, 10;";
+                                        }
                                         $results = $wpdb->get_results( $sql , ARRAY_A );
-                                        if(isset($results)) {
-                                                foreach ($results as $result) {
-                                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
-                                                        if($usepictures=='true') {
-                                                                $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'" /></a>';
-                                                        }
-                                                        if($usetext=='true') {
-                                                                $output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
-                                                        }
-                                                }
+
+                                        if($devOptions['displayThumb']=='true') {
+                                            $usepictures='true';
+                                            $maxImageWidth = $devOptions['wpStoreCartwidth'];
+                                            $maxImageHeight = $devOptions['wpStoreCartheight'];
+                                        }
+                                        if($devOptions['displayintroDesc']=='true') {
+                                            $usetext='true';
+                                        }
+
+                                        // If we're dealing with categories, we have different fields to deal with than products.
+                                        if($devOptions['frontpageDisplays']=='List all categories') {
+                                            if(isset($results)) {
+                                                    foreach ($results as $result) {
+                                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            if($devOptions['displayType']=='grid'){
+                                                                    $output .= '<div class="wpsc-grid">';
+                                                            }
+                                                            if($devOptions['displayType']=='list'){
+                                                                    $output .= '<div class="wpsc-list">';
+                                                            }
+                                                            if($usepictures=='true') {
+                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                            }
+                                                            if($usetext=='true') {
+                                                                    $output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
+                                                            }
+                                                            if($devOptions['displayintroDesc']=='true'){
+                                                                    $output .= '<p>'.$result['description'].'</p>';
+                                                            }
+                                                            $output .= '</div>';
+                                                    }
+                                            }
+                                        } else { // This is for products:
+                                            if(isset($results)) {
+                                                    foreach ($results as $result) {
+                                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            if($devOptions['displayType']=='grid'){
+                                                                    $output .= '<div class="wpsc-grid">';
+                                                            }
+                                                            if($devOptions['displayType']=='list'){
+                                                                    $output .= '<div class="wpsc-list">';
+                                                            }
+                                                            if($usepictures=='true') {
+                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                            }
+                                                            if($usetext=='true') {
+                                                                    $output .= '<a href="'.$permalink.'"><h1>'.$result['name'].'</h1></a>';
+                                                            }
+                                                            if($devOptions['displayintroDesc']=='true'){
+                                                                    $output .= '<p>'.$result['introdescription'].'</p>';
+                                                            }
+                                                            if($devOptions['displayAddToCart']=='true'){
+                                                                    $output .= '
+                                                                    <form method="post" action="">
+
+                                                                            <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
+                                                                            <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
+                                                                            <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
+                                                                            <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                            <label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
+
+                                                                    ';
+
+                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
+                                                                        $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button" />';
+                                                                    } else {
+                                                                        $output .= $devOptions['out_of_stock'];
+                                                                    }
+                                                            
+
+                                                                    $output .= '
+                                                                    </form>
+                                                                    ';
+                                                            }
+
+                                                            $output .= '</div>';
+                                                    }
+                                            }
                                         }
                                     } else {
                                         if($_GET['wpsc']=='orders') {
@@ -3302,7 +3498,7 @@ $(document).ready(function() {
                                 if(isset($current_item[0]) && isset($current_item[1])) {
                                     $sql2 = "SELECT `primkey`, `name`, `download`, `postid` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
                                     $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
-                                    if($type=="default") {
+                                    if($type=="default" && isset($moreresults[0])) {
                                         $output .= ', ';
                                         if($output==', ') {$output = '';}
                                         $output .= $moreresults[0]['name'];
@@ -3310,7 +3506,7 @@ $(document).ready(function() {
                                             $output .= ' (x'.$current_item[1].')';
                                         }
                                     }
-                                    if($type=="download") {
+                                    if($type=="download" && isset($moreresults[0])) {
                                         $output .= ', <br />';
                                         if($output==', <br />') {$output = '';}
                                         if($moreresults[0]['download']=='' || $results[0]['orderstatus']!='Completed') {
@@ -3322,7 +3518,7 @@ $(document).ready(function() {
                                             $output .= ' (x'.$current_item[1].')';
                                         }
                                     }
-                                    if($type=="edit") {
+                                    if($type=="edit" && isset($moreresults[0])) {
                                         $output .= '<div id="delIcon'.$current_item[0].'">'.$moreresults[0]['name'];
                                         if($current_item[1]!=1) {
                                             $output .= '(x'.$current_item[1].')';
@@ -3836,7 +4032,7 @@ if (isset($wpStoreCart)) {
     //Actions
 	require_once(ABSPATH . 'wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
 	if(!isset($_SESSION)) {
-		session_start();
+		@session_start();
 		$cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
 	}	
 

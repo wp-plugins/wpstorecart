@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+error_reporting(0);
 if (!function_exists('add_action'))
 {
     require_once("../../../../../../wp-config.php");
