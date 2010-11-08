@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.3
+Version: 2.0.4
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.3';
+$wpstorecart_version = '2.0.4';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -1831,26 +1831,35 @@ if (!class_exists("wpStoreCart")) {
 				// Default form values
 				$wpStoreCartCategory = '';
 				$wpStoreCartCategoryParent = 0;
+				$wpStoreCartCategoryThumbnail = '';
+				$wpStoreCartCategoryDescription = '';
+				$wpStoreCartCategoryPostID = 0;				
 				$keytoedit=0;
 			} 
 			
 			
-			// To edit a previous product
+			// To edit a previous category
 			$isanedit = false;
 			if(!isset($_GET['keytoedit'])) {$_GET['keytoedit'] = 0;}
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
 				$isanedit = true;
 				
-				if (isset($_POST['wpStoreCartCategory']) && isset($_POST['wpStoreCartCategoryParent'])) {
+				if (isset($_POST['wpStoreCartCategory'])) {
 					$wpStoreCartCategory = $wpdb->escape($_POST['wpStoreCartCategory']);
 					$wpStoreCartCategoryParent = $wpdb->escape($_POST['wpStoreCartCategoryParent']);
+					$wpStoreCartCategoryThumbnail = $wpdb->escape($_POST['wpStoreCartCategoryThumbnail']);
+					$wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
+					$wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
 		
 
 					$updateSQL = "
 					UPDATE `{$table_name}` SET 
 					`parent` = '{$wpStoreCartCategoryParent}', 
-					`category` = '{$wpStoreCartCategory}'
+					`category` = '{$wpStoreCartCategory}',
+					`thumbnail` = '{$wpStoreCartCategoryThumbnail}',
+					`description` = '{$wpStoreCartCategoryDescription}',
+					`postid` = '{$wpStoreCartCategoryPostID}'
 					WHERE `primkey` ={$cleanKey} LIMIT 1 ;				
 					";
 
@@ -1880,6 +1889,9 @@ if (!class_exists("wpStoreCart")) {
 						
 						$wpStoreCartCategoryParent = stripslashes($result['parent']);
 						$wpStoreCartCategory = stripslashes($result['category']);
+						$wpStoreCartCategoryThumbnail = stripslashes($result['thumbnail']);
+						$wpStoreCartCategoryDescription = stripslashes($result['description']);
+						$wpStoreCartCategoryPostID = stripslashes($result['postid']);						
 			
 					}
 				} else {
@@ -1894,6 +1906,9 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['wpStoreCartCategoryParent']) && isset($_POST['wpStoreCartCategory'])) {
 					$wpStoreCartCategoryParent = $wpdb->escape($_POST['wpStoreCartCategoryParent']);
 					$wpStoreCartCategory = $wpdb->escape($_POST['wpStoreCartCategory']);
+					$wpStoreCartCategoryThumbnail = $wpdb->escape($_POST['wpStoreCartCategoryThumbnail']);
+					$wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
+					$wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);					
 	
 					$devOptions = $this->getAdminOptions();
 					
@@ -1904,10 +1919,13 @@ if (!class_exists("wpStoreCart")) {
 					INSERT INTO `{$table_name}` (
 					`primkey` ,
 					`parent` ,
-					`category`
+					`category`,
+					`thumbnail`,
+					`description`,
+					`postid`
 					)
 					VALUES (
-					NULL , '{$wpStoreCartCategoryParent}', '{$wpStoreCartCategory}'
+					NULL , '{$wpStoreCartCategoryParent}', '{$wpStoreCartCategory}', '{$wpStoreCartCategoryThumbnail}', '{$wpStoreCartCategoryDescription}', '{$wpStoreCartCategoryPostID}'
 					);
 					";					
 	
@@ -1921,7 +1939,7 @@ if (!class_exists("wpStoreCart")) {
 					} else { // If we get this far, we are still successful					
 						echo '<div class="updated"><p><strong>';
 						_e("Your category details have been saved.", "wpStoreCart");
-						echo '</strong></p></div><br /><p>Add a new category by <a href="admin.php?page=wpstorecart-categories">clicking here</a>.</p>';
+						echo '</strong></p></div><br />';
 						$keytoedit = $wpdb->insert_id;
 					}  
 	
@@ -1970,13 +1988,13 @@ if (!class_exists("wpStoreCart")) {
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
 			if ($isanedit != true) {
-				echo '<h2>Add a Category</h2>';
+				echo '<h2>Add a Category</h2>Add a new category by <a href="admin.php?page=wpstorecart-categories">clicking here</a>.<br />';
 			} else {
 				echo '<h2>Edit a Category</h2>Add a new category by <a href="admin.php?page=wpstorecart-categories">clicking here</a>.<br />';
 			}
 			
 			echo '<table class="widefat">
-			<thead><tr><th> </th><th>Category <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Category <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Thumb</th><th>Description</th><th>Page</th></tr></thead><tbody>
 			';
 			
 			echo '
@@ -2007,7 +2025,9 @@ if (!class_exists("wpStoreCart")) {
 			}
 			echo '
 			</select></td>			
-			
+			<td><input type="text" name="wpStoreCartCategoryThumbnail" style="width: 80%;" value="'.$wpStoreCartThumbnail.'" /></td>
+			<td><input type="text" name="wpStoreCartCategoryDescription" style="width: 80%;" value="'.$wpStoreCartCategoryDescription.'" /></td>
+			<td><input type="text" name="wpStoreCartCategoryPostID" style="width: 80%;" value="'.$wpStoreCartCategoryPostID.'" /></td>
 			</tr>';			
 			
 			echo '
@@ -2953,7 +2973,7 @@ if (!class_exists("wpStoreCart")) {
                                             $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, 10;";
                                         }
                                         if($devOptions['frontpageDisplays']=='List all categories') {
-                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_orders` WHERE `parent`=0 DESC LIMIT 0, 10;";
+                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT 0, 10;";
                                         }
                                         $results = $wpdb->get_results( $sql , ARRAY_A );
 
@@ -2970,6 +2990,9 @@ if (!class_exists("wpStoreCart")) {
                                         if($devOptions['frontpageDisplays']=='List all categories') {
                                             if(isset($results)) {
                                                     foreach ($results as $result) {
+															if($result['postid'] == 0 || $result['postid'] == '') {
+																$result['postid'] = $devOptions['mainpage'];
+															}
                                                             $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                             if($devOptions['displayType']=='grid'){
                                                                     $output .= '<div class="wpsc-grid">';
@@ -2977,8 +3000,8 @@ if (!class_exists("wpStoreCart")) {
                                                             if($devOptions['displayType']=='list'){
                                                                     $output .= '<div class="wpsc-list">';
                                                             }
-                                                            if($usepictures=='true') {
-                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                            if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                             }
                                                             if($usetext=='true') {
                                                                     $output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';

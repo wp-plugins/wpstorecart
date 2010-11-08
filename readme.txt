@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.3
-Version: 2.0.3
+Stable tag: 2.0.4
+Version: 2.0.4
 
 == Description ==
 
@@ -44,6 +44,11 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.4 =
+* Made Add New Category always display
+* Added additional category settings such as description, thumbnail, and POST ID
+* Fixed bug with categories not displaying
 
 = 2.0.3 =
 * Fixed some CSS issues
