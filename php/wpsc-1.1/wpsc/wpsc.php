@@ -15,6 +15,10 @@ http://www.webforce.co.nz/cart/
 **********************************************************************/
 
 error_reporting(0);
+
+
+
+
 if (!function_exists('add_action'))
 {
     require_once("../../../../../../wp-config.php");

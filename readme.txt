@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.4
-Version: 2.0.4
+Stable tag: 2.0.5
+Version: 2.0.5
 
 == Description ==
 
@@ -45,10 +45,17 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 2.0.5 =
+* Changed the way admin notices are displayed
+* Added an error message if register_globals is set to On
+* Changed the notification for when the main page and checkout page are not set
+* Added the ability for wpStoreCart to automatically create and set the main page and checkout page
+
 = 2.0.4 =
 * Made Add New Category always display
 * Added additional category settings such as description, thumbnail, and POST ID
 * Fixed bug with categories not displaying
+* Fixed bug with shipping not calculating
 
 = 2.0.3 =
 * Fixed some CSS issues

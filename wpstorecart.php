@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.4
+Version: 2.0.5
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.4';
+$wpstorecart_version = '2.0.5';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -70,6 +70,7 @@ if (!class_exists("wpStoreCart")) {
                 $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
                 $results = $wpdb->query( $sql );
                 $devOptions['database_version'] = $wpstorecart_db_version;
+                update_option('wpStoreCartAdminOptions', $devOptions);
             }
 
             // This increments the add to cart counter for the product statistics
@@ -95,8 +96,37 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
+       function wpscError($theError='unknown') {
+           $output = "<div id='wpsc-warning' class='updated fade'><p>";
+           if($theError=='nopage') {
+               $output .= __('<strong>wpStoreCart is not properly configured at this time.</strong>  You\'ll need to either have wpStoreCart automatically create a "main page" and a "checkout page" for your store by <a href="?page=wpstorecart-admin&wpscaction=createpages">clicking here</a>, or you can create your own and then visit <a href="?page=wpstorecart-settings">the settings page</a> to tell wpStoreCart which pre-existing pages to use.  See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
+           }
+           if($theError=='register_globals') {
+               $output .= __('<strong>wpStoreCart has detected that register_globals is set to ON.</strong>  This is a major security risk that can make it much easier for a hacker to gain full access to your website and it\'s data.  Please disable register_globals by following <a href="http://wpstorecart.com/forum/viewtopic.php?f=2&t=2" target="_blank">the directions here</a> before using wpStoreCart. Your shopping cart, checkout, and add to cart functionality will not work while register_globals is set to On. See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
+           }
+           $output .= "</p></div>";
+           return $output;
+       }
+
+        function wpscErrorRegisterGlobals() {
+            echo $this->wpscError('register_globals');
+        }
+
+        function wpscErrorNoPage() {
+             echo $this->wpscError('nopage');
+        }
+
         function register_custom_init() {
             // This block of code is for incrementing the add to cart log
+
+            $devOptions = $this->getAdminOptions();
+
+            if (@ini_get('register_globals')==1) {
+                add_action('admin_notices', array(&$this, 'wpscErrorRegisterGlobals'));
+            }
+            if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
+                add_action('admin_notices', array(&$this, 'wpscErrorNoPage'));
+            }
 
             if(isset($_POST['my-item-id'])) {
                 $primkey = $_POST['my-item-id'];
@@ -271,8 +301,9 @@ if (!class_exists("wpStoreCart")) {
 
             $devOptions = get_option($this->adminOptionsName);
             if (!empty($devOptions)) {
-                foreach ($devOptions as $key => $option)
+                foreach ($devOptions as $key => $option) {
                     $apAdminOptions[$key] = $option;
+                }
             }            
             update_option($this->adminOptionsName, $apAdminOptions);
             return $apAdminOptions;
@@ -924,10 +955,7 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_products";
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 			
 			// For new products
 			if(!isset($_GET['keytoedit'])) {
@@ -1431,10 +1459,6 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_orders";
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
 
 			// @todo Theres a bug here where this will keep saying this over and over again.
 			if(isset($_GET['keytodelete']) && is_numeric($_GET['keytodelete']))  {
@@ -1813,10 +1837,7 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_categories";
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 
 			// @todo Theres a bug here where this will keep saying this over and over again.
 			if(isset($_GET['keytodelete']) && is_numeric($_GET['keytodelete']))  {
@@ -2107,10 +2128,7 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 
 			// @todo Theres a bug here where this will keep saying this over and over again.
 			if(isset($_GET['keytodelete']) && is_numeric($_GET['keytodelete']))  {
@@ -2406,11 +2424,7 @@ if (!class_exists("wpStoreCart")) {
 		
 			$devOptions = $this->getAdminOptions();
 			
-			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 		
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.php');
 		
@@ -2425,17 +2439,66 @@ if (!class_exists("wpStoreCart")) {
 			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
-		
+
+
 			$devOptions = $this->getAdminOptions();
-			
-			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
+                        if(isset($_GET['wpscaction']) && $_GET['wpscaction']=='createpages') {
+                            if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage']) || $devOptions['mainpage']==0) {
+                                // Insert the PAGE into the WP database
+                                $my_post = array();
+                                $my_post['post_title'] = 'Store';
+                                $my_post['post_type'] = 'page';
+                                $my_post['post_author'] = 1;
+                                $my_post['post_parent'] = 0;
+                                $my_post['post_content'] = '[wpstorecart]';
+                                $my_post['post_status'] = 'publish';
+                                $thePostIDx = wp_insert_post( $my_post );
+
+                                if($thePostIDx==0) {
+                                        echo '<div class="updated"><p><strong>';
+                                        _e("ERROR 4: wpStoreCart didn't like your data and failed to create a page for it!", "wpStoreCart");
+                                        echo $wpdb->print_error();
+                                        echo '</strong></p></div>';
+                                        return false;
+                                } 
+                                @$devOptions['mainpage']=$thePostIDx;
+                                update_option('wpStoreCartAdminOptions', $devOptions);
+                                
+                                
+
+                            }
+                            if(!isset($devOptions['checkoutpage']) || !is_numeric($devOptions['checkoutpage']) || $devOptions['checkoutpage']==0) {
+                                // Insert the PAGE into the WP database
+                                $my_post = array();
+                                $my_post['post_title'] = 'Checkout';
+                                $my_post['post_type'] = 'page';
+                                $my_post['post_author'] = 1;
+                                $my_post['post_parent'] = 0;
+                                $my_post['post_content'] = '[wpstorecart display="checkout"]';
+                                $my_post['post_status'] = 'publish';
+                                $thePostIDy = wp_insert_post( $my_post );
+
+                                if($thePostIDy==0) {
+                                        echo '<div class="updated"><p><strong>';
+                                        _e("ERROR 4: wpStoreCart didn't like your data and failed to create a page for it!", "wpStoreCart");
+                                        echo $wpdb->print_error();
+                                        echo '</strong></p></div>';
+                                        return false;
+                                } 
+                                @$devOptions['checkoutpage']=$thePostIDy;
+                                @$devOptions['checkoutpageurl'] = get_permalink($devOptions['checkoutpage']);
+                                update_option('wpStoreCartAdminOptions', $devOptions);
+
+                                
+                            }
+                        }
+
 		
 			$this->spHeader();
-			
+
+                        echo '<h2>Overview</h2>';
+
 			$this->wpstorecart_main_dashboard_widget_function();
 
                         echo '
@@ -2549,10 +2612,7 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 		
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.php');
 		
@@ -2571,10 +2631,7 @@ if (!class_exists("wpStoreCart")) {
 			$devOptions = $this->getAdminOptions();
 			
 			
-			if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
-				echo '<br /><br /><h3>ERROR: wpStoreCart is configured incorrectly.  Visit the wpStoreCart options page and set the main page to the numeric POST ID of a dedicated PAGE that you have created for your arcade.</h3>';
-				return false;
-			}
+
 		
 			$this->spHeader();
 			
