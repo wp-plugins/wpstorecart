@@ -337,11 +337,15 @@ class wpsc {
 
 
 	// PROCESS AND DISPLAY CART
-	function display_cart($wpsc)
+	function display_cart($wpsc, $hidden=false)
 		{
-		global $wpsc, $is_checkout, $devOptions;
+		global $wpsc, $is_checkout, $devOptions, $wpscCarthasBeenCalled;
 		// wpsc ARRAY HOLDS USER CONFIG SETTINGS
 		extract($wpsc);
+
+                // We use this global variable to fix a bug
+                $wpscCarthasBeenCalled = true;
+                
 
 		// ASSIGN USER CONFIG VALUES AS POST VAR LITERAL INDICES
 		// INDICES ARE THE HTML NAME ATTRIBUTES FROM THE USERS ADD-TO-CART FORM
@@ -461,7 +465,11 @@ class wpsc {
 			}
 
 		// DISPLAY THE CART HEADER
-		echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
+                        if($hidden==false) {
+                            echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
+                        } else {
+                            echo "<!-- BEGIN wpsc -->\n<div id='wpsc' style='display:none;'>\n";
+                        }
 		if (isset($error_message)) {
 			echo "\t$error_message\n";
 		}
@@ -599,7 +607,7 @@ class wpsc {
 			{
 			if ($button['checkout']) { $input_type = 'image'; $src = ' src="' . $button['checkout'] . '" alt="' . $text['checkout_button'] . '" title="" ';	}
 
-			echo "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='wpsc-button' value='" . $text['checkout_button'] . "' /><br />\n";
+			echo "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
 			}
 
 		if ($is_checkout == true) {
@@ -616,12 +624,12 @@ class wpsc {
 
 		
 		if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
-		echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='wpsc-button' />\n";
+		echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='wpsc-button wpsc-update' />\n";
 
                 echo "<div class='wpsc-hide'>";
 		if ($is_checkout == false) {
 			if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
-			echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='wpsc-button' />\n";
+			echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='wpsc-button wpsc-empty' />\n";
 		}
 		
 		echo "</div>";
@@ -642,12 +650,27 @@ class wpsc {
 			$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
 			echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "' />\n";
 
-			if($devOptions['allowpaypal']==true && $isLoggedIn == true) {
+			if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
 				if(!isset($_POST['ispaypal'])) {
-					echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button"></input>';
+                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="paypal" />';
+					echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout"></input>';
 				}
 			}
-			
+
+			if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
+				if(!isset($_POST['ispaypal'])) {
+                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="authorize.net" />';
+					echo '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout"></input>';
+				}
+			}
+
+			if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
+				if(!isset($_POST['ispaypal'])) {
+                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="2checkout" />';
+					echo '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout"></input>';
+				}
+			}
+
 			/*
 			$disable_paypal_checkout=NULL;
 			// PAYPAL CHECKOUT BUTTON

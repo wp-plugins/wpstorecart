@@ -47,6 +47,8 @@ if (isset($wpStoreCart)) {
 	$wpsc['text']['update_button']				= $devOptions['update_button'];		// update
 	$wpsc['text']['checkout_button']			= $devOptions['checkout_button'];		// checkout
 	$wpsc['text']['checkout_paypal_button']	= $devOptions['checkout_paypal_button'];		// Checkout with PayPal
+        @$wpsc['text']['checkout_authorizenet_button']	= $devOptions['checkout_authorizenet_button'];
+        @$wpsc['text']['checkout_2co_button']	= $devOptions['checkout_2co_button'];
 	$wpsc['text']['remove_link']				= $devOptions['remove_link'];		// remove
 	$wpsc['text']['empty_button']				= $devOptions['empty_button'];		// empty
 	$wpsc['text']['empty_message']				= $devOptions['empty_message'];		// Your cart is empty!

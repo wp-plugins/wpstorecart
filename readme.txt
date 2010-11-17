@@ -1,11 +1,11 @@
 === Plugin Name ===
 Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
-Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,
+Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.5
-Version: 2.0.5
+Stable tag: 2.0.6
+Version: 2.0.6
 
 == Description ==
 
@@ -44,6 +44,17 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.6 =
+* Added the ability to switch the sites currency (for PayPal only at this time)
+* Fixed a bug where commas could not be used in product titles
+* 3 new wpsc CSS themes added, which include image buttons: bright.css, small-grey.css, and blue-and-blocky
+* Added the following CSS class attributes to client side elements: wpsc-addtocart, wpsc-thumbnail, wpsc-individualqtylabel, wpsc-individualqty, wpsc-qtylabel, wpsc-qty, wpsc-h1, wpsc-checkout, wpsc-empty, wpsc-update, wpsc-paypalcheckout, wpsc-authorizenetcheckout, wpsc-2checkoutcheckout
+* Fixed a bug that required admin to use the shopping cart widget in order for the cart to work
+* Admin CSS altered for low resolutions, buttons resized
+* jQuery added to the Settings page during updates
+* When you update your settings on the Settings page, the tab you were on is selected automatically
+* Updated the payment gateways for wpStoreCart PRO
 
 = 2.0.5 =
 * Changed the way admin notices are displayed

@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.5
+Version: 2.0.6
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.5';
+$wpstorecart_version = '2.0.6';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -44,10 +44,10 @@ if ( ! defined( 'WP_PLUGIN_DIR' ) )
 
 // Create the proper directory structure if it is not already created
 if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
-	mkdir(WP_CONTENT_DIR . '/uploads/', 0777, true);
+	@mkdir(WP_CONTENT_DIR . '/uploads/', 0777, true);
 }
 if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
-	mkdir(WP_CONTENT_DIR . '/uploads/wpstorecart/', 0777, true);
+	@mkdir(WP_CONTENT_DIR . '/uploads/wpstorecart/', 0777, true);
 }
 	
 
@@ -56,6 +56,7 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
  * Main wpStoreCart Class
  */	
 if (!class_exists("wpStoreCart")) {
+
     class wpStoreCart {
 		var $adminOptionsName = "wpStoreCartAdminOptions";
 		
@@ -113,7 +114,9 @@ if (!class_exists("wpStoreCart")) {
         }
 
         function wpscErrorNoPage() {
-             echo $this->wpscError('nopage');
+            if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
+                echo $this->wpscError('nopage');
+            }
         }
 
         function register_custom_init() {
@@ -148,7 +151,7 @@ if (!class_exists("wpStoreCart")) {
                 $labels = array(
                 'name' => _x('Products', 'post type general name'),
                 'singular_name' => _x('Product', 'post type singular name'),
-                'add_new' => _x('Add New', 'book'),
+                'add_new' => _x('Add New', 'product'),
                 'add_new_item' => __('Add New Product'),
                 'edit_item' => __('Edit Product'),
                 'new_item' => __('New Product'),
@@ -187,15 +190,18 @@ if (!class_exists("wpStoreCart")) {
 				ul#tabnav { 
 					text-align: left;
 					margin: 0.8em 0 0.8em 0;
-					font: bold 10px verdana, arial, sans-serif;
+					font: bold 9px verdana, arial, sans-serif;
 					list-style-type: none;
-					padding: 7px 10px 3px 10px; 
+					padding: 7px 8px 3px 8px;
+                                        width:770px;
+                                        min-width:770px;
 				}
 
 				ul#tabnav li { 
 					display: block;
 					float:left;
-					margin:0 1px 0 1px; 
+					margin:0 1px 0 1px;
+                                        border: 1px solid #AAA;
 				}
 
 				body#tab li.tab { 
@@ -258,7 +264,7 @@ if (!class_exists("wpStoreCart")) {
                                     'wpStoreCartwidth' => '100',
                                     'showproductthumbnail' => 'true',
                                     'showproductdescription' => 'true',
-                                    'wpscCss' => 'bigbuttons.css',
+                                    'wpscCss' => 'small-grey.css',
                                     'frontpageDisplays' => 'List all products',
                                     'displayThumb' => 'true',
                                     'displayTitle' => 'true',
@@ -271,6 +277,13 @@ if (!class_exists("wpStoreCart")) {
                                     'allowpaypal' => 'true',
                                     'paypalemail' => get_bloginfo('admin_email'),
                                     'paypaltestmode' => 'false',
+                                    'allowauthorizenet' => 'false',
+                                    'authorizenetemail' => '',
+                                    'authorizenetsecretkey' => '',
+                                    'authorizenettestmode' => 'false',
+                                    'allow2checkout' => 'false',
+                                    '2checkoutemail' => '',
+                                    '2checkouttestmode' => 'false',
                                     'emailonpurchase' => 'Dear [customername], thanks for your recent order from [sitename].  Your order has been submitted to our staff for approval.  This process can take as little as an hour to as long as a few weeks depending on how quickly your payment clears, and whether there are other issues which may cause a delay.',
                                     'emailonapproval' => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been approved.  For physical products, this does not mean that they have been shipped yet; as you will get another email when the order is shipped.  If you ordered a digital download, your download is now available.  .',
                                     'emailonshipped'  => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been shipped.',
@@ -282,7 +295,10 @@ if (!class_exists("wpStoreCart")) {
                                     'subtotal' => 'Subtotal',
                                     'update_button' => 'update',
                                     'checkout_button' => 'checkout',
+                                    'currency_code' => 'USD',
                                     'checkout_paypal_button' => 'Checkout with PayPal',
+                                    'checkout_authorizenet_button' => 'Checkout with Authorize.NET',
+                                    'checkout_2checkout_button' => 'Checkout with 2CheckOut',
                                     'remove_link' => 'remove',
                                     'empty_button' => 'empty',
                                     'empty_message' => 'Your cart is empty!',
@@ -388,7 +404,33 @@ if (!class_exists("wpStoreCart")) {
 				}
 				if (isset($_POST['paypaltestmode'])) {
 					$devOptions['paypaltestmode'] = $wpdb->escape($_POST['paypaltestmode']);
-				}				
+				}
+
+				if (isset($_POST['allowauthorizenet'])) {
+					$devOptions['allowauthorizenet'] = $wpdb->escape($_POST['allowauthorizenet']);
+				}
+				if (isset($_POST['authorizenettestmode'])) {
+					$devOptions['authorizenettestmode'] = $wpdb->escape($_POST['authorizenettestmode']);
+				}
+				if (isset($_POST['authorizenetemail'])) {
+					$devOptions['authorizenetemail'] = $wpdb->escape($_POST['authorizenetemail']);
+				}
+				if (isset($_POST['authorizenetsecretkey'])) {
+					$devOptions['authorizenetsecretkey'] = $wpdb->escape($_POST['authorizenetsecretkey']);
+				}
+
+                                
+				if (isset($_POST['allow2checkout'])) {
+					$devOptions['allow2checkout'] = $wpdb->escape($_POST['allow2checkout']);
+				}
+				if (isset($_POST['2checkouttestmode'])) {
+					$devOptions['2checkouttestmode'] = $wpdb->escape($_POST['2checkouttestmode']);
+				}
+				if (isset($_POST['2checkoutemail'])) {
+					$devOptions['2checkoutemail'] = $wpdb->escape($_POST['2checkoutemail']);
+				}
+
+
 				if (isset($_POST['emailonpurchase'])) {
 					$devOptions['emailonpurchase'] = $wpdb->escape($_POST['emailonpurchase']);
 				}	
@@ -422,8 +464,17 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['checkout_button'])) {
  					$devOptions['checkout_button'] = $wpdb->escape($_POST['checkout_button']);
 				}
+				if (isset($_POST['currency_code'])) {
+ 					$devOptions['currency_code'] = $wpdb->escape($_POST['currency_code']);
+				}
 				if (isset($_POST['checkout_paypal_button'])) {
  					$devOptions['checkout_paypal_button'] = $wpdb->escape($_POST['checkout_paypal_button']);
+				}
+				if (isset($_POST['checkout_authorizenet_button'])) {
+ 					$devOptions['checkout_authorizenet_button'] = $wpdb->escape($_POST['checkout_authorizenet_button']);
+				}
+				if (isset($_POST['checkout_2checkout_button'])) {
+ 					$devOptions['checkout_2checkout_button'] = $wpdb->escape($_POST['checkout_2checkout_button']);
 				}
 				if (isset($_POST['remove_link'])) {
  					$devOptions['remove_link'] = $wpdb->escape($_POST['remove_link']);
@@ -467,21 +518,44 @@ if (!class_exists("wpStoreCart")) {
 
 				update_option($this->adminOptionsName, $devOptions);
 			   
-				echo '<div class="updated"><p><strong>';
+				echo '<div id="wpscFadeUpdate" class="updated fade"><p><strong>';
 				_e("Settings Updated.", "wpStoreCart");
-				echo '</strong></p></div>';
+				echo '</strong></p></div>
+                        <script type="text/javascript">
+			//<![CDATA[
+                                jQuery("#wpscFadeUpdate").hide().fadeIn(2000).fadeOut(2000);
+                        //]]>
+                        </script>
+                                ';
 			
 			}
 			
 			echo '
                         <script type="text/javascript">
 			//<![CDATA[
+                        ';
+
+
+                        if(@!isset($_POST['theCurrentTab']) || @$_POST['theCurrentTab']=='') {
+                            $theCurrentTab = '#tab1';
+                        } else {
+                            $theCurrentTab = $_POST['theCurrentTab'];
+                        }
+                        echo 'var theCurrentTab = \''.$theCurrentTab.'\';';
+                        
+                        echo '
 			jQuery(document).ready(function($) {
                                 //When page loads...
                                 $(".tab_content").hide(); //Hide all content
-                                $("ul.tabs li:first").addClass("active").show(); //Activate first tab
-                                $(".tab_content:first").show(); //Show first tab content
+                                ';
 
+                        
+                        echo '
+                                $("ul.tabs "+theCurrentTab).addClass("active").show(); //Activate first tab
+                                $(theCurrentTab).show(); //Show first tab content
+                        ';
+                        
+                        echo '
                                 //On Click Event
                                 $("ul.tabs li").click(function() {
 
@@ -510,6 +584,8 @@ if (!class_exists("wpStoreCart")) {
                                 list-style: none;
                                 height: 74px; /*--Set height of tabs--*/
                                 width: 100%;
+                                width:770px;
+                                min-width:770px;
                         }
                         ul.tabs li {
                                 float: left;
@@ -552,16 +628,17 @@ if (!class_exists("wpStoreCart")) {
 			$this->spHeader();
 			
 			echo'
+                            <h2> </h2>
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].'">
+                            <input type="hidden" name="theCurrentTab" id="theCurrentTab" value="" />
                         <ul class="tabs">
-                            <li><a href="#tab1"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
-                            <li><a href="#tab2"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>
-                            <li><a href="#tab3"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>
-                            <li><a href="#tab4"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
-                            <li><a href="#tab5"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
+                            <li><a href="#tab1" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab1\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
+                            <li><a href="#tab2" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab2\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>
+                            <li><a href="#tab3" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab3\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>
+                            <li><a href="#tab4" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab4\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
+                            <li><a href="#tab5" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab5\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
                         </ul>
-
-
+                        <div style="clear:both;"></div>
                         <div id="tab1" class="tab_content">
 			<h2>wpStoreCart General Options</h2>
 			';
@@ -797,10 +874,18 @@ if (!class_exists("wpStoreCart")) {
                         </div>
                         <div id="tab4" class="tab_content">
 			<h2>Payment Options</h2>';
+                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
+                            echo '
+                            <h3>PayPal Payment Gateway</h3>
+                            <table class="widefat">
+                                                    <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+                            ';
+                        } else {
+                            echo '<table class="widefat">
+                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
+                        }
 
-			echo '<table class="widefat">
-			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
-
+                        echo '
 			<tr><td><h3>Accept PayPal Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Want to accept PayPal payments?  Then set this to yes!</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using PayPal.</p></td>
 			<td><p><label for="allowpaypal"><input type="radio" id="allowpaypal_yes" name="allowpaypal" value="true" '; if ($devOptions['allowpaypal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowpaypal_no"><input type="radio" id="allowpaypal_no" name="allowpaypal" value="false" '; if ($devOptions['allowpaypal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
@@ -814,11 +899,123 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>PayPal Email Address <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The PayPal email address you wish to recieve payments to.  Make sure you have already registered this email address with PayPal.</div></h3></td>
 			<td class="tableDescription"><p>The email address you wish to receive PayPal payments.</p></td>
 			<td><input type="text" name="paypalemail" value="'; _e(apply_filters('format_to_edit',$devOptions['paypalemail']), 'wpStoreCart'); echo'" />
-			</td></tr>			
+			</td></tr>
 
-        		</table>
+			<tr><td><h3>Currency <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-941" /><div class="tooltip-content" id="example-content-941">Change this to whatever currency your shop is in.  Note that this is currently only supported in PayPal payments.</div></h3></td>
+			<td class="tableDescription"><p>The type of currency that your store uses.</p></td>
+			<td>
+                        <select name="currency_code">
+';
+
+                        $theOptionsz[0] = 'USD';$theOptionszName[0] = 'U.S. Dollars ($)';
+                        $theOptionsz[1] = 'AUD';$theOptionszName[1] = 'Australian Dollars (A $)';
+                        $theOptionsz[2] = 'CAD';$theOptionszName[2] = 'Canadian Dollars (C $)';
+                        $theOptionsz[3] = 'EUR';$theOptionszName[3] = 'Euros (€)';
+                        $theOptionsz[4] = 'GBP';$theOptionszName[4] = 'Pounds Sterling (£)';
+                        $theOptionsz[5] = 'JPY';$theOptionszName[5] = 'Yen (¥)';
+                        $theOptionsz[6] = 'NZD';$theOptionszName[6] = 'New Zealand Dollar ($)';
+                        $theOptionsz[7] = 'CHF';$theOptionszName[7] = 'Swiss Franc';
+                        $theOptionsz[8] = 'HKD';$theOptionszName[8] = 'Hong Kong Dollar ($)';
+                        $theOptionsz[9] = 'SGD';$theOptionszName[9] = 'Singapore Dollar ($)';
+                        $theOptionsz[10] = 'SEK';$theOptionszName[10] = 'Swedish Krona';
+                        $theOptionsz[11] = 'DKK';$theOptionszName[11] = 'Danish Krone';
+                        $theOptionsz[12] = 'PLN';$theOptionszName[12] = 'Polish Zloty';
+                        $theOptionsz[13] = 'NOK';$theOptionszName[13] = 'Norwegian Krone';
+                        $theOptionsz[14] = 'HUF';$theOptionszName[14] = 'Hungarian Forint';
+                        $theOptionsz[15] = 'CZK';$theOptionszName[15] = 'Czech Koruna';
+                        $theOptionsz[16] = 'ILS';$theOptionszName[16] = 'Israeli Shekel';
+                        $theOptionsz[17] = 'MXN';$theOptionszName[17] = 'Mexican Peso';
+                        $theOptionsz[18] = 'BRL';$theOptionszName[18] = 'Brazilian Real (only for Brazilian users)';
+                        $theOptionsz[19] = 'MYR';$theOptionszName[19] = 'Malaysian Ringgits (only for Malaysian users)';
+                        $theOptionsz[20] = 'PHP';$theOptionszName[20] = 'Philippine Pesos';
+                        $theOptionsz[21] = 'TWD';$theOptionszName[21] = 'Taiwan New Dollars';
+                        $theOptionsz[22] = 'THB';$theOptionszName[22] = 'Thai Baht';
+                        $icounter = 0;
+                        foreach ($theOptionsz as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['currency_code']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionszName[$icounter];
+				$option .= '</option>';
+				echo $option;
+                                $icounter++;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Currency Symbol</h3></td>
+			<td class="tableDescription"><p>Default: <i>$</i></p></td>
+			<td><input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        </table>
+                        <br style="clear:both;" /><br />
+                        ';
+
+                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
+                            echo '
+                            <h3>Authorize.NET Gateway (wpStoreCart PRO)</h3>
+                            <table class="widefat">
+                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
+                            <tr><td><h3>Accept Authorize.NET Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-70099" /><div class="tooltip-content" id="example-content-70099">Want to accept Authorize.NET payments?  Then set this to yes!</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using Authorize.NET.</p></td>
+                            <td><p><label for="allowauthorizenet"><input type="radio" id="allowauthorizenet_yes" name="allowauthorizenet" value="true" '; if ($devOptions['allowauthorizenet'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowauthorizenet_no"><input type="radio" id="allowauthorizenet_no" name="allowauthorizenet" value="false" '; if ($devOptions['allowauthorizenet'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            <tr><td><h3>Turn on Authorize.NET Test Mode? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-81111" /><div class="tooltip-content" id="example-content-81111">If you need to do tests with Authorize.NET then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, all transactions are tests done using Authorize.NET.</p></td>
+                            <td><p><label for="authorizenettestmode"><input type="radio" id="authorizenettestmode_yes" name="authorizenettestmode" value="true" '; if ($devOptions['authorizenettestmode'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="authorizenettestmode_no"><input type="radio" id="authorizenettestmode_no" name="authorizenettestmode" value="false" '; if ($devOptions['authorizenettestmode'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            <tr><td><h3>API Login ID <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9666" /><div class="tooltip-content" id="example-content-9666">The Authorize.NET API Login ID assigned to you.  </div></h3></td>
+                            <td class="tableDescription"><p>The API Login ID you are assigned to use access your Authorize.NET account.</p></td>
+                            <td><input type="text" name="authorizenetemail" value="'; _e(apply_filters('format_to_edit',$devOptions['authorizenetemail']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+
+                            <tr><td><h3>Secret Key <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9667" /><div class="tooltip-content" id="example-content-9667">The Authorize.NET secret key which is used to authenticate your shop.</div></h3></td>
+                            <td class="tableDescription"><p>The Authorize.NET secret key md5 hash value.</p></td>
+                            <td><input type="text" name="authorizenetsecretkey" value="'; _e(apply_filters('format_to_edit',$devOptions['authorizenetsecretkey']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            </table>
+                            <br style="clear:both;" /><br />
+
+
+                            <h3>2CheckOut Gateway (wpStoreCart PRO)</h3>
+                            <table class="widefat">
+                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
+                            <tr><td><h3>Accept 2CheckOut Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-700992" /><div class="tooltip-content" id="example-content-700992">Want to accept 2CheckOut payments?  Then set this to yes!</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using 2CheckOut.</p></td>
+                            <td><p><label for="allow2checkout"><input type="radio" id="allow2checkout_yes" name="allow2checkout" value="true" '; if ($devOptions['allow2checkout'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allow2checkout_no"><input type="radio" id="allow2checkout_no" name="allow2checkout" value="false" '; if ($devOptions['allow2checkout'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            <tr><td><h3>Turn on 2CheckOut Test Mode? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8111166" /><div class="tooltip-content" id="example-content-8111166">If you need to do tests with 2CheckOut then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, all transactions are tests done using 2CheckOut.</p></td>
+                            <td><p><label for="2checkouttestmode"><input type="radio" id="2checkouttestmode_yes" name="2checkouttestmode" value="true" '; if ($devOptions['2checkouttestmode'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="2checkouttestmode_no"><input type="radio" id="2checkouttestmode_no" name="2checkouttestmode" value="false" '; if ($devOptions['2checkouttestmode'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            <tr><td><h3>2CheckOut Vendor ID <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-966644" /><div class="tooltip-content" id="example-content-966644">The 2CheckOut Vendor ID assigned to you.  </div></h3></td>
+                            <td class="tableDescription"><p>The 2CheckOut Vendor ID you are assigned to use access your 2CheckOut account.</p></td>
+                            <td><input type="text" name="2checkoutemail" value="'; _e(apply_filters('format_to_edit',$devOptions['2checkoutemail']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+
+                            </table>
+                            <br style="clear:both;" /><br />
+
+
+                            ';
+                        }
+
+                        echo '
+        		
 			
-			<br style="clear:both;" /><br />
+			
                         </div>
                         <div id="tab5" class="tab_content">
                         <h2>Text &amp; Language Options</h2>';
@@ -852,11 +1049,6 @@ if (!class_exists("wpStoreCart")) {
 			<td><input type="text" name="multiple_items" value="'; _e(apply_filters('format_to_edit',$devOptions['multiple_items']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			<tr><td><h3>Currency Symbol</h3></td>
-			<td class="tableDescription"><p>Default: <i>$</i></p></td>
-			<td><input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
-			</td></tr>
-
 			<tr><td><h3>Subtotal</h3></td>
 			<td class="tableDescription"><p>Default: <i>Subtotal</i></p></td>
 			<td><input type="text" name="subtotal" value="'; _e(apply_filters('format_to_edit',$devOptions['subtotal']), 'wpStoreCart'); echo'" />
@@ -876,7 +1068,26 @@ if (!class_exists("wpStoreCart")) {
 			<td class="tableDescription"><p>Default: <i>Checkout with PayPal</i></p></td>
 			<td><input type="text" name="checkout_paypal_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_paypal_button']), 'wpStoreCart'); echo'" />
 			</td></tr>
+                        ';
 
+                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
+                            echo '
+                            <tr><td><h3>Checkout Authorize.NET Button</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Checkout with Authorize.NET</i></p></td>
+                            <td><input type="text" name="checkout_authorizenet_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_authorizenet_button']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Checkout 2checkout Button</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Checkout with 2Checkout</i></p></td>
+                            <td><input type="text" name="checkout_2checkout_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_2checkout_button']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                        }
+
+                        echo '
 			<tr><td><h3>Remove Link</h3></td>
 			<td class="tableDescription"><p>Default: <i>remove</i></p></td>
 			<td><input type="text" name="remove_link" value="'; _e(apply_filters('format_to_edit',$devOptions['remove_link']), 'wpStoreCart'); echo'" />
@@ -935,6 +1146,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="update_wpStoreCartSettings" value="'; _e('Update Settings', 'wpStoreCart'); echo'" /></div>
 			</form>
+
 			 </div>';		
 		
 		}
@@ -982,7 +1194,7 @@ if (!class_exists("wpStoreCart")) {
 				$isanedit = true;
 				
 				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
-					$wpStoreCartproduct_name = $wpdb->escape($_POST['wpStoreCartproduct_name']);
+					$wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
 					$wpStoreCartproduct_introdescription = $wpdb->prepare($_POST['wpStoreCartproduct_introdescription']);
 					$wpStoreCartproduct_description = $wpdb->prepare($_POST['wpStoreCartproduct_description']);
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
@@ -1059,7 +1271,7 @@ if (!class_exists("wpStoreCart")) {
 			if (isset($_POST['addNewwpStoreCart_product']) && $isanedit == false) {
 			
 				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
-					$wpStoreCartproduct_name = $wpdb->escape($_POST['wpStoreCartproduct_name']);
+					$wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
 					$wpStoreCartproduct_introdescription = $wpdb->prepare($_POST['wpStoreCartproduct_introdescription']);
 					$wpStoreCartproduct_description = $wpdb->prepare($_POST['wpStoreCartproduct_description']);
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
@@ -1296,7 +1508,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
 			</form>
-			 </div>';	
+        		 </div>';
 		
 		}	
 		// END Prints out the Add products admin page =======================================================================		
@@ -2714,6 +2926,23 @@ if (!class_exists("wpStoreCart")) {
                         
 			//echo '<!-- wpStoreCart END -->';
         }
+
+        function addFooterCode(){
+                        global $is_checkout, $cart, $wpscCarthasBeenCalled, $wpsc;
+
+                        $output = '';
+
+                        if($wpscCarthasBeenCalled==false) {
+                            $old_checkout = $is_checkout;
+                            $is_checkout = false;
+                            $output= $cart->display_cart($wpsc, true);
+                            $is_checkout = $old_checkout;
+                            $wpscCarthasBeenCalled = true;
+                        }
+
+                        return $output;
+        }
+
 		
 		function  addContent($content = '') {
             $content .= "<p>wpStoreCart</p>";
@@ -2994,13 +3223,13 @@ if (!class_exists("wpStoreCart")) {
 								  <li><strong>'.$results[0]['name'].'</strong></li>
 								  <li>Price: '.$results[0]['price'].'</li>
 								  <li>
-									<label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
+									<label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>
 								   </li>
 								 </ul>
                                                         ';
 
                                                         if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) ) {
-                                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button" />';
+                                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
                                                         } else {
                                                             $output .= $devOptions['out_of_stock'];
                                                         }
@@ -3058,7 +3287,7 @@ if (!class_exists("wpStoreCart")) {
                                                                     $output .= '<div class="wpsc-list">';
                                                             }
                                                             if($usepictures=='true' || $result['thumbnail']!='' ) {
-                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                    $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                             }
                                                             if($usetext=='true') {
                                                                     $output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
@@ -3081,10 +3310,10 @@ if (!class_exists("wpStoreCart")) {
                                                                     $output .= '<div class="wpsc-list">';
                                                             }
                                                             if($usepictures=='true') {
-                                                                    $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                    $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                             }
                                                             if($usetext=='true') {
-                                                                    $output .= '<a href="'.$permalink.'"><h1>'.$result['name'].'</h1></a>';
+                                                                    $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
                                                             }
                                                             if($devOptions['displayintroDesc']=='true'){
                                                                     $output .= '<p>'.$result['introdescription'].'</p>';
@@ -3097,12 +3326,12 @@ if (!class_exists("wpStoreCart")) {
                                                                             <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
                                                                             <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
                                                                             <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
-                                                                            <label>Qty: <input type="text" name="my-item-qty" value="1" size="3" /></label>
+                                                                            <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
                                                                     ';
 
                                                                     if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
-                                                                        $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button" />';
+                                                                        $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
                                                                     } else {
                                                                         $output .= $devOptions['out_of_stock'];
                                                                     }
@@ -3245,7 +3474,10 @@ if (!class_exists("wpStoreCart")) {
                                     }
                                     break;
 			}			
-			
+
+
+
+
 			return $output;
 		}
 		// END SHORTCODE ================================================
@@ -3746,7 +3978,7 @@ if (class_exists("WP_Widget")) {
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {
-			global $wpdb, $cart, $wpsc, $is_checkout;
+			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled;
 			$output = NULL;
 			extract( $args );
 			$title = apply_filters('widget_title', $instance['title']);
@@ -3757,6 +3989,7 @@ if (class_exists("WP_Widget")) {
 			$is_checkout = false;
 			$output = $cart->display_cart($wpsc);
 			$is_checkout = $old_checkout;
+                        $wpscCarthasBeenCalled = true;
 			echo $output;
 			echo $after_widget;
 		}
@@ -4125,6 +4358,7 @@ if (isset($wpStoreCart)) {
         add_action('wpstorecart/wpstorecart.php',  array(&$wpStoreCart, 'init')); // Create options on activation
 	add_action('admin_menu', 'wpStoreCartAdminPanel'); // Create admin panel
 	add_action('wp_dashboard_setup', array(&$wpStoreCart, 'wpstorecart_main_add_dashboard_widgets') ); // Dashboard widget
+        add_action('wp_footer', array(&$wpStoreCart, 'addFooterCode'), 1); // Place wpStoreCart comment into header
         add_action('wp_head', array(&$wpStoreCart, 'addHeaderCode'), 1); // Place wpStoreCart comment into header
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCheckoutWidget");')); // Register the widget: wpStoreCartTopproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartLoginWidget");')); // Register the widget: wpStoreCartTopproductsWidget
