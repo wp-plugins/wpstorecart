@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.6
+Version: 2.0.7
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.6';
+$wpstorecart_version = '2.0.7';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -3086,6 +3086,20 @@ if (!class_exists("wpStoreCart")) {
                                 'thecategory' => '',
 			), $atts));
 
+                        // Adds this shortcode: [wpstorecart display="orders"]
+                        if ($display=='orders') {
+                            $display = NULL;
+                            $_GET['wpsc']='orders';
+                        }
+
+                        // Lists the products in a category
+                        if (@isset($_GET['wpsc'])) {
+                            if($_GET['wpsc']=='lc' && @is_numeric($_GET['wpsccat'])){
+                                $display = 'categories';
+                                $thecategory = $_GET['wpsccat'];
+                            }
+                        }
+
 			$output = '';
 			switch ($display) {
 				case 'haspurchased': // Categories shortcode =========================================================
@@ -3167,17 +3181,52 @@ if (!class_exists("wpStoreCart")) {
                                         if(is_numeric($quantity) && is_numeric($thecategory)){
 						$sql = "SELECT * FROM `{$table_name}` WHERE `category`={$thecategory} ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, {$quantity};";
 						$results = $wpdb->get_results( $sql , ARRAY_A );
-						if(isset($results)) {
-							foreach ($results as $result) {
-								$permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
-								if($usepictures=='true') {
-									$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'" /></a>';
-								}
-								if($usetext=='true') {
-									$output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
-								}
-							}
-						}
+                                            if(isset($results)) {
+                                                    foreach ($results as $result) {
+                                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            if($devOptions['displayType']=='grid'){
+                                                                    $output .= '<div class="wpsc-grid">';
+                                                            }
+                                                            if($devOptions['displayType']=='list'){
+                                                                    $output .= '<div class="wpsc-list">';
+                                                            }
+                                                            if($usepictures=='true') {
+                                                                    $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                            }
+                                                            if($usetext=='true') {
+                                                                    $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
+                                                            }
+                                                            if($devOptions['displayintroDesc']=='true'){
+                                                                    $output .= '<p>'.$result['introdescription'].'</p>';
+                                                            }
+                                                            if($devOptions['displayAddToCart']=='true'){
+                                                                    $output .= '
+                                                                    <form method="post" action="">
+
+                                                                            <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
+                                                                            <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
+                                                                            <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
+                                                                            <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                            <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
+
+                                                                    ';
+
+                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
+                                                                        $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                    } else {
+                                                                        $output .= $devOptions['out_of_stock'];
+                                                                    }
+
+
+                                                                    $output .= '
+                                                                    </form>
+                                                                    ';
+                                                            }
+
+                                                            $output .= '</div>';
+                                                    }
+                                                    $output .= '<div class="wpsc-clear"></div>';
+                                            }
 					} else {
 						$output .= '<div class="wpsc-error">wpStoreCart did not like your categories shortcode!  The quantity and/or category field contained non-numeric data. Please fix your page or consult the wpStoreCart documentation for help.</div>';
 					}
@@ -3276,10 +3325,18 @@ if (!class_exists("wpStoreCart")) {
                                         if($devOptions['frontpageDisplays']=='List all categories') {
                                             if(isset($results)) {
                                                     foreach ($results as $result) {
-															if($result['postid'] == 0 || $result['postid'] == '') {
-																$result['postid'] = $devOptions['mainpage'];
-															}
-                                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            if(trim($result['thumbnail']=='')) {
+                                                                $result['thumbnail'] = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                                                            }
+                                                            if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                                    $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                                                } else {
+                                                                    $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                                                }
+                                                            } else {
+                                                                $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            }
                                                             if($devOptions['displayType']=='grid'){
                                                                     $output .= '<div class="wpsc-grid">';
                                                             }

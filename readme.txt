@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.6
-Version: 2.0.6
+Stable tag: 2.0.7
+Version: 2.0.7
 
 == Description ==
 
@@ -44,6 +44,11 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.7 =
+* New shortcode [wpstorecart display="orders"] added
+* Fixed categories not displaying correctly
+* Forced default thumbnails for categories, even if none was specifically specified
 
 = 2.0.6 =
 * Added the ability to switch the sites currency (for PayPal only at this time)
