@@ -15,7 +15,7 @@ http://www.webforce.co.nz/cart/
 **********************************************************************/
 
 error_reporting(0);
-
+//error_reporting(E_ALL);
 
 
 
@@ -649,34 +649,32 @@ class wpsc {
 			// WHEN JAVASCRIPT IS DISABLED WE USE A HEADER REDIRECT AFTER THE UPDATE OR EMPTY BUTTONS ARE CLICKED
 			$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
 			echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "' />\n";
+                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="" />';
+
+			if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
+				if(!isset($_POST['ispaypal'])) {
+					echo '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class="wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
+				}
+			}
 
 			if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
 				if(!isset($_POST['ispaypal'])) {
-                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="paypal" />';
-					echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout"></input>';
+					echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
 				}
 			}
 
 			if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
 				if(!isset($_POST['ispaypal'])) {
-                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="authorize.net" />';
-					echo '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout"></input>';
+					echo '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
 				}
 			}
 
 			if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
 				if(!isset($_POST['ispaypal'])) {
-                                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="2checkout" />';
-					echo '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout"></input>';
+					echo '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
 				}
 			}
 
-			/*
-			$disable_paypal_checkout=NULL;
-			// PAYPAL CHECKOUT BUTTON
-			if (isset($button['paypal_checkout']))	{ $input_type = 'image'; $src = ' src="' . $button['paypal_checkout'] . '" alt="' . $text['checkout_paypal_button'] . '" title="" '; }
-			echo "\t\t\t<input type='submit' " . $src ."id='wpsc-paypal-checkout' name='wpsc_paypal_checkout' value='" . $text['checkout_paypal_button'] . "'" . $disable_paypal_checkout . " />\n";
-			*/
 			
 			}
 
@@ -685,7 +683,7 @@ class wpsc {
 		// IF UPDATING AN ITEM, FOCUS ON ITS QTY INPUT AFTER THE CART IS LOADED (DOESN'T SEEM TO WORK IN IE7)
 		if (isset($_POST['wpsc_update_item']))
 			{
-			echo "\t" . '<script type="text/javascript">$(function(){$("#wpsc-item-id-' . $_POST['item_id'] . '").focus()});</script>' . "\n";
+			echo "\t" . '<script type="text/javascript">jQuery(function(){jQuery("#wpsc-item-id-' . $_POST['item_id'] . '").focus()});</script>' . "\n";
 			}
 
 		echo "</div>\n<!-- END wpsc -->\n";

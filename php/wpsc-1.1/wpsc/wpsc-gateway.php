@@ -1,7 +1,7 @@
 <?php
 
 // wpsc library, v1.1a by wpStoreCart.com
-// Forked from wpsc v1.1 http://conceptlogic.com/jcart/
+// Forked from jcart v1.1 http://conceptlogic.com/jcart/
 
 // THIS FILE IS CALLED WHEN ANY BUTTON ON THE CHECKOUT PAGE (PAYPAL CHECKOUT, UPDATE, OR EMPTY) IS CLICKED
 // WE CAN ONLY DEFINE ONE FORM ACTION, SO THIS FILE ALLOWS US TO FORK THE FORM SUBMISSION DEPENDING ON WHICH BUTTON WAS CLICKED
@@ -9,6 +9,7 @@
 
 // INCLUDE wpsc BEFORE SESSION START
 
+//error_reporting(E_ALL);
 error_reporting(0);
 if (!function_exists('add_action'))
 {
@@ -104,18 +105,61 @@ else
                 global $current_user, $wpdb, $paymentGateway, $paymentGatewayOptions;
                 get_currentuserinfo();
 
+                $paymentGateway = 'checkmoneyorder';
+
                 if(@isset($_POST['paymentGateway'])) {
                     $paymentGateway = $_POST['paymentGateway'];
                 }
 
-                if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
-                    $paymentGateway = 'paypal';
+                if($paymentGateway == 'checkmoneyorder') {
+                    $cartContents = '';
+                    $totalPrice = 0;
+                    $totalShipping = 0;
+                    $amountToSubtractFromCart = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            // Implement shipping here if needed
+                            $table_name = $wpdb->prefix . "wpstorecart_products";
+                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                            if(isset($results)) {
+                                if($results[0]['shipping']!='0.00') {
+                                    $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+                                }
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                @$amountToSubtractFromCart  = $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + $item['price'];
+
+                    }
+
+                    $totalPrice = $totalPrice - $amountToSubtractFromCart; // Apply the coupon
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Check/Money Order', '{$totalPrice}', '{$totalShipping}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
                 }
-                if(@!isset($paymentGateway)) {
-                    $paymentGateway = 'paypal';
-                } 
-
-
+                
                 if($paymentGateway == 'authorize.net') {
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/php/payment/Authorize.php');
                     $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/authorize_ipn.php';
@@ -170,6 +214,7 @@ else
                     $items_query_string;
                     $cartContents = '';
                     $totalPrice = 0;
+                    $totalShipping = 0;
                     foreach ($cart->get_contents() as $item) {
                             // BUILD THE QUERY STRING
                             // Specify the product information
@@ -179,15 +224,17 @@ else
                             $myPaypal->addField('item_number_' . $paypal_count, $paypal_count);
                             $myPaypal->addField('quantity_' . $paypal_count, $item['qty']);
 
+                            // Implement shipping here if needed
                             $table_name = $wpdb->prefix . "wpstorecart_products";
                             $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
                             if(isset($results)) {
                                 if($results[0]['shipping']!='0.00') {
                                     $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
+                                    $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
                                 }
                             }
 
-
+                            // Check for a coupon
                             if(@!isset($_SESSION)) {
                                     @session_start();
                             }
@@ -208,11 +255,17 @@ else
                     // Insert the order into the database
                     $table_name = $wpdb->prefix . "wpstorecart_orders";
                     $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
                     $insert = "
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'PayPal', '{$totalPrice}', '0', '{$current_user->ID}', '{$current_user->user_email}', '0', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', 'PayPal', '{$totalPrice}', '{$totalShipping}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );

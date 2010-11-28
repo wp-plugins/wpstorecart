@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.7
+Version: 2.0.8
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.7';
+$wpstorecart_version = '2.0.8';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -61,7 +61,7 @@ if (!class_exists("wpStoreCart")) {
 		var $adminOptionsName = "wpStoreCartAdminOptions";
 		
         function wpStoreCart() { //constructor
-            global $wpdb;
+            global $wpdb, $wpstorecart_db_version;
 
             $devOptions = $this->getAdminOptions();
 
@@ -226,12 +226,18 @@ if (!class_exists("wpStoreCart")) {
 			
 			<div class="wrap">
 			<div style="padding: 20px 10px 10px 10px;">
-			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/logo.png" alt="wpstorecart" /></a><br /><a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/order_pro.png" alt="wpstorecart" /></a></div>
+			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/logo.png" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/order_pro.png" alt="wpstorecart" /></a>';}
+                        echo'</div>';
+                        if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) {
+                            echo '
 			<div style="float:right;">
 				
                                 <a style="position:absolute;top:50px;margin-left:-200px;" href="http://wpstorecart.com/design-mods-support/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/hire_us.png" alt="wpstorecart" /></a>
 			</div>
+                        ';
+                        }
 
+                        echo '
 			<br style="clear:both;" />
 			<ul id="tabnav">
 				<li class="tab"><a href="admin.php?page=wpstorecart-admin" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/controller.png" /></a></li>
@@ -274,7 +280,8 @@ if (!class_exists("wpStoreCart")) {
                                     'displayAddToCart' => 'true',
                                     'displayBuyNow' => 'true',
                                     'displayPrice' => 'true',
-                                    'allowpaypal' => 'true',
+                                    'allowcheckmoneyorder' => 'false',
+                                    'checkmoneyordertext' => 'Please send a check or money order for the above amount to:<br /><br /><strong>My Business Name<br />1234 My Address, Suite ABC<br />New York, NY 24317, USA</strong><br /><br />Please allow 4 to 6 weeks for delivery.',
                                     'paypalemail' => get_bloginfo('admin_email'),
                                     'paypaltestmode' => 'false',
                                     'allowauthorizenet' => 'false',
@@ -296,6 +303,7 @@ if (!class_exists("wpStoreCart")) {
                                     'update_button' => 'update',
                                     'checkout_button' => 'checkout',
                                     'currency_code' => 'USD',
+                                    'checkout_checkmoneyorder_button' => 'Checkout with Check/Money Order',
                                     'checkout_paypal_button' => 'Checkout with PayPal',
                                     'checkout_authorizenet_button' => 'Checkout with Authorize.NET',
                                     'checkout_2checkout_button' => 'Checkout with 2CheckOut',
@@ -395,7 +403,15 @@ if (!class_exists("wpStoreCart")) {
 				}
 				if (isset($_POST['showproductdescription'])) {
 					$devOptions['showproductdescription'] = $wpdb->escape($_POST['showproductdescription']);
-				}	
+				}
+
+				if (isset($_POST['allowcheckmoneyorder'])) {
+					$devOptions['allowcheckmoneyorder'] = $wpdb->escape($_POST['allowcheckmoneyorder']);
+				}
+				if (isset($_POST['checkmoneyordertext'])) {
+					$devOptions['checkmoneyordertext'] = $wpdb->escape($_POST['checkmoneyordertext']);
+				}
+
 				if (isset($_POST['allowpaypal'])) {
 					$devOptions['allowpaypal'] = $wpdb->escape($_POST['allowpaypal']);
 				}
@@ -467,6 +483,11 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['currency_code'])) {
  					$devOptions['currency_code'] = $wpdb->escape($_POST['currency_code']);
 				}
+
+				if (isset($_POST['checkout_checkmoneyorder_button'])) {
+ 					$devOptions['checkout_checkmoneyorder_button'] = $wpdb->escape($_POST['checkout_checkmoneyorder_button']);
+				}
+
 				if (isset($_POST['checkout_paypal_button'])) {
  					$devOptions['checkout_paypal_button'] = $wpdb->escape($_POST['checkout_paypal_button']);
 				}
@@ -874,18 +895,13 @@ if (!class_exists("wpStoreCart")) {
                         </div>
                         <div id="tab4" class="tab_content">
 			<h2>Payment Options</h2>';
-                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
-                            echo '
-                            <h3>PayPal Payment Gateway</h3>
-                            <table class="widefat">
-                                                    <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
-                            ';
-                        } else {
-                            echo '<table class="widefat">
-                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
-                        }
+
+
 
                         echo '
+                        <h3>PayPal Payment Gateway</h3>
+                        <table class="widefat">
+                                                <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 			<tr><td><h3>Accept PayPal Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Want to accept PayPal payments?  Then set this to yes!</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using PayPal.</p></td>
 			<td><p><label for="allowpaypal"><input type="radio" id="allowpaypal_yes" name="allowpaypal" value="true" '; if ($devOptions['allowpaypal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowpaypal_no"><input type="radio" id="allowpaypal_no" name="allowpaypal" value="false" '; if ($devOptions['allowpaypal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
@@ -951,6 +967,24 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>Currency Symbol</h3></td>
 			<td class="tableDescription"><p>Default: <i>$</i></p></td>
 			<td><input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        </table>
+                        <br style="clear:both;" /><br />
+                        ';
+
+                        echo '
+                        <h3>Check/Money Order/COD Payments</h3>
+                        <table class="widefat">
+                                                <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+			<tr><td><h3>Accept Payments via Mail? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, customers can purchase using Check, Money Order or COD</p></td>
+			<td><p><label for="allowcheckmoneyorder"><input type="radio" id="allowcheckmoneyorder_yes" name="allowcheckmoneyorder" value="true" '; if ($devOptions['allowcheckmoneyorder'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowcheckmoneyorder_no"><input type="radio" id="allowcheckmoneyorder_no" name="allowcheckmoneyorder" value="false" '; if ($devOptions['allowcheckmoneyorder'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Text to Display <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></h3></td>
+			<td class="tableDescription"><p>The text/html that is displayed to customers who choose to pay via check or money order.</p></td>
+			<td><textarea name="checkmoneyordertext" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['checkmoneyordertext']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>
 
                         </table>
@@ -1062,6 +1096,11 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>Checkout Button</h3></td>
 			<td class="tableDescription"><p>Default: <i>checkout</i></p></td>
 			<td><input type="text" name="checkout_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_button']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Checkout Check/Money Order Button</h3></td>
+			<td class="tableDescription"><p>Default: <i>Checkout with Check/Money Order</i></p></td>
+			<td><input type="text" name="checkout_checkmoneyorder_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_checkmoneyorder_button']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
 			<tr><td><h3>Checkout PayPal Button</h3></td>
@@ -1896,7 +1935,10 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<tr>
 			<td></td>
-			<td>
+			<td>';
+
+                        /*
+                        echo '
 			<select name="wpStoreCartorderstatus"> 
 			 <option value="">
 						';
@@ -1928,7 +1970,14 @@ if (!class_exists("wpStoreCart")) {
 
 
 			echo '
-			</select></td>
+			</select>';
+                         * 
+                         */
+
+                        echo '<input name="wpStoreCartorderstatus" id="wpStoreCartorderstatus" type="text" value="'.$wpStoreCartorderstatus.'">';
+
+                         echo '</td>
+
 			<td><input type="hidden" id="wpStoreCartcartcontents" name="wpStoreCartcartcontents" style="width: 80%;" value="'.$wpStoreCartcartcontents.'" />';
                         if ($isanedit == true) {
                             echo'<select name="addNewProduct" id="addNewProduct">
@@ -2531,7 +2580,7 @@ if (!class_exists("wpStoreCart")) {
 			<tr>
 			<td><input type="text" name="wpStoreCartcode" style="width: 80%;" value="'.$wpStoreCartcode.'" /></td>
 			<td><input type="text" name="wpStoreCartamount" style="width: 80%;" value="'.$wpStoreCartamount.'" /></td>
-			<!--<td><input type="text" name="wpStoreCartpercent" style="width: 80%;" value="'.$wpStoreCartpercent.'" /></td>-->
+			<td style="display:none;"><input type="hidden" name="wpStoreCartpercent" style="width: 80%;" value="'.$wpStoreCartpercent.'" /></td>
 			<td><input type="text" name="wpStoreCartdescription" style="width: 80%;" value="'.$wpStoreCartdescription.'" /></td>
 			<td>
 <!--<input type="text" name="wpStoreCartproduct" style="width: 80%;" value="'.$wpStoreCartproduct.'" />-->
@@ -4372,7 +4421,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
 			$ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'activate_plugins', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
 			$page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'activate_plugins', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
 			add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'activate_plugins', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
-			add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'activate_plugins', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
+			$statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'activate_plugins', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
 			add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'activate_plugins', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
 			add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
 			add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_tooltip_script') );
@@ -4380,6 +4429,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
 			add_action("admin_print_scripts-$page", array(&$wpStoreCart, 'my_admin_scripts') );
 			add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
 			add_action("admin_print_scripts-$mainPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
+                        add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
                         
 
                 }

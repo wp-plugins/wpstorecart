@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.7
-Version: 2.0.7
+Stable tag: 2.0.8
+Version: 2.0.8
 
 == Description ==
 
@@ -44,6 +44,14 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.8 =
+* Fixed a problem with coupons not working: http://wpstorecart.com/forum/viewtopic.php?f=12&t=52#p120
+* Ability to accept mailed in payments added (cash, money order, check, etc)
+* .wpsc-checkmoneyordercheckout CSS class added
+* checkout_checkmoneyorder_button $devOptions added
+* Fixed problem with payment gateway coming up blank
+* Fixed problem with shipping not getting recorded to the database
 
 = 2.0.7 =
 * New shortcode [wpstorecart display="orders"] added
@@ -117,5 +125,5 @@ Or, if you want to install manually:
 
 == Upgrade Notice ==
 
-= 0.62 =
-* First draft of wpStoreCart.
+= 2.0.8 =
+* wpStoreCart is an open source ecommerce solution for Wordpress.  In this patch, we fix a number of bugs.  It is highly recommended that all users upgrade immediately.
