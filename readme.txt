@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
 Requires at least: 2.8.0
 Tested up to: 3.0.1
-Stable tag: 2.0.8
-Version: 2.0.8
+Stable tag: 2.0.9
+Version: 2.0.9
 
 == Description ==
 
@@ -44,6 +44,13 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.9 =
+* Fixed problem with cash/check payment gateway
+* Added category widget
+* Added pie chart to admin dashboard widget
+* Added bar chart with last 30 days sales chart to admin dashboard widget
+* Cleaned up the admin dashboard a little bit
 
 = 2.0.8 =
 * Fixed a problem with coupons not working: http://wpstorecart.com/forum/viewtopic.php?f=12&t=52#p120

@@ -24,10 +24,13 @@ if (isset($wpStoreCart)) {
 
         // Send an email when purchase is submitted
         mail($current_user->user_email, 'Thank you for your recent purchase', $message, $headers);
+
+
+        header ('HTTP/1.1 301 Moved Permanently');
+        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+            header ('Location: '.get_permalink($devOptions['mainpage']).'?wpsc=success');
+        } else {
+            header ('Location: '.get_permalink($devOptions['mainpage']).'&wpsc=success');
+        }
 }
-
-header ('HTTP/1.1 301 Moved Permanently');
-header ('Location: '.get_permalink($devOptions['mainpage']).'?wpsc=success');
-
-
 ?>

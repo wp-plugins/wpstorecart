@@ -56,7 +56,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty']))
 	exit;
 	}
 
-// THE VISITOR HAS CLICKED THE PAYPAL CHECKOUT BUTTON
+// THE VISITOR HAS CLICKED THE CHECKOUT BUTTON
 else
 	{
 
@@ -102,7 +102,7 @@ else
 	else if ($valid_prices === true)
 		{
 
-                global $current_user, $wpdb, $paymentGateway, $paymentGatewayOptions;
+                global $current_user, $wpdb, $paymentGateway, $paymentGatewayOptions,$cart;
                 get_currentuserinfo();
 
                 $paymentGateway = 'checkmoneyorder';
@@ -140,7 +140,7 @@ else
 
                     }
 
-                    $totalPrice = $totalPrice - $amountToSubtractFromCart; // Apply the coupon
+                    $totalPrice = $totalPrice - $amountToSubtractFromCart + $totalShipping; // Apply the coupon plus shipping
                     $cartContents = $cartContents . '0*0';
 
                     // Insert the order into the database
@@ -158,6 +158,29 @@ else
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
                     (NULL, 'Pending', '{$cartContents}', 'Check/Money Order', '{$totalPrice}', '{$totalShipping}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
                     ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    $keytoedit = $lastID;
+                    $cart->empty_cart();
+                    
+                    @header ('HTTP/1.1 301 Moved Permanently');
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        @header ('Location: '.get_permalink($devOptions['mainpage']).'?wpsc=manual&order='.$keytoedit.'&price='.$totalPrice);
+                    } else {
+                        @header ('Location: '.get_permalink($devOptions['mainpage']).'&wpsc=manual&order='.$keytoedit.'&price='.$totalPrice);
+                    }
+
+                    echo '<script type="text/javascript">
+                    <!--';
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        echo 'window.location = "'.get_permalink($devOptions['mainpage']).'?wpsc=manual&order='.$keytoedit.'&price='.$totalPrice.'";';
+                    } else {
+                        echo 'window.location = "'.get_permalink($devOptions['mainpage']).'&wpsc=manual&order='.$keytoedit.'&price='.$totalPrice.'";';
+                    }
+                    echo '//-->
+                    </script>
+                    ';
                 }
                 
                 if($paymentGateway == 'authorize.net') {
@@ -167,6 +190,70 @@ else
                     $paymentGatewayOptions['authorizenettestmode'] = $devOptions['authorizenettestmode'];
                     $paymentGatewayOptions['authorizenetemail'] = $devOptions['authorizenetemail'];
                     $paymentGatewayOptions['authorizenetsecretkey'] = $devOptions['authorizenetsecretkey'];
+                    $paymentGatewayOptions['theCartNames'] = '';
+                    $paymentGatewayOptions['theCartPrice'] = 0.00;
+                    $cartContents = '';
+                    $paymentGatewayOptions['totalPrice'] = 0;
+                    $paymentGatewayOptions['totalShipping'] = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $item['price'];
+
+                            // Implement shipping here if needed
+                            $table_name = $wpdb->prefix . "wpstorecart_products";
+                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                            if(isset($results)) {
+                                if($results[0]['shipping']!='0.00') {
+                                    $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                }
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] - $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + $item['price'];
+
+                    }
+
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+                    $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
+
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $paymentGatewayOptions['userid'] = $current_user->ID;
+
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Authorize.Net', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    $keytoedit = $lastID;
+
+                    // Specify any custom value, here we send the primkey of the order record
+                    $paymentGatewayOptions['invoice'] = $lastID;
+
+                    //
+                    $cart->empty_cart();
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
                 }
 
@@ -175,6 +262,70 @@ else
                     $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/2co_ipn.php';
                     $paymentGatewayOptions['2checkouttestmode'] = $devOptions['2checkouttestmode'];
                     $paymentGatewayOptions['2checkoutemail'] = $devOptions['2checkoutemail'];
+                    $paymentGatewayOptions['theCartNames'] = '';
+                    $paymentGatewayOptions['theCartPrice'] = 0.00;
+                    $cartContents = '';
+                    $paymentGatewayOptions['totalPrice'] = 0;
+                    $paymentGatewayOptions['totalShipping'] = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $item['price'];
+
+                            // Implement shipping here if needed
+                            $table_name = $wpdb->prefix . "wpstorecart_products";
+                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                            if(isset($results)) {
+                                if($results[0]['shipping']!='0.00') {
+                                    $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                }
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] - $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + $item['price'];
+
+                    }
+
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+                    $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
+
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $paymentGatewayOptions['userid'] = $current_user->ID;
+
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Authorize.Net', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    $keytoedit = $lastID;
+
+                    // Specify any custom value, here we send the primkey of the order record
+                    $paymentGatewayOptions['invoice'] = $lastID;
+
+                    $cart->empty_cart();
+                    //
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
                 }
                 

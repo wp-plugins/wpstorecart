@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.8
+Version: 2.0.9
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.8';
+$wpstorecart_version = '2.0.9';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -2946,18 +2946,40 @@ if (!class_exists("wpStoreCart")) {
 			$permalink = get_permalink( $devOptions['mainpage'] );
 			
 			$orderpercentage = @round($totalrecordsordercompleted / $totalrecordsorder * 100);
-			
+
+                        $startdate =date("Ymd", strtotime("30 days ago"));
+                        $enddate = date("Ymd");
+                        $theSQL = "SELECT `date` FROM `{$table_name_orders}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `orderstatus`='Completed' ORDER BY `date` DESC;";
+			$salesThisMonth = $wpdb->get_results( $theSQL , ARRAY_A );
+                        $currentDay = $enddate;
+                        $dayAgo = 0 ;
+                        $highestNumber = 0;
+                        while($currentDay != $startdate) {
+                            $salesOnDay[$currentDay] = 0;
+                            foreach($salesThisMonth as $currentSale) {
+                                if($currentDay == $currentSale['date']) {
+                                    $salesOnDay[$currentDay] = $salesOnDay[$currentDay] + 1;
+                                }
+                            }
+                            if($salesOnDay[$currentDay] > $highestNumber) {
+                                $highestNumber = $salesOnDay[$currentDay];
+                            }
+                            $dayAgo++;
+                            $currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));
+                        }
+                        $dayAgo = 29 ;
+                        $currentDay = $startdate;
+
 			// inlinebar
 			// 
 			$lastrecordssql = "SELECT * FROM `{$table_name_orders}` ORDER BY `date` DESC LIMIT 0, 30";
 			$lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 			
 			echo '<ul>';
-                        echo '<li>wpStoreCart version '.$wpstorecart_version.'</li>';
-			echo '<li><strong>wpStoreCart main page:</strong> <a href="'.$permalink.'" target="_blank">here</a> </li>';
-			echo "<li><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <span class=\"inlinepie\">{$totalrecordsordercompleted},{$totalrecordsorder}</span> </li>";
+                        echo '<li>wpStoreCart v'.$wpstorecart_version.' [mainpage]:</strong> <a href="'.$permalink.'" target="_blank">here</a></li>';
 			echo "<li><strong>Number of Products:</strong> {$totalrecords} </li>";
-			//echo "<li><strong>Sales this month:</strong> <span class=\"inlinebar\">1,2,3,4,5,4,3,2,1</span></li>";
+                        echo "<li><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"http://chart.apis.google.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
+			echo "<li><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" />";
 			echo '</ul>';
 		} 
 		
@@ -3481,6 +3503,10 @@ if (!class_exists("wpStoreCart")) {
                                                 $output .= 'User ID: ' . $current_user->ID . '<br />';
 
                                             }
+                                        }
+                                        if($_GET['wpsc']=='manual') {
+                                            $output .= '<h2>Order total: '. $_GET['price'] .'</h2>';
+                                            $output .= $devOptions['checkmoneyordertext'];
                                         }
                                         if($_GET['wpsc']=='success') {
                                             $output .= $this->makeEmailTxt($devOptions['success_text']);
@@ -4076,6 +4102,95 @@ if (class_exists("wpStoreCart")) {
  * wpStoreCartCheckoutWidget SIDEBAR WIDGET
  */
 if (class_exists("WP_Widget")) {
+
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+
+	class wpStoreCartCategoryWidget extends WP_Widget {
+		/** constructor */
+		function wpStoreCartCategoryWidget() {
+			parent::WP_Widget(false, $name = 'wpStoreCart Categories');
+		}
+
+		/** @see WP_Widget::widget */
+		function widget($args, $instance) {
+			global $wpdb, $wpStoreCart;
+			$output = NULL;
+			$table_name = $wpdb->prefix . "wpstorecart_categories";
+
+                        $devOptions = $wpStoreCart->getAdminOptions();
+
+			extract( $args );
+			$title = apply_filters('widget_title', $instance['title']);
+			$numberOfproductsToDisplay = empty($instance['numberOfproductsToDisplay']) ? '10' : $instance['numberOfproductsToDisplay'];
+			$widgetShowproductImages = empty($instance['widgetShowproductImages']) ? 'false' : $instance['widgetShowproductImages'];
+                        $maxImageWidth = empty($instance['maxImageWidth']) ? 'false' : $instance['maxImageWidth'];
+                        $maxImageHeight = empty($instance['maxImageHeight']) ? 'false' : $instance['maxImageHeight'];
+
+			echo $before_widget;
+			if ( $title ) { echo $before_title . $title . $after_title; }
+			if(is_numeric($numberOfproductsToDisplay)){
+				$sql = "SELECT * FROM `{$table_name}` ORDER BY `parent` DESC LIMIT 0, {$numberOfproductsToDisplay};";
+				$results = $wpdb->get_results( $sql , ARRAY_A );
+				if(isset($results)) {
+					foreach ($results as $result) {
+                                                if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                        $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                                    } else {
+                                                        $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                                    }
+                                                } else {
+                                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                }
+						if($widgetShowproductImages=='true') {
+                                                        if(trim($result['thumbnail']=='')) {
+                                                            $result['thumbnail'] = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                                                        }
+							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['category'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+						}
+						$output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
+					}
+				}
+			} else {
+				$output .= 'wpStoreCart did not like your widget!  The number of categories to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+			}
+			echo $output;
+			echo $after_widget;
+		}
+
+		/** @see WP_Widget::update */
+		function update($new_instance, $old_instance) {
+			$instance['title']= strip_tags(stripslashes($new_instance['title']));
+			$instance['numberOfproductsToDisplay'] = strip_tags(stripslashes($new_instance['numberOfproductsToDisplay']));
+			$instance['widgetShowproductImages'] = strip_tags(stripslashes($new_instance['widgetShowproductImages']));
+                        $instance['maxImageWidth'] = strip_tags(stripslashes($new_instance['maxImageWidth']));
+                        $instance['maxImageHeight'] = strip_tags(stripslashes($new_instance['maxImageHeight']));
+			return $instance;
+		}
+
+		/** @see WP_Widget::form */
+		function form($instance) {
+			@$title = esc_attr($instance['title']);
+			@$numberOfproductsToDisplay = htmlspecialchars($instance['numberOfproductsToDisplay']);
+			@$widgetShowproductImages = htmlspecialchars($instance['widgetShowproductImages']);
+                        @$maxImageWidth = htmlspecialchars($instance['maxImageWidth']);
+                        @$maxImageHeight = htmlspecialchars($instance['maxImageHeight']);
+
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of categories to display:') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
+			//echo '<p style="text-align:left;"><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . ' <input style="width: 200px;" id="' . $this->get_field_id('widgetShowproductImages') . '" name="' . $this->get_field_name('widgetShowproductImages') . '" type="text" value="' . $widgetShowproductImages . '" /></label></p>';
+			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+		}
+
+	}
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+
+
+
 	class wpStoreCartCheckoutWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartCheckoutWidget() {
@@ -4471,6 +4586,8 @@ if (isset($wpStoreCart)) {
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartLoginWidget");')); // Register the widget: wpStoreCartTopproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartTopproductsWidget");')); // Register the widget: wpStoreCartTopproductsWidget
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartRecentproductsWidget");')); // Register the widget: wpStoreCartRecentproductsWidget
+        add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
+
 	add_shortcode('wpstorecart', array(&$wpStoreCart, 'wpstorecart_mainshortcode'));
 	add_action('admin_head', array(&$wpStoreCart, 'placeAdminHeaderCode')); // Place wpStoreCart comment into header
         add_action( 'wp_print_styles', array(&$wpStoreCart, 'enqueue_my_styles') );
