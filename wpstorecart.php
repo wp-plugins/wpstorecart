@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.9
+Version: 2.0.10
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.9';
+$wpstorecart_version = '2.0.10';
 $wpstorecart_db_version = '2.0.2';
 $APjavascriptQueue = NULL;
 
@@ -897,6 +897,10 @@ if (!class_exists("wpStoreCart")) {
 			<h2>Payment Options</h2>';
 
 
+                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/updater.pro.php') ) {
+                            include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
+                            include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/updater.pro.php');
+                        }
 
                         echo '
                         <h3>PayPal Payment Gateway</h3>
@@ -3373,13 +3377,13 @@ if (!class_exists("wpStoreCart")) {
                                 default: // Default shortcode
                                     if(!isset($_GET['wpsc'])) {
                                         if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
-                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, 10;";
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, {$quantity};";
                                         }
                                         if($devOptions['frontpageDisplays']=='List most popular products') {
-                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, 10;";
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, {$quantity};";
                                         }
                                         if($devOptions['frontpageDisplays']=='List all categories') {
-                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT 0, 10;";
+                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT 0, {$quantity};";
                                         }
                                         $results = $wpdb->get_results( $sql , ARRAY_A );
 
@@ -3624,7 +3628,8 @@ if (!class_exists("wpStoreCart")) {
 		
 		function my_mainpage_scripts() {
 			global $APjavascriptQueue;
-		
+
+                        /*
 			wp_enqueue_script('sparkline',WP_PLUGIN_URL . '/wpstorecart/js/jquery.sparkline.min.js',array('jquery'),'1.4' );
 		
 			$APjavascriptQueue .= '
@@ -3640,7 +3645,8 @@ if (!class_exists("wpStoreCart")) {
 			//]]>
 			</script>					
 			';
-
+                        */
+                        
                         $APjavascriptQueue .= '
                             <link href="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/basic.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/_shared/EnhanceJS/enhance.js"></script>
@@ -4255,8 +4261,13 @@ if (class_exists("WP_Widget")) {
 			if ( $title ) { echo $before_title . $title . $after_title; }
 
                         if ( is_user_logged_in() ) {
+                                if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                    $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
+                                } else {
+                                    $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
+                                }
                                 $output .= '<ul>';
-                                $output .= '<li><a href="'.get_permalink($devOptions['mainpage']).'?wpsc=orders">My Orders &amp; Purchases</a></li>';
+                                $output .= '<li><a href="'.$permalink.'">My Orders &amp; Purchases</a></li>';
                                 $output .= '<li><a href="'.wp_logout_url(get_permalink()).'">Logout</a></li>';
                                 $output .= '</ul>';
                         } else {

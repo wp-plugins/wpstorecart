@@ -254,10 +254,11 @@ else
 
                     //
                     $cart->empty_cart();
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/';
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
                 }
 
-                if($paymentGateway == '2co') {
+                if($paymentGateway == '2checkout') {
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/php/payment/TwoCo.php');
                     $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/2co_ipn.php';
                     $paymentGatewayOptions['2checkouttestmode'] = $devOptions['2checkouttestmode'];
@@ -314,7 +315,7 @@ else
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'Authorize.Net', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', '2CheckOut', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
@@ -325,7 +326,8 @@ else
                     $paymentGatewayOptions['invoice'] = $lastID;
 
                     $cart->empty_cart();
-                    //
+
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/';
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
                 }
                 

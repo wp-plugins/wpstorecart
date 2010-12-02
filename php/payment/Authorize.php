@@ -86,13 +86,13 @@ class Authorize extends PaymentGateway
     public function prepareSubmit()
     {
         $this->addField('x_Login', $this->login);
-        $this->addField('x_fp_sequence', $this->fields['x_Invoice_num']);
+        $this->addField('x_fp_sequence', $this->fields['x_invoice_num']);
         $this->addField('x_fp_timestamp', time());
 
         $data = $this->fields['x_Login'] . '^' .
-                $this->fields['x_Invoice_num'] . '^' .
+                $this->fields['x_invoice_num'] . '^' .
                 $this->fields['x_fp_timestamp'] . '^' .
-                $this->fields['x_Amount'] . '^';
+                $this->fields['x_amount'] . '^';
 
         $this->addField('x_fp_hash', $this->hmac($this->secret, $data));
     }

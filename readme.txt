@@ -3,9 +3,9 @@ Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
 Requires at least: 2.8.0
-Tested up to: 3.0.1
-Stable tag: 2.0.9
-Version: 2.0.9
+Tested up to: 3.0.2
+Stable tag: 2.0.10
+Version: 2.0.10
 
 == Description ==
 
@@ -44,6 +44,12 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.10 =
+* Fixed non-updating quantities in shortcode
+* Made charts wider by default
+* Fixed a problem with the login widget for users not using custom permalinks
+* Added buttons that were missing for check/money order purchasing
 
 = 2.0.9 =
 * Fixed problem with cash/check payment gateway
