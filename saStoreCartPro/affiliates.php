@@ -1,4 +1,4 @@
-<?PHP
+<?PHP 
 global $wpStoreCart, $allowedToAccess, $wpdb, $affiliatepurchases;
 
 $wpStoreCart::spHeader();
