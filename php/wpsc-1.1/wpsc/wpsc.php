@@ -480,12 +480,46 @@ class wpsc {
                         $isLoggedIn = true;
                     } else {
                         $isLoggedIn = false;
+
+                        /*
+                         * Show error messages, then remove the wpscregerror from the URI
+                         * @todo Add these into the language options of wpStoreCart
+                         */
+                        $servrequest_uri = $_SERVER['REQUEST_URI'] ;
+                        if(@isset($_GET['wpscregerror'])) {
+                            if($_GET['wpscregerror']=='1') {
+                                echo '<div class="wpscerror">Username taken.</div>';
+                                $servrequest_uri = str_replace("&wpscregerror=1", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=1", "", $servrequest_uri);
+                            }
+                            if($_GET['wpscregerror']=='2') {
+                                echo '<div class="wpscerror">Username invalid.</div>';
+                                $servrequest_uri = str_replace("&wpscregerror=2", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=2", "", $servrequest_uri);
+                            }
+                            if($_GET['wpscregerror']=='3') {
+                               echo '<div class="wpscerror">Email is invalid.</div>';
+                                $servrequest_uri = str_replace("&wpscregerror=3", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=3", "", $servrequest_uri);
+                            }
+                            if($_GET['wpscregerror']=='4') {
+                                $servrequest_uri = str_replace("&wpscregerror=4", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=4", "", $servrequest_uri);
+                                echo '<div class="wpscerror">Email is already registered.</div>';
+                            }
+                            if($_GET['wpscregerror']=='5') {
+                                $servrequest_uri = str_replace("&wpscregerror=5", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=5", "", $servrequest_uri);
+                                echo '<div class="wpscerror">Wordpress could not create the account, alert the admin to enable registrations.</div>';
+                            }
+                        }
+
                         echo '<br /><strong>Register</strong><br />
                         <form name="registerform" action="'. WP_PLUGIN_URL.'/wpstorecart/php/register.php" method="post">
                                 <fieldset>
                                         <label>E-mail
                                         <input type="text" name="email" value="" /></label>
-                                        <input type="hidden" name="redirect_to" value="'.$_SERVER['REQUEST_URI'].'" />
+                                        <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
                                         <label>Password
                                         <input type="password" name="user_pass" value="" /></label>
 <select name="wpstate" style="display:none;">
@@ -639,6 +673,8 @@ class wpsc {
 		if ($is_checkout == true)
 			{
 
+                        $servrequest_uri = $_SERVER['REQUEST_URI'] ;
+
 
 
 			// HIDDEN INPUT ALLOWS US TO DETERMINE IF WE'RE ON THE CHECKOUT PAGE
@@ -648,7 +684,7 @@ class wpsc {
 			// SEND THE URL OF THE CHECKOUT PAGE TO wpsc-gateway.php
 			// WHEN JAVASCRIPT IS DISABLED WE USE A HEADER REDIRECT AFTER THE UPDATE OR EMPTY BUTTONS ARE CLICKED
 			$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
-			echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "' />\n";
+			echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $servrequest_uri . "' />\n";
                         echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="" />';
 
 			if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {

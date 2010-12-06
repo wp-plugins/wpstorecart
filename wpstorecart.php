@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.10
+Version: 2.0.11
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc;
 
 //Global variables:
-$wpstorecart_version = '2.0.10';
-$wpstorecart_db_version = '2.0.2';
+$wpstorecart_version = '2.0.11';
+$wpstorecart_db_version = '2.0.11';
 $APjavascriptQueue = NULL;
 
 // Pre-2.6 compatibility, which is actually frivilous since we use the 2.8+ widget technique
@@ -74,6 +74,27 @@ if (!class_exists("wpStoreCart")) {
                 update_option('wpStoreCartAdminOptions', $devOptions);
             }
 
+            if($devOptions['database_version']=='2.0.2') {
+		   $table_name = $wpdb->prefix . "wpstorecart_meta";
+		   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+			$sql = "
+				CREATE TABLE {$table_name} (
+				`primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				`value` TEXT NOT NULL,
+				`type` VARCHAR(32) NOT NULL,
+				`foreignkey` INT NOT NULL
+				);
+				";
+
+
+			$results = $wpdb->query( $sql );
+                        $devOptions['database_version'] = $wpstorecart_db_version;
+                        update_option('wpStoreCartAdminOptions', $devOptions);
+			}
+            }
+
+
             // This increments the add to cart counter for the product statistics
             if(isset($_POST['my-item-id'])) {
                 $primkey = $_POST['my-item-id'];
@@ -97,13 +118,16 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
-       function wpscError($theError='unknown') {
+       function wpscError($theError='unknown', $variables=NULL) {
            $output = "<div id='wpsc-warning' class='updated fade'><p>";
            if($theError=='nopage') {
                $output .= __('<strong>wpStoreCart is not properly configured at this time.</strong>  You\'ll need to either have wpStoreCart automatically create a "main page" and a "checkout page" for your store by <a href="?page=wpstorecart-admin&wpscaction=createpages">clicking here</a>, or you can create your own and then visit <a href="?page=wpstorecart-settings">the settings page</a> to tell wpStoreCart which pre-existing pages to use.  See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
            }
            if($theError=='register_globals') {
                $output .= __('<strong>wpStoreCart has detected that register_globals is set to ON.</strong>  This is a major security risk that can make it much easier for a hacker to gain full access to your website and it\'s data.  Please disable register_globals by following <a href="http://wpstorecart.com/forum/viewtopic.php?f=2&t=2" target="_blank">the directions here</a> before using wpStoreCart. Your shopping cart, checkout, and add to cart functionality will not work while register_globals is set to On. See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
+           }
+           if($theError=='nouploadsdir') {
+               $output .= '<strong>wpStoreCart has detected that a required folder is missing and we could not automatically create it.</strong>  Please manually create this folder and give it 0777 permissions: '.$variables;
            }
            $output .= "</p></div>";
            return $output;
@@ -119,10 +143,25 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
+        function wpscErrorNoUploadDir() {
+            echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/');
+        }
+
+        function wpscErrorNoUploadWpDir() {
+            echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/wpstorecart/');
+        }
+
         function register_custom_init() {
             // This block of code is for incrementing the add to cart log
 
             $devOptions = $this->getAdminOptions();
+
+            if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
+                    add_action('admin_notices', array(&$this, ' wpscErrorNoUploadDir'));
+            }
+            if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
+                   add_action('admin_notices', array(&$this, ' wpscErrorNoUploadWpDir'));
+            }
 
             if (@ini_get('register_globals')==1) {
                 add_action('admin_notices', array(&$this, 'wpscErrorRegisterGlobals'));
@@ -320,7 +359,9 @@ if (!class_exists("wpStoreCart")) {
                                     'add_to_cart' => 'Add to Cart',
                                     'out_of_stock' => 'Out of Stock!',
                                     'ga_trackingnum' => '',
-                                    'database_version' => NULL
+                                    'database_version' => NULL,
+                                    'minimumAffiliatePayment' => '0.00',
+                                    'minimumDaysBeforePaymentEligable' => '30'
                                     );
 
             $devOptions = get_option($this->adminOptionsName);
@@ -535,6 +576,12 @@ if (!class_exists("wpStoreCart")) {
 				}
 				if (isset($_POST['ga_trackingnum'])) {
  					$devOptions['ga_trackingnum'] = $wpdb->escape($_POST['ga_trackingnum']);
+				}
+				if (isset($_POST['minimumAffiliatePayment'])) {
+ 					$devOptions['minimumAffiliatePayment'] = $wpdb->escape($_POST['minimumAffiliatePayment']);
+				}
+				if (isset($_POST['minimumDaysBeforePaymentEligable'])) {
+ 					$devOptions['minimumDaysBeforePaymentEligable'] = $wpdb->escape($_POST['minimumDaysBeforePaymentEligable']);
 				}
 
 				update_option($this->adminOptionsName, $devOptions);
@@ -2917,7 +2964,14 @@ if (!class_exists("wpStoreCart")) {
 		// Dashboard widget code=======================================================================
 		function wpstorecart_main_dashboard_widget_function() {
 			global $wpdb, $wpstorecart_version;
-			
+
+                        /*
+                         * @todo Add the ability to specify user permission levels for dashboard.  This is not a priority, but more of an after thought
+                         */
+			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) { // Remove the main dashboard widget from end users
+				exit();
+			}
+                        
 			$devOptions = $this->getAdminOptions();
 			
 			$table_name = $wpdb->prefix . "wpstorecart_products";
@@ -3200,8 +3254,9 @@ if (!class_exists("wpStoreCart")) {
                                             }
                                         }
 					break;
-                                case 'checkout': // Categories shortcode =========================================================
+                                case 'checkout': // Checkout shortcode =========================================================
 					$is_checkout = true;
+
 					//if(!is_array($wpsc)) {
 						require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
 						require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');					
@@ -3511,6 +3566,47 @@ if (!class_exists("wpStoreCart")) {
                                         if($_GET['wpsc']=='manual') {
                                             $output .= '<h2>Order total: '. $_GET['price'] .'</h2>';
                                             $output .= $devOptions['checkmoneyordertext'];
+                                            if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=manualresponse&order='.$_GET['order'];
+                                            } else {
+                                                $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=manualresponse&order='.$_GET['order'];
+                                            }
+                                            $output .= '<form action="'.$permalink.'" method="post"><textarea class="wpsc-textarea" name="manualresponsetext"></textarea><input type="submit" class="wpsc-button" value="Submit" /> </form>';
+                                        }
+                                        if($_GET['wpsc']=='manualresponse') {
+                                            global $wpstorecart_version;
+                                            if(is_numeric($_GET['order'])) {
+                                                $orderNumber = intval($_GET['order']);
+                                                @$orderText = $wpdb->prepare($_POST['manualresponsetext']);
+                                                $table_name3 = $wpdb->prefix . "wpstorecart_orders";
+                                                $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='{$current_user->ID}' AND `primkey`={$orderNumber};";
+                                                $results = $wpdb->get_results( $sql , ARRAY_A );
+                                                if(isset($results)) {
+                                                    $table_name3 = $wpdb->prefix . "wpstorecart_meta";
+                                                    $sql = "INSERT INTO `{$table_name3}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$orderText}', 'ordernote', '{$orderNumber}');";
+                                                    $wpdb->query( $sql );
+                                                }
+                                                $output .= $this->makeEmailTxt($devOptions['success_text']);
+                                                 // Let's send them an email telling them their purchase was successful
+                                                 // In case any of our lines are larger than 70 characters, we should use wordwrap()
+                                                $message = wordwrap($this->makeEmailTxt($devOptions['emailonapproval']) . $this->makeEmailTxt($devOptions['emailsig']), 70);
+
+                                                $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                                                    'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                                                    'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                                                // Send an email when purchase is submitted
+                                                @mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
+
+                                                $message = wordwrap("A note was added to a recent order. Here is the contents:<br /> {$orderText}", 70);
+
+                                                $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                                                    'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                                                    'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                                                // Send an email when purchase is submitted
+                                                @mail($devOptions['wpStoreCartEmail'], 'A note was added to a recent order!', $message, $headers);
+                                            }
                                         }
                                         if($_GET['wpsc']=='success') {
                                             $output .= $this->makeEmailTxt($devOptions['success_text']);
@@ -4209,11 +4305,14 @@ if (class_exists("WP_Widget")) {
 			$output = NULL;
 			extract( $args );
 			$title = apply_filters('widget_title', $instance['title']);
-
+                        $widgetShowproductImages = empty($instance['widgetShowproductImages']) ? 'false' : $instance['widgetShowproductImages'];
 			echo $before_widget;
 			if ( $title ) { echo $before_title . $title . $after_title; }
 			$old_checkout = $is_checkout;
 			$is_checkout = false;
+                        if($widgetShowproductImages=='true') {
+                           $is_checkout = true;
+                        }
 			$output = $cart->display_cart($wpsc);
 			$is_checkout = $old_checkout;
                         $wpscCarthasBeenCalled = true;
@@ -4224,16 +4323,16 @@ if (class_exists("WP_Widget")) {
 		/** @see WP_Widget::update */
 		function update($new_instance, $old_instance) {
 			$instance['title']= strip_tags(stripslashes($new_instance['title']));
-
+                        $instance['widgetShowproductImages'] = strip_tags(stripslashes($new_instance['widgetShowproductImages']));
 			return $instance;
 		}
 
 		/** @see WP_Widget::form */
 		function form($instance) {
 			@$title = esc_attr($instance['title']);
-
+                        @$widgetShowproductImages = htmlspecialchars($instance['widgetShowproductImages']);
 			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-
+                        echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Use as the final checkout:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
 		}
 
 	}

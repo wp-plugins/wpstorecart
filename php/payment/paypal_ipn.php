@@ -63,8 +63,8 @@ if ($myPaypal->validateIpn())
              // In case any of our lines are larger than 70 characters, we should use wordwrap()
             $message = wordwrap($wpStoreCart->makeEmailTxt($devOptions['emailonapproval']) . $wpStoreCart->makeEmailTxt($devOptions['emailsig']), 70);
 
-            $headers = 'From: '.$current_user->user_email . "\r\n" .
-                'Reply-To: ' .$current_user->user_email. "\r\n" .
+            $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
                 'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
             // Send an email when purchase is submitted

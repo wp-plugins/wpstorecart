@@ -70,14 +70,14 @@ if ($myAuthorize->validateIpn())
 
              // Let's send them an email telling them their purchase was successful
              // In case any of our lines are larger than 70 characters, we should use wordwrap()
-            $message = wordwrap($wpStoreCart->makeEmailTxt($devOptions['emailonapproval']) . $wpStoreCart->makeEmailTxt($devOptions['emailsig']), 70);
+                $message = wordwrap($wpStoreCart->makeEmailTxt($devOptions['emailonapproval']) . $wpStoreCart->makeEmailTxt($devOptions['emailsig']), 70);
 
-            $headers = 'From: '.$current_user->user_email . "\r\n" .
-                'Reply-To: ' .$current_user->user_email. "\r\n" .
-                'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+                $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                    'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                    'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
-            // Send an email when purchase is submitted
-            mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
+                // Send an email when purchase is submitted
+                mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
 
             }
      }

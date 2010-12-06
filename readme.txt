@@ -1,11 +1,11 @@
 === Plugin Name ===
 Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
-Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates
+Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.0.2
-Stable tag: 2.0.10
-Version: 2.0.10
+Stable tag: 2.0.11
+Version: 2.0.11
 
 == Description ==
 
@@ -44,6 +44,16 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.11 =
+* Added error messages to the registration process during checkout
+* Added graceful exit via redirect to the registration process during checkout
+* Added error messages in the admin panel if /uploads/wpstorecart/ or /uploads/ directories are missing and could not be created
+* Fixed problem with checkout_2checkout_button and checkout_checkmoneyorder_button not displaying text
+* Updated the database schema and added a new table: wpstorecart_meta.  This table holds generic information about tons of small, added detail
+* New CSS class .wpsc-textarea added
+* Added the ability for a manual order customer to send a note to the store admin regarding their purchase after checkout
+* Updated the email that is sent after orders so that it sends from the wpStoreCart email address specified in the settings
 
 = 2.0.10 =
 * Fixed non-updating quantities in shortcode

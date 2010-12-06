@@ -15,4 +15,5 @@
 .wpsc-clear {clear:both;}
 .wpsc-product-info {list-style:none;}
 .wpsc-product-info li {text-indent:12px;}
+.wpscerror {display:block;background-color:#ff0000;color:#000000;margin:5px 5px 5px 5px;padding:5px 5px 5px 5px;border:1px #000000 solid;}
 /* END wpStoreCart */
