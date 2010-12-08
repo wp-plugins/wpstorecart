@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.11
+Version: 2.0.12
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -25,10 +25,10 @@ library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, S
 Boston, MA 02111-1307 USA 
 */
 
-global $wpStoreCart, $cart, $wpsc;
+global $wpStoreCart, $cart, $wpsc, $wpstorecart_version;
 
 //Global variables:
-$wpstorecart_version = '2.0.11';
+$wpstorecart_version = '2.0.12';
 $wpstorecart_db_version = '2.0.11';
 $APjavascriptQueue = NULL;
 
@@ -361,7 +361,8 @@ if (!class_exists("wpStoreCart")) {
                                     'ga_trackingnum' => '',
                                     'database_version' => NULL,
                                     'minimumAffiliatePayment' => '0.00',
-                                    'minimumDaysBeforePaymentEligable' => '30'
+                                    'minimumDaysBeforePaymentEligable' => '30',
+                                    'affiliateInstructions'=>'Welcome to our affiliate program.  Here, you can review successful affiliate sales as well as grab links to all the products in our store that include your affiliate code.'
                                     );
 
             $devOptions = get_option($this->adminOptionsName);
@@ -577,12 +578,7 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['ga_trackingnum'])) {
  					$devOptions['ga_trackingnum'] = $wpdb->escape($_POST['ga_trackingnum']);
 				}
-				if (isset($_POST['minimumAffiliatePayment'])) {
- 					$devOptions['minimumAffiliatePayment'] = $wpdb->escape($_POST['minimumAffiliatePayment']);
-				}
-				if (isset($_POST['minimumDaysBeforePaymentEligable'])) {
- 					$devOptions['minimumDaysBeforePaymentEligable'] = $wpdb->escape($_POST['minimumDaysBeforePaymentEligable']);
-				}
+
 
 				update_option($this->adminOptionsName, $devOptions);
 			   
@@ -3221,6 +3217,12 @@ if (!class_exists("wpStoreCart")) {
                             $_GET['wpsc']='orders';
                         }
 
+                        // Adds this shortcode: [wpstorecart display="affiliate"]
+                        if ($display=='affiliate') {
+                            $display = NULL;
+                            $_GET['wpsc']='affiliate';
+                        }
+
                         // Lists the products in a category
                         if (@isset($_GET['wpsc'])) {
                             if($_GET['wpsc']=='lc' && @is_numeric($_GET['wpsccat'])){
@@ -3535,6 +3537,49 @@ if (!class_exists("wpStoreCart")) {
                                             }
                                         }
                                     } else {
+                                        if($_GET['wpsc']=='affiliate') {
+                                            global $affiliatemanager, $affiliatesettings, $affiliatepurchases;
+                                            $affiliatemanager = true;
+                                            $affiliatesettings['current_user'] = $current_user->ID;
+                                            $affiliatesettings['available_products']  = NULL;
+                                            $affiliatesettings['product_urls'] = NULL;
+                                            $affiliatesettings['minimumAffiliatePayment'] = $devOptions['minimumAffiliatePayment'];
+                                            $affiliatesettings['minimumDaysBeforePaymentEligable'] = $devOptions['minimumDaysBeforePaymentEligable'];
+                                            $affiliatesettings['affiliateInstructions'] = $devOptions['affiliateInstructions'];
+                                            
+                                            $table_name_products = $wpdb->prefix . "wpstorecart_products";
+                                            $sql = "SELECT `primkey`, `postid` FROM `{$table_name_products}` ORDER BY `primkey` ASC;";
+                                            $results = $wpdb->get_results( $sql , ARRAY_A );
+                                            $affiliatesettings['base_url'] = WP_PLUGIN_URL;
+                                            if(isset($results)) {
+                                                foreach ($results as $result) {
+                                                    $affiliatesettings['available_products'] = $affiliatesettings['available_products'] . $result['primkey'] . ',';
+                                                    $affiliatesettings['product_urls'] = $affiliatesettings['product_urls']  . urlencode(get_permalink($result['postid'])) . '|Z|Z|Z|';
+                                                }
+                                                $affiliatesettings['available_products'] = substr($affiliatesettings['available_products'], 0, -1);
+                                                $affiliatesettings['product_urls'] = substr($affiliatesettings['product_urls'], 0, -7);
+                                            }
+                                            $table_name = $wpdb->prefix . "wpstorecart_orders";
+                                            $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                            $sql = "SELECT * FROM `{$table_name}`, `{$table_name_meta}` WHERE  `{$table_name}`.`affiliate`='{$affiliatesettings['current_user']}' AND  `{$table_name}`.`orderstatus`='Completed' AND `{$table_name}`.`primkey`=`{$table_name_meta}`.`foreignkey` ORDER BY  `{$table_name}`.`affiliate`,  `{$table_name}`.`date` DESC;";
+                                            $results = $wpdb->get_results( $sql , ARRAY_A );
+                                            $icounter = 0;
+                                            foreach ($results as $result) {
+                                                global $userinfo2;
+                                                $affiliatepurchases[$icounter]['cartcontents'] = $this->splitOrderIntoProduct($result['primkey']);
+                                                $affiliatepurchases[$icounter]['amountpaid'] = $result['value'];
+                                                $affiliatepurchases[$icounter]['primkey'] = $result['primkey'];
+                                                $affiliatepurchases[$icounter]['price'] = $result['price'];
+                                                $affiliatepurchases[$icounter]['date'] = $result['date'];
+                                                $affiliatepurchases[$icounter]['orderstatus'] = $result['orderstatus'];
+                                                $userinfo2 = get_userdata($result['affiliate']);
+                                                @$affiliatepurchases[$icounter]['affiliateusername'] = $userinfo2->user_login;
+                                                $icounter++;
+                                            }
+                                            @include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php');
+                                            echo @wpscAffiliates();
+                                            $affiliatemanager = false;
+                                        }
                                         if($_GET['wpsc']=='orders') {
                                             $output .= 'Your orders';
                                             

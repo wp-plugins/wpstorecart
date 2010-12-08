@@ -161,6 +161,9 @@ else
 
                     $results = $wpdb->query( $insert );
                     $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
                     $keytoedit = $lastID;
                     $cart->empty_cart();
                     
@@ -247,6 +250,9 @@ else
 
                     $results = $wpdb->query( $insert );
                     $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
                     $keytoedit = $lastID;
 
                     // Specify any custom value, here we send the primkey of the order record
@@ -320,6 +326,9 @@ else
 
                     $results = $wpdb->query( $insert );
                     $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
                     $keytoedit = $lastID;
 
                     // Specify any custom value, here we send the primkey of the order record
@@ -423,6 +432,9 @@ else
 
                     $results = $wpdb->query( $insert );
                     $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
                     $keytoedit = $lastID;
 
                     // Specify any custom value, here we send the primkey of the order record

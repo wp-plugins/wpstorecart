@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.0.2
-Stable tag: 2.0.11
-Version: 2.0.11
+Stable tag: 2.0.12
+Version: 2.0.12
 
 == Description ==
 
@@ -44,6 +44,10 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.12 =
+* New shortcode added for wpStoreCart PRO users: [wpstorecart display="affiliate"] which displays the user's affiliate management panel
+* .wpsc-table-tr-colorstrip and .wpsc-table-tr CSS classes added
 
 = 2.0.11 =
 * Added error messages to the registration process during checkout
