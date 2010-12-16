@@ -1,5 +1,5 @@
 <?PHP
-global $wpStoreCart, $allowedToAccess;
+global $wpStoreCart, $allowedToAccess, $statsOptions;
 
 $wpStoreCart::spHeader();
 
@@ -24,6 +24,13 @@ if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php'))
     <h3>Requires wpStoreCart PRO!  <a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank">Upgrade to the PRO version now by making a donation!</a></h3>
     ';
 } else {
+    
+    $statsOptions['databasename'] = DB_NAME;
+    $statsOptions['databaseuser'] = DB_USER;
+    $statsOptions['databasepass'] = DB_PASSWORD;
+    $statsOptions['databasehost'] =DB_HOST;
+    $statsOptions['databasetable'] = $wpdb->prefix . 'wpstorecart_log';
+
     require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php');
 }
 

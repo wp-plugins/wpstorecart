@@ -377,6 +377,7 @@ else
                     $cartContents = '';
                     $totalPrice = 0;
                     $totalShipping = 0;
+                    $couponset = false;
                     foreach ($cart->get_contents() as $item) {
                             // BUILD THE QUERY STRING
                             // Specify the product information
@@ -402,6 +403,7 @@ else
                             }
                             if(@$_SESSION['validcouponid']==$item['id']) {
                                 @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                                $couponset = true;
                             }
 
 
@@ -410,6 +412,10 @@ else
 
                             // INCREMENT THE COUNTER
                             ++$paypal_count;
+                    }
+                    if(@isset($_SESSION['validcouponamount']) && $couponset==false) {
+                        @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                        $couponset = true;
                     }
 
                     $cartContents = $cartContents . '0*0';

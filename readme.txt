@@ -3,9 +3,9 @@ Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
-Tested up to: 3.0.2
-Stable tag: 2.0.12
-Version: 2.0.12
+Tested up to: 3.0.3
+Stable tag: 2.0.13
+Version: 2.0.13
 
 == Description ==
 
@@ -44,6 +44,12 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.0.13 =
+* Orders can now be sorted in the admin panel by user, status, processor, date, affiliate, or price.
+* Fixed bug with coupon not being applied during PayPal checkout
+* Images and other settings that were not correctly applied to browsing categories are fixed
+* Fixed bug with checkout page not displaying for some users
 
 = 2.0.12 =
 * New shortcode added for wpStoreCart PRO users: [wpstorecart display="affiliate"] which displays the user's affiliate management panel

@@ -468,7 +468,9 @@ class wpsc {
                         if($hidden==false) {
                             echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
                         } else {
-                            echo "<!-- BEGIN wpsc -->\n<div id='wpsc' style='display:none;'>\n";
+                            echo '<!-- BEGIN wpsc -->
+                                <div id="wpsc" style="display:none;">
+                                ';
                         }
 		if (isset($error_message)) {
 			echo "\t$error_message\n";

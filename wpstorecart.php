@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.12
+Version: 2.0.13
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version;
 
 //Global variables:
-$wpstorecart_version = '2.0.12';
+$wpstorecart_version = '2.0.13';
 $wpstorecart_db_version = '2.0.11';
 $APjavascriptQueue = NULL;
 
@@ -2073,13 +2073,24 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<br style="clear:both;" /><br />
 			<h2>Edit Orders</h2>';
-			
+
+                        echo '<form action="" method="post">Sort by <select name="orderby"><option value="`date`">date</option><option value="`wpuser`">user</option><option value="`orderstatus`">order status</option><option value="`affiliate`">affiliate</option><option value="`paymentprocessor`">processor</option><option value="`price`">price</option></select> in <select name="ordersort"><option value="DESC">descending</option><option value="ASC">ascending</option></select> order. <input type="submit" value="Submit"></input></form>';
 			echo '<table class="widefat">
 			<thead><tr><th> </th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price</th><th>Shipping</th><th>User</th><th>Email</th><th>Affiliate</th></tr></thead><tbody>
 			';
 
 
-			$grabrecord = "SELECT * FROM `{$table_name}`;";
+                        if(@!isset($_POST['orderby'])) {
+                            $orderby = '`date`';
+                        } else {
+                            $orderby = $wpdb->prepare($_POST['orderby']);
+                        }
+                        if(@!isset($_POST['ordersort'])) {
+                            $ordersort = 'DESC';
+                        } else {
+                            $ordersort = $wpdb->prepare($_POST['ordersort']);
+                        }
+			$grabrecord = "SELECT * FROM `{$table_name}` ORDER BY {$orderby} {$ordersort};";
 			
 			$results = $wpdb->get_results( $grabrecord , ARRAY_A );		
 			if(isset($results)) {
@@ -3058,6 +3069,19 @@ if (!class_exists("wpStoreCart")) {
                         $output = '';
 
                         if($wpscCarthasBeenCalled==false) {
+                            require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+                            require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+                            require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+                            if(!isset($_SESSION)) {
+                                    @session_start();
+
+                            }
+                            if(@!is_object($cart)) {
+                                $cart =& $_SESSION['wpsc'];
+                                if(@!is_object($cart)) {
+                                    $cart = new wpsc();
+                                }
+                            }
                             $old_checkout = $is_checkout;
                             $is_checkout = false;
                             $output= $cart->display_cart($wpsc, true);
@@ -3259,11 +3283,15 @@ if (!class_exists("wpStoreCart")) {
                                 case 'checkout': // Checkout shortcode =========================================================
 					$is_checkout = true;
 
-					//if(!is_array($wpsc)) {
-						require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
-						require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');					
-					//}
-					
+                                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+                                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+                                        if(@!is_object($cart)) {
+                                            require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+                                            if(!isset($_SESSION)) {
+                                                    @session_start();
+                                            }
+                                            $cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
+                                        }
 					$output .= $cart->display_cart($wpsc);
 					break;			
 				case 'recentproducts': // Recent product shortcode =========================================================
@@ -3310,6 +3338,11 @@ if (!class_exists("wpStoreCart")) {
 					break;					
 				case 'categories': // Categories shortcode =========================================================
 					$output .= '<div class="wpsc-by-category">';
+                                        if($devOptions['showproductthumbnail']=='true') {
+                                            $usepictures='true';
+                                            $maxImageWidth = $devOptions['wpStoreCartwidth'];
+                                            $maxImageHeight = $devOptions['wpStoreCartheight'];
+                                        }
                                         if(is_numeric($quantity) && is_numeric($thecategory)){
 						$sql = "SELECT * FROM `{$table_name}` WHERE `category`={$thecategory} ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, {$quantity};";
 						$results = $wpdb->get_results( $sql , ARRAY_A );
@@ -4347,6 +4380,19 @@ if (class_exists("WP_Widget")) {
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {
 			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled;
+                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+                        if(!isset($_SESSION)) {
+                                @session_start();
+
+                        }
+                        if(@!is_object($cart)) {
+                            $cart =& $_SESSION['wpsc'];
+                            if(@!is_object($cart)) {
+                                $cart = new wpsc();
+                            }
+                        }
 			$output = NULL;
 			extract( $args );
 			$title = apply_filters('widget_title', $instance['title']);
@@ -4722,13 +4768,19 @@ if (!function_exists("wpStoreCartAdminPanel")) {
 //Actions and Filters   
 if (isset($wpStoreCart)) {
     //Actions
-	require_once(ABSPATH . 'wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+	require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
 	if(!isset($_SESSION)) {
 		@session_start();
-		$cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
-	}	
-
-
+		
+	}
+        if(@!is_object($cart)) {
+            $cart =& $_SESSION['wpsc'];
+            if(@!is_object($cart)) {
+                $cart = new wpsc();
+            }
+        }
 
 	register_activation_hook(__FILE__, array(&$wpStoreCart, 'wpstorecart_install')); // Install DB schema
 	add_action('init', array(&$wpStoreCart, 'register_custom_init')); //
