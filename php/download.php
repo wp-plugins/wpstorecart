@@ -40,9 +40,26 @@ if ( 0 == $current_user->ID ) {
                             if(isset($results2)) {
                                 foreach ($results2 as $result2) {
                                     if($result2['download']!='') {
-                                        $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
-                                        $file_real = $secretPath.$result2['download'];
-                                        $productDownloadName =  $result2['name']. '_' .rand(0,999).$current_user->user_login. substr($result2['download'], -5);
+                                        $multidownloads = explode('||', $result2['download']);
+                                        if(@isset($_GET['isvariation']) && @isset($_GET['variationdl']) && @$_GET['isvariation']=="true") {
+                                            // Variation download
+                                            $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
+                                            $file_real = $secretPath.$_GET['variationdl'];
+                                            $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($_GET['variationdl'], -12);
+                                        } else {
+                                            // Standard download
+                                            if(@isset($_GET['part']) && @isset($multidownloads[$_GET['part']])) {
+                                                // Multi part file download
+                                                $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
+                                                $file_real = $secretPath.$multidownloads[$_GET['part']];
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($multidownloads[$_GET['part']], -12);
+                                            } else {
+                                                // Single files to download
+                                                $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
+                                                $file_real = $secretPath.$result2['download'];
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($result2['download'], -12);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -52,7 +69,7 @@ if ( 0 == $current_user->ID ) {
             }
         }
     } else {
-        echo("Unauthorized access");
+        echo("Unauthorized access - No order found.");
         die();
     }
 
@@ -102,8 +119,8 @@ if ( 0 == $current_user->ID ) {
     fclose($stream);
     }
     }else{
-    // Requested file does not exist (File not found)
-    echo("Unathorized Access.");
+        // Requested file does not exist (File not found)
+        echo("Unathorized Access.  File does not exist.");
     die();
     }
 }

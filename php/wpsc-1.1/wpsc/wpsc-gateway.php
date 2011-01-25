@@ -357,7 +357,7 @@ else
 
                     $myPaypal->addField('rm', '2'); // Return method = POST
 
-                    $myPaypal->addField('cmd', '_cart');
+                    
                     $myPaypal->addField('upload', '1');
 
                     // Specify the url where paypal will send the user on success/failure
@@ -378,6 +378,7 @@ else
                     $totalPrice = 0;
                     $totalShipping = 0;
                     $couponset = false;
+                    $donation = true;
                     foreach ($cart->get_contents() as $item) {
                             // BUILD THE QUERY STRING
                             // Specify the product information
@@ -389,8 +390,11 @@ else
 
                             // Implement shipping here if needed
                             $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                            $results = $wpdb->get_results( "SELECT `shipping`, `donation` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
                             if(isset($results)) {
+                                if($results[0]['donation']==0) {
+                                    $donation = false;
+                                }
                                 if($results[0]['shipping']!='0.00') {
                                     $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
                                     $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
@@ -413,6 +417,14 @@ else
                             // INCREMENT THE COUNTER
                             ++$paypal_count;
                     }
+
+                    if($donation==true) {
+                        $myPaypal->addField('cmd', '_donations');
+                    } else {
+                        $myPaypal->addField('cmd', '_cart');
+                    }
+                    
+
                     if(@isset($_SESSION['validcouponamount']) && $couponset==false) {
                         @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
                         $couponset = true;

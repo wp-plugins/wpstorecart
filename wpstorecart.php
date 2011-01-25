@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.0.13
+Version: 2.1.0
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -25,11 +25,13 @@ library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, S
 Boston, MA 02111-1307 USA 
 */
 
-global $wpStoreCart, $cart, $wpsc, $wpstorecart_version;
+global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
 
 //Global variables:
-$wpstorecart_version = '2.0.13';
-$wpstorecart_db_version = '2.0.11';
+$wpstorecart_version = '2.1.0';
+$wpstorecart_version_int = 201000; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
+$testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $APjavascriptQueue = NULL;
 
 // Pre-2.6 compatibility, which is actually frivilous since we use the 2.8+ widget technique
@@ -66,7 +68,7 @@ if (!class_exists("wpStoreCart")) {
             $devOptions = $this->getAdminOptions();
 
             // Upgrade the database schema if they're running 2.0.2 or below:
-            if($devOptions['database_version']==NULL) {
+            if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
                 $table_name = $wpdb->prefix . "wpstorecart_categories";
                 $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
                 $results = $wpdb->query( $sql );
@@ -74,7 +76,7 @@ if (!class_exists("wpStoreCart")) {
                 update_option('wpStoreCartAdminOptions', $devOptions);
             }
 
-            if($devOptions['database_version']=='2.0.2') {
+            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2') { // 2.0.11 - Database schema update for version 2.0.10 and below
 		   $table_name = $wpdb->prefix . "wpstorecart_meta";
 		   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
@@ -94,27 +96,37 @@ if (!class_exists("wpStoreCart")) {
 			}
             }
 
+            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
+                        $table_name = $wpdb->prefix . "wpstorecart_products";
+                        $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
+                        $results = $wpdb->query( $sql );
+                        $devOptions['database_version'] = $wpstorecart_db_version;
+                        update_option('wpStoreCartAdminOptions', $devOptions);
+            }
 
             // This increments the add to cart counter for the product statistics
             if(isset($_POST['my-item-id'])) {
                 $primkey = $_POST['my-item-id'];
 
+                // Product variations have their primkey's like this: 1-59 where 1 is the product's primkey and the 59 represents the variations primkey
                 if(is_numeric($primkey)) {
+                        $newprimkey = $primkey;
+                } else {
+                        $explodeprimkey = explode('-', $primkey);
+                        $newprimkey = intval($explodeprimkey[0]);
+                }
 
-
+                if(is_numeric($newprimkey)) {
                         $table_name = $wpdb->prefix . "wpstorecart_products";
-                        $sql = "SELECT * FROM `{$table_name}` WHERE `primkey`={$primkey};";
+                        $sql = "SELECT * FROM `{$table_name}` WHERE `primkey`={$newprimkey};";
                         $results = $wpdb->get_results( $sql , ARRAY_A );
+                        
                         if(isset($results)) {
                                 $newTimesAddedToCart = $results[0]['timesaddedtocart'] + 1;
-                                $wpdb->query("UPDATE `{$table_name}` SET `timesaddedtocart` = '{$newTimesAddedToCart}' WHERE `primkey` = {$primkey} LIMIT 1 ;");
-
+                                $wpdb->query("UPDATE `{$table_name}` SET `timesaddedtocart` = '{$newTimesAddedToCart}' WHERE `primkey` = {$newprimkey} LIMIT 1 ;");
                         }
-
-
-                } else {
-                        //exit();
                 }
+
             }
         }
 
@@ -128,6 +140,9 @@ if (!class_exists("wpStoreCart")) {
            }
            if($theError=='nouploadsdir') {
                $output .= '<strong>wpStoreCart has detected that a required folder is missing and we could not automatically create it.</strong>  Please manually create this folder and give it 0777 permissions: '.$variables;
+           }
+           if($theError=='testingmode') {
+               $output .= __('<strong>wpStoreCart "<a href="http://wpstorecart.com/documentation/advanced-technical-topics/testing-mode/" target="_blank">Testing Mode</a>" enabled. DO NOT USE TESTING MODE ON A SERVER THAT IS CONNECTED TO THE INTERNET. DO NOT USE IT ON A LIVE WEBSITE. DO NOT USE IT WITH ACTUAL CUSTOMERS OR EVEN ACTUAL CUSTOMER DATA. ONLY USE TESTING MODE ON A TEST SERVER, WITH TEST DATA.</strong>  Visit <a href="http://wpstorecart.com/documentation/advanced-technical-topics/testing-mode/" target="_blank">this topic</a> for information on how to disable Testing Mode and this message.  ');
            }
            $output .= "</p></div>";
            return $output;
@@ -143,6 +158,10 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
+        function wpscErrorTestingMode() {
+            echo $this->wpscError('testingmode');
+        }
+
         function wpscErrorNoUploadDir() {
             echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/');
         }
@@ -152,15 +171,19 @@ if (!class_exists("wpStoreCart")) {
         }
 
         function register_custom_init() {
-            // This block of code is for incrementing the add to cart log
+            global $testing_mode;
 
             $devOptions = $this->getAdminOptions();
 
+            if($testing_mode==true) {
+                add_action('admin_notices', array(&$this, 'wpscErrorTestingMode'));
+            }
+
             if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
-                    add_action('admin_notices', array(&$this, ' wpscErrorNoUploadDir'));
+                    add_action('admin_notices', array(&$this, 'wpscErrorNoUploadDir'));
             }
             if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
-                   add_action('admin_notices', array(&$this, ' wpscErrorNoUploadWpDir'));
+                   add_action('admin_notices', array(&$this, 'wpscErrorNoUploadWpDir'));
             }
 
             if (@ini_get('register_globals')==1) {
@@ -170,10 +193,19 @@ if (!class_exists("wpStoreCart")) {
                 add_action('admin_notices', array(&$this, 'wpscErrorNoPage'));
             }
 
+            // This block of code is for incrementing the add to cart log
             if(isset($_POST['my-item-id'])) {
                 $primkey = $_POST['my-item-id'];
 
+                // Product variations have their primkey's like this: 1-59 where 1 is the product's primkey and the 59 represents the variations primkey
                 if(is_numeric($primkey)) {
+                        $newprimkey = $primkey;
+                } else {
+                        $explodeprimkey = explode('-', $primkey);
+                        $newprimkey = intval($explodeprimkey[0]);
+                }
+
+                if(is_numeric($newprimkey)) {
                     global $current_user, $wpdb;
                     wp_get_current_user();
                     if ( 0 == $current_user->ID ) {
@@ -182,7 +214,7 @@ if (!class_exists("wpStoreCart")) {
                     } else {
                         $theuser = $current_user->ID;
                     }
-                    $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log` (`primkey` ,`action` ,`data` ,`foreignkey` ,`date` ,`userid`) VALUES (NULL, 'addtocart', '{$_SERVER['REMOTE_ADDR']}', '{$primkey}', '".date('Ymd')."', '{$theuser}');");
+                    $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log` (`primkey` ,`action` ,`data` ,`foreignkey` ,`date` ,`userid`) VALUES (NULL, 'addtocart', '{$_SERVER['REMOTE_ADDR']}', '{$newprimkey}', '".date('Ymd')."', '{$theuser}');");
                 }
             }
             /* The use of custom post types will be implemented in a future version of wpsc
@@ -224,44 +256,8 @@ if (!class_exists("wpStoreCart")) {
         }
 		
 		function spHeader() {
-			echo '
-			<style type="text/css">
-				ul#tabnav { 
-					text-align: left;
-					margin: 0.8em 0 0.8em 0;
-					font: bold 9px verdana, arial, sans-serif;
-					list-style-type: none;
-					padding: 7px 8px 3px 8px;
-                                        width:770px;
-                                        min-width:770px;
-				}
-
-				ul#tabnav li { 
-					display: block;
-					float:left;
-					margin:0 1px 0 1px;
-                                        border: 1px solid #AAA;
-				}
-
-				body#tab li.tab { 
-					border-bottom: 1px solid #bbb; 
-				}
-
-				ul#tabnav li a { 
-					padding: 7px 4px 3px 4px;
-					border: 1px solid #bbb; 
-					background: #FFF url("'.get_option( 'siteurl' ).'/wp-admin/images/gray-grad.png") repeat;
-					color: #666; 
-					margin-right: 0px; 
-					text-decoration: none;
-					border-bottom: 1px solid #999;
-				}
-
-				ul#tabnav a:hover {
-					background: #DDD; 
-				}
-
-			</style>
+                        global $wpstorecart_version_int, $testing_mode;
+                        echo'
 			
 			<div class="wrap">
 			<div style="padding: 20px 10px 10px 10px;">
@@ -278,19 +274,56 @@ if (!class_exists("wpStoreCart")) {
 
                         echo '
 			<br style="clear:both;" />
-			<ul id="tabnav">
-				<li class="tab"><a href="admin.php?page=wpstorecart-admin" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/controller.png" /></a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> Settings</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" /> Add Product</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_edit.png" /> Edit Products</a></li>
+			<ul id="jsddm">
+				<li class="tab"style="border-left:1px solid #999;"><a href="admin.php?page=wpstorecart-admin" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/controller.png" /> &nbsp;</a></li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> Settings</a>
+                                    <ul>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> General</a>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/email.png" /> E-Mail</a>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/css.png" /> Display</a>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/creditcards.png" /> Payment</a>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Language</a>
+                                    </ul>
+                                </li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" />Products</a>
+                                    <ul>
+                                        <li><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" /> Add Product</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_edit.png" /> Edit Products</a></li>
+                                        ';
+                                        if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
+                                            echo '<li><a href="admin.php?page=wpstorecart-import" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/server_go.png" /> Import/Export</a></li>';
+                                        }
+
+                                    echo '
+                                    </ul>
+                                </li>
+				
 				<li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/table.png" /> Categories</a></li>
 				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> Orders</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Marketing</a>
+                                    <ul>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
+                                    </ul>
+                                </li>
 				<li class="tab"><a href="admin.php?page=wpstorecart-affiliates" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/user_suit.png" /> Affiliates</a></li>
 				<li class="tab"><a href="admin.php?page=wpstorecart-statistics" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/chart_bar.png" /> Statistics</a></li>
-				<li class="tab"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" /></a></li>
+				<li class="tab" style="border-right:1px solid #999;"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" /> Help</a>
+                                    <ul>
+                                        <li><a href="http://wpstorecart.com/forum/" class="spmenu"  target="_blank">Support Forum</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/initial-settings/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> Initial Settings</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/adding-editing-products/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" /> Products</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/widgets/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Widgets</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/coupons/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/shortcodes/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Shortcodes</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/error-messages/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png" /> Error Messages</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/styles-designs/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/css.png" /> Styles &amp; Design</a></li>
+                                        <li><a href="http://wpstorecart.com/faq/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" /> FAQ</a></li>
+                                        <li><a href="http://wpstorecart.com/help-support/" class="spmenu"  target="_blank">More Help</a></li>
+
+                                    </ul>
+                                </li>
 			</ul>
-			<br />
+			<br style="clear:both;" />
 
 			';
 
@@ -338,6 +371,7 @@ if (!class_exists("wpStoreCart")) {
                                     'single_item' => 'Item',
                                     'multiple_items' => 'Items',
                                     'currency_symbol' => '$',
+                                    'currency_symbol_right' => '',
                                     'subtotal' => 'Subtotal',
                                     'update_button' => 'update',
                                     'checkout_button' => 'checkout',
@@ -362,7 +396,8 @@ if (!class_exists("wpStoreCart")) {
                                     'database_version' => NULL,
                                     'minimumAffiliatePayment' => '0.00',
                                     'minimumDaysBeforePaymentEligable' => '30',
-                                    'affiliateInstructions'=>'Welcome to our affiliate program.  Here, you can review successful affiliate sales as well as grab links to all the products in our store that include your affiliate code.'
+                                    'affiliateInstructions'=>'Welcome to our affiliate program.  Here, you can review successful affiliate sales as well as grab links to all the products in our store that include your affiliate code.',
+                                    'wpscjQueryUITheme' =>''
                                     );
 
             $devOptions = get_option($this->adminOptionsName);
@@ -513,6 +548,9 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['currency_symbol'])) {
  					$devOptions['currency_symbol'] = $wpdb->escape($_POST['currency_symbol']);
 				}
+				if (isset($_POST['currency_symbol_right'])) {
+ 					$devOptions['currency_symbol_right'] = $wpdb->escape($_POST['currency_symbol_right']);
+				}
 				if (isset($_POST['subtotal'])) {
  					$devOptions['subtotal'] = $wpdb->escape($_POST['subtotal']);
 				}
@@ -578,7 +616,9 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['ga_trackingnum'])) {
  					$devOptions['ga_trackingnum'] = $wpdb->escape($_POST['ga_trackingnum']);
 				}
-
+				if (isset($_POST['wpscjQueryUITheme'])) {
+ 					$devOptions['wpscjQueryUITheme'] = $wpdb->escape($_POST['wpscjQueryUITheme']);
+				}
 
 				update_option($this->adminOptionsName, $devOptions);
 			   
@@ -604,6 +644,9 @@ if (!class_exists("wpStoreCart")) {
                             $theCurrentTab = '#tab1';
                         } else {
                             $theCurrentTab = $_POST['theCurrentTab'];
+                        }
+                        if(@isset($_GET['theCurrentTab']) || @$_GET['theCurrentTab']!='') {
+                            $theCurrentTab = '#'.$_GET['theCurrentTab'];
                         }
                         echo 'var theCurrentTab = \''.$theCurrentTab.'\';';
                         
@@ -641,6 +684,11 @@ if (!class_exists("wpStoreCart")) {
 					max-width:200px;
 				}
 
+                        .tabs {
+                            position:relative;
+                            z-index:1;
+                        }
+
                         ul.tabs {
                                 margin: 0 0 10px 8px;
                                 padding: 0;
@@ -650,6 +698,8 @@ if (!class_exists("wpStoreCart")) {
                                 width: 100%;
                                 width:770px;
                                 min-width:770px;
+                            position:relative;
+                            z-index:1;
                         }
                         ul.tabs li {
                                 float: left;
@@ -661,13 +711,15 @@ if (!class_exists("wpStoreCart")) {
                                 margin-bottom: -1px; /*--Pull the list item down 1px--*/
                                 overflow: hidden;
                                 position: relative;
+                                z-index:1;
                         }
                         ul.tabs li a {
                                 text-decoration: none;
                                 color: #000;
                                 display: block;
                                 font-size: 1.2em;
-                                
+                                position: relative;
+                                z-index:1;
                                 outline: none;
                         }
                         ul.tabs li a:hover {
@@ -682,6 +734,8 @@ if (!class_exists("wpStoreCart")) {
                                 overflow: hidden;
                                 clear: both;
                                 float: left; width: 100%;
+                                position: relative;
+                                z-index:1;
                         }
                         .tab_content {
                                 padding: 20px;
@@ -704,7 +758,7 @@ if (!class_exists("wpStoreCart")) {
                         </ul>
                         <div style="clear:both;"></div>
                         <div id="tab1" class="tab_content">
-			<h2>wpStoreCart General Options</h2>
+			<h2>wpStoreCart General Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
 			';
 			
 			echo '<table class="widefat">
@@ -774,7 +828,7 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab2" class="tab_content">
-			<h2>EMail Options</h2>';
+			<h2>EMail Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
 
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
@@ -808,13 +862,52 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab3" class="tab_content">
-			<h2>Display Options</h2>			
+			<h2>Display Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
 			';
 			
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
 
                         echo '
+			<tr><td><h3>jQuery UI Theme <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
+			<td class="tableDescription"><p>jQuery UI Theme</p></td>
+			<td>
+                        <select name="wpscjQueryUITheme">
+			 <option value=""></option>';
+
+                        $olddir = getcwd();
+                        $dir = WP_PLUGIN_DIR .'/wpstorecart/jqueryui/css/';
+                        chdir($dir);
+                        $dir = getcwd();
+
+                        $dh  = opendir($dir);
+                        $icounter = 0;
+                        while (false !== ($filename2 = readdir($dh))) {
+                                $files2[] = $filename2;
+                                $icounter++;
+                        }
+                        $rcounter = 0;
+
+                        while ($rcounter != $icounter) {
+                            if (filetype($dir .'/'. $files2[$rcounter])== 'dir' && $files2[$rcounter]!='.' && $files2[$rcounter]!='..') {
+				$option = '<option value="'.$files2[$rcounter].'"';
+				if($files2[$rcounter] == $devOptions['wpscjQueryUITheme']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $files2[$rcounter];
+				$option .= '</option>';
+				echo $option;
+                            }
+                            $rcounter++;
+                        }
+
+                        chdir($olddir);
+                        $option = NULL;
+			echo '
+			</select>
+			</td></tr>
+
 			<tr><td><h3>wpStoreCart Theme <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-431" /><div class="tooltip-content" id="example-content-431">You can style your shopping cart, products, and other wpStoreCart related elements here, but is recommended that you do it in your theme\'s CSS file to keep all CSS in one place.</div></h3></td>
 			<td class="tableDescription"><p>Optional CSS styles for wpStoreCart. Choose the CSS file to theme wpStoreCart with.  For a full list of IDs and Classes to use with wpStoreCart, check out <a href="http://wpstorecart.com/documentation/styles-designs/" target="_blank">this webpage.</a></p></td>
 			<td>
@@ -937,7 +1030,7 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab4" class="tab_content">
-			<h2>Payment Options</h2>';
+			<h2>Payment Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
 
 
                         if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/updater.pro.php') ) {
@@ -973,9 +1066,9 @@ if (!class_exists("wpStoreCart")) {
                         $theOptionsz[0] = 'USD';$theOptionszName[0] = 'U.S. Dollars ($)';
                         $theOptionsz[1] = 'AUD';$theOptionszName[1] = 'Australian Dollars (A $)';
                         $theOptionsz[2] = 'CAD';$theOptionszName[2] = 'Canadian Dollars (C $)';
-                        $theOptionsz[3] = 'EUR';$theOptionszName[3] = 'Euros (€)';
-                        $theOptionsz[4] = 'GBP';$theOptionszName[4] = 'Pounds Sterling (£)';
-                        $theOptionsz[5] = 'JPY';$theOptionszName[5] = 'Yen (¥)';
+                        $theOptionsz[3] = 'EUR';$theOptionszName[3] = 'Euros (�)';
+                        $theOptionsz[4] = 'GBP';$theOptionszName[4] = 'Pounds Sterling (�)';
+                        $theOptionsz[5] = 'JPY';$theOptionszName[5] = 'Yen (�)';
                         $theOptionsz[6] = 'NZD';$theOptionszName[6] = 'New Zealand Dollar ($)';
                         $theOptionsz[7] = 'CHF';$theOptionszName[7] = 'Swiss Franc';
                         $theOptionsz[8] = 'HKD';$theOptionszName[8] = 'Hong Kong Dollar ($)';
@@ -1012,8 +1105,9 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>
 
 			<tr><td><h3>Currency Symbol</h3></td>
-			<td class="tableDescription"><p>Default: <i>$</i></p></td>
-			<td><input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
+			<td class="tableDescription"><p>Left Symbol Default: <i>$</i></p><p>Right Symbol Default: </p></td>
+			<td>Left symbol: <input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
+                        <br />Right symbol: <input type="text" name="currency_symbol_right" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol_right']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
                         </table>
@@ -1099,7 +1193,7 @@ if (!class_exists("wpStoreCart")) {
 			
                         </div>
                         <div id="tab5" class="tab_content">
-                        <h2>Text &amp; Language Options</h2>';
+                        <h2>Text &amp; Language Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
 
 
 			echo '<table class="widefat">
@@ -1239,7 +1333,249 @@ if (!class_exists("wpStoreCart")) {
 		//END Prints out the admin page ================================================================================		
 		
 		
-		
+		//Prints out the Import/Export admin page =======================================================================
+        function printAdminPageImport() {
+			global $wpdb, $user_level,$wpstorecart_version_int,$testing_mode;
+
+			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+				die(__('Cheatin&#8217; uh?'));
+			}
+
+			$devOptions = $this->getAdminOptions();
+			$table_name = $wpdb->prefix . "wpstorecart_products";
+                        $this->spHeader();
+                        echo '<h2>Import/Export</h2>';
+                        if($testing_mode==true && $wpstorecart_version_int < 202000) {
+                            echo '<div id="wpsc-warning" class="updated fade"><p><strong>This feature is intended for wpStoreCart 2.2 and above.  You can only access it right now because you are using Testing Mode.  Currently, this feature may be incomplete or non functional, and using this feature may destroy your data, your website, even your life!</strong></p></div>';
+                        }
+
+			
+
+			if (session_id() == "") {@session_start();};
+
+                        echo '
+                            <style type="text/css">
+                                #upload-progressbar-container4 {
+                                    min-width:200px;
+                                    max-width:200px;
+                                    min-height:20px;
+                                    max-height:20px;
+                                    background-color:#FFF;
+                                    display:block;
+                                }
+                                #upload-progressbar4 {
+                                    min-height:20px;
+                                    max-height:20px;
+                                    background-color:#6ba6ff;
+                                    width:0px;
+                                    display:none;
+                                    border:1px solid #1156be;
+                                }
+                            </style>
+                            <script type="text/javascript">
+
+
+
+                                    var productUploadStartEventHandler = function (file) {
+                                            var continue_with_upload;
+
+                                            continue_with_upload = true;
+
+                                            return continue_with_upload;
+                                    };
+
+                                    var productUploadSuccessEventHandler = function (file, server_data, receivedResponse) {
+                                            document.theimportform.importthisfile.value = file.name;
+
+                                    };
+
+
+                                    function uploadError(file, errorCode, message) {
+                                            try {
+
+                                                    switch (errorCode) {
+                                                    case SWFUpload.UPLOAD_ERROR.HTTP_ERROR:
+                                                            alert("Error Code: HTTP Error, File name. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.MISSING_UPLOAD_URL:
+                                                            alert("Error Code: No backend file. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.UPLOAD_FAILED:
+                                                            alert("Error Code: Upload Failed. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.IO_ERROR:
+                                                            alert("Error Code: IO Error. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.SECURITY_ERROR:
+                                                            alert("Error Code: Security Error. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+                                                            alert("Error Code: Upload Limit Exceeded. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.SPECIFIED_FILE_ID_NOT_FOUND:
+                                                            alert("Error Code: The file was not found. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED:
+                                                            alert("Error Code: File Validation Failed. Message: " + message);
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+                                                            break;
+                                                    case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+                                                            break;
+                                                    default:
+                                                            alert("Error Code: " + errorCode + ". Message: " + message);
+                                                            break;
+                                                    }
+                                            } catch (ex) {
+                                                    this.debug(ex);
+                                            }
+                                    }
+
+                                    function uploadProgress(file, bytesLoaded, bytesTotal) {
+                                        try {
+                                            var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                            jQuery("#upload-progressbar4").css("display", "block");
+                                            jQuery("#upload-progressbar4").css("width", percent+"%");
+                                            jQuery("#upload-progressbar4").html("<center>"+ percent+"%</center>");
+                                        } catch (e) {
+                                        }
+                                    }
+
+                                    function beginTheUpload(selected, addtoqueue, inqueuealready) {
+                                            this.startUpload();
+                                    }
+
+                                    function debugSWFUpload (message) {
+                                            try {
+                                                    if (window.console && typeof(window.console.error) === "function" && typeof(window.console.log) === "function") {
+                                                            if (typeof(message) === "object" && typeof(message.name) === "string" && typeof(message.message) === "string") {
+                                                                    window.console.error(message);
+                                                            } else {
+                                                                    window.console.log(message);
+                                                            }
+                                                    }
+                                            } catch (ex) {
+                                            }
+                                            try {
+                                                    if (this.settings.debug) {
+                                                            this.debugMessage(message);
+                                                    }
+                                            } catch (ex1) {
+                                            }
+                                    }
+
+                                    var swfu;
+                                    window.onload = function () {
+                                            var settings_object = {
+                                                    upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+                                                    post_params: {"PHPSESSID" : "'.session_id().'"},
+                                                    flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
+                                                    file_size_limit : "2048 MB",
+                                                    file_types : "*.*",
+                                                    file_types_description : "Any file type",
+                                                    file_upload_limit : "1",
+                                                    file_post_name: "Filedata",
+                                                    button_placeholder_id : "spanSWFUploadButton4",
+                                                    button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+                                                    button_width: 61,
+                                                    button_height: 22,
+                                                    debug : false,
+                                                    debug_handler : debugSWFUpload,
+                                                    file_dialog_complete_handler: beginTheUpload,
+                                                    upload_progress_handler: uploadProgress,
+                                                    upload_start_handler : productUploadStartEventHandler,
+                                                    upload_success_handler : productUploadSuccessEventHandler,
+                                                    upload_error_handler : uploadError
+                                            };
+
+                                            swfu = new SWFUpload(settings_object); 
+                                     };
+
+                                jQuery(document).ready(function() {
+                                    jQuery("#importformatx").toggle();
+
+                                });
+
+                                    function theOperation(theOption) {
+                                        if(theOption=="import") {
+                                            jQuery("#importformatx").toggle();
+                                            jQuery("#exportformatx").toggle();
+                                        }
+                                        if(theOption=="export") {
+                                            jQuery("#importformatx").toggle();
+                                            jQuery("#exportformatx").toggle();
+                                        }
+                                        return true;
+                                    }
+
+                            </script>
+                            <br />';
+
+                        if(@$_POST['isreal']=='true') {
+                            echo '<h3>Attempting to '.$_POST['typeofoperation'] .' using '; if($_POST['typeofoperation']=='export') {echo $_POST['exportformat'];} else {echo $_POST['importformat'];} echo ' file...</h3>';
+
+                            // Export routines here:
+                            if($_POST['typeofoperation']=='export') {
+                                if($_POST['exportformat']=='csv') {
+                                    echo '
+                                        <script type="text/javascript">
+                                        <!--
+                                        window.open("'.WP_PLUGIN_URL.'/wpstorecart/php/exportcsv.php");
+                                        //-->
+                                        </script>
+                                        ';
+                                }
+
+                                if($_POST['exportformat']=='sql') {
+                                    echo '
+                                        <script type="text/javascript">
+                                        <!--
+                                        window.open("'.WP_PLUGIN_URL.'/wpstorecart/php/exportsql.php");
+                                        //-->
+                                        </script>
+                                        ';
+                                }
+
+                            }
+
+                            // Import routines here:
+                            if($_POST['typeofoperation']=='import') {
+
+                            }
+
+
+                        }
+
+                        echo '
+                            <form action="" name="theimportform" method="post">
+                                <div>Type of operation: <select name="typeofoperation"  onchange="theOperation(this.value);">
+                                  <option value="export">Export</option>
+                                  <option value="import">Import</option>
+                                </select>
+                                <div id="exportformatx">File format for export <select name="exportformat">
+                                  <option value="sql">SQL file</option>
+                                  <option value="csv">CSV file</option>
+                                </select>                                
+                                </div><br />
+                                
+                                <div id="importformatx">File format for input <select name="importformat">
+                                  <option value="sql">SQL file</option>
+                                  <option value="csv">CSV file</option>
+                                </select>
+                                <input type="text" id="importthisfile" name="importthisfile" style="width: 200px;" value="" />
+                                Upload a file: <span id="spanSWFUploadButton4"></span>
+                                <div id="upload-progressbar-container4">
+                                    <div id="upload-progressbar4">
+                                    </div>
+                                </div>
+                                </div><br />
+                                <input type="hidden" name="isreal" value="true" />
+                                <input type="submit" value="Begin >" />
+                             </form>
+                             ';
+
+        }
+		//END Prints out the admin page ================================================================================
 		
 		
 		//Prints out the Add products admin page =======================================================================
@@ -1271,6 +1607,7 @@ if (!class_exists("wpStoreCart")) {
                                 $wpStoreCartproduct_useinventory = 1;
 				$keytoedit=0;
 				$_GET['keytoedit'] = 0;
+                                $wpStoreCartproduct_donation = 'false';
 			} 
 			
 			
@@ -1292,6 +1629,7 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartproduct_category = $wpdb->escape($_POST['wpStoreCartproduct_category']);
 					$wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
                                         $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
+                                        $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
 		
 
@@ -1307,7 +1645,8 @@ if (!class_exists("wpStoreCart")) {
 					`tags` = '{$wpStoreCartproduct_tags}', 
 					`category` = '{$wpStoreCartproduct_category}', 
 					`inventory` = '{$wpStoreCartproduct_inventory}',
-                                        `useinventory` = '{$wpStoreCartproduct_useinventory}'
+                                        `useinventory` = '{$wpStoreCartproduct_useinventory}',
+                                        `donation` =  '{$wpStoreCartproduct_donation}'
 					WHERE `primkey` ={$cleanKey} LIMIT 1 ;				
 					";
 
@@ -1346,6 +1685,7 @@ if (!class_exists("wpStoreCart")) {
 						$wpStoreCartproduct_category = stripslashes($result['category']);
 						$wpStoreCartproduct_inventory = stripslashes($result['inventory']);
                                                 $wpStoreCartproduct_useinventory = stripslashes($result['useinventory']);
+                                                $wpStoreCartproduct_donation =  stripslashes($result['donation']);
 					}
 				} else {
 					echo '<div class="updated"><p><strong>';
@@ -1369,6 +1709,7 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartproduct_category = $wpdb->escape($_POST['wpStoreCartproduct_category']);
 					$wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
                                         $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
+                                        $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
 	
 					$devOptions = $this->getAdminOptions();
 					
@@ -1393,7 +1734,7 @@ if (!class_exists("wpStoreCart")) {
 	
 					// Now insert the product into the wpStoreCart database
 					$insert = "
-					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`) VALUES
+					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`) VALUES
 					(NULL, 
 					'{$wpStoreCartproduct_name}', 
 					'{$wpStoreCartproduct_introdescription}', 
@@ -1410,7 +1751,8 @@ if (!class_exists("wpStoreCart")) {
 					0,
 					0,
 					0,
-                                        {$wpStoreCartproduct_useinventory});
+                                        {$wpStoreCartproduct_useinventory},
+                                        {$wpStoreCartproduct_donation});
 					";					
 					
 					$results = $wpdb->query( $insert );
@@ -1476,10 +1818,19 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			echo '
-			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
+			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">';
 
-			<h2>Add or Edit a Product</h2>';
-			
+                        if($isanedit != true) {
+                            echo '<h2>Add';
+                        } else {
+                            echo '<h2>Edit';
+                        }
+			echo ' a Product <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
+
+                        if($isanedit == true) {
+                            echo ' <a href="'.get_permalink($result['postid']).'" target="_blank">View Product Page</a>';
+                        }
+
 			echo '<table class="widefat">
 			<thead><tr><th>Product Attribute</th><th>Value</th><th>Description</th></tr></thead><tbody>
 			';
@@ -1494,10 +1845,11 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<tr>
 			<td><h3>Price & Shipping: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  In this early version of wpStoreCart, only flat shipping is available.  In future version, full shipping options and providers will be added.  Set shipping to 0 for digital downloads.</div></h3></td>
-			<td>Price: <input type="text" name="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Shipping: <input type="text" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" /></td>
+			<td>Price: <input type="text" name="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Shipping: <input type="text" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" /><p><strong>Accept Donations? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
 			<td><div style="width:300px;">The price and shipping cost of the product.</div></td>
 			</tr>';			
-			
+
+
 			echo '
 			<tr>
 			<td><h3>Introduction Description: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">Keep this short and concise, as this text will be used in several places as a quick description of the product.  For higher sales and conversions, sum up the main features and benefits and include a direct call to action.</div></h3></td>
@@ -1519,7 +1871,7 @@ if (!class_exists("wpStoreCart")) {
 			<td class="tableDescription"><p>Set to no for unlimited purchases or<br /> yes if you have a limited amount to sell.</p></td>
 			</td></tr>
                         ';
-            
+
 			echo '
 			<tr>
 			<td><h3>Inventory Quantity: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">If you\'re selling a limited number of a product (for example, a tangible item with a limited stock, or a digital product that you are only selling a limited number of copies.)</div></h3></td>
@@ -1554,7 +1906,6 @@ if (!class_exists("wpStoreCart")) {
 			}
 			echo '
 			</select></td>
-			<!--<td><input type="text" name="wpStoreCartproduct_category" style="width: 120px;" value="'.$wpStoreCartproduct_category.'" />  </td>-->
 			<td><div style="width:300px;">The category the product belongs to.</div></td>
 			</tr>';	
 			
@@ -1567,11 +1918,15 @@ if (!class_exists("wpStoreCart")) {
 	
 			echo '
 			<tr>
-			<td><h3>Downloadable File: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, use something like 7zip or WinRAR to make a single file archive from the multiple files.  Enter a file name here or upload a new one.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
+			<td><h3>Downloadable Files: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
 			<td>File: <input type="text" name="wpStoreCartproduct_download" style="width: 200px;" value="'.$wpStoreCartproduct_download.'" /> or<br />
 			Upload a file: <span id="spanSWFUploadButton"></span>
+                        <div id="upload-progressbar-container">
+                            <div id="upload-progressbar">
+                            </div>
+                        </div>
 			</td>
-			<td><div style="width:300px;">The filename or upload of a downloadable product.  Leave this blank for physical products.  Max filesize is either: '.ini_get('post_max_size').' or '.ini_get('upload_max_filesize').', whichever is lower. Do not put URLs or full paths here, only a filename.</div></td>
+			<td><div style="width:300px;">The filename of a downloadable product.  Leave this blank for physical products.  Max filesize is either: <strong>'.ini_get('post_max_size').' or '.ini_get('upload_max_filesize').'</strong>, whichever is lower. Do not put URLs or full paths here, only use the upload box.</div></td>
 			</tr>';			
 			
                         if($wpStoreCartproduct_thumbnail==''||!isset($wpStoreCartproduct_thumbnail)) {
@@ -1582,15 +1937,85 @@ if (!class_exists("wpStoreCart")) {
 			<td><h3>Product Thumbnail: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.</div></h3></td>
 			<td>URL: <input type="text" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /> or<br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
+                        <div id="upload-progressbar-container2">
+                            <div id="upload-progressbar2">
+                            </div>
+                        </div>
 			</td>
 			<td><div style="width:300px;">Either a full URL to an image file, or use the upload form to select an image file from your computer.</div></td>
 			</tr>';			
 			
-			
+			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
+                            $codeForKeyToEditAjax = '&keytoedit='.$_GET['keytoedit'];
+                        }
+
 			echo '
-			</tbody>
-			</table>
-			<br style="clear:both;" />
+			</tbody></table>';
+
+                        if($isanedit) {
+                            echo '
+                            <script type="text/javascript">
+
+                                function delvar(keytodel) {
+                                    jQuery.ajax({ url: "'.WP_PLUGIN_URL.'/wpstorecart/php/delvar.php", type:"POST", data:"delete="+keytodel, success: function(){
+                                        jQuery("#"+keytodel).remove();
+                                    }});
+                                }
+
+                                function addvar() {
+                                    jQuery.ajax({ url: "'.WP_PLUGIN_URL.'/wpstorecart/php/addvar.php", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
+                                        jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.WP_PLUGIN_URL.'/wpstorecart/images/cross.png\' /> "+jQuery("#createnewvar").val()+"</td><td>"+jQuery("#varvalue").val()+"</td><td>"+jQuery("#varprice").val()+"</td><td>"+jQuery("#vardesc").val()+"</td></tr>");
+                                    }});
+                                }
+                            </script>
+                            
+                            <br style="clear:both;" />
+                            <h2>Product Variations &amp; Attributes</h2>
+                            <table class="widefat">
+                            <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th><th>Downloads</th></tr></thead><tbody>
+                            <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.WP_PLUGIN_URL.'/wpstorecart/images/add.png" /> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td>
+                            <input type="text" id="wpStoreCartproduct_variation" name="wpStoreCartproduct_variation" style="width: 200px;" value="" />
+                            Upload a file: <span id="spanSWFUploadButton3"></span>
+                            <div id="upload-progressbar-container3">
+                                <div id="upload-progressbar3">
+                                </div>
+                            </div>
+                            </td></tr>
+                            ';
+
+                            echo '
+                            </tbody>
+                            </table>
+
+                            <br style="clear:both;" />
+                            <table class="widefat" id="varholder">
+                                <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th></tr></thead><tbody>';
+
+                                $table_name3 = $wpdb->prefix . "wpstorecart_meta";
+                                $grabrecord = "SELECT * FROM `{$table_name3}` WHERE `type`='productvariation' AND `foreignkey`={$_GET['keytoedit']};";
+
+                                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                                if(isset($results)) {
+                                        foreach ($results as $result) {
+                                            $theKey = $result['primkey'];
+                                            $exploder = explode('||', $result['value']);
+                                            echo '<tr id="'.$theKey.'"><td><img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png" /> '.$exploder[0].'</td><td>'.$exploder[1].'</td><td>'.$exploder[2].'</td><td>'.$exploder[3].'</td></tr>';
+                                        }
+                                }
+
+                            echo '
+                            </table>
+                            <br style="clear:both;" />
+                            ';
+                        } else {
+                            echo '
+                            <br style="clear:both;" />
+                            <h2>Product Variations &amp; Attributes</h2>
+                            <p>Once you\'ve created your product, then you are able to create variations such as multiple sizes, colors, versions, upgrades, and downgrades, all with specific prices.  Save the product now to begin adding variations to it.</p>
+                            ';
+                        }
+                        
+                        echo '
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
 			</form>
@@ -1673,7 +2098,7 @@ if (!class_exists("wpStoreCart")) {
 
 			</script>
 			
-			<h2>Edit products</h2>
+			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
 			
 			<form method="post" name="myForm">
 			<select name="bulkactions">
@@ -1685,7 +2110,7 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			<input type="submit" name="submitter" class="button-secondary action" value="Apply" onclick="if (! confirm(\'Are you sure you want to do this permanent bulk action?\')) { return false;}" />
 			<table class="widefat">
-			<thead><tr><th><input type="checkbox" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'myCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'myCheckbox\', false);ischecked=false;}" /> Action</th><th>Name</th><th>Intro Description</th><th>Description</th><th>Thumbnail</th><th>Price</th><th>Shipping</th><th>Download</th><th>Tags</th><th>Category</th><th>Inventory</th></tr></thead><tbody>
+			<thead><tr><th><input type="checkbox" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'myCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'myCheckbox\', false);ischecked=false;}" /> Action</th><th>Name</th><th>Intro Description</th><th>Description</th><th>Thumbnail</th><th>Price</th><th>Shipping</th><th>Downloads</th><th>Tags</th><th>Category</th><th>Inventory</th></tr></thead><tbody>
 			';
 			
 		
@@ -1729,7 +2154,7 @@ if (!class_exists("wpStoreCart")) {
 						}
 					}
 		
-					echo "<tr><td><input type=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /> [ <a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\">Edit</a> | <a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\">Delete</a> ]</td><td>".stripslashes($result['name'])."</td><td>".stripslashes(substr($result['introdescription'],0,128))."</td><td>".stripslashes(substr($result['description'],0,128))."</td><td><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td>{$result['price']}</td><td>{$result['shipping']}</td><td>".stripslashes($result['download'])."</td><td>".stripslashes($result['tags'])."</td><td>".stripslashes($currentCat)."</td><td>".stripslashes($result['inventory'])."</td></tr>";
+					echo "<tr><td><input type=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /> [ <a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\">Edit</a> | <a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\">Delete</a> ]</td><td>".stripslashes($result['name'])."</td><td>".stripslashes(substr($result['introdescription'],0,128))."</td><td>".stripslashes(substr($result['description'],0,128))."</td><td><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td>{$result['price']}</td><td>{$result['shipping']}</td><td>".str_replace('||',', ',stripslashes($result['download']))."</td><td>".stripslashes($result['tags'])."</td><td>".stripslashes($currentCat)."</td><td>".stripslashes($result['inventory'])."</td></tr>";
 				
 
 				}
@@ -2365,7 +2790,7 @@ if (!class_exists("wpStoreCart")) {
 			}
 			echo '
 			</select></td>			
-			<td><input type="text" name="wpStoreCartCategoryThumbnail" style="width: 80%;" value="'.$wpStoreCartThumbnail.'" /></td>
+			<td><input type="text" name="wpStoreCartCategoryThumbnail" style="width: 80%;" value="'.$wpStoreCartCategoryThumbnail.'" /></td>
 			<td><input type="text" name="wpStoreCartCategoryDescription" style="width: 80%;" value="'.$wpStoreCartCategoryDescription.'" /></td>
 			<td><input type="text" name="wpStoreCartCategoryPostID" style="width: 80%;" value="'.$wpStoreCartCategoryPostID.'" /></td>
 			</tr>';			
@@ -2624,9 +3049,9 @@ if (!class_exists("wpStoreCart")) {
 			';
 			
 			if ($isanedit != true) {
-				echo '<h2>Add a Coupon</h2>';
+				echo '<h2>Add a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
 			} else {
-				echo '<h2>Edit a Coupon</h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
+				echo '<h2>Edit a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
 			}
 			
 			echo '<table class="widefat">
@@ -2735,7 +3160,7 @@ if (!class_exists("wpStoreCart")) {
 		
 		//Prints out the Statistics admin page =======================================================================
         function printAdminPageStatistics() {
-			global $wpdb;
+			global $wpdb, $devOptions;
 
 			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
 				die(__('Cheatin&#8217; uh?'));
@@ -2743,7 +3168,7 @@ if (!class_exists("wpStoreCart")) {
 		
 			$devOptions = $this->getAdminOptions();
 			
-
+                        $this->spHeader();
 		
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.php');
 		
@@ -2926,12 +3351,10 @@ if (!class_exists("wpStoreCart")) {
 
 			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
 				die(__('Cheatin&#8217; uh?'));
-			}		
-		
-			$devOptions = $this->getAdminOptions();
-			$table_name = $wpdb->prefix . "wpstorecart_coupons";
-			
+			}
 
+
+                        $this->spHeader();
 		
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.php');
 		
@@ -3014,16 +3437,26 @@ if (!class_exists("wpStoreCart")) {
 
                         $startdate =date("Ymd", strtotime("30 days ago"));
                         $enddate = date("Ymd");
-                        $theSQL = "SELECT `date` FROM `{$table_name_orders}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `orderstatus`='Completed' ORDER BY `date` DESC;";
+
+                        $theSQL = "SELECT SUM(`price`) AS `thetotal` FROM `{$table_name_orders}` WHERE `orderstatus`='Completed';";
+			$salesAllTime = $wpdb->get_results( $theSQL , ARRAY_A );
+                        $allTimeGrossRevenue = 0;
+                        foreach ($salesAllTime as $sat) {
+                            $allTimeGrossRevenue = $sat['thetotal'];
+                        }
+
+                        $theSQL = "SELECT `date`, `price` FROM `{$table_name_orders}` WHERE `date` > {$startdate} AND `date` <= {$enddate} AND `orderstatus`='Completed' ORDER BY `date` DESC;";
 			$salesThisMonth = $wpdb->get_results( $theSQL , ARRAY_A );
                         $currentDay = $enddate;
                         $dayAgo = 0 ;
                         $highestNumber = 0;
+						$totalearned = 0;
                         while($currentDay != $startdate) {
                             $salesOnDay[$currentDay] = 0;
                             foreach($salesThisMonth as $currentSale) {
                                 if($currentDay == $currentSale['date']) {
                                     $salesOnDay[$currentDay] = $salesOnDay[$currentDay] + 1;
+                                    $totalearned = $totalearned + $currentSale['price'];
                                 }
                             }
                             if($salesOnDay[$currentDay] > $highestNumber) {
@@ -3031,6 +3464,7 @@ if (!class_exists("wpStoreCart")) {
                             }
                             $dayAgo++;
                             $currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));
+							
                         }
                         $dayAgo = 29 ;
                         $currentDay = $startdate;
@@ -3041,11 +3475,12 @@ if (!class_exists("wpStoreCart")) {
 			$lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 			
 			echo '<ul>';
-                        echo '<li>wpStoreCart v'.$wpstorecart_version.' [mainpage]:</strong> <a href="'.$permalink.'" target="_blank">here</a></li>';
-			echo "<li><strong>Number of Products:</strong> {$totalrecords} </li>";
-                        echo "<li><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"http://chart.apis.google.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
-			echo "<li><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" />";
-			echo '</ul>';
+                        echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart v'.$wpstorecart_version.' :</strong></span> <a href="'.$permalink.'" target="_blank">'.get_bloginfo('name').'</a> with '.$totalrecords.' product(s).</u></li>';
+                        echo '<li><strong>Gross Revenue last 30 days: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong></li>';
+                        echo '<li><strong>All Time Gross Revenue: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
+                        echo "<li><span style=\"float:left;padding:0 10px 0 0;border-right:1px #CCC solid;\"><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"http://chart.apis.google.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
+			echo "<li><span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div></li>";
+        		echo '</ul>';
 		} 
 		
 		// Create the function use in the action hook
@@ -3058,8 +3493,42 @@ if (!class_exists("wpStoreCart")) {
 		function  addHeaderCode() {
                         
 			//echo '<!-- wpStoreCart BEGIN -->';
-			wp_enqueue_script('wpsc', WP_PLUGIN_URL.'/wpstorecart/php/wpsc-1.1/wpsc/wpsc-javascript.php', array('jquery'),'1.1' );
-                        
+			wp_enqueue_script('wpsc', WP_PLUGIN_URL.'/wpstorecart/php/wpsc-1.1/wpsc/wpsc-javascript.php', array('jquery'),'1.3.2' );
+                    
+
+                        $devOptions = $this->getAdminOptions();
+
+                        if($devOptions['wpscjQueryUITheme']!='') {
+                            $myStyleUrl = WP_PLUGIN_URL . '/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+                            $myStyleFile = WP_PLUGIN_DIR . '/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+                            if ( file_exists($myStyleFile) ) {
+                                wp_register_style('myStyleSheets', $myStyleUrl);
+                                wp_enqueue_style( 'myStyleSheets');
+                            }
+
+                            wp_enqueue_script('jqueryui-new', WP_PLUGIN_URL.'/wpstorecart/jqueryui/js/jquery-ui-1.8.7.custom.min.js', array('jquery'),'1.3.2' );
+
+                            echo '
+                            <script type="text/javascript">
+                            //<![CDATA[
+                                    jQuery(document).ready(function($) {
+                                            $(".wpsc-button").button();
+                                            $(".wpsc-button").hover(
+                                                    function(){
+                                                            $(this).addClass("ui-state-hover");
+                                                    },
+                                                    function(){
+                                                            $(this).removeClass("ui-state-hover");
+                                                    }
+                                            );
+
+                                    });
+                            //]]>
+                            </script>
+                                ';
+
+                        }
+
 			//echo '<!-- wpStoreCart END -->';
         }
 
@@ -3350,10 +3819,10 @@ if (!class_exists("wpStoreCart")) {
                                                     foreach ($results as $result) {
                                                             $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                             if($devOptions['displayType']=='grid'){
-                                                                    $output .= '<div class="wpsc-grid">';
+                                                                    $output .= '<div class="wpsc-grid wpsc-categories">';
                                                             }
                                                             if($devOptions['displayType']=='list'){
-                                                                    $output .= '<div class="wpsc-list">';
+                                                                    $output .= '<div class="wpsc-list wpsc-categories">';
                                                             }
                                                             if($usepictures=='true') {
                                                                     $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
@@ -3424,21 +3893,121 @@ if (!class_exists("wpStoreCart")) {
                                                                     $output .= '<img class="wpsc-product-img" src="'.$results[0]['thumbnail'].'" alt="'.$results[0]['name'].'" /><br />';
                                                                 }
 							}
-							
+
+                                                        // Product variations
+                                                        $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                        $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
+
+                                                        $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                                        if(isset($vresults)) {
+                                                            $voutput = NULL;
+                                                            $variationStorage = array();
+                                                            $varStorageCounter = 0;
+                                                            foreach ($vresults as $vresult) {
+                                                                $theKey = $vresult['primkey'];
+                                                                $exploder = explode('||', $vresult['value']);
+                                                                $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
+                                                                $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
+                                                                $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
+                                                                $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
+                                                                $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                                                //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
+                                                                $varStorageCounter++;
+                                                            }
+                                                        }
+
+                                                        $output .= '
+                                                        <script type="text/javascript">
+                                                            var alteredPrice = [];var alteredName = [];
+                                                            alteredPrice[0] = 0;alteredName[0]="";
+                                                            alteredPrice[1] = 0;alteredName[1]="";
+                                                            alteredPrice[2] = 0;alteredName[2]="";
+                                                            alteredPrice[3] = 0;alteredName[3]="";
+                                                            alteredPrice[4] = 0;alteredName[4]="";
+                                                            alteredPrice[5] = 0;alteredName[5]="";
+                                                            alteredPrice[6] = 0;alteredName[6]="";
+                                                            alteredPrice[7] = 0;alteredName[7]="";
+                                                            alteredPrice[8] = 0;alteredName[8]="";
+                                                            alteredPrice[9] = 0;alteredName[9]="";
+                                                            alteredPrice[10] = 0;alteredName[10]="";
+                                                            alteredPrice[11] = 0;alteredName[11]="";
+                                                            alteredPrice[12] = 0;alteredName[12]="";
+                                                            alteredPrice[13] = 0;alteredName[13]="";
+                                                        </script>
+                                                        ';
+                                                        $variationTest = array();
+                                                        $variationCounter = 0;
+                                                        if(@is_array($variationStorage) && @isset($variationStorage[0])) {
+                                                            if(isset($variationStorage)) {
+                                                                    foreach ($variationStorage as $variationStorageCycle) {
+                                                                        if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
+                                                                        $output .= '
+                                                                        <script type="text/javascript">
+                                                                            alteredPrice['.$variationCounter.'] = 0;
+                                                                            alteredName['.$variationCounter.'] = "";
+
+                                                                            function changePrice'.$variationCounter.'(amount) {
+                                                                                price = amount.split("||");
+                                                                                theprice = parseFloat(price[0]);
+                                                                                thename = price[1];
+                                                                                thekey = price[2];
+                                                                                alteredPrice['.$variationCounter.'] = theprice;
+                                                                                alteredName['.$variationCounter.'] = thename;
+                                                                                oldAmount = parseFloat('.$results[0]['price'].');
+                                                                                newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13]) *100)/100;
+                                                                                newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13];
+                                                                                jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: "+ newAmount.toFixed(2) + "</li>");
+                                                                                jQuery("#my-item-price").val(newAmount.toFixed(2));
+                                                                                jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
+                                                                                jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
+                                                                                jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
+                                                                                
+                                                                            }
+                                                                        </script>
+                                                                        ';
+                                                                         $voutput .= '
+                                                                            <li>'.$variationStorageCycle['variationname'].' - '.$variationStorageCycle['variationdesc'].'  <select name="variation_'.$variationStorageCycle['variationname'].'" onclick="changePrice'.$variationCounter.'(this.value);" onchange="changePrice'.$variationCounter.'(this.value);">';
+                                                                            $variationTest[$variationStorageCycle['variationname']] = true;
+                                                                        }
+                                                                        if(isset($variationStorage)) {
+                                                                                foreach ($variationStorage as $currentVariation) {
+                                                                                        if ($currentVariation['variationname']==$variationStorageCycle['variationname']) {
+                                                                                            $option = '<option value="'.$currentVariation['variationprice'].'||'.$currentVariation['variationvalue'].'||'.$currentVariation['variationkey'].'"';
+                                                                                            $option .='>';
+                                                                                            $option .= $currentVariation['variationvalue'] .' ('. $currentVariation['variationprice'].')';
+                                                                                            $option .= '</option>';
+                                                                                            $voutput .=  $option;
+                                                                                        }
+                                                                                }
+                                                                        }
+                                                                        $voutput .=  '
+                                                                        </select>   </li>';
+                                                                        $variationCounter++;
+                                                                    }
+                                                                }
+                                                        }
+                                                        // Product variations
+
 							$output .= '
 							<form method="post" action="">
 							 
-								<input type="hidden" name="my-item-id" value="'.$results[0]['primkey'].'" />
-								<input type="hidden" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
-								<input type="hidden" name="my-item-name" value="'.$results[0]['name'].'" />
-								<input type="hidden" name="my-item-price" value="'.$results[0]['price'].'" />
+								<input type="hidden" id="my-item-id" name="my-item-id" value="'.$results[0]['primkey'].'" />
+								<input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
+								<input type="hidden" id="my-item-name" name="my-item-name" value="'.$results[0]['name'].'" />
+								<input type="hidden" id="my-item-price" name="my-item-price" value="'.$results[0]['price'].'" />
+                                                                <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
 
 								<ul class="wpsc-product-info">
-								  <li><strong>'.$results[0]['name'].'</strong></li>
-								  <li>Price: '.$results[0]['price'].'</li>
-								  <li>
-									<label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>
-								   </li>
+								  <li id="list-item-name"><strong>'.$results[0]['name'].'</strong></li>
+								  <li id="list-item-price">Price: '.$results[0]['price'].'</li>
+								  <li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
+
+                                                                if($voutput!=NULL) {
+                                                                    $output .= $voutput;
+                                                                }
+
+                                                        $output .= '
 								 </ul>
                                                         ';
 
@@ -3474,6 +4043,9 @@ if (!class_exists("wpStoreCart")) {
                                         }
                                         if($devOptions['frontpageDisplays']=='List all categories') {
                                             $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT 0, {$quantity};";
+                                            $secondcss = 'wpsc-categories';
+                                        } else {
+                                            $secondcss = 'wpsc-products';
                                         }
                                         $results = $wpdb->get_results( $sql , ARRAY_A );
 
@@ -3503,10 +4075,10 @@ if (!class_exists("wpStoreCart")) {
                                                                 $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                             }
                                                             if($devOptions['displayType']=='grid'){
-                                                                    $output .= '<div class="wpsc-grid">';
+                                                                    $output .= '<div class="wpsc-grid '.$secondcss.'">';
                                                             }
                                                             if($devOptions['displayType']=='list'){
-                                                                    $output .= '<div class="wpsc-list">';
+                                                                    $output .= '<div class="wpsc-list '.$secondcss.'">';
                                                             }
                                                             if($usepictures=='true' || $result['thumbnail']!='' ) {
                                                                     $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
@@ -3526,10 +4098,10 @@ if (!class_exists("wpStoreCart")) {
                                                     foreach ($results as $result) {
                                                             $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                             if($devOptions['displayType']=='grid'){
-                                                                    $output .= '<div class="wpsc-grid">';
+                                                                    $output .= '<div class="wpsc-grid wpsc-products">';
                                                             }
                                                             if($devOptions['displayType']=='list'){
-                                                                    $output .= '<div class="wpsc-list">';
+                                                                    $output .= '<div class="wpsc-list wpsc-products">';
                                                             }
                                                             if($usepictures=='true') {
                                                                     $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
@@ -3799,7 +4371,11 @@ if (!class_exists("wpStoreCart")) {
 
 			return $posts;
 		}		
-		
+
+                function my_import_scripts() {
+                    wp_enqueue_script('swfupload');
+                }
+
 		function my_mainpage_scripts() {
 			global $APjavascriptQueue;
 
@@ -3860,6 +4436,7 @@ $(document).ready(function() {
 					background-color: white;
 					max-width:345px;
 					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+                                        z-index:999999;
 				}			
 			</style>
 			
@@ -3893,6 +4470,7 @@ $(document).ready(function() {
 					min-width:345px;
 					max-width:345px;
 					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+                                        z-index:999999;
 				}			
 			</style>
 			
@@ -3918,6 +4496,16 @@ $(document).ready(function() {
                             wp_enqueue_style( 'myStyleSheets');
                         }
                     }
+
+                    if($devOptions['wpscjQueryUITheme']!='') {
+                        $myStyleUrljQUI = WP_PLUGIN_URL . '/wpstorecart/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+                        $myStyleFilejQUI = WP_PLUGIN_DIR . '/wpstorecart/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+                        if ( file_exists($myStyleFilejQUI) ) {
+                            wp_register_style('myStyleSheetsjQUI', $myStyleUrljQUI);
+                            wp_enqueue_style( 'myStyleSheetsjQUI');
+                        }
+                    }
+
                 }
 
 		function my_admin_scripts(){
@@ -3949,7 +4537,26 @@ $(document).ready(function() {
 					min-width:345px;
 					max-width:345px;
 					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
-				}			
+                                        z-index:999999;
+				}
+
+                            #upload-progressbar-container, #upload-progressbar-container2, #upload-progressbar-container3 {
+                                min-width:200px;
+                                max-width:200px;
+                                min-height:20px;
+                                max-height:20px;
+                                background-color:#FFF;
+                                display:block;
+                            }
+                            #upload-progressbar, #upload-progressbar2, #upload-progressbar3 {
+                                min-height:20px;
+                                max-height:20px;
+                                background-color:#6ba6ff;
+                                width:0px;
+                                display:none;
+                                border:1px solid #1156be;
+                            }
+
 			</style>
 			
 			<script type="text/javascript">
@@ -3967,14 +4574,24 @@ $(document).ready(function() {
 				return continue_with_upload; 
 			}; 
 
-			var productUploadSuccessEventHandler = function (file, server_data, receivedResponse) { 
-				document.wpstorecartaddproductform.wpStoreCartproduct_download.value = file.name;
+			var productUploadSuccessEventHandler = function (file, server_data, receivedResponse) {
+                                jQuery("#uploadimage1").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+				document.wpstorecartaddproductform.wpStoreCartproduct_download.value = document.wpstorecartaddproductform.wpStoreCartproduct_download.value + file.name + "||";
+                                this.startUpload();
 			}; 
 			
-			var productUploadSuccessEventHandler2 = function (file, server_data, receivedResponse) { 
+			var productUploadSuccessEventHandler2 = function (file, server_data, receivedResponse) {
+                                jQuery("#uploadimage2").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_thumbnail.value = "'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name;
+                                this.startUpload();
 			}; 			
-			
+
+			var productUploadSuccessEventHandler3 = function (file, server_data, receivedResponse) {
+                                jQuery("#uploadimage3").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+				document.wpstorecartaddproductform.wpStoreCartproduct_variation.value = document.wpstorecartaddproductform.wpStoreCartproduct_variation.value + file.name + "****";
+                                this.startUpload();
+			};
+
 			function uploadError(file, errorCode, message) {
 				try {
 
@@ -4016,6 +4633,36 @@ $(document).ready(function() {
 				}
 			}
 
+                        function uploadProgress(file, bytesLoaded, bytesTotal) {
+                            try {
+                                var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                jQuery("#upload-progressbar").css("display", "block");
+                                jQuery("#upload-progressbar").css("width", percent+"%");
+                                jQuery("#upload-progressbar").html("<center>"+ percent+"%</center>");
+                            } catch (e) {
+                            }
+                        }
+
+                        function uploadProgress2(file, bytesLoaded, bytesTotal) {
+                            try {
+                                var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                jQuery("#upload-progressbar2").css("display", "block");
+                                jQuery("#upload-progressbar2").css("width", percent+"%");
+                                jQuery("#upload-progressbar2").html("<center>"+ percent+"%</center>");
+                            } catch (e) {
+                            }
+                        }
+
+                        function uploadProgress3(file, bytesLoaded, bytesTotal) {
+                            try {
+                                var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                jQuery("#upload-progressbar3").css("display", "block");
+                                jQuery("#upload-progressbar3").css("width", percent+"%");
+                                jQuery("#upload-progressbar3").html("<center>"+ percent+"%</center>");
+                            } catch (e) {
+                            }
+                        }
+
 			function beginTheUpload(selected, addtoqueue, inqueuealready) {
 				this.startUpload();
 			}
@@ -4046,10 +4693,10 @@ $(document).ready(function() {
 					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php", 
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
-					file_size_limit : "200 MB",
+					file_size_limit : "2048 MB",
 					file_types : "*.*",
 					file_types_description : "Any file type",
-					file_upload_limit : "1",
+					file_upload_limit : "0",
 					file_post_name: "Filedata",					
 					button_placeholder_id : "spanSWFUploadButton",
 					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
@@ -4058,6 +4705,7 @@ $(document).ready(function() {
 					debug : false, 
 					debug_handler : debugSWFUpload,
 					file_dialog_complete_handler: beginTheUpload,
+                                        upload_progress_handler: uploadProgress,
 					upload_start_handler : productUploadStartEventHandler, 
 					upload_success_handler : productUploadSuccessEventHandler,
 					upload_error_handler : uploadError
@@ -4067,10 +4715,10 @@ $(document).ready(function() {
 					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php", 
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
-					file_size_limit : "200 MB",
-					file_types : "*.jpg;*.gif;*.png;",
+					file_size_limit : "9999 MB",
+					file_types : "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.tiff;",
 					file_types_description : "Image files",
-					file_upload_limit : "1",
+					file_upload_limit : "0",
 					file_post_name: "Filedata",					
 					button_placeholder_id : "spanSWFUploadButton2",
 					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
@@ -4079,14 +4727,40 @@ $(document).ready(function() {
 					debug : false, 
 					debug_handler : debugSWFUpload,
 					file_dialog_complete_handler: beginTheUpload,
+                                        upload_progress_handler: uploadProgress2,
 					upload_start_handler : productUploadStartEventHandler, 
 					upload_success_handler : productUploadSuccessEventHandler2,
 					upload_error_handler : uploadError
 				}; 				
-				
+
+				var settings_object3 = {
+					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+					post_params: {"PHPSESSID" : "'.session_id().'"},
+					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
+					file_size_limit : "2048 MB",
+					file_types : "*.*",
+					file_types_description : "Any file type",
+					file_upload_limit : "0",
+					file_post_name: "Filedata",
+					button_placeholder_id : "spanSWFUploadButton3",
+					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_width: 61,
+					button_height: 22,
+					debug : false,
+					debug_handler : debugSWFUpload,
+					file_dialog_complete_handler: beginTheUpload,
+                                        upload_progress_handler: uploadProgress3,
+					upload_start_handler : productUploadStartEventHandler,
+					upload_success_handler : productUploadSuccessEventHandler3,
+					upload_error_handler : uploadError
+				};
+
 				swfu = new SWFUpload(settings_object); 
-				swfu2 = new SWFUpload(settings_object2); 
+				swfu2 = new SWFUpload(settings_object2);
+                                swfu3 = new SWFUpload(settings_object3);
 			};
+
+
 			//]]>
 			</script>			
 			';
@@ -4095,6 +4769,100 @@ $(document).ready(function() {
 				
 		function placeAdminHeaderCode() {
 			global $APjavascriptQueue;
+
+                        wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+
+                        $APjavascriptQueue .= '
+                        <style type="text/css">
+                        /* menu styles */
+                        #jsddm
+                        {	margin: 0;
+                                padding: 0
+                                position:relative;
+                                z-index:99999;
+                                font: 12px Tahoma, Arial
+                        }
+
+                                #jsddm li
+                                {	float: left;
+                                        list-style: none;
+                                        
+                                position:relative;
+                                z-index:99999;
+}
+
+                                #jsddm li a
+                                {	display: block;
+                                        background: #FFF url("'.get_option( 'siteurl' ).'/wp-admin/images/gray-grad.png") repeat;
+                                        padding: 5px 12px;
+                                        text-decoration: none;
+                                        border-right: 1px solid white;
+                                        color: #000;
+                                        white-space: nowrap;
+                                position:relative;
+                                z-index:99999;
+                                }
+
+
+
+                                .tab {
+                                 border-top:1px solid #999;
+                                border-bottom:1px solid #999;
+                                }
+
+                                #jsddm li a:hover
+                                {	background: #787878}
+
+                                        #jsddm li ul
+                                        {	margin: 0;
+                                                padding: 0;
+                                                position: absolute;
+                                                visibility: hidden;
+                                                border-top: 1px solid white
+                                                z-index:99999;
+                                        }
+
+                                                #jsddm li ul li
+                                                {	float: none;
+                                                        display: inline}
+
+                                                #jsddm li ul li a
+                                                {	width: auto;
+                                                        background: #A9C251;
+                                                        color: #24313C}
+
+                                                #jsddm li ul li a:hover
+                                                {	background: #8EA344}
+                        </style>
+                        <script type="text/javascript">
+                            var timeout    = 1000;
+                            var closetimer = 0;
+                            var ddmenuitem = 0;
+
+                            function jsddm_open()
+                            {  jsddm_canceltimer();
+                               jsddm_close();
+                               ddmenuitem = jQuery(this).find(\'ul\').css(\'visibility\', \'visible\');}
+
+                            function jsddm_close()
+                            {  if(ddmenuitem) ddmenuitem.css(\'visibility\', \'hidden\');}
+
+                            function jsddm_timer()
+                            {  closetimer = window.setTimeout(jsddm_close, timeout);}
+
+                            function jsddm_canceltimer()
+                            {  if(closetimer)
+                               {  window.clearTimeout(closetimer);
+                                  closetimer = null;}}
+
+                            jQuery(document).ready(function()
+                            {  jQuery(\'#jsddm > li\').bind(\'mouseover\', jsddm_open)
+                               jQuery(\'#jsddm > li\').bind(\'mouseout\',  jsddm_timer)});
+
+                            document.onclick = jsddm_close;
+                        </script>
+                        ';
+
 			echo $APjavascriptQueue;
 		}
 				
@@ -4112,6 +4880,7 @@ $(document).ready(function() {
                     global $wpdb;
                     $table_name = $wpdb->prefix . "wpstorecart_orders";
                     $table_name2 = $wpdb->prefix . "wpstorecart_products";
+                    $table_name3 = $wpdb->prefix . "wpstorecart_meta";
 
                     $output = NULL;
                     $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name}` WHERE `primkey`={$keyToLookup};";
@@ -4121,13 +4890,29 @@ $(document).ready(function() {
                         foreach($specific_items as $specific_item) {
                             if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
                                 $current_item = explode('*', $specific_item);
+                                $thevariationdetail[0] = NULL;
+                                $thevariationdetail[1] = NULL;
                                 if(isset($current_item[0]) && isset($current_item[1])) {
+                                    if(!is_numeric($current_item[0])) { // This code adds support for product variations
+                                        $newsplit = explode('-', $current_item[0]);
+                                        $current_item[0] = $newsplit[0];
+                                        if(@isset($newsplit[1]) && @is_numeric($newsplit[1])) {
+                                            $sql3 = "SELECT * FROM `{$table_name3}` WHERE `type`='productvariation' AND `primkey`={$newsplit[1]};";
+                                            $moreresults3 = $wpdb->get_results( $sql3 , ARRAY_A );
+                                            if(@isset($moreresults3[0])) {
+                                                $thevariationdetail = explode('||',$moreresults3[0]['value']);
+                                                if(@isset($thevariationdetail[4])) { // If the variation has downloads associated with it
+                                                    $variationdownloads = explode('****',$thevariationdetail[4]);
+                                                }
+                                            }
+                                        } 
+                                    }
                                     $sql2 = "SELECT `primkey`, `name`, `download`, `postid` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
                                     $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
                                     if($type=="default" && isset($moreresults[0])) {
                                         $output .= ', ';
                                         if($output==', ') {$output = '';}
-                                        $output .= $moreresults[0]['name'];
+                                        $output .= $moreresults[0]['name'] .' '.$thevariationdetail[0].' '.$thevariationdetail[1];
                                         if($current_item[1]!=1) {
                                             $output .= ' (x'.$current_item[1].')';
                                         }
@@ -4135,17 +4920,34 @@ $(document).ready(function() {
                                     if($type=="download" && isset($moreresults[0])) {
                                         $output .= ', <br />';
                                         if($output==', <br />') {$output = '';}
-                                        if($moreresults[0]['download']=='' || $results[0]['orderstatus']!='Completed') {
-                                            $output .= $moreresults[0]['name'];
-                                        } else {
-                                            $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].'</a>';
+                                        if($moreresults[0]['download']=='' || $results[0]['orderstatus']!='Completed') { // Non-downloads products below:
+                                            $output .= $moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1];
+                                        } else { // Download products below:
+                                            if(@isset($variationdownloads)) { // If we've got variations that have downloads
+                                                foreach ($variationdownloads as $variationdownload) {
+                                                    $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&isvariation=true&variationdl='.$variationdownload.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].'</a><br />';
+                                                }
+                                            }
+                                            
+                                            $multidownloads = explode('||', $moreresults[0]['download']);
+                                            if(@isset($multidownloads[0]) && @isset($multidownloads[1])) {
+                                                $downloadcount = 0;
+                                                foreach($multidownloads as $multidownload) {
+                                                    if($multidownload!='') {
+                                                        $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&part='.$downloadcount.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].' #'.$downloadcount.'</a><br />';
+                                                    }
+                                                        $downloadcount++;
+                                                }
+                                            } else {
+                                                $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].'</a>';
+                                            }
                                         }
                                         if($current_item[1]!=1) {
                                             $output .= ' (x'.$current_item[1].')';
                                         }
                                     }
                                     if($type=="edit" && isset($moreresults[0])) {
-                                        $output .= '<div id="delIcon'.$current_item[0].'">'.$moreresults[0]['name'];
+                                        $output .= '<div id="delIcon'.$current_item[0].'">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1];
                                         if($current_item[1]!=1) {
                                             $output .= '(x'.$current_item[1].')';
                                         }
@@ -4249,16 +5051,19 @@ $(document).ready(function() {
 
         function register_extra_fields($user_id, $password="", $meta=array()) {
             global $wpdb;
-            if ( !current_user_can( 'edit_user', $user_id ) ) { return false; }
-            $userdata = array();
-            $userdata['ID'] = $user_id;
-            $userdata['first_name'] = $_POST['first'];
-            $userdata['last_name'] = $_POST['last'];
-            wp_update_user($userdata);
-            update_usermeta( $user_id, 'address', $wpdb->escape($_POST['address']) );
-            update_usermeta( $user_id, 'city', $wpdb->escape($_POST['city']) );
-            update_usermeta( $user_id, 'state', $wpdb->escape($_POST['state']) );
-            update_usermeta( $user_id, 'postalcode', $wpdb->escape($_POST['postalcode']) );
+            if ( !current_user_can( 'edit_user', $user_id ) ) { 
+                return false;
+            } else {
+                $userdata = array();
+                $userdata['ID'] = $user_id;
+                $userdata['first_name'] = $_POST['first'];
+                $userdata['last_name'] = $_POST['last'];
+                wp_update_user($userdata);
+                update_usermeta( $user_id, 'address', $wpdb->escape($_POST['address']) );
+                update_usermeta( $user_id, 'city', $wpdb->escape($_POST['city']) );
+                update_usermeta( $user_id, 'state', $wpdb->escape($_POST['state']) );
+                update_usermeta( $user_id, 'postalcode', $wpdb->escape($_POST['postalcode']) );
+            }
         }
 
 
@@ -4724,7 +5529,7 @@ if (class_exists("WP_Widget")) {
  */
 if (!function_exists("wpStoreCartAdminPanel")) {
     function wpStoreCartAdminPanel() {
-        global $wpStoreCart;
+        global $wpStoreCart, $testing_mode, $wpstorecart_version_int;
         if (!isset($wpStoreCart)) {
             return;
         }
@@ -4733,6 +5538,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
 			$settingsPage = add_submenu_page('wpstorecart-admin','Settings - wpStoreCart ', 'Settings', 'activate_plugins', 'wpstorecart-settings', array(&$wpStoreCart, 'printAdminPage'));
 			$page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'activate_plugins', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
 			add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'activate_plugins', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
+			if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
+				$importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'activate_plugins', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
+				add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
+			}
 			$categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'activate_plugins', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
 			$ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'activate_plugins', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
 			$page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'activate_plugins', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
@@ -4745,10 +5554,8 @@ if (!function_exists("wpStoreCartAdminPanel")) {
 			add_action("admin_print_scripts-$page", array(&$wpStoreCart, 'my_admin_scripts') );
 			add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
 			add_action("admin_print_scripts-$mainPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
-                        add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
-                        
-
-                }
+            add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
+        }
     }   
 }
  /**

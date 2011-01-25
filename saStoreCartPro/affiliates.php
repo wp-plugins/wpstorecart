@@ -2,12 +2,6 @@
 global $wpStoreCart, $allowedToAccess, $wpdb, $affiliatepurchases, $affiliatesettings,$wpstorecart_version,$wpscAffiliateVersion;
 $wpscAffiliateVersion = 1.1;
 
-$wpStoreCart::spHeader();
-
-if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
-        die(__('Cheatin&#8217; uh?'));
-}
-
 $allowedToAccess = true;
 
 if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) {

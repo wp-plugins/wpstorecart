@@ -3,9 +3,9 @@ Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
-Tested up to: 3.0.3
-Stable tag: 2.0.13
-Version: 2.0.13
+Tested up to: 3.1.0
+Stable tag: 2.1.0
+Version: 2.1.0
 
 == Description ==
 
@@ -44,6 +44,25 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.0 =
+* Product variations added
+* Products can now have multiple downloadable files and multiple pictures added in the Add/Edit Products admin
+* Progress bars added to uploads
+* Admin panel upgraded to dropdown menus, CSS redone to make the interface more professional
+* When editing a product, a link is now present that lets you view the product's page
+* Added preliminary support for jQuery UI, which will be powering both the frontend (optionally) and the admin panel backend in future versions of wpStoreCart.
+* Included the 24 default jQuery UI Themes.
+* Added Donation options for product payment, supported only in PayPal payment module, but falls back to a standard purchase for other payment gateways or if the cart contains non-discount items.
+* Updated the database schema so that products have a donation boolean flag
+* Added the $wpstorecart_version_int variable
+* $testing_mode variable added.  If set to true, this will enable bleeding edge features that may not be stable.  This should only be set to true on test sites
+* TESTING MODE ONLY: Added basic Import/Export functionality.  Will be unlocked in version 2.2 and above (or sooner)
+* Last 30 days gross revenue added to Overview/admin dashboard widget
+* All time gross revenue added to Overview/admin dashboard widget
+* Fixed issue with category thumbnails URLs not sticking inside the admin form after update
+* Added .wpsc-products and .wpsc-categories CSS classes that are added to .wpsc-grid and .wpsc-list styled DIVs.
+* Currency not asks for Left Currency Symbol and Right Currency Symbol
 
 = 2.0.13 =
 * Orders can now be sorted in the admin panel by user, status, processor, date, affiliate, or price.
