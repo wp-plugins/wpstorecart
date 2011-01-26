@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.0
-Version: 2.1.0
+Stable tag: 2.1.1
+Version: 2.1.1
 
 == Description ==
 
@@ -44,6 +44,9 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.1 =
+* Forcing an update for the Wordpress.org Plugin Repository
 
 = 2.1.0 =
 * Product variations added
