@@ -24,7 +24,8 @@ if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php'))
     $statsOptions['databasepass'] = DB_PASSWORD;
     $statsOptions['databasehost'] =DB_HOST;
     $statsOptions['databaseprefix'] = $wpdb->prefix;
-    $statsOptions['databasetable'] = $wpdb->prefix . 'wpstorecart_log';
+    $statsOptions['databasetable'] = $statsOptions['databaseprefix'] . 'wpstorecart_log';
+    $statsOptions['databaseproductstable'] = $statsOptions['databaseprefix'] . 'wpstorecart_products';
 
     
     require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php');

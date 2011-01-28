@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.2
-Version: 2.1.2
+Stable tag: 2.1.3
+Version: 2.1.3
 
 == Description ==
 
@@ -44,6 +44,11 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.3 =
+* Added left and right currency symbols to front end
+* Fixed bug with username not appearing in the User field when editing an order
+* Streamlined the order page so that the interface was less cluttered and important information was more prevalent
 
 = 2.1.2 =
 * Fixed a fatal error that effected some users

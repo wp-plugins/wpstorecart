@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.1.2
+Version: 2.1.3
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
 
 //Global variables:
-$wpstorecart_version = '2.1.2';
-$wpstorecart_version_int = 201002; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.1.3';
+$wpstorecart_version_int = 201003; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $APjavascriptQueue = NULL;
@@ -2206,7 +2206,7 @@ if (!class_exists("wpStoreCart")) {
 			} 
 			
 			
-			// To edit a previous product
+			// To edit a previous order
 			$isanedit = false;
 			if(!isset($_GET['keytoedit'])) {$_GET['keytoedit'] = 0;}
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
@@ -2401,7 +2401,7 @@ if (!class_exists("wpStoreCart")) {
                             }
                         </script>
                         <table class="widefat">
-			<thead><tr><th> </th><th>Order Status <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>"Dropped" means they added it to their cart, but never completed checkout.  "Order Recieved" means the customer successfully completed the checkout process, but an admin hasn\'t verified and approved the order yet.  "Pending" means the order is delayed until an admin changes the order status.  "Canceled" means the order was manually canceled by an admin.  "Completed" means the order is fulfilled, the payment was successfully recieved and approved.</h3></div></th><th>Cart Contents <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>The items that were in the customers shopping cart.  You can add or remove items if you need to modify or fulfill an order manually.</h3></div></th><th>Processor <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The payment gateway that was used in the transaction.</h3></div></th><th>Price <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>The total price of everything added together in the shopping cart.</h3></div></th><th>Shipping <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The total shipping of everything in the shopping cart.</h3></div></th><th>User <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The Wordpress User ID of the purchaser.</h3></div></th><th>Email <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8"><h3>The email address the customer used to make the purchase.</h3></div></th><th>Affiliate <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The Wordpress user ID of the affiliate who is credited with driving the sale.</h3></div></th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Order Status <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>"Dropped" means they added it to their cart, but never completed checkout.  "Order Recieved" means the customer successfully completed the checkout process, but an admin hasn\'t verified and approved the order yet.  "Pending" means the order is delayed until an admin changes the order status.  "Canceled" means the order was manually canceled by an admin.  "Completed" means the order is fulfilled, the payment was successfully recieved and approved.</h3></div></th><th>Cart Contents <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>The items that were in the customers shopping cart.  You can add or remove items if you need to modify or fulfill an order manually.</h3></div></th><th>Processor <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The payment gateway that was used in the transaction.</h3></div></th><th>Price <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>The total price of everything added together in the shopping cart.</h3></div></th><th>Shipping <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The total shipping of everything in the shopping cart.</h3></div></th><th>User <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The Wordpress User ID of the purchaser.</h3></div></th><th>Email <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8"><h3>The email address the customer used to make the purchase.</h3></div></th><th  style="display:none;">Affiliate <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The Wordpress user ID of the affiliate who is credited with driving the sale.</h3></div></th></tr></thead><tbody>
 			';
 			
 			echo '
@@ -2477,13 +2477,18 @@ if (!class_exists("wpStoreCart")) {
                             echo '
                             </select><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/add.png" style="cursor:pointer;" onclick="addItemToCart(jQuery(\'#addNewProduct\').val());" ></a><br />'.$this->splitOrderIntoProduct($keytoedit, 'edit');
                         }
+
+                        if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
+                            $user_info3 = get_userdata($wpStoreCartwpuser);
+                        }
+
                         echo '</td>
 			<td><input type="text" name="wpStoreCartpaymentprocessor" style="width: 80%;" value="'.$wpStoreCartpaymentprocessor.'" /></td>
 			<td><input type="text" name="wpStoreCartprice" style="width: 80%;" value="'.$wpStoreCartprice.'" /></td>
 			<td><input type="text" name="wpStoreCartshipping" style="width: 80%;" value="'.$wpStoreCartshipping.'" /></td>
-			<td><input type="text" name="wpStoreCartwpuser" style="width: 80%;" value="';if ($isanedit == true) {echo @$user_info->user_login;}; echo'" /></td>
+			<td><input type="text" name="wpStoreCartwpuser" style="width: 80%;" value="';if ($isanedit == true) {echo $user_info3->user_login;}; echo'" /></td>
 			<td><input type="text" name="wpStoreCartemail" style="width: 80%;" value="'.$wpStoreCartemail.'" /></td>
-			<td><input type="text" name="wpStoreCartaffiliate" style="width: 80%;" value="'.$wpStoreCartaffiliate.'" /></td>
+			<td style="display:none;"><input type="text" name="wpStoreCartaffiliate" style="width: 80%;" value="'.$wpStoreCartaffiliate.'" /></td>
 			</tr>';			
 			
 			echo '
@@ -2501,7 +2506,7 @@ if (!class_exists("wpStoreCart")) {
 
                         echo '<form action="" method="post">Sort by <select name="orderby"><option value="`date`">date</option><option value="`wpuser`">user</option><option value="`orderstatus`">order status</option><option value="`affiliate`">affiliate</option><option value="`paymentprocessor`">processor</option><option value="`price`">price</option></select> in <select name="ordersort"><option value="DESC">descending</option><option value="ASC">ascending</option></select> order. <input type="submit" value="Submit"></input></form>';
 			echo '<table class="widefat">
-			<thead><tr><th> </th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price</th><th>Shipping</th><th>User</th><th>Email</th><th>Affiliate</th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
 			';
 
 
@@ -2528,25 +2533,31 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartwpuser = $result['wpuser'];
 					$wpStoreCartemail = $result['email'];
 					$wpStoreCartaffiliate = $result['affiliate'];
+                                        if(isset($wpStoreCartaffiliate) && $wpStoreCartaffiliate!=0) {
+                                            global $user_info4;
+                                            $user_info4 = get_userdata($wpStoreCartaffiliate);
+                                        }
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
                                             $user_info3 = get_userdata($wpStoreCartwpuser);
                                         }
 										
 					echo "
 					<tr>
-					<td>[ {$result['primkey']} | <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\">Edit</a> | <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\">Delete</a> ]</td>
+					<td style=\"min-width:80px;\">{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
 					<td>{$wpStoreCartorderstatus}</td>
 					<td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
 					<td>{$wpStoreCartpaymentprocessor}</td>
-					<td>{$wpStoreCartprice}</td>
-					<td>{$wpStoreCartshipping}</td>
+					<td><strong>{$devOptions['currency_symbol']}{$wpStoreCartprice}{$devOptions['currency_symbol_right']}</strong>"; if($wpStoreCartshipping!=0.00) {echo"<br /><i>({$devOptions['currency_symbol']}{$wpStoreCartshipping}{$devOptions['currency_symbol_right']})</i>";} echo"</td>
 					<td>";
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
-                                            echo "<a href=\"user-edit.php?user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a></td>";
+                                            echo "<a href=\"user-edit.php?user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
                                         }
                                         echo "
-					<td>{$wpStoreCartemail}</td>
-					<td>{$wpStoreCartaffiliate}</td>
+					<td>";
+                                        if(isset($wpStoreCartaffiliate) && $wpStoreCartaffiliate!=0) {
+                                            echo "<a href=\"user-edit.php?user_id={$wpStoreCartaffiliate}\">{$user_info4->user_login}</a></td>";
+                                        }
+                                        echo "</td>
 					</tr>";	
 					
 
@@ -3957,7 +3968,7 @@ if (!class_exists("wpStoreCart")) {
                                                                                 oldAmount = parseFloat('.$results[0]['price'].');
                                                                                 newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13]) *100)/100;
                                                                                 newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13];
-                                                                                jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: "+ newAmount.toFixed(2) + "</li>");
+                                                                                jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
                                                                                 jQuery("#my-item-price").val(newAmount.toFixed(2));
                                                                                 jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
                                                                                 jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
@@ -4000,7 +4011,7 @@ if (!class_exists("wpStoreCart")) {
 
 								<ul class="wpsc-product-info">
 								  <li id="list-item-name"><strong>'.$results[0]['name'].'</strong></li>
-								  <li id="list-item-price">Price: '.$results[0]['price'].'</li>
+								  <li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>
 								  <li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
 
                                                                 if($voutput!=NULL) {

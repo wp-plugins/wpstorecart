@@ -21,7 +21,7 @@ if ( 0 == $current_user->ID ) {
     $varvalue = $wpdb->escape($_POST['varvalue']);
     $varprice = $wpdb->escape($_POST['varprice']);
     $vardesc = $wpdb->escape($_POST['vardesc']);
-	$vardownloads = $wpdb->escape($_POST['vardownloads']);
+    $vardownloads = $wpdb->escape($_POST['vardownloads']);
     $keytoedit = $wpdb->escape($_POST['keytoedit']);
 
     $insert = "
