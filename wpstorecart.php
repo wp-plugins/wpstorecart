@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://www.wpstorecart.com/
 Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.1.3
+Version: 2.1.4
 Author: wpStoreCart.com
 Author URI: http://www.wpstorecart.com/
 License: LGPL
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
 
 //Global variables:
-$wpstorecart_version = '2.1.3';
-$wpstorecart_version_int = 201003; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.1.4';
+$wpstorecart_version_int = 201004; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $APjavascriptQueue = NULL;
@@ -67,6 +67,8 @@ if (!class_exists("wpStoreCart")) {
 
             $devOptions = $this->getAdminOptions();
 
+			$this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );			
+			
             // Upgrade the database schema if they're running 2.0.2 or below:
             if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
                 $table_name = $wpdb->prefix . "wpstorecart_categories";
@@ -254,6 +256,21 @@ if (!class_exists("wpStoreCart")) {
 		function  init() {
             $this->getAdminOptions();
         }
+		
+		function add_column_if_not_exist($db, $column, $column_attr = "VARCHAR( 255 ) NULL" ){
+			global $wpdb;
+			$exists = false;
+			$columns = $wpdb->get_results( "show columns from $db" , ARRAY_A );
+			foreach($columns as $c) {
+				if($c['Field'] == $column){
+					$exists = true;
+					break;
+				}
+			}      
+			if(!$exists){
+				$wpdb->query("ALTER TABLE `$db` ADD `$column`  $column_attr");
+			}
+		}		
 		
 		function spHeader() {
                         global $wpstorecart_version_int, $testing_mode;
@@ -3604,7 +3621,8 @@ if (!class_exists("wpStoreCart")) {
 				`timesviewed` INT NOT NULL,  
 				`timesaddedtocart` INT NOT NULL, 
 				`timespurchased` INT NOT NULL,
-                                `useinventory` BOOL NOT NULL DEFAULT '1'
+                `useinventory` BOOL NOT NULL DEFAULT '1',
+				`donation` BOOL NOT NULL DEFAULT '0'
 				);			
 				";
 			  
