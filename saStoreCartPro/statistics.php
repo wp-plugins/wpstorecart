@@ -3,7 +3,7 @@ global $wpStoreCart, $allowedToAccess, $statsOptions, $wpdb, $devOptions;
 
 $allowedToAccess = true;
 
-if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php')) {
+if(!file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
 
     echo '
     <h2>Statistics</h2>
@@ -28,7 +28,7 @@ if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php'))
     $statsOptions['databaseproductstable'] = $statsOptions['databaseprefix'] . 'wpstorecart_products';
 
     
-    require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.pro.php');
+    require_once(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php');
 }
 
 ?>

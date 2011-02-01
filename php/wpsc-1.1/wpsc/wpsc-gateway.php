@@ -260,8 +260,8 @@ else
 
                     //
                     $cart->empty_cart();
-                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/';
-                    include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/';
+                    include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
                 }
 
                 if($paymentGateway == '2checkout') {
@@ -336,8 +336,8 @@ else
 
                     $cart->empty_cart();
 
-                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/';
-                    include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/';
+                    include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
                 }
                 
                 if($paymentGateway == 'paypal') {

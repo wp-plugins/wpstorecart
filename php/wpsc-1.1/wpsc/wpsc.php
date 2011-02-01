@@ -622,6 +622,7 @@ class wpsc {
 				//echo "\t\t\t\t\t</td>\n";
 				//echo "\t\t\t\t</tr>\n";
 				}
+                                $cart_is_empty = false;
 			}
 
 		// THE CART IS EMPTY
@@ -629,6 +630,7 @@ class wpsc {
 			{
 			//echo "\t\t\t\t<tr><td colspan='3' class='empty'>" . $text['empty_message'] . "</td></tr>\n";
 			echo "\t\t\t\t" . $text['empty_message'] . "\n<br />";
+                        $cart_is_empty = true;
 			}
 
 		// DISPLAY THE CART FOOTER
@@ -658,10 +660,10 @@ class wpsc {
 		echo "\t\t\t\t\t\t<span id='wpsc-subtotal'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . "</strong></span>\n";
 
 
-		
-		if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
-		echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-update ' />\n";
-
+		if(!$cart_is_empty) {
+                    if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
+                    echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-update ' />\n";
+                }
                 echo "<div class='wpsc-hide'>";
 		if ($is_checkout == false) {
 			if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
@@ -671,8 +673,8 @@ class wpsc {
 		echo "</div>";
 		//echo "\t\t</fieldset>\n";
 		
-		// IF THIS IS THE CHECKOUT DISPLAY THE PAYPAL CHECKOUT BUTTON
-		if ($is_checkout == true)
+		// IF THIS IS THE CHECKOUT AND THERE ARE ITEMS IN THE CART THEN DISPLAY CHECKOUT BUTTONS
+		if ($is_checkout == true && !$cart_is_empty)
 			{
 
                         $servrequest_uri = $_SERVER['REQUEST_URI'] ;

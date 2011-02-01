@@ -4,7 +4,7 @@ $wpscAffiliateVersion = 1.1;
 
 $allowedToAccess = true;
 
-if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) {
+if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
 
     echo '<iframe src="http://wpstorecart.com/store/wpscaffiliate-pro/" frameborder="0" border="0" cellspacing="0" style="border:0px;width:1000px;height:2500px;min-width:1000px;min-height:2500px;"></iframe>';
 
@@ -54,7 +54,7 @@ if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php'))
         @$affiliatepurchases[$icounter]['affiliatecustomer'] = $userinfo2->user_login;
         $icounter++;
     }
-    require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php');
+    require_once(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php');
 }
 
 ?>

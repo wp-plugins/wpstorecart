@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.5
-Version: 2.1.5
+Stable tag: 2.1.6
+Version: 2.1.6
 
 == Description ==
 
@@ -44,6 +44,11 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.6 =
+* When visiting the checkout page when there are no items in the cart, the user will from now on not see any of the buttons (update, checkout, etc)
+* Order page now lets you show Completed, Pending, and Refunded orders from the main admin menu and from the order sorting options
+* Customers who upgrade wpStoreCart PRO installations automatically will no longer have to reinstall their PRO modules separately after the auto upgrade
 
 = 2.1.5 =
 * Fixed an issue with variation displaying unwanted output on the frontend

@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: wpStoreCart
-Plugin URI: http://www.wpstorecart.com/
-Description: <a href="http://www.wpstorecart.com/" target="blank">wpStoreCart</a> is a full e-commerce Wordpress plugin that accepts PayPal out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple. 
-Version: 2.1.5
+Plugin URI: http://wpstorecart.com/
+Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
+Version: 2.1.6
 Author: wpStoreCart.com
-Author URI: http://www.wpstorecart.com/
+Author URI: http://wpstorecart.com/
 License: LGPL
 */
 
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
 
 //Global variables:
-$wpstorecart_version = '2.1.5';
-$wpstorecart_version_int = 201005; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.1.6';
+$wpstorecart_version_int = 201006; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $APjavascriptQueue = NULL;
@@ -278,9 +278,9 @@ if (!class_exists("wpStoreCart")) {
 			
 			<div class="wrap">
 			<div style="padding: 20px 10px 10px 10px;">
-			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/logo.png" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/order_pro.png" alt="wpstorecart" /></a>';}
+			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/logo.png" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/order_pro.png" alt="wpstorecart" /></a>';}
                         echo'</div>';
-                        if(!file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php')) {
+                        if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
                             echo '
 			<div style="float:right;">
 				
@@ -316,7 +316,14 @@ if (!class_exists("wpStoreCart")) {
                                 </li>
 				
 				<li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/table.png" /> Categories</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> Orders</a></li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> Orders</a>
+                                    <ul>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> All Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=completed" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_green.png" /> Completed Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=pending" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_orange.png" /> Pending Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=refunded" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_red.png" /> Refunded Orders</a></li>
+                                    </ul>
+                                </li>
 				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Marketing</a>
                                     <ul>
                                         <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
@@ -1050,9 +1057,9 @@ if (!class_exists("wpStoreCart")) {
 			<h2>Payment Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
 
 
-                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/updater.pro.php') ) {
-                            include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php');
-                            include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/updater.pro.php');
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/updater.pro.php') ) {
+                            include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
+                            include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/updater.pro.php');
                         }
 
                         echo '
@@ -1149,7 +1156,7 @@ if (!class_exists("wpStoreCart")) {
                         <br style="clear:both;" /><br />
                         ';
 
-                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
                             echo '
                             <h3>Authorize.NET Gateway (wpStoreCart PRO)</h3>
                             <table class="widefat">
@@ -1267,7 +1274,7 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>
                         ';
 
-                        if(file_exists(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/payments.pro.php')) {
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
                             echo '
                             <tr><td><h3>Checkout Authorize.NET Button</h3></td>
                             <td class="tableDescription"><p>Default: <i>Checkout with Authorize.NET</i></p></td>
@@ -2521,9 +2528,13 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
 			<h2>Edit Orders</h2>';
 
-                        echo '<form action="" method="post">Sort by <select name="orderby"><option value="`date`">date</option><option value="`wpuser`">user</option><option value="`orderstatus`">order status</option><option value="`affiliate`">affiliate</option><option value="`paymentprocessor`">processor</option><option value="`price`">price</option></select> in <select name="ordersort"><option value="DESC">descending</option><option value="ASC">ascending</option></select> order. <input type="submit" value="Submit"></input></form>';
+                        if(@isset($_GET['show'])) {
+                            $_POST['show'] = $_GET['show'];
+                        }
+
+                        echo '<form action="" method="post">Show <select name="show"><option value="all">All Orders</option><option value="completed">Completed Purchases Only</option><option value="pending">Pending Orders Only</option><option value="refunded">Refunded Orders Only</option></select> Sort by <select name="orderby"><option value="`date`">date</option><option value="`wpuser`">user</option><option value="`orderstatus`">order status</option><option value="`affiliate`">affiliate</option><option value="`paymentprocessor`">processor</option><option value="`price`">price</option></select> in <select name="ordersort"><option value="DESC">descending</option><option value="ASC">ascending</option></select> order. <input type="submit" value="Submit"></input></form>';
 			echo '<table class="widefat">
-			<thead><tr><th> </th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
+			<thead><tr><th>Date<br />Order #</th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
 			';
 
 
@@ -2537,7 +2548,25 @@ if (!class_exists("wpStoreCart")) {
                         } else {
                             $ordersort = $wpdb->prepare($_POST['ordersort']);
                         }
-			$grabrecord = "SELECT * FROM `{$table_name}` ORDER BY {$orderby} {$ordersort};";
+
+
+                        if(@!isset($_POST['show'])) {
+                            $whereclause = '';
+                        } else {
+                            if ($_POST['show']=='all') {
+                                $whereclause = '';
+                            }
+                            if ($_POST['show']=='pending') {
+                                $whereclause = 'WHERE `orderstatus`="Pending"';
+                            }
+                            if ($_POST['show']=='completed') {
+                                $whereclause = 'WHERE `orderstatus`="Completed"';
+                            }
+                            if ($_POST['show']=='refunded') {
+                                $whereclause = 'WHERE `orderstatus`="Refunded"';
+                            }
+                        }
+			$grabrecord = "SELECT * FROM `{$table_name}` {$whereclause} ORDER BY {$orderby} {$ordersort};";
 			
 			$results = $wpdb->get_results( $grabrecord , ARRAY_A );		
 			if(isset($results)) {
@@ -2557,10 +2586,11 @@ if (!class_exists("wpStoreCart")) {
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
                                             $user_info3 = get_userdata($wpStoreCartwpuser);
                                         }
+                                        $wpStoreCartdate = $result['date'];
 										
 					echo "
 					<tr>
-					<td style=\"min-width:80px;\">{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
+					<td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
 					<td>{$wpStoreCartorderstatus}</td>
 					<td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
 					<td>{$wpStoreCartpaymentprocessor}</td>
@@ -4211,7 +4241,7 @@ if (!class_exists("wpStoreCart")) {
                                                 @$affiliatepurchases[$icounter]['affiliateusername'] = $userinfo2->user_login;
                                                 $icounter++;
                                             }
-                                            @include_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.pro.php');
+                                            @include_once(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php');
                                             echo @wpscAffiliates();
                                             $affiliatemanager = false;
                                         }
