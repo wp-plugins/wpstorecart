@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.4
-Version: 2.1.4
+Stable tag: 2.1.5
+Version: 2.1.5
 
 == Description ==
 
@@ -44,6 +44,9 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.5 =
+* Fixed an issue with variation displaying unwanted output on the frontend
 
 = 2.1.4 =
 * Fixed fatal error when adding products
