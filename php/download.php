@@ -1,6 +1,9 @@
 <?php
 
 error_reporting(0);
+@apache_setenv('no-gzip', '1');
+@ini_set('zlib.output_compression', 'Off');
+
 if (!function_exists('add_action'))
 {
     require_once("../../../../wp-config.php");
@@ -107,7 +110,7 @@ if ( 0 == $current_user->ID ) {
     header("Accept-Ranges: bytes");
     header("Content-Disposition: attachment; filename=\"" . $header_file . "\";");
     header("Content-Transfer-Encoding: binary");
-    header("Content-Length: " . filesize($file_real));
+    //header("Content-Length: " . filesize($file_real));
     // Send file for download
     if ($stream = fopen($file_real, 'rb')){
     while(!feof($stream) && connection_status() == 0){

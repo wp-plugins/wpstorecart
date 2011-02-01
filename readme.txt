@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.6
-Version: 2.1.6
+Stable tag: 2.1.7
+Version: 2.1.7
 
 == Description ==
 
@@ -44,6 +44,9 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.7 =
+* Fixed an issue with downloads not working on specific server installations.
 
 = 2.1.6 =
 * When visiting the checkout page when there are no items in the cart, the user will from now on not see any of the buttons (update, checkout, etc)
