@@ -4,6 +4,22 @@ error_reporting(0);
 @apache_setenv('no-gzip', '1');
 @ini_set('zlib.output_compression', 'Off');
 
+if (get_magic_quotes_gpc()) {
+    $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
+    while (list($key, $val) = each($process)) {
+        foreach ($val as $k => $v) {
+            unset($process[$key][$k]);
+            if (is_array($v)) {
+                $process[$key][stripslashes($k)] = $v;
+                $process[] = &$process[$key][stripslashes($k)];
+            } else {
+                $process[$key][stripslashes($k)] = stripslashes($v);
+            }
+        }
+    }
+    unset($process);
+}
+
 if (!function_exists('add_action'))
 {
     require_once("../../../../wp-config.php");
@@ -35,12 +51,14 @@ if ( 0 == $current_user->ID ) {
                 foreach($specific_items as $specific_item) {
                     if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
                         $current_item = explode('*', $specific_item);
-                        
+
                         if(isset($current_item[0]) && $current_item[0]==$file) { // If the customer has purchased the product that is being requested for download
                             $table_name4 = $wpdb->prefix . "wpstorecart_products";
+                            $current_item[0] = substr($current_item[0], 0, strpos("$current_item[0]-", "-")); // Remove the variation from the initial product lookup
                             $sql2 = "SELECT * FROM `{$table_name4}` WHERE `primkey`='{$current_item[0]}';";
                             $results2 = $wpdb->get_results( $sql2 , ARRAY_A );
                             if(isset($results2)) {
+                                $xpart = 1;
                                 foreach ($results2 as $result2) {
                                     if($result2['download']!='') {
                                         $multidownloads = explode('||', $result2['download']);
@@ -48,23 +66,25 @@ if ( 0 == $current_user->ID ) {
                                             // Variation download
                                             $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
                                             $file_real = $secretPath.$_GET['variationdl'];
-                                            $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($_GET['variationdl'], -12);
+                                            $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$xpart.'_'. substr($_GET['variationdl'], -12);
                                         } else {
                                             // Standard download
                                             if(@isset($_GET['part']) && @isset($multidownloads[$_GET['part']])) {
                                                 // Multi part file download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
                                                 $file_real = $secretPath.$multidownloads[$_GET['part']];
-                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($multidownloads[$_GET['part']], -12);
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$_GET['part'].'_'. substr($multidownloads[$_GET['part']], -12);
                                             } else {
                                                 // Single files to download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
                                                 $file_real = $secretPath.$result2['download'];
-                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login. substr($result2['download'], -12);
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$xpart.'_'. substr($result2['download'], -12);
                                             }
                                         }
                                     }
+                                    $xpart++;
                                 }
+                                
                             }
                         }
                     }
@@ -78,7 +98,7 @@ if ( 0 == $current_user->ID ) {
 
     if (file_exists($file_real)){
                 // Get extension of requested file
-                echo $extension = strtolower(substr(strrchr($file, "."), 1));
+                $extension = strtolower(substr(strrchr($file_real, "."), 1));
                 // Determine correct MIME type
 
                 switch($extension){

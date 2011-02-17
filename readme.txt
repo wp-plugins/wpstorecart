@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
 Tested up to: 3.1.0
-Stable tag: 2.1.7
-Version: 2.1.7
+Stable tag: 2.1.8
+Version: 2.1.8
 
 == Description ==
 
@@ -44,6 +44,10 @@ Or, if you want to install manually:
 1. No picture
 
 == Changelog ==
+
+= 2.1.8 =
+* Fixed more issues with the downloads not working correctly
+* Fixed a problem with variations not working for new downloads. This problem didn't effect those who upgraded to 2.1.x, only those who did fresh installs
 
 = 2.1.7 =
 * Fixed an issue with downloads not working on specific server installations.

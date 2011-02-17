@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.1.7
+Version: 2.1.8
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,8 +28,8 @@ Boston, MA 02111-1307 USA
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
 
 //Global variables:
-$wpstorecart_version = '2.1.7';
-$wpstorecart_version_int = 201007; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.1.8';
+$wpstorecart_version_int = 201008; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $APjavascriptQueue = NULL;
@@ -52,6 +52,21 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
 	@mkdir(WP_CONTENT_DIR . '/uploads/wpstorecart/', 0777, true);
 }
 	
+if (get_magic_quotes_gpc()) {
+    $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
+    while (list($key, $val) = each($process)) {
+        foreach ($val as $k => $v) {
+            unset($process[$key][$k]);
+            if (is_array($v)) {
+                $process[$key][stripslashes($k)] = $v;
+                $process[] = &$process[$key][stripslashes($k)];
+            } else {
+                $process[$key][stripslashes($k)] = stripslashes($v);
+            }
+        }
+    }
+    unset($process);
+}
 
  /**
  * ===============================================================================================================
@@ -67,44 +82,48 @@ if (!class_exists("wpStoreCart")) {
 
             $devOptions = $this->getAdminOptions();
 
-			$this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );			
-			
-            // Upgrade the database schema if they're running 2.0.2 or below:
-            if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
-                $table_name = $wpdb->prefix . "wpstorecart_categories";
-                $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
-                $results = $wpdb->query( $sql );
-                $devOptions['database_version'] = $wpstorecart_db_version;
-                update_option('wpStoreCartAdminOptions', $devOptions);
-            }
+            // UPDATES ARE PUSHED HERE
+            if($devOptions['run_updates']=='true') {
+                $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );
 
-            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2') { // 2.0.11 - Database schema update for version 2.0.10 and below
-		   $table_name = $wpdb->prefix . "wpstorecart_meta";
-		   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+                // Upgrade the database schema if they're running 2.0.2 or below:
+                if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
+                    $table_name = $wpdb->prefix . "wpstorecart_categories";
+                    $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
+                    $results = $wpdb->query( $sql );
+                    $devOptions['database_version'] = $wpstorecart_db_version;
+                    update_option('wpStoreCartAdminOptions', $devOptions);
+                }
 
-			$sql = "
-				CREATE TABLE {$table_name} (
-				`primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				`value` TEXT NOT NULL,
-				`type` VARCHAR(32) NOT NULL,
-				`foreignkey` INT NOT NULL
-				);
-				";
+                          $table_name = $wpdb->prefix . "wpstorecart_meta";
+                       if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                            $sql = "
+                                    CREATE TABLE IF NOT EXISTS {$table_name} (
+                                    `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                    `value` TEXT NOT NULL,
+                                    `type` VARCHAR(32) NOT NULL,
+                                    `foreignkey` INT NOT NULL
+                                    );
+                                    ";
 
 
-			$results = $wpdb->query( $sql );
-                        $devOptions['database_version'] = $wpstorecart_db_version;
-                        update_option('wpStoreCartAdminOptions', $devOptions);
-			}
-            }
+                            $results = $wpdb->query( $sql );
+                            $devOptions['database_version'] = $wpstorecart_db_version;
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+                            }
+                
 
-            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
-                        $table_name = $wpdb->prefix . "wpstorecart_products";
-                        $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
-                        $results = $wpdb->query( $sql );
-                        $devOptions['database_version'] = $wpstorecart_db_version;
-                        update_option('wpStoreCartAdminOptions', $devOptions);
-            }
+                if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
+                            $table_name = $wpdb->prefix . "wpstorecart_products";
+                            $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
+                            $results = $wpdb->query( $sql );
+                            $devOptions['database_version'] = $wpstorecart_db_version;
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+                }
+            $devOptions['run_updates']='false'; // These updates only need to be ran once.
+            update_option('wpStoreCartAdminOptions', $devOptions);
+            } // End updates
 
             // This increments the add to cart counter for the product statistics
             if(isset($_POST['my-item-id'])) {
@@ -421,7 +440,8 @@ if (!class_exists("wpStoreCart")) {
                                     'minimumAffiliatePayment' => '0.00',
                                     'minimumDaysBeforePaymentEligable' => '30',
                                     'affiliateInstructions'=>'Welcome to our affiliate program.  Here, you can review successful affiliate sales as well as grab links to all the products in our store that include your affiliate code.',
-                                    'wpscjQueryUITheme' =>''
+                                    'wpscjQueryUITheme' =>'',
+                                    'run_updates' => 'true'
                                     );
 
             $devOptions = get_option($this->adminOptionsName);
@@ -3738,6 +3758,23 @@ if (!class_exists("wpStoreCart")) {
 
 			  dbDelta($sql);
 		   }
+
+		   $table_name = $wpdb->prefix . "wpstorecart_meta";
+		   if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                            $sql = "
+                                    CREATE TABLE {$table_name} (
+                                    `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                    `value` TEXT NOT NULL,
+                                    `type` VARCHAR(32) NOT NULL,
+                                    `foreignkey` INT NOT NULL
+                                    );
+                                    ";
+
+
+			  dbDelta($sql);
+		   }
+
 
 		   
 		}
