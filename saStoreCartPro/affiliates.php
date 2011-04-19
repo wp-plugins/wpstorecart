@@ -31,7 +31,7 @@ if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pr
 
     $table_name = $wpdb->prefix . "wpstorecart_orders";
     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
-    $sql = "SELECT * FROM `{$table_name_meta}`, `{$table_name}` WHERE  `{$table_name}`.`affiliate`>0 AND  `{$table_name}`.`orderstatus`='Completed' AND `{$table_name}`.`primkey`=`{$table_name_meta}`.`foreignkey` ORDER BY  `{$table_name}`.`affiliate`,  `{$table_name}`.`date` DESC;";
+    $sql = "SELECT * FROM `{$table_name_meta}`, `{$table_name}` WHERE  `{$table_name}`.`affiliate`>0 AND  `{$table_name}`.`orderstatus`='Completed' AND `{$table_name}`.`primkey`=`{$table_name_meta}`.`foreignkey` AND `{$table_name_meta}`.`type` != 'requiredinfo' ORDER BY  `{$table_name}`.`affiliate`,  `{$table_name}`.`date` DESC;";
     $results = $wpdb->get_results( $sql , ARRAY_A );
     $icounter = 0;
     foreach ($results as $result) {

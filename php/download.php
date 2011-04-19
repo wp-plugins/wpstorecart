@@ -1,6 +1,9 @@
 <?php
 
-error_reporting(0);
+global $wpsc_error_reporting;
+if($wpsc_error_reporting==false) {
+    error_reporting(0);
+}
 @apache_setenv('no-gzip', '1');
 @ini_set('zlib.output_compression', 'Off');
 

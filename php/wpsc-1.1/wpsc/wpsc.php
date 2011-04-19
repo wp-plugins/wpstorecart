@@ -14,8 +14,10 @@ http://www.webforce.co.nz/cart/
 
 **********************************************************************/
 
-error_reporting(0);
-//error_reporting(E_ALL);
+global $wpsc_error_reporting;
+if($wpsc_error_reporting==false) {
+    error_reporting(0);
+}
 
 
 
@@ -23,7 +25,7 @@ if (!function_exists('add_action'))
 {
     require_once("../../../../../../wp-config.php");
 }
-global $wpStoreCart;
+global $wpStoreCart, $devOptions;
 
 if(isset($wpStoreCart)) {
 	$devOptions = $wpStoreCart->getAdminOptions();
@@ -51,6 +53,7 @@ class wpsc {
 	var $itemprices = array();
 	var $itemqtys = array();
 	var $itemname = array();
+        var $itemshipping = array(); // Added in wpStoreCart 2.2.0
 
 	// CONSTRUCTOR FUNCTION
 	function cart() {}
@@ -75,8 +78,9 @@ class wpsc {
 
 			$item['name'] = $this->itemname[$tmp_item];
 			
-
-                            $item['subtotal'] = $item['qty'] * $item['price'];
+                        $item['shipping'] = $this->itemshipping[$tmp_item]; // Added in wpStoreCart 2.2.0
+                        
+                        $item['subtotal'] = $item['qty'] * $item['price'];
                         
 			$items[] = $item;
 			}
@@ -85,7 +89,7 @@ class wpsc {
 
 
 	// ADD AN ITEM
-	function add_item($item_id, $item_qty=1, $item_price, $item_name)
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0)
 		{
 		// VALIDATION
 		$valid_item_qty = $valid_item_price = false;
@@ -117,6 +121,7 @@ class wpsc {
 				$this->itemqtys[$item_id] = $item_qty;
 				$this->itemprices[$item_id] = $item_price;
 				$this->itemname[$item_id] = $item_name;
+                                $this->itemshipping[$item_id] = $item_shipping; 
 				
 				}
 			$this->_update_total();
@@ -170,7 +175,7 @@ class wpsc {
 					$discount_price = $result['amount'];
 					$discount_percent = $result['percent'];
 					
-					@$_SESSION['validcouponid'] = $result['primkey'];
+					@$_SESSION['validcouponid'] = $result['product'];
                                         @$_SESSION['validcouponamount'] = $result['amount'];
                                         @$_SESSION['validcouponpercent'] = $result['percent'];
                                         
@@ -307,6 +312,7 @@ class wpsc {
 		$this->itemprices = array();
 		$this->itemqtys = array();
 		$this->itemname = array();
+                $this->itemshipping = array();
 		}
 
 
@@ -339,7 +345,7 @@ class wpsc {
 	// PROCESS AND DISPLAY CART
 	function display_cart($wpsc, $hidden=false)
 		{
-		global $wpsc, $is_checkout, $devOptions, $wpscCarthasBeenCalled;
+		global $wpsc, $is_checkout, $devOptions, $wpscCarthasBeenCalled, $wpscWidgetSettings, $wpStoreCart, $wpscIsCheckoutPage, $wpdb;
 		// wpsc ARRAY HOLDS USER CONFIG SETTINGS
 		extract($wpsc);
 
@@ -353,11 +359,12 @@ class wpsc {
 		@$item_qty = $_POST[$item_qty];
 		@$item_price = $_POST[$item_price];
 		@$item_name = $_POST[$item_name];
+                @$item_shipping = $_POST[$item_shipping];
 
 		// ADD AN ITEM
 		if (isset($_POST[$item_add]))
 			{
-			$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name);
+			$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping);
 			// IF NOT TRUE THE ADD ITEM FUNCTION RETURNS THE ERROR TYPE
 			if ($item_added !== true)
 				{
@@ -406,6 +413,7 @@ class wpsc {
 		// EMPTY THE CART
 		if(isset($_POST['wpsc_empty']))
 			{
+                        $totalshipping = 0;
 			$this->empty_cart();
 			}
 
@@ -466,7 +474,11 @@ class wpsc {
 
 		// DISPLAY THE CART HEADER
                         if($hidden==false) {
-                            echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
+                            if($wpscIsCheckoutPage==true) {
+                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc' class='wpsc-checkout-page-contents'>\n";
+                            } else {
+                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
+                            }
                         } else {
                             echo '<!-- BEGIN wpsc -->
                                 <div id="wpsc" style="display:none;">
@@ -490,235 +502,365 @@ class wpsc {
                         $servrequest_uri = $_SERVER['REQUEST_URI'] ;
                         if(@isset($_GET['wpscregerror'])) {
                             if($_GET['wpscregerror']=='1') {
-                                echo '<div class="wpscerror">Username taken.</div>';
+                                echo '<div class="wpscerror">'. $text['username'] .' taken.</div>';
                                 $servrequest_uri = str_replace("&wpscregerror=1", "", $servrequest_uri );
                                 $servrequest_uri = str_replace("?wpscregerror=1", "", $servrequest_uri);
                             }
                             if($_GET['wpscregerror']=='2') {
-                                echo '<div class="wpscerror">Username invalid.</div>';
+                                echo '<div class="wpscerror">'. $text['username'] .' invalid.</div>';
                                 $servrequest_uri = str_replace("&wpscregerror=2", "", $servrequest_uri );
                                 $servrequest_uri = str_replace("?wpscregerror=2", "", $servrequest_uri);
                             }
                             if($_GET['wpscregerror']=='3') {
-                               echo '<div class="wpscerror">Email is invalid.</div>';
+                               echo '<div class="wpscerror">'. $text['email'] .' is invalid.</div>';
                                 $servrequest_uri = str_replace("&wpscregerror=3", "", $servrequest_uri );
                                 $servrequest_uri = str_replace("?wpscregerror=3", "", $servrequest_uri);
                             }
                             if($_GET['wpscregerror']=='4') {
                                 $servrequest_uri = str_replace("&wpscregerror=4", "", $servrequest_uri );
                                 $servrequest_uri = str_replace("?wpscregerror=4", "", $servrequest_uri);
-                                echo '<div class="wpscerror">Email is already registered.</div>';
+                                echo '<div class="wpscerror">'. $text['email'] .' is already registered.</div>';
                             }
                             if($_GET['wpscregerror']=='5') {
                                 $servrequest_uri = str_replace("&wpscregerror=5", "", $servrequest_uri );
                                 $servrequest_uri = str_replace("?wpscregerror=5", "", $servrequest_uri);
                                 echo '<div class="wpscerror">Wordpress could not create the account, alert the admin to enable registrations.</div>';
                             }
+                            if($_GET['wpscregerror']=='6') {
+                                $servrequest_uri = str_replace("&wpscregerror=6", "", $servrequest_uri );
+                                $servrequest_uri = str_replace("?wpscregerror=6", "", $servrequest_uri);
+                                echo '<div class="wpscerror">Not all of the required fields were filled out.  Please fill out all the required information and try again.</div>';
+                            }
                         }
 
-                        echo '<br /><strong>Register</strong><br />
-                        <form name="registerform" action="'. WP_PLUGIN_URL.'/wpstorecart/php/register.php" method="post">
-                                <fieldset>
-                                        <label>E-mail
-                                        <input type="text" name="email" value="" /></label>
-                                        <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                                        <label>Password
-                                        <input type="password" name="user_pass" value="" /></label>
-<select name="wpstate" style="display:none;">
-<option value="" selected="selected">Select a State</option>
-<option value="not applicable">Other (Non-US)</option>
-<option value="AL">Alabama</option>
-<option value="AK">Alaska</option>
-<option value="AZ">Arizona</option>
-<option value="AR">Arkansas</option>
-<option value="CA">California</option>
-<option value="CO">Colorado</option>
-<option value="CT">Connecticut</option>
-<option value="DE">Delaware</option>
-<option value="DC">District Of Columbia</option>
-<option value="FL">Florida</option>
-<option value="GA">Georgia</option>
-<option value="HI">Hawaii</option>
-<option value="ID">Idaho</option>
-<option value="IL">Illinois</option>
-<option value="IN">Indiana</option>
-<option value="IA">Iowa</option>
-<option value="KS">Kansas</option>
-<option value="KY">Kentucky</option>
-<option value="LA">Louisiana</option>
-<option value="ME">Maine</option>
-<option value="MD">Maryland</option>
-<option value="MA">Massachusetts</option>
-<option value="MI">Michigan</option>
-<option value="MN">Minnesota</option>
-<option value="MS">Mississippi</option>
-<option value="MO">Missouri</option>
-<option value="MT">Montana</option>
-<option value="NE">Nebraska</option>
-<option value="NV">Nevada</option>
-<option value="NH">New Hampshire</option>
-<option value="NJ">New Jersey</option>
-<option value="NM">New Mexico</option>
-<option value="NY">New York</option>
-<option value="NC">North Carolina</option>
-<option value="ND">North Dakota</option>
-<option value="OH">Ohio</option>
-<option value="OK">Oklahoma</option>
-<option value="OR">Oregon</option>
-<option value="PA">Pennsylvania</option>
-<option value="RI">Rhode Island</option>
-<option value="SC">South Carolina</option>
-<option value="SD">South Dakota</option>
-<option value="TN">Tennessee</option>
-<option value="TX">Texas</option>
-<option value="UT">Utah</option>
-<option value="VT">Vermont</option>
-<option value="VA">Virginia</option>
-<option value="WA">Washington</option>
-<option value="WV">West Virginia</option>
-<option value="WI">Wisconsin</option>
-<option value="WY">Wyoming</option>
-</select>
-                                        <input type="submit" name="wp-submit" value="Register" />
-                                </fieldset>
+                        echo '
+                        <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">
+                            <br /><strong>'. $text['login'] .'</strong><br />
+                                    <label><span>'. $text['username'] .' </span><input type="text" value="" name="log" /></label>
+                                    <label><span>'. $text['password'] .' </span><input type="password" value="" name="pwd"  /></label>
+                                    <input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" />
+                                    <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                        </form>
+                        <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
+                            <br /><strong>'. $text['register'] .'</strong><br />
+                                        <label><span>'. $text['email'] .' <div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                        <label><span>'. $text['password'] .' <div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
+
+                                        $wpStoreCart->show_custom_reg_fields();
+
+                        echo '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                                        <label><span class="wpsc-required-help">'.$text['required_help'].'</span><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></label>
                         </form>';
                     }
                 }
 
-		echo "\t<form method='post' action='$form_action'>\n";
-
-		echo "\t\t\t\t\t\t<strong id='wpsc-title'>" . $text['cart_title'] . "</strong> (" . $this->itemcount . "&nbsp;" . $text['items_in_cart'] .")<br />\n";
+                if( $isLoggedIn == true || $is_checkout==false) {
 
 
-		// IF ANY ITEMS IN THE CART
-		if($this->itemcount > 0)
-			{
+                    echo "\t<form method='post' action='$form_action'>\n";
 
-			// DISPLAY LINE ITEMS
-			foreach($this->get_contents() as $item)
-				{
-
-				echo "\t\t\t\t\t\t<input type='text' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />\n";
-
-				echo "\t\t\t\t\t\t" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' />\n";
-				echo "\t\t\t\t\t\t<input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' />\n";
-
-				if(@!isset($_SESSION)) {
-					@session_start();
-				}
-
-				$finalAmount = number_format($item['subtotal'], 2);
-                                $newAmount = number_format($item['subtotal'] - $this->update_coupon($item['id']),2);
-			
-
-				if ($newAmount != $finalAmount) {
-					
-					//if(number_format($item['subtotal'],2) != (number_format(($item['subtotal'] - $this->update_coupon($item['id'])),2) )){
-					$tempAmount = '<strike>'.number_format($item['subtotal'],2).'</strike> '. $newAmount;
-					$finalAmount = $tempAmount;
-				}
-				echo "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
-				echo "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
-				//echo "\t\t\t\t\t</td>\n";
-				//echo "\t\t\t\t</tr>\n";
-				}
-                                $cart_is_empty = false;
-			}
-
-		// THE CART IS EMPTY
-		else
-			{
-			//echo "\t\t\t\t<tr><td colspan='3' class='empty'>" . $text['empty_message'] . "</td></tr>\n";
-			echo "\t\t\t\t" . $text['empty_message'] . "\n<br />";
-                        $cart_is_empty = true;
-			}
-
-		// DISPLAY THE CART FOOTER
-		//echo "\t\t\t\t<tr>\n";
-		//echo "\t\t\t\t\t<th id='wpsc-footer' colspan='3'>\n";
-
-		// IF THIS IS THE CHECKOUT HIDE THE CART CHECKOUT BUTTON
-		if(!isset($src)) {
-			$src = NULL;
-		}		
-		if ($is_checkout !== true)
-			{
-			if ($button['checkout']) { $input_type = 'image'; $src = ' src="' . $button['checkout'] . '" alt="' . $text['checkout_button'] . '" title="" ';	}
-
-			echo "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='ui-state-default ui-corner-all wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
-			}
-
-		if ($is_checkout == true) {
-			//echo "<tr><th id='wpsc-footer' colspan='3'>Enter Coupon:<input type=\"text\" value=\"\" name=\"\" /></th></tr>";
-			if(@isset($_SESSION['validcoupon'])) {
-				echo "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"{$_SESSION['validcoupon']}\" name=\"ccoupon\" /></div><br />";
-			} else {
-				echo "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"\" name=\"ccoupon\" /></div><br />";
-			}
-		}			
-			
-		echo "\t\t\t\t\t\t<span id='wpsc-subtotal'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . "</strong></span>\n";
+                    echo "\t\t\t\t\t\t<strong id='wpsc-title'>" . $text['cart_title'] . "</strong> (" . $this->itemcount . "&nbsp;" . $text['items_in_cart'] .")<br />\n";
 
 
-		if(!$cart_is_empty) {
-                    if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
-                    echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-update ' />\n";
+                    // IF ANY ITEMS IN THE CART
+                    if($this->itemcount > 0)
+                            {
+
+                            $totalshipping = 0; // set shipping to zero
+                            $shipping_needs_calculation = false; // By default we'll assume shipping doesn't need calculations
+                            $shipping_offered_by_flatrate = true; // By default, we'll assume we can use flatrate shipping
+                            $shipping_offered_by_usps = true; // By default, we'll assume we can use USPS shipping
+                            $shipping_offered_by_ups = true; // By default, we'll assume we can use UPS shipping
+                            $shipping_offered_by_fedex = true; // By default, we'll assume we can't use FedEx shipping
+                            $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+
+                            if($devOptions['enableusps']=='false' || $devOptions['storetype']=='Digital Goods Only') {
+                                $shipping_offered_by_usps = false;
+                            }
+                            if($devOptions['enableups']=='false' || $devOptions['storetype']=='Digital Goods Only') {
+                                $shipping_offered_by_ups = false;
+                            }
+                            if($devOptions['enablefedex']=='false' || $devOptions['storetype']=='Digital Goods Only') {
+                                $shipping_offered_by_fedex = false;
+                            }
+                            if($devOptions['flatrateshipping']=='off' || $devOptions['storetype']=='Digital Goods Only') {
+                                $shipping_offered_by_flatrate = false;
+                            }
+
+                            // DISPLAY LINE ITEMS
+                            foreach($this->get_contents() as $item)
+                                    {
+
+                                    
+                                    if($shipping_offered_by_flatrate) {
+                                        $results_flatrateshipping = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_flatrateshipping' AND `foreignkey`={$item['id']};", ARRAY_N);
+                                        if(@$results_flatrateshipping[0][0]=='yes'){$shipping_offered_by_flatrate = true;} else {$shipping_offered_by_flatrate = false;}
+                                    }
+                                    if($shipping_offered_by_usps) {
+                                        $results_usps = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_usps' AND `foreignkey`={$item['id']};", ARRAY_N);
+                                        if(@$results_usps[0][0]=='yes'){$shipping_offered_by_usps = true;} else {$shipping_offered_by_usps = false;}
+                                    }
+                                    if($shipping_offered_by_ups) {
+                                        $results_ups = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_ups' AND `foreignkey`={$item['id']};", ARRAY_N);
+                                        if(@$results_ups[0][0]=='yes'){$shipping_offered_by_ups = true;} else {$shipping_offered_by_ups = false;}
+                                    }
+
+                                    if($shipping_offered_by_fedex) {
+                                        $results_fedex = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_fedex' AND `foreignkey`={$item['id']};", ARRAY_N);
+                                        if(@$results_fedex[0][0]=='yes'){$shipping_offered_by_fedex = true;} else {$shipping_offered_by_fedex = false;}
+                                    }
+
+                                    // If flat rate is disabled and any of the other shipping services are enabled, then we need to calculate shipping
+                                    if(($results_flatrateshipping==false || $results_flatrateshipping[0][0]=='no') && (($results_usps || $results_usps[0][0]=='yes') || ($results_ups || $results_ups[0][0]='yes') || ($results_fedex || $results_fedex[0][0]=='yes'))) {
+                                        $shipping_needs_calculation = true;
+                                    }
+
+
+                                    $totalshipping = $totalshipping + ($item['shipping'] * $item['qty']); // Added in 2.2
+
+                                    echo "\t\t\t\t\t\t<input type='text' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />\n";
+
+                                    echo "\t\t\t\t\t\t" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' />\n";
+                                    echo "\t\t\t\t\t\t<input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' />\n";
+
+                                    if(@!isset($_SESSION)) {
+                                            @session_start();
+                                    }
+
+                                    $finalAmount = number_format($item['subtotal'], 2);
+                                    $newAmount = number_format($item['subtotal'] - $this->update_coupon($item['id']),2);
+
+
+                                    if ($newAmount != $finalAmount) {
+
+                                            //if(number_format($item['subtotal'],2) != (number_format(($item['subtotal'] - $this->update_coupon($item['id'])),2) )){
+                                            $tempAmount = '<strike>'.number_format($item['subtotal'],2).'</strike> '. $newAmount;
+                                            $finalAmount = $tempAmount;
+                                    }
+                                    echo "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                    echo "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
+                                    //echo "\t\t\t\t\t</td>\n";
+                                    //echo "\t\t\t\t</tr>\n";
+                                    }
+                                    $cart_is_empty = false;
+                            }
+
+                    // THE CART IS EMPTY
+                    else
+                            {
+                            //echo "\t\t\t\t<tr><td colspan='3' class='empty'>" . $text['empty_message'] . "</td></tr>\n";
+                            echo "\t\t\t\t" . $text['empty_message'] . "\n<br />";
+                            $cart_is_empty = true;
+                            }
+
+                    // DISPLAY THE CART FOOTER
+                    //echo "\t\t\t\t<tr>\n";
+                    //echo "\t\t\t\t\t<th id='wpsc-footer' colspan='3'>\n";
+
+                    // IF THIS IS THE CHECKOUT HIDE THE CART CHECKOUT BUTTON
+                    if(!isset($src)) {
+                            $src = NULL;
+                    }
+                    if ($is_checkout !== true) {
+                        if ($button['checkout']) { $input_type = 'image'; $src = ' src="' . $button['checkout'] . '" alt="' . $text['checkout_button'] . '" title="" ';	}
+
+                        echo "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='ui-state-default ui-corner-all wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
+                    }
+
+                    if ($is_checkout == true && $devOptions['enablecoupons']=='true') {
+                            //echo "<tr><th id='wpsc-footer' colspan='3'>Enter Coupon:<input type=\"text\" value=\"\" name=\"\" /></th></tr>";
+                            if(@isset($_SESSION['validcoupon'])) {
+                                    echo "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"{$_SESSION['validcoupon']}\" name=\"ccoupon\" /></div>";
+                            } else {
+                                    echo "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"\" name=\"ccoupon\" /></div>";
+                            }
+                    }
+
+                    echo '<br />';
+
+                    if($devOptions['storetype']=='Digital Goods Only') {
+                        // if we're dealing with digital goods, let's put shipping down to 0
+                        $totalshipping = 0;
+                    }
+                    if(!isset($totalshipping)) {
+                        $totalshipping = 0;
+                    }
+                    if($devOptions['flatrateshipping']=='all_global') {
+                        if($this->itemcount > 0) {
+                            $totalshipping = number_format($devOptions['flatrateamount'], 2);
+                        } else {
+                            $totalshipping = 0;
+                        }
+                    }
+
+                    if($shipping_needs_calculation == true) {
+                        $totalshipping = 0; // We don't know the shipping value yet, so let's return to the original 0 for shipping until we find out.
+                    }
+
+                    if($devOptions['storetype']!='Digital Goods Only' && (($devOptions['displayshipping']=='true' && $wpscWidgetSettings['iswidget']!='true')|| $wpscWidgetSettings['widgetShowShipping']=='true') ) {
+                        echo '<div id="wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'">';
+                        $firstone = true;
+                        if($shipping_offered_by_flatrate) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_flatrate" /> Flat rate shipping<br />';$firstone = false;}
+                        if($shipping_offered_by_usps) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_usps" /> United States Postal Service <div id="wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'"> Zipcode: <input type="text" id="wpsc-zipcode-input'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" name="wpsc-zipcode-input" /></div><br />';$firstone = false;}
+                        if($shipping_offered_by_ups) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_ups" /> UPS Shipping<br />';$firstone = false;}
+                        if($shipping_offered_by_fedex) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_fedex" /> FedEx Shipping<br />';$firstone = false;}
+                        if($shipping_offered_by_flatrate || $shipping_offered_by_usps || $shipping_offered_by_ups || $shipping_offered_by_fedex) {
+                            echo '<button id="wpsc-calculate-shipping-button'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'">'. $text['calculateshipping'] .'</button>';
+                        } else {
+                            echo '  <script type="text/javascript">
+                                        jQuery(document).ready(function($) {
+                                            $("#toggle_shipping_form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").hide();
+                                        });
+                                    </script>';
+                        }
+                        echo '</div>';
+                        echo '  <script type="text/javascript">
+                                    jQuery(document).ready(function($) {
+                                        $("#wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").toggle();
+                                        $("#wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").toggle();
+                                        function wpscCreateShippingForm'; if(isset($wpscWidgetSettings)) {echo 'widget';} echo'() {
+                                            if( $("input[@name=wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo']:checked").val() == "shipping_offered_by_usps") {
+                                                $("#wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").show("drop", { direction: "down" }, 1000);
+                                            } else {
+                                                if($("#wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").is(":hidden")) {
+                                                    //
+                                                } else {
+                                                    $("#wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").hide("drop", { direction: "down" }, 1000);
+                                                }
+                                            }
+                                        }
+                                        wpscCreateShippingForm'; if(isset($wpscWidgetSettings)) {echo 'widget';} echo'();
+                                        $(".wpsc-shipping-form-radio").click(function() {
+                                            wpscCreateShippingForm'; if(isset($wpscWidgetSettings)) {echo 'widget';} echo'();
+                                        });
+
+                                        $("#toggle_shipping_form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").click(function() {
+                                            $("#wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").slideToggle("slow");
+                                        });
+
+                                        $("#wpsc-calculate-shipping-button'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").click(function() {
+                                            $.ajax(
+                                            {
+                                                type: "POST",
+                                                url: "'. plugins_url('/wpstorecart/php/calculateshipping.php').'",
+                                                data: "zipcode=" + $(\'#wpsc-zipcode-input'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'\').val(),
+                                                dataType: "html",
+                                                success: function(data, status)
+                                                {
+                                                    $("#wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").hide("explode", 1000);
+                                                    $("#wpsc-shipping'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").replaceWith("\t\t\t\t\t\t<span id=\'wpsc-shipping'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'\'>'.$devOptions['shipping'] . ': <strong>' . $devOptions['currency_symbol'] . '"+data+"'. $devOptions['currency_symbol_right'] . '</strong>&nbsp;<img src=\''.plugins_url('/wpstorecart/images/package_go.png').'\' id=\'toggle_shipping_form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'\' alt=\'\' onclick=\'jQuery(\\"#wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'\\").slideToggle(\\"slow\\");\' /><span>");
+                                                    $("#wpsc-shipping'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").show("drop", { direction: "down" }, 1000);';
+                                                    if(($devOptions['displaytotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowTotal']=='true' ) {
+                                                        echo 'var newtotal = Number(data) + Number('.number_format($this->total,2).');
+                                                              newtotal = newtotal.toFixed(2);
+                                                              $("#wpsc-total'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").replaceWith("\t\t\t\t\t\t<span id=\'wpsc-total'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'\'>'.$text['total'] . ': <strong>' . $text['currency_symbol'] . '"+newtotal+"' . $text['currency_symbol_right'] .'</strong></span>");';
+                                                    }
+                                                    echo'
+                                                    $(".wpsc-checkmoneyordercheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-paypalcheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-authorizenetcheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-2checkoutcheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-libertyreservecheckout").show("drop", { direction: "down" }, 1000);
+                                                }
+                                            });
+
+                                            return false;
+                                        });
+                                    });
+                                </script>';
+
+
+                        if($shipping_needs_calculation == false ) {
+                            echo "\t\t\t\t\t\t<span id='wpsc-shipping"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"'>" . $text['shipping'] . ": <strong>" . $text['currency_symbol'] . number_format($totalshipping, 2) . $text['currency_symbol_right'] . '</strong>&nbsp;<img src="'.plugins_url('/wpstorecart/images/package_go.png').'" id="toggle_shipping_form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" alt="" /></span><br />';
+
+                        } else {
+                            echo "\t\t\t\t\t\t<span id='wpsc-shipping"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"'>" . $text['shipping'] . ": <strong><a href=\"\" class=\"wpsc-calculate-shipping\" onclick=\"jQuery('#wpsc-shipping-calculation-form"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"').show('drop', { direction: 'down' }, 1000);jQuery(this).hide('drop', { direction: 'down' }, 1000);jQuery('#wpsc-shipping"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"').hide('drop', { direction: 'down' }, 1000);return false;\">" . $text['calculateshipping'] . "</a></strong></span><br />\n";
+                        }
+                    }
+
+                    if(($devOptions['displaysubtotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowSubtotal']=='true' ) {
+                        echo "\t\t\t\t\t\t<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                    }
+
+                    if(($devOptions['displaytotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowTotal']=='true' ) {
+                        echo "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                    }
+
+                    if(!$cart_is_empty) {
+                        if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
+                        echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-update ' />\n";
+                    }
+                    echo "<div class='wpsc-hide'>";
+                    if ($is_checkout == false) {
+                            if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
+                            echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-empty' />\n";
+                    }
+
+                    echo "</div>";
+                    //echo "\t\t</fieldset>\n";
+
+                    // IF THIS IS THE CHECKOUT AND THERE ARE ITEMS IN THE CART THEN DISPLAY CHECKOUT BUTTONS
+                    if ($is_checkout == true && !$cart_is_empty) {
+
+                                $servrequest_uri = $_SERVER['REQUEST_URI'] ;
+
+                                // HIDDEN INPUT ALLOWS US TO DETERMINE IF WE'RE ON THE CHECKOUT PAGE
+                                // WE NORMALLY CHECK AGAINST REQUEST URI BUT AJAX UPDATE SETS VALUE TO wpsc-relay.php
+                                echo "\t\t\t<input type='hidden' id='wpsc-is-checkout' name='wpsc_is_checkout' value='true' />\n";
+
+                                // SEND THE URL OF THE CHECKOUT PAGE TO wpsc-gateway.php
+                                // WHEN JAVASCRIPT IS DISABLED WE USE A HEADER REDIRECT AFTER THE UPDATE OR EMPTY BUTTONS ARE CLICKED
+                                $protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
+                                echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $servrequest_uri . "' />\n";
+                                echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="" />';
+
+
+                                    if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    echo '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
+                                            }
+                                    }
+
+                                    if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
+                                            }
+                                    }
+
+                                    if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    echo '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
+                                            }
+                                    }
+
+                                    if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    echo '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
+                                            }
+                                    }
+
+                                    if($devOptions['allowlibertyreserve']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    echo '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-libertyreservecheckout" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
+                                            }
+                                    }
+                                
+
+                                    if($shipping_needs_calculation==true  && $devOptions['storetype']!='Digital Goods Only') {
+                                        echo '  <script type="text/javascript">
+                                                    jQuery(".wpsc-checkmoneyordercheckout").hide();
+                                                    jQuery(".wpsc-paypalcheckout").hide();
+                                                    jQuery(".wpsc-authorizenetcheckout").hide();
+                                                    jQuery(".wpsc-2checkoutcheckout").hide();
+                                                    jQuery(".wpsc-libertyreservecheckout").hide();
+                                                </script>
+                                            ';
+                                    }
+
+                            }
+
+                    echo "\t</form>\n";
                 }
-                echo "<div class='wpsc-hide'>";
-		if ($is_checkout == false) {
-			if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
-			echo "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-empty' />\n";
-		}
-		
-		echo "</div>";
-		//echo "\t\t</fieldset>\n";
-		
-		// IF THIS IS THE CHECKOUT AND THERE ARE ITEMS IN THE CART THEN DISPLAY CHECKOUT BUTTONS
-		if ($is_checkout == true && !$cart_is_empty)
-			{
-
-                        $servrequest_uri = $_SERVER['REQUEST_URI'] ;
-
-
-
-			// HIDDEN INPUT ALLOWS US TO DETERMINE IF WE'RE ON THE CHECKOUT PAGE
-			// WE NORMALLY CHECK AGAINST REQUEST URI BUT AJAX UPDATE SETS VALUE TO wpsc-relay.php
-			echo "\t\t\t<input type='hidden' id='wpsc-is-checkout' name='wpsc_is_checkout' value='true' />\n";
-
-			// SEND THE URL OF THE CHECKOUT PAGE TO wpsc-gateway.php
-			// WHEN JAVASCRIPT IS DISABLED WE USE A HEADER REDIRECT AFTER THE UPDATE OR EMPTY BUTTONS ARE CLICKED
-			$protocol = 'http://'; if (!empty($_SERVER['HTTPS'])) { $protocol = 'https://'; }
-			echo "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $servrequest_uri . "' />\n";
-                        echo '<input type="hidden" name="paymentGateway" id="paymentGateway" value="" />';
-
-			if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
-				if(!isset($_POST['ispaypal'])) {
-					echo '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
-				}
-			}
-
-			if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
-				if(!isset($_POST['ispaypal'])) {
-					echo '<input type="submit" value="'.$text['checkout_paypal_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
-				}
-			}
-
-			if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
-				if(!isset($_POST['ispaypal'])) {
-					echo '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
-				}
-			}
-
-			if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
-				if(!isset($_POST['ispaypal'])) {
-					echo '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
-				}
-			}
-
-			
-			}
-
-		echo "\t</form>\n";
 
 		// IF UPDATING AN ITEM, FOCUS ON ITS QTY INPUT AFTER THE CART IS LOADED (DOESN'T SEEM TO WORK IN IE7)
 		if (isset($_POST['wpsc_update_item']))

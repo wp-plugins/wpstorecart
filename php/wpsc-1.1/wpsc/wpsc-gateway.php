@@ -9,8 +9,10 @@
 
 // INCLUDE wpsc BEFORE SESSION START
 
-//error_reporting(E_ALL);
-error_reporting(0);
+global $wpsc_error_reporting;
+if($wpsc_error_reporting==false) {
+    error_reporting(0);
+}
 if (!function_exists('add_action'))
 {
     require_once("../../../../../../wp-config.php");
@@ -105,6 +107,39 @@ else
                 global $current_user, $wpdb, $paymentGateway, $paymentGatewayOptions,$cart;
                 get_currentuserinfo();
 
+                @$shipping_type = $_POST['wpsc-shipping-type'];
+                @$shipping_type_widget = $_POST['wpsc-shipping-type-widget'];
+                
+                // USPS shipping calculations are done here, if applicable.
+                if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                    $table_name_products = $wpdb->prefix . "wpstorecart_products";
+                    $totalweight = 0;
+
+                                    // IF ANY ITEMS IN THE CART
+                                    if($cart->itemcount > 0) {
+
+                                            // DISPLAY LINE ITEMS
+                                            foreach($cart->get_contents() as $item) {
+                                                $results = $wpdb->get_results('SELECT `weight` FROM `'.$table_name_products.'` WHERE `primkey`='.$item['id'].';', ARRAY_N);
+                                                $totalweight = $totalweight + $results[0][0];
+                                                unset($results);
+                                            }
+
+                                    }
+
+                    if(!isset($_SESSION)) {
+                            @session_start();
+                    }
+                    $_SESSION['wpsc_zipcode'] = $_POST['wpsc-zipcode-input'];
+
+                    // USPS
+                    $totalshippingcalculated = $wpStoreCart->USPSParcelRate($totalweight, $_SESSION['wpsc_zipcode'] );
+
+                    $usps_shipping_total = number_format($totalshippingcalculated, 2);
+                    
+                }
+
+
                 $paymentGateway = 'checkmoneyorder';
 
                 if(@isset($_POST['paymentGateway'])) {
@@ -117,13 +152,28 @@ else
                     $totalShipping = 0;
                     $amountToSubtractFromCart = 0;
                     foreach ($cart->get_contents() as $item) {
-                            // Implement shipping here if needed
-                            $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
-                            if(isset($results)) {
-                                if($results[0]['shipping']!='0.00') {
-                                    $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
                                 }
+                            } else {
+                                $totalShipping = 0;
+                            }
+
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $totalShipping = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $totalShipping = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $totalShipping = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
                             }
 
                             // Check for a coupon
@@ -200,15 +250,29 @@ else
                     $paymentGatewayOptions['totalShipping'] = 0;
                     foreach ($cart->get_contents() as $item) {
                             $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
-                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $item['price'];
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + ($item['price'] * $item['qty']);
 
-                            // Implement shipping here if needed
-                            $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
-                            if(isset($results)) {
-                                if($results[0]['shipping']!='0.00') {
-                                    $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
                                 }
+                            } else {
+                                $paymentGatewayOptions['totalShipping'] = 0;
+                            }
+
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $paymentGatewayOptions['totalShipping'] = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
                             }
 
                             // Check for a coupon
@@ -221,7 +285,7 @@ else
 
 
                             $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
-                            $totalPrice = $totalPrice + $item['price'];
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
 
                     }
 
@@ -276,15 +340,28 @@ else
                     $paymentGatewayOptions['totalShipping'] = 0;
                     foreach ($cart->get_contents() as $item) {
                             $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
-                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $item['price'];
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + ($item['price'] * $item['qty']);
 
-                            // Implement shipping here if needed
-                            $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
-                            if(isset($results)) {
-                                if($results[0]['shipping']!='0.00') {
-                                    $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
                                 }
+                            } else {
+                                $paymentGatewayOptions['totalShipping'] = 0;
+                            }
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $paymentGatewayOptions['totalShipping'] = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
                             }
 
                             // Check for a coupon
@@ -297,7 +374,7 @@ else
 
 
                             $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
-                            $totalPrice = $totalPrice + $item['price'];
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
 
                     }
 
@@ -337,9 +414,104 @@ else
                     $cart->empty_cart();
 
                     $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/';
+                    $paymentGatewayOptions['shortpath']=WP_PLUGIN_DIR.'/wpsc-payments-pro/';
                     include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
                 }
-                
+
+                if($paymentGateway == 'libertyreserve') {
+                    @include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/libertyreserve/lb.php');
+                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbi.php';
+                    $paymentGatewayOptions['success'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbs.php';
+                    $paymentGatewayOptions['failure'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbf.php';
+                    $paymentGatewayOptions['libertyreserveaccount'] = $devOptions['libertyreserveaccount'];
+                    $paymentGatewayOptions['libertyreservestore'] = $devOptions['libertyreservestore'];
+                    $paymentGatewayOptions['authorizenetsecretkey'] = $devOptions['authorizenetsecretkey'];
+                    $paymentGatewayOptions['theCartNames'] = '';
+                    $paymentGatewayOptions['theCartPrice'] = 0.00;
+                    $cartContents = '';
+                    $paymentGatewayOptions['totalPrice'] = 0;
+                    $paymentGatewayOptions['totalShipping'] = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + ($item['price'] * $item['qty']);
+
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
+                                }
+                            } else {
+                                $paymentGatewayOptions['totalShipping'] = 0;
+                            }
+
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $paymentGatewayOptions['totalShipping'] = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] - $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
+
+                    }
+
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+                    $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
+
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $paymentGatewayOptions['userid'] = $current_user->ID;
+
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Liberty Reserve', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
+                    $keytoedit = $lastID;
+
+                    // Specify any custom value, here we send the primkey of the order record
+                    $paymentGatewayOptions['invoice'] = $lastID;
+
+                    //
+                    $cart->empty_cart();
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/';
+                    $paymentGatewayOptions['shortpath']=WP_PLUGIN_DIR.'/wpsc-payments-pro/';
+                    include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
+                }
+
                 if($paymentGateway == 'paypal') {
                     // PAYPAL COUNT STARTS AT ONE INSTEAD OF ZERO
                     // Include the paypal library
@@ -388,6 +560,7 @@ else
                             $myPaypal->addField('item_number_' . $paypal_count, $paypal_count);
                             $myPaypal->addField('quantity_' . $paypal_count, $item['qty']);
 
+
                             // Implement shipping here if needed
                             $table_name = $wpdb->prefix . "wpstorecart_products";
                             $results = $wpdb->get_results( "SELECT `shipping`, `donation` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
@@ -395,11 +568,24 @@ else
                                 if($results[0]['donation']==0) {
                                     $donation = false;
                                 }
-                                if($results[0]['shipping']!='0.00') {
-                                    $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
-                                    $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+                                if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
+                                        $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
+                                } else {
+                                    $totalShipping = 0;
                                 }
                             }
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $totalShipping = $devOptions['flatrateamount'];
+                                $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $totalShipping = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                                $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
+                            }
+
 
                             // Check for a coupon
                             if(@!isset($_SESSION)) {
@@ -416,6 +602,11 @@ else
 
                             // INCREMENT THE COUNTER
                             ++$paypal_count;
+                    }
+
+                    if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                        $totalShipping = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
+                        $myPaypal->addField('shipping_1', round($totalShipping, 2));
                     }
 
                     if($donation==true) {

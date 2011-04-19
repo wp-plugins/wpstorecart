@@ -3,14 +3,14 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.1.8
+Version: 2.2.0
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
 */
 
 /*  
-Copyright 2010 wpStoreCart.com  (email : admin@wpstorecart.com)
+Copyright 2010, 2011 wpStoreCart.com  (email : admin@wpstorecart.com)
 
 This library is free software; you can redistribute it and/or modify it under the terms 
 of the GNU Lesser General Public License as published by the Free Software Foundation; 
@@ -25,14 +25,135 @@ library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, S
 Boston, MA 02111-1307 USA 
 */
 
-global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version;
+/**
+ * wpStoreCart
+ *
+ * @package wpstorecart
+ * @version 2.2.0
+ * @author wpStoreCart.com <admin@wpstorecart.com>
+ * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
+ * @link http://wpstorecart.com/
+ *
+ */
+
+/**
+ * @global object $wpStoreCart - The wpStoreCart object
+ * @global object $cart - The shopping cart object
+ * @global string $wpstorecart_version - The current version of wpStoreCart as a string
+ * @global integer $wpstorecart_version_int -  M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+ * @global boolean $testing_mode - Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
+ * @global boolean $wpsc_error_reporting - Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
+ * @global string $wpstorecart_db_version - Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
+ */
+global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level;
+
+if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
+    require_once(ABSPATH . 'wp-includes/pluggable.php');
+}
 
 //Global variables:
-$wpstorecart_version = '2.1.8';
-$wpstorecart_version_int = 201008; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
-$wpstorecart_db_version = '2.1.0'; // Indicates the last version in which the database schema was altered
-$testing_mode = false; // Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
+$wpstorecart_version = '2.2.0';
+$wpstorecart_version_int = 202000; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = '2.2.0'; // Indicates the last version in which the database schema was altered
+$testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
+$wpsc_error_reporting = true; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
+$wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
 $APjavascriptQueue = NULL;
+
+if($wpsc_error_reporting==true) {
+
+        error_reporting($wpsc_error_level); // Let's manually set the PHP error reporting level
+
+        if (!function_exists('getUncaughtEx')) {
+                function getUncaughtEx() {
+                        // if error has been supressed with an @
+                        if (error_reporting() == 0) {
+                                return;
+                        }
+                        $arr = get_defined_vars();
+                        echo '<div style="padding:25px 25px 25px 25px;border:1px solid #999999;font-family:Courier New,Terminal,Fixedsys,Courier;position:absolute;top:1px;left:1px;z-index:999999;">';
+                        echo '<h1>wpscAdvancedError Error Report</h1>';
+                        echo '<br />' . $additionalMessage. ' <br /><br />';
+                        echo '<b>ERROR MESSAGE:</b> ' . $e->getMessage() . '<br /><br />';
+                        echo '<b>CODE:</b> ' . $e->getCode() . '<br /><br />';
+                        echo '<b>FILENAME:</b> ' . $e->getFile() . '<br /><br />';
+                        echo '<b>ON LINE #</b>' . $e->getLine() . '<br /><br />';
+                        echo '<b>BACKTRACE:</b> <pre>'; print_r($e->getTrace()); echo '</pre><br /><br />';
+                        echo '<b>BACKTRACE: </b>'. $e->getTraceAsString(). '<br /><br />';
+                        echo '<b>VARIABLES:</b> <pre>';print_r(array_keys(get_defined_vars())); echo '</pre><br /><br />';
+                        echo '<b>VARIABLE VALUES:</b> <pre>';print_r($arr); echo '</pre><br /><br />';
+                        echo '</div>';
+                        die('FATAL ERROR: UNCAUGHT EXCEPTION!');
+                }
+                set_exception_handler('getUncaughtEx');
+        }
+
+        if (!function_exists('wpscErrorReport')) {
+            function wpscErrorReport($e, $additionalMessage = NULL) {
+
+                    // if error has been supressed with an @
+                    if (error_reporting() == 0) {
+                            return;
+                    }
+
+                            $arr = get_defined_vars();
+                            echo '<div style="padding:25px 25px 25px 25px;border:1px solid #999999;font-family:Courier New,Terminal,Fixedsys,Courier;background:#eff5fe;color:#000000;position:absolute;top:1px;left:1px;z-index:999999;">';
+                            echo '<h1>wpscAdvancedError Error Report</h1>';
+                            echo '<br />' . $additionalMessage. ' <br /><br />';
+                            echo '<b>ERROR MESSAGE:</b> ' . $e->getMessage() . '<br /><br />';
+                            echo '<b>CODE:</b> ' . $e->getCode() . '<br /><br />';
+                            echo '<b>FILENAME:</b> ' . $e->getFile() . '<br /><br />';
+                            echo '<b>ON LINE #</b>' . $e->getLine() . '<br /><br />';
+                            echo '<b>BACKTRACE:</b> <pre>'; print_r($e->getTrace()); echo '</pre><br /><br />';
+                            echo '<b>BACKTRACE:</b> '. $e->getTraceAsString(). '<br /><br />';
+                            echo '<b>VARIABLES:</b> <pre>';print_r(array_keys(get_defined_vars())); echo '</pre><br /><br />';
+                            echo '<b>VARIABLE VALUES:</b> <pre>';print_r($arr); echo '</pre><br /><br />';
+                            echo '</div>';
+
+            }
+        }
+
+        if (!function_exists('myErrorHandler')) {
+                function myErrorHandler($errno, $errstr, $errfile, $errline) {
+                        try {
+
+                                // if error has been supressed with an @
+                                if (error_reporting() == 0) {
+                                        return;
+                                }
+
+                                switch ($errno) {
+                                    case E_USER_ERROR:
+                                            throw new Exception("<b>ERROR</b> [$errno] $errstr<br />\n  Fatal error on line $errline in file $errfile , PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n Aborting...<br />\n");
+                                            break;
+
+                                    case E_USER_WARNING:
+                                            throw new Exception("<b>WARNING</b> [$errno] $errstr<br />\n  Warning on line $errline in file $errfile , PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n Aborting...<br />\n");
+                                            break;
+
+                                    case E_USER_NOTICE:
+                                            throw new Exception("<b>NOTICE</b> [$errno] $errstr<br />\n  Notice on line $errline in file $errfile , PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n Aborting...<br />\n");
+                                            break;
+
+                                    case E_PARSE:
+                                            throw new Exception("<b>PARSE</b> [$errno] $errstr<br />\n  Parsing issue on line $errline in file $errfile , PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n Aborting...<br />\n");
+                                            break;
+
+                                }
+                                return true;
+                        } catch(Exception $e) {
+                                wpscErrorReport($e, 'EXCEPTION.');
+                                die;
+                        }
+                }
+                set_error_handler('myErrorHandler'); 
+        }
+} else {
+        error_reporting(0); // Turns error reporting off
+        restore_exception_handler(); // Restore regular exception handler
+        restore_error_handler(); // Restore error handler
+}
+
 
 // Pre-2.6 compatibility, which is actually frivilous since we use the 2.8+ widget technique
 if ( ! defined( 'WP_CONTENT_URL' ) )
@@ -51,8 +172,61 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
 if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
 	@mkdir(WP_CONTENT_DIR . '/uploads/wpstorecart/', 0777, true);
 }
-	
-if (get_magic_quotes_gpc()) {
+
+/**
+ * copyr
+ *
+ * Copy a file, or recursively copy a folder and its contents
+ *
+ * @author      Aidan Lister <aidan@php.net>
+ * @version     1.0.1
+ * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
+ * @param       string   $source    Source path
+ * @param       string   $dest      Destination path
+ * @return      bool     Returns TRUE on success, FALSE on failure
+ * @license     public domain
+ */
+function copyr($source, $dest)
+{
+    // Check for symlinks
+    if (is_link($source)) {
+        return symlink(readlink($source), $dest);
+    }
+
+    // Simple copy for a file
+    if (is_file($source)) {
+        return copy($source, $dest);
+    }
+
+    // Make destination directory
+    if (!is_dir($dest)) {
+        mkdir($dest);
+    }
+
+    // Loop through the folder
+    $dir = dir($source);
+    while (false !== $entry = $dir->read()) {
+        // Skip pointers
+        if ($entry == '.' || $entry == '..') {
+            continue;
+        }
+
+        // Deep copy directories
+        copyr("$source/$entry", "$dest/$entry");
+    }
+
+    // Clean up
+    $dir->close();
+    return true;
+}
+
+// Copy the theme if needed
+if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/index.php')) {
+    copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
+}
+
+// Try and fix things for people who have magic quotes on
+if (@get_magic_quotes_gpc()) {
     $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
     while (list($key, $val) = each($process)) {
         foreach ($val as $k => $v) {
@@ -68,61 +242,56 @@ if (get_magic_quotes_gpc()) {
     unset($process);
 }
 
- /**
- * ===============================================================================================================
- * Main wpStoreCart Class
- */	
+	
 if (!class_exists("wpStoreCart")) {
-
+    /**
+     * wpStoreCart
+     *
+     * The main class of the wpStoreCart application
+     *
+     * @package wpstorecart
+     *
+     */
     class wpStoreCart {
-		var $adminOptionsName = "wpStoreCartAdminOptions";
-		
+        /**
+         * 
+         * @var string $adminOptionsName Just the name of the wpStoreCart options in the Wordpress database
+         */
+	var $adminOptionsName = "wpStoreCartAdminOptions";
+
+        /**
+         *
+         * @var array $wpStoreCartSettings The actual wpStoreCart options.
+         */
+        var $wpStoreCartSettings = null;
+
+        /**
+         *
+         * @var object $wpStoreCartRegistrationFields The registration fieldss
+         */
+        var $wpStoreCartRegistrationFields = null;
+
+        /**
+         * wpStoreCart() Constructor Method
+         *
+         * The initial constructor call that is initialized when the wpStoreCart object is invoked
+         *
+         * @global object $wpdb
+         * @global string $wpstorecart_db_version
+         */
         function wpStoreCart() { //constructor
             global $wpdb, $wpstorecart_db_version;
 
             $devOptions = $this->getAdminOptions();
 
-            // UPDATES ARE PUSHED HERE
+            $devOptions['run_updates']='true';
+            if ($devOptions['database_version']=='2.2.0') {
+                $devOptions['run_updates']='false';
+            }
+
+            // UPDATES ARE PUSHED HERE.  Moving the updates to it's method now allows us to force an update at anytime
             if($devOptions['run_updates']=='true') {
-                $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );
-
-                // Upgrade the database schema if they're running 2.0.2 or below:
-                if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
-                    $table_name = $wpdb->prefix . "wpstorecart_categories";
-                    $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
-                    $results = $wpdb->query( $sql );
-                    $devOptions['database_version'] = $wpstorecart_db_version;
-                    update_option('wpStoreCartAdminOptions', $devOptions);
-                }
-
-                          $table_name = $wpdb->prefix . "wpstorecart_meta";
-                       if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
-
-                            $sql = "
-                                    CREATE TABLE IF NOT EXISTS {$table_name} (
-                                    `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                    `value` TEXT NOT NULL,
-                                    `type` VARCHAR(32) NOT NULL,
-                                    `foreignkey` INT NOT NULL
-                                    );
-                                    ";
-
-
-                            $results = $wpdb->query( $sql );
-                            $devOptions['database_version'] = $wpstorecart_db_version;
-                            update_option('wpStoreCartAdminOptions', $devOptions);
-                            }
-                
-
-                if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
-                            $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
-                            $results = $wpdb->query( $sql );
-                            $devOptions['database_version'] = $wpstorecart_db_version;
-                            update_option('wpStoreCartAdminOptions', $devOptions);
-                }
-            $devOptions['run_updates']='false'; // These updates only need to be ran once.
-            update_option('wpStoreCartAdminOptions', $devOptions);
+                $this->wpscUpdate();
             } // End updates
 
             // This increments the add to cart counter for the product statistics
@@ -151,10 +320,80 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
+        /**
+         * __destruct() Destructor Method
+         *
+         * Restores the error reporting after wpStoreCart is done
+         *
+         */
+       function __destruct() {
+           	error_reporting(0); // Turns error reporting off
+		restore_exception_handler(); // Restore regular exception handler
+		restore_error_handler(); // Restore error handler
+       }
+
+        /**
+         * wpscUpdate() Method
+         *
+         * This method handles all the special actions that need to be taken when upgrading from an older version of wpStoreCart (no matter how old) to the latest version.
+         *
+         * @global object $wpdb
+         * @global string $wpstorecart_db_version
+         */
+       function wpscUpdate() {
+            global $wpdb, $wpstorecart_db_version;
+
+            $devOptions = $this->getAdminOptions();
+
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "weight", "INT( 7 ) NOT NULL DEFAULT  '0'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "length", "INT( 7 ) NOT NULL DEFAULT  '0'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "width", "INT( 7 ) NOT NULL DEFAULT  '0'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "height", "INT( 7 ) NOT NULL DEFAULT  '0'" );
+
+            // Upgrade the database schema if they're running 2.0.2 or below:
+            if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
+                $table_name = $wpdb->prefix . "wpstorecart_categories";
+                $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
+                $results = $wpdb->query( $sql );
+                $devOptions['database_version'] = $wpstorecart_db_version;
+                update_option('wpStoreCartAdminOptions', $devOptions);
+            }
+
+                      $table_name = $wpdb->prefix . "wpstorecart_meta";
+                   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                        $sql = "
+                                CREATE TABLE IF NOT EXISTS {$table_name} (
+                                `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                `value` TEXT NOT NULL,
+                                `type` VARCHAR(32) NOT NULL,
+                                `foreignkey` INT NOT NULL
+                                );
+                                ";
+
+
+                        $results = $wpdb->query( $sql );
+                        $devOptions['database_version'] = $wpstorecart_db_version;
+                        update_option('wpStoreCartAdminOptions', $devOptions);
+                        }
+
+
+            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
+                        $table_name = $wpdb->prefix . "wpstorecart_products";
+                        $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
+                        $results = $wpdb->query( $sql );
+                        $devOptions['database_version'] = $wpstorecart_db_version;
+                        update_option('wpStoreCartAdminOptions', $devOptions);
+            }
+            $devOptions['run_updates']='false'; // These updates only need to be ran once.
+            update_option('wpStoreCartAdminOptions', $devOptions);
+       }
+
        function wpscError($theError='unknown', $variables=NULL) {
            $output = "<div id='wpsc-warning' class='updated fade'><p>";
            if($theError=='nopage') {
-               $output .= __('<strong>wpStoreCart is not properly configured at this time.</strong>  You\'ll need to either have wpStoreCart automatically create a "main page" and a "checkout page" for your store by <a href="?page=wpstorecart-admin&wpscaction=createpages">clicking here</a>, or you can create your own and then visit <a href="?page=wpstorecart-settings">the settings page</a> to tell wpStoreCart which pre-existing pages to use.  See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
+               $output .= __('<div style="float:left;margin-top:10px;"><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" style="text-decoration:none;"><img src="'.plugins_url('/images/wizard/button_setup_wizard2.png' , __FILE__).'" /></a></div><div style="float:left;width:77%;margin-left:10px;"><strong>wpStoreCart is almost ready! Configuration required.</strong>  The <i>easiest</i> and <i>best way</i> to configure wpStoreCart is to <a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay">click here</a> to run the <a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay">Setup Wizard</a>.  You can also automatically create a "main page" and a "checkout page" for your store by <a href="admin.php?page=wpstorecart-admin&wpscaction=createpages">clicking here</a>, or you can create your own pages first &amp; then visit <a href="admin.php?page=wpstorecart-settings">the settings page</a> to specify which pre-existing pages to use.  See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.</div><br style="clear:both;" />');
            }
            if($theError=='register_globals') {
                $output .= __('<strong>wpStoreCart has detected that register_globals is set to ON.</strong>  This is a major security risk that can make it much easier for a hacker to gain full access to your website and it\'s data.  Please disable register_globals by following <a href="http://wpstorecart.com/forum/viewtopic.php?f=2&t=2" target="_blank">the directions here</a> before using wpStoreCart. Your shopping cart, checkout, and add to cart functionality will not work while register_globals is set to On. See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
@@ -165,9 +404,19 @@ if (!class_exists("wpStoreCart")) {
            if($theError=='testingmode') {
                $output .= __('<strong>wpStoreCart "<a href="http://wpstorecart.com/documentation/advanced-technical-topics/testing-mode/" target="_blank">Testing Mode</a>" enabled. DO NOT USE TESTING MODE ON A SERVER THAT IS CONNECTED TO THE INTERNET. DO NOT USE IT ON A LIVE WEBSITE. DO NOT USE IT WITH ACTUAL CUSTOMERS OR EVEN ACTUAL CUSTOMER DATA. ONLY USE TESTING MODE ON A TEST SERVER, WITH TEST DATA.</strong>  Visit <a href="http://wpstorecart.com/documentation/advanced-technical-topics/testing-mode/" target="_blank">this topic</a> for information on how to disable Testing Mode and this message.  ');
            }
+           if($theError=='no_curl' ){
+               $output .= __('<strong>wpStoreCart has detected that CURL is not enabled.</strong>  CURL is required if you wish to allow customers to calculate shipping costs with USPS, FedEx, and UPS.  Please have a system administrator install and/or configure CURL so that you can use those features.  Until that happens, you must use either flat rate shipping or have PayPal or your payment processor calculate shipping for you.  <a href="?page=wpstorecart-admin&wpscaction=removecurl">Click here to remove this message</a>');
+           }
+           if($theError=='uspsnotconfigured' ){
+               $output .= __('<strong>wpStoreCart has noticed a serious problem!</strong>  You\'ve selected to offer shipping through the United States Postal Service (USPS) but did not enter a USPS API key.  If you already have a USPS API key, please visit the <a href="?page=wpstorecart-settings&theCurrentTab=tab6">wpStoreCart > Settings > Shipping admin page</a>, enter the API name in the form, and click the "Update Settings" button.  If you do not have a USPS API key, visit this URL now: <a href="https://secure.shippingapis.com/registration/" target="_blank">https://secure.shippingapis.com/registration/</a>, complete the registration process by filling out the form and click the "Submit" button, then visit the <a href="?page=wpstorecart-settings&theCurrentTab=tab6">wpStoreCart > Settings > Shipping admin page</a> enter the API name in the form, and click the "Update Settings" button. If you only want to use flat rate shipping for all products (regardless of shipping provider) then simply disable USPS as a shipping service to dismiss this message, and use the flat rate shipping option instead.');
+           }
            $output .= "</p></div>";
            return $output;
        }
+
+        function wpscErrorNoCURL() {
+            echo $this->wpscError('no_curl');
+        }
 
         function wpscErrorRegisterGlobals() {
             echo $this->wpscError('register_globals');
@@ -191,20 +440,41 @@ if (!class_exists("wpStoreCart")) {
             echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/wpstorecart/');
         }
 
+        function wpscErrorUSPS() {
+            echo $this->wpscError('uspsnotconfigured');
+        }
+
+
+
+
         function register_custom_init() {
             global $testing_mode;
 
+
             $devOptions = $this->getAdminOptions();
+            if($devOptions['checkcurl']=='true') {
+                if (@!extension_loaded('curl')) {
+                    add_action('admin_notices', array(&$this, 'wpscErrorNoCURL'));
+                } else {
+                    if (@!function_exists('curl_init')) {
+                        add_action('admin_notices', array(&$this, 'wpscErrorNoCURL'));
+                    }
+                }
+            }
 
             if($testing_mode==true) {
                 add_action('admin_notices', array(&$this, 'wpscErrorTestingMode'));
             }
 
+            if($devOptions['enableusps']=='true' && $devOptions['uspsapiname']=='') {
+                add_action('admin_notices', array(&$this, 'wpscErrorUSPS'));
+            }
+
             if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
-                    add_action('admin_notices', array(&$this, 'wpscErrorNoUploadDir'));
+                add_action('admin_notices', array(&$this, 'wpscErrorNoUploadDir'));
             }
             if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
-                   add_action('admin_notices', array(&$this, 'wpscErrorNoUploadWpDir'));
+                add_action('admin_notices', array(&$this, 'wpscErrorNoUploadWpDir'));
             }
 
             if (@ini_get('register_globals')==1) {
@@ -238,43 +508,12 @@ if (!class_exists("wpStoreCart")) {
                     $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log` (`primkey` ,`action` ,`data` ,`foreignkey` ,`date` ,`userid`) VALUES (NULL, 'addtocart', '{$_SERVER['REMOTE_ADDR']}', '{$newprimkey}', '".date('Ymd')."', '{$theuser}');");
                 }
             }
-            /* The use of custom post types will be implemented in a future version of wpsc
-            if(get_bloginfo('version') >= 3) { // If we're using Wordpress 3 or higher, use custom post types
-                $labels = array(
-                'name' => _x('Products', 'post type general name'),
-                'singular_name' => _x('Product', 'post type singular name'),
-                'add_new' => _x('Add New', 'product'),
-                'add_new_item' => __('Add New Product'),
-                'edit_item' => __('Edit Product'),
-                'new_item' => __('New Product'),
-                'view_item' => __('View Product'),
-                'search_items' => __('Search Products'),
-                'not_found' =>  __('No products found'),
-                'not_found_in_trash' => __('No products found in Trash'),
-                'parent_item_colon' => ''
-                );
-                $args = array(
-                'labels' => $labels,
-                'public' => true,
-                'publicly_queryable' => true,
-                'show_ui' => true,
-                'query_var' => true,
-                'rewrite' => true,
-                'capability_type' => 'page',
-                'hierarchical' => true,
-                'menu_position' => null,
-                'supports' => array('title','editor','author','thumbnail','excerpt','comments')
-                );
-                register_post_type('wpsc_product',$args);
 
-            }
-             *
-             */
         }
 
 		function  init() {
-            $this->getAdminOptions();
-        }
+                    $this->getAdminOptions();
+                }
 		
 		function add_column_if_not_exist($db, $column, $column_attr = "VARCHAR( 255 ) NULL" ){
 			global $wpdb;
@@ -290,20 +529,152 @@ if (!class_exists("wpStoreCart")) {
 				$wpdb->query("ALTER TABLE `$db` ADD `$column`  $column_attr");
 			}
 		}		
-		
+
+                function spSettings() {
+			echo '
+                        <script type="text/javascript">
+			//<![CDATA[
+                        ';
+
+
+                        if(@!isset($_POST['theCurrentTab']) || @$_POST['theCurrentTab']=='') {
+                            $theCurrentTab = '#tab1';
+                        } else {
+                            $theCurrentTab = $_POST['theCurrentTab'];
+                        }
+                        if(@isset($_GET['theCurrentTab']) || @$_GET['theCurrentTab']!='') {
+                            $theCurrentTab = '#'.$_GET['theCurrentTab'];
+                        }
+                        echo 'var theCurrentTab = \''.$theCurrentTab.'\';';
+
+                        echo '
+			jQuery(document).ready(function($) {
+                                //When page loads...
+                                $(".tab_content").hide(); //Hide all content
+                                ';
+
+
+                        echo '
+                                $("ul.tabs "+theCurrentTab).addClass("active").show(); //Activate first tab
+                                $(theCurrentTab).show(); //Show first tab content
+                        ';
+
+                        echo '
+                                //On Click Event
+                                $("ul.tabs li").click(function() {
+
+                                        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+                                        $(this).addClass("active"); //Add "active" class to selected tab
+                                        $(".tab_content").hide(); //Hide all tab content
+
+                                        var activeTab = $(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
+                                        $(activeTab).fadeIn(); //Fade in the active ID content
+                                        return false;
+                                });
+
+                        });
+                        //]]>
+                        </script>
+			<style type="text/css">
+				.tableDescription {
+					width:200px;
+					max-width:200px;
+				}
+
+                        .tabs {
+                            position:relative;
+                            z-index:1;
+                        }
+
+                        ul.tabs {
+                                margin: 0 0 -5px 8px;
+                                padding: 0;
+                                float: left;
+                                list-style: none;
+                                height: 40px;
+                                max-height: 40px;
+                                width: 100%;
+                                width:812px;
+                                min-width:812px;
+                            position:relative;
+                            z-index:1;
+                        }
+                        ul.tabs li {
+                                float: left;
+                                margin: 0;
+                                padding: 0;
+                                height: 39px; /*--Subtract 1px from the height of the unordered list--*/
+                                line-height: 39px; /*--Vertically aligns the text within the tab--*/
+                                border:  none;
+                                margin-bottom: -1px; /*--Pull the list item down 1px--*/
+                                overflow: hidden;
+                                position: relative;
+                                z-index:1;
+                        }
+                        ul.tabs li a {
+                                text-decoration: none;
+                                color: #000;
+                                display: block;
+                                font-size: 1.2em;
+                                position: relative;
+                                z-index:1;
+                                outline: none;
+                        }
+                        ul.tabs li a:hover {
+                                opacity:.80;
+                        }
+                        html ul.tabs li.active, html ul.tabs li.active a:hover  { /*--Makes sure that the active tab does not listen to the hover properties--*/
+
+
+                        }
+                        .tab_container {
+                                border: none;
+                                overflow: hidden;
+                                clear: both;
+                                float: left; width: 100%;
+                                position: relative;
+                                z-index:1;
+                        }
+                        .tab_content {
+                                padding: 10px;
+
+                        }
+			</style>';
+
+
+                }
+
 		function spHeader() {
                         global $wpstorecart_version_int, $testing_mode;
+
+                        $devOptions = $this->getAdminOptions();
+                        $logofile = 'logo.png';
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
+                            if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
+                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
+                                    $logofile = 'logo_pro.png';
+                                }
+                            }
+                        }
+
                         echo'
-			
+			<!-- overlayed element -->
+                        <div class="apple_overlay" id="overlay">
+
+                                <!-- the external content is loaded inside this tag -->
+                                <div class="contentWrap"></div>
+
+                        </div>
+                        
 			<div class="wrap">
 			<div style="padding: 20px 10px 10px 10px;">
-			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/logo.png" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/order_pro.png" alt="wpstorecart" /></a>';}
+			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofile , __FILE__).'" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/order_pro.png' , __FILE__).'" alt="wpstorecart" /></a>';}
                         echo'</div>';
-                        if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
+                        if($logofile != 'logo_pro.png') {
                             echo '
 			<div style="float:right;">
 				
-                                <a style="position:absolute;top:50px;margin-left:-200px;" href="http://wpstorecart.com/design-mods-support/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/hire_us.png" alt="wpstorecart" /></a>
+                                <a style="position:absolute;top:50px;margin-left:-222px;" href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/hire_us.png' , __FILE__).'" alt="wpstorecart" /></a>
 			</div>
                         ';
                         }
@@ -311,56 +682,71 @@ if (!class_exists("wpStoreCart")) {
                         echo '
 			<br style="clear:both;" />
 			<ul id="jsddm">
-				<li class="tab"style="border-left:1px solid #999;"><a href="admin.php?page=wpstorecart-admin" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/controller.png" /> &nbsp;</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> Settings</a>
+				<li class="tab" style="border-left:1px solid #999;"><a href="'.plugins_url('/php/wizard/wizard_begin.php' , __FILE__).'" rel="#overlay" style="text-decoration:none" class="spmenu"><img src="'.plugins_url('/images/controller.png' , __FILE__).'" /> &nbsp;</a>
                                     <ul>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> General</a>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/email.png" /> E-Mail</a>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/css.png" /> Display</a>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/creditcards.png" /> Payment</a>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Language</a>
+                                        <li><a href="admin.php?page=wpstorecart-admin" class="spmenu">Overview</a></li>
+                                        <li><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" class="spmenu">Setup Wizard</a></li>
+                                        <li><a href="'.plugins_url('/php/wizard/wizard_setup_04.php' , __FILE__).'" rel="#overlay" class="spmenu">Payments Wizard</a></li>
                                     </ul>
                                 </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" />Products</a>
+                                <li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Settings</a>
                                     <ul>
-                                        <li><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" /> Add Product</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_edit.png" /> Edit Products</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> General</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.plugins_url('/images/email.png' , __FILE__).'" /> E-Mail</a></li>';
+                                        $theme_data = get_theme_data(get_stylesheet_uri());
+                                        if($theme_data['Title'] == 'wpStoreCartTheme') {
+                                            echo '<li><a href="admin.php?page=wpstorecarttheme-settings" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Theme Settings</a></li>';
+                                        }
+                                        echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Display</a></li>';
+
+                                        if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
+                                            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" class="spmenu"><img src="'.plugins_url('/images/package_go.png' , __FILE__).'" /> Shipping</a></li>';
+                                        }
+                                        echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" class="spmenu"><img src="'.plugins_url('/images/creditcards.png' , __FILE__).'" /> Payment</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" class="spmenu"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Language</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Customers</a></li>
+                                    </ul>
+                                </li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" />Products</a>
+                                    <ul>
+                                        <li><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Add Product</a></li>
+                                        <li><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.plugins_url('/images/basket_edit.png' , __FILE__).'" /> Edit Products</a></li>
                                         ';
                                         if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
-                                            echo '<li><a href="admin.php?page=wpstorecart-import" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/server_go.png" /> Import/Export</a></li>';
+                                            //echo '<li><a href="admin.php?page=wpstorecart-import" class="spmenu"><img src="'.plugins_url('/images/server_go.png' , __FILE__).'" /> Import/Export</a></li>';
                                         }
 
                                     echo '
                                     </ul>
                                 </li>
 				
-				<li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/table.png" /> Categories</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> Orders</a>
+				<li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Categories</a></li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> Orders</a>
                                     <ul>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cart_go.png" /> All Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=completed" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_green.png" /> Completed Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=pending" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_orange.png" /> Pending Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=refunded" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bullet_red.png" /> Refunded Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> All Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=completed" class="spmenu"><img src="'.plugins_url('/images/bullet_green.png' , __FILE__).'" /> Completed Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=pending" class="spmenu"><img src="'.plugins_url('/images/bullet_orange.png' , __FILE__).'" /> Pending Orders</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=refunded" class="spmenu"><img src="'.plugins_url('/images/bullet_red.png' , __FILE__).'" /> Refunded Orders</a></li>
                                     </ul>
                                 </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Marketing</a>
+				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Marketing</a>
                                     <ul>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
+                                        <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
                                     </ul>
                                 </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-affiliates" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/user_suit.png" /> Affiliates</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-statistics" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/chart_bar.png" /> Statistics</a></li>
-				<li class="tab" style="border-right:1px solid #999;"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" /> Help</a>
+				<li class="tab"><a href="admin.php?page=wpstorecart-affiliates" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Affiliates</a></li>
+				<li class="tab"><a href="admin.php?page=wpstorecart-statistics" class="spmenu"><img src="'.plugins_url('/images/chart_bar.png' , __FILE__).'" /> Statistics</a></li>
+				<li class="tab" style="border-right:1px solid #999;"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> Help</a>
                                     <ul>
                                         <li><a href="http://wpstorecart.com/forum/" class="spmenu"  target="_blank">Support Forum</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/initial-settings/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/application_form_edit.png" /> Initial Settings</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/adding-editing-products/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/basket_add.png" /> Products</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/widgets/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Widgets</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/coupons/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/money.png" /> Coupons</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/shortcodes/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/text_padding_top.png" /> Shortcodes</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/error-messages/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png" /> Error Messages</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/styles-designs/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/css.png" /> Styles &amp; Design</a></li>
-                                        <li><a href="http://wpstorecart.com/faq/" class="spmenu"  target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" /> FAQ</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/initial-settings/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Initial Settings</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/adding-editing-products/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Products</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/widgets/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Widgets</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/coupons/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/shortcodes/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Shortcodes</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/error-messages/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/cross.png' , __FILE__).'" /> Error Messages</a></li>
+                                        <li><a href="http://wpstorecart.com/documentation/styles-designs/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Styles &amp; Design</a></li>
+                                        <li><a href="http://wpstorecart.com/faq/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> FAQ</a></li>
                                         <li><a href="http://wpstorecart.com/help-support/" class="spmenu"  target="_blank">More Help</a></li>
 
                                     </ul>
@@ -379,7 +765,7 @@ if (!class_exists("wpStoreCart")) {
             $apAdminOptions = array('mainpage' => '',
                                     'checkoutpage' => '',
                                     'checkoutpageurl' => '',
-                                    'turnon_wpstorecart' => 'false',
+                                    'turnon_wpstorecart' => 'true',
                                     'wpStoreCartEmail' => get_bloginfo('admin_email'),
                                     'wpStoreCartheight' => '100',
                                     'wpStoreCartwidth' => '100',
@@ -399,6 +785,7 @@ if (!class_exists("wpStoreCart")) {
                                     'checkmoneyordertext' => 'Please send a check or money order for the above amount to:<br /><br /><strong>My Business Name<br />1234 My Address, Suite ABC<br />New York, NY 24317, USA</strong><br /><br />Please allow 4 to 6 weeks for delivery.',
                                     'paypalemail' => get_bloginfo('admin_email'),
                                     'paypaltestmode' => 'false',
+                                    'allowpaypal' => 'true',
                                     'allowauthorizenet' => 'false',
                                     'authorizenetemail' => '',
                                     'authorizenetsecretkey' => '',
@@ -406,6 +793,9 @@ if (!class_exists("wpStoreCart")) {
                                     'allow2checkout' => 'false',
                                     '2checkoutemail' => '',
                                     '2checkouttestmode' => 'false',
+                                    'allowlibertyreserve' => 'false',
+                                    'libertyreserveaccount' => '',
+                                    'libertyreservestore' => '',
                                     'emailonpurchase' => 'Dear [customername], thanks for your recent order from [sitename].  Your order has been submitted to our staff for approval.  This process can take as little as an hour to as long as a few weeks depending on how quickly your payment clears, and whether there are other issues which may cause a delay.',
                                     'emailonapproval' => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been approved.  For physical products, this does not mean that they have been shipped yet; as you will get another email when the order is shipped.  If you ordered a digital download, your download is now available.  .',
                                     'emailonshipped'  => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been shipped.',
@@ -414,7 +804,7 @@ if (!class_exists("wpStoreCart")) {
                                     'single_item' => 'Item',
                                     'multiple_items' => 'Items',
                                     'currency_symbol' => '$',
-                                    'currency_symbol_right' => '',
+                                    'currency_symbol_right' => ' USD',
                                     'subtotal' => 'Subtotal',
                                     'update_button' => 'update',
                                     'checkout_button' => 'checkout',
@@ -423,6 +813,7 @@ if (!class_exists("wpStoreCart")) {
                                     'checkout_paypal_button' => 'Checkout with PayPal',
                                     'checkout_authorizenet_button' => 'Checkout with Authorize.NET',
                                     'checkout_2checkout_button' => 'Checkout with 2CheckOut',
+                                    'checkout_libertyreserve_button' => 'Checkout with Liberty Reserve',
                                     'remove_link' => 'remove',
                                     'empty_button' => 'empty',
                                     'empty_message' => 'Your cart is empty!',
@@ -441,16 +832,50 @@ if (!class_exists("wpStoreCart")) {
                                     'minimumDaysBeforePaymentEligable' => '30',
                                     'affiliateInstructions'=>'Welcome to our affiliate program.  Here, you can review successful affiliate sales as well as grab links to all the products in our store that include your affiliate code.',
                                     'wpscjQueryUITheme' =>'',
-                                    'run_updates' => 'true'
+                                    'run_updates' => 'true',
+                                    'shipping_zip_origin' => '99202',
+                                    'enableusps' => 'false',
+                                    'enableups' => 'false',
+                                    'enablefedex' => 'false',
+                                    'storetype' => 'Mixed (physical and digital)',
+                                    'checkcurl' => 'true',
+                                    'uspsapiname' => '',
+                                    'displayshipping' => 'true',
+                                    'displaysubtotal' => 'true',
+                                    'displaytotal' => 'true',
+                                    'total' => 'Total',
+                                    'shipping' => 'Shipping',
+                                    'requireregistration' => 'true',
+                                    'enablecoupons' => 'true',
+                                    'login' => 'Login',
+                                    'register' => 'Register',
+                                    'logout' => 'Logout',
+                                    'username' => 'Username',
+                                    'password' => 'Password',
+                                    'email' => 'Email',
+                                    'myordersandpurchases' => 'My Orders &amp; Purchases',
+                                    'required_symbol' => '*',
+                                    'required_help' => '* - Fields with an asterick are required.',
+                                    'flatrateshipping' => 'individual',
+                                    'flatrateamount' => '0.00',
+                                    'calculateshipping' => 'Calculate Shipping',
+                                    'itemsperpage' => '10',
+                                    'libertyreservesecretword' => ''
                                     );
 
-            $devOptions = get_option($this->adminOptionsName);
+            if($this->wpStoreCartSettings!=NULL) {
+                $devOptions = $this->wpStoreCartSettings;
+            } else {
+                $devOptions = get_option($this->adminOptionsName);
+            }
+            
             if (!empty($devOptions)) {
                 foreach ($devOptions as $key => $option) {
                     $apAdminOptions[$key] = $option;
                 }
-            }            
+            }
             update_option($this->adminOptionsName, $apAdminOptions);
+            
             return $apAdminOptions;
         }
 		
@@ -459,7 +884,7 @@ if (!class_exists("wpStoreCart")) {
 			global $wpdb;
 
                 //must check that the user has the required capability
-                if (!current_user_can('manage_options'))
+                if (function_exists('current_user_can') && !current_user_can('manage_options'))
                 {
                   wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
                 }
@@ -663,9 +1088,119 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['wpscjQueryUITheme'])) {
  					$devOptions['wpscjQueryUITheme'] = $wpdb->escape($_POST['wpscjQueryUITheme']);
 				}
+				if (isset($_POST['shipping_zip_origin'])) {
+ 					$devOptions['shipping_zip_origin'] = $wpdb->escape($_POST['shipping_zip_origin']);
+				}
+				if (isset($_POST['enableusps'])) {
+ 					$devOptions['enableusps'] = $wpdb->escape($_POST['enableusps']);
+				}
+				if (isset($_POST['enableups'])) {
+ 					$devOptions['enableups'] = $wpdb->escape($_POST['enableups']);
+				}
+				if (isset($_POST['enablefedex'])) {
+ 					$devOptions['enablefedex'] = $wpdb->escape($_POST['enablefedex']);
+				}
+				if (isset($_POST['storetype'])) {
+ 					$devOptions['storetype'] = $wpdb->escape($_POST['storetype']);
+				}
+				if (isset($_POST['uspsapiname'])) {
+ 					$devOptions['uspsapiname'] = $wpdb->escape($_POST['uspsapiname']);
+				}
+
+				if (isset($_POST['displayshipping'])) {
+ 					$devOptions['displayshipping'] = $wpdb->escape($_POST['displayshipping']);
+				}
+				if (isset($_POST['displaysubtotal'])) {
+ 					$devOptions['displaysubtotal'] = $wpdb->escape($_POST['displaysubtotal']);
+				}
+				if (isset($_POST['displaytotal'])) {
+ 					$devOptions['displaytotal'] = $wpdb->escape($_POST['displaytotal']);
+				}
+				if (isset($_POST['total'])) {
+ 					$devOptions['total'] = $wpdb->escape($_POST['total']);
+				}
+				if (isset($_POST['shipping'])) {
+ 					$devOptions['shipping'] = $wpdb->escape($_POST['shipping']);
+				}
+
+				if (isset($_POST['requireregistration'])) {
+ 					$devOptions['requireregistration'] = $wpdb->escape($_POST['requireregistration']);
+				}
+				if (isset($_POST['enablecoupons'])) {
+ 					$devOptions['enablecoupons'] = $wpdb->escape($_POST['enablecoupons']);
+				}
+				if (isset($_POST['login'])) {
+ 					$devOptions['login'] = $wpdb->escape($_POST['login']);
+				}
+				if (isset($_POST['register'])) {
+ 					$devOptions['register'] = $wpdb->escape($_POST['register']);
+				}
+
+				if (isset($_POST['logout'])) {
+ 					$devOptions['logout'] = $wpdb->escape($_POST['logout']);
+				}
+				if (isset($_POST['username'])) {
+ 					$devOptions['username'] = $wpdb->escape($_POST['username']);
+				}
+				if (isset($_POST['password'])) {
+ 					$devOptions['password'] = $wpdb->escape($_POST['password']);
+				}
+				if (isset($_POST['email'])) {
+ 					$devOptions['email'] = $wpdb->escape($_POST['email']);
+				}
+				if (isset($_POST['myordersandpurchases'])) {
+ 					$devOptions['myordersandpurchases'] = $wpdb->escape($_POST['myordersandpurchases']);
+				}
+
+				if (isset($_POST['required_symbol'])) {
+ 					$devOptions['required_symbol'] = $wpdb->escape($_POST['required_symbol']);
+				}
+				if (isset($_POST['required_help'])) {
+ 					$devOptions['required_help'] = $wpdb->escape($_POST['required_help']);
+				}
+
+				if (isset($_POST['flatrateshipping'])) {
+ 					$devOptions['flatrateshipping'] = $wpdb->escape($_POST['flatrateshipping']);
+				}
+				if (isset($_POST['flatrateamount'])) {
+ 					$devOptions['flatrateamount'] = $wpdb->escape($_POST['flatrateamount']);
+				}
+				if (isset($_POST['calculateshipping'])) {
+ 					$devOptions['calculateshipping'] = $wpdb->escape($_POST['calculateshipping']);
+				}
+				if (isset($_POST['itemsperpage'])) {
+ 					$devOptions['itemsperpage'] = $wpdb->escape($_POST['itemsperpage']);
+				}
+
+				if (isset($_POST['allowlibertyreserve'])) {
+ 					$devOptions['allowlibertyreserve'] = $wpdb->escape($_POST['allowlibertyreserve']);
+				}
+				if (isset($_POST['libertyreserveaccount'])) {
+ 					$devOptions['libertyreserveaccount'] = $wpdb->escape($_POST['libertyreserveaccount']);
+				}
+				if (isset($_POST['libertyreservestore'])) {
+ 					$devOptions['libertyreservestore'] = $wpdb->escape($_POST['libertyreservestore']);
+				}
+				if (isset($_POST['checkout_libertyreserve_button'])) {
+ 					$devOptions['checkout_libertyreserve_button'] = $wpdb->escape($_POST['checkout_libertyreserve_button']);
+				}
+				if (isset($_POST['libertyreservesecretword'])) {
+ 					$devOptions['libertyreservesecretword'] = $wpdb->escape($_POST['libertyreservesecretword']);
+				}
 
 				update_option($this->adminOptionsName, $devOptions);
-			   
+
+                                if (isset($_POST['required_info_key']) && isset($_POST['required_info_name']) && isset($_POST['required_info_type'])) {
+                                    $arrayCounter = 0;
+                                    $table_name777 = $wpdb->prefix . "wpstorecart_meta";
+                                    foreach ($_POST['required_info_key'] as $currentKey) {
+                                        $updateSQL = "UPDATE  `{$table_name777}` SET  `value` =  '{$_POST['required_info_name'][$arrayCounter]}||{$_POST['required_info_required_'.$currentKey]}||{$_POST['required_info_type'][$arrayCounter]}' WHERE  `primkey` ={$currentKey};";
+                                        $results = $wpdb->query($updateSQL);
+                                        $arrayCounter++;
+                                    }
+                                }
+
+
 				echo '<div id="wpscFadeUpdate" class="updated fade"><p><strong>';
 				_e("Settings Updated.", "wpStoreCart");
 				echo '</strong></p></div>
@@ -678,131 +1213,35 @@ if (!class_exists("wpStoreCart")) {
 			
 			}
 			
-			echo '
-                        <script type="text/javascript">
-			//<![CDATA[
-                        ';
-
-
-                        if(@!isset($_POST['theCurrentTab']) || @$_POST['theCurrentTab']=='') {
-                            $theCurrentTab = '#tab1';
-                        } else {
-                            $theCurrentTab = $_POST['theCurrentTab'];
-                        }
-                        if(@isset($_GET['theCurrentTab']) || @$_GET['theCurrentTab']!='') {
-                            $theCurrentTab = '#'.$_GET['theCurrentTab'];
-                        }
-                        echo 'var theCurrentTab = \''.$theCurrentTab.'\';';
-                        
-                        echo '
-			jQuery(document).ready(function($) {
-                                //When page loads...
-                                $(".tab_content").hide(); //Hide all content
-                                ';
-
-                        
-                        echo '
-                                $("ul.tabs "+theCurrentTab).addClass("active").show(); //Activate first tab
-                                $(theCurrentTab).show(); //Show first tab content
-                        ';
-                        
-                        echo '
-                                //On Click Event
-                                $("ul.tabs li").click(function() {
-
-                                        $("ul.tabs li").removeClass("active"); //Remove any "active" class
-                                        $(this).addClass("active"); //Add "active" class to selected tab
-                                        $(".tab_content").hide(); //Hide all tab content
-
-                                        var activeTab = $(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
-                                        $(activeTab).fadeIn(); //Fade in the active ID content
-                                        return false;
-                                });
-
-                        });
-                        //]]>
-                        </script>
-			<style type="text/css">
-				.tableDescription {
-					width:200px;
-					max-width:200px;
-				}
-
-                        .tabs {
-                            position:relative;
-                            z-index:1;
-                        }
-
-                        ul.tabs {
-                                margin: 0 0 10px 8px;
-                                padding: 0;
-                                float: left;
-                                list-style: none;
-                                height: 74px; /*--Set height of tabs--*/
-                                width: 100%;
-                                width:770px;
-                                min-width:770px;
-                            position:relative;
-                            z-index:1;
-                        }
-                        ul.tabs li {
-                                float: left;
-                                margin: 0;
-                                padding: 0;
-                                height: 73px; /*--Subtract 1px from the height of the unordered list--*/
-                                line-height: 73px; /*--Vertically aligns the text within the tab--*/
-                                border:  none;
-                                margin-bottom: -1px; /*--Pull the list item down 1px--*/
-                                overflow: hidden;
-                                position: relative;
-                                z-index:1;
-                        }
-                        ul.tabs li a {
-                                text-decoration: none;
-                                color: #000;
-                                display: block;
-                                font-size: 1.2em;
-                                position: relative;
-                                z-index:1;
-                                outline: none;
-                        }
-                        ul.tabs li a:hover {
-                                opacity:.80;
-                        }
-                        html ul.tabs li.active, html ul.tabs li.active a:hover  { /*--Makes sure that the active tab does not listen to the hover properties--*/
-                                
-                                
-                        }
-                        .tab_container {
-                                border: none;
-                                overflow: hidden;
-                                clear: both;
-                                float: left; width: 100%;
-                                position: relative;
-                                z-index:1;
-                        }
-                        .tab_content {
-                                padding: 20px;
-
-                        }
-			</style>';
-
 			$this->spHeader();
-			
+			$this->spSettings();
+
 			echo'
                             <h2> </h2>
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].'">
                             <input type="hidden" name="theCurrentTab" id="theCurrentTab" value="" />
                         <ul class="tabs">
-                            <li><a href="#tab1" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab1\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
-                            <li><a href="#tab2" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab2\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>
-                            <li><a href="#tab3" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab3\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>
-                            <li><a href="#tab4" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab4\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
-                            <li><a href="#tab5" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab5\');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
+                            <li><a href="#tab1" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab1\');"><img src="'.plugins_url('/images/buttons_general.jpg' , __FILE__).'" /></a></li>
+                            <li><a href="#tab2" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab2\');"><img src="'.plugins_url('/images/buttons_email.jpg' , __FILE__).'" /></a></li>';
+
+                        $theme_data = get_theme_data(get_stylesheet_uri());
+                        if($theme_data['Title'] == 'wpStoreCartTheme') {
+                            echo '<li><a href="admin.php?page=wpstorecarttheme-settings" onclick="window.location = \'admin.php?page=wpstorecarttheme-settings\';"><img src="'.plugins_url('/images/buttons_theme.jpg' , __FILE__).'" /></a></li>';
+                        }
+
+                        echo '<li><a href="#tab3" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab3\');"><img src="'.plugins_url('/images/buttons_product.jpg' , __FILE__).'" /></a></li>';
+
+                        if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
+                            echo '<li><a href="#tab6" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab6\');"><img src="'.plugins_url('/images/buttons_shipping.jpg' , __FILE__).'" /></a></li>';
+                        }
+                        echo '<li><a href="#tab4" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab4\');"><img src="'.plugins_url('/images/buttons_payment.jpg' , __FILE__).'" /></a></li>
+                            <li><a href="#tab5" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab5\');"><img src="'.plugins_url('/images/buttons_text.jpg' , __FILE__).'" /></a></li>
+                            <li><a href="#tab7" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab7\');"><img src="'.plugins_url('/images/buttons_customers.jpg' , __FILE__).'" /></a></li>
                         </ul>
-                        <div style="clear:both;"></div>
-                        <div id="tab1" class="tab_content">
-			<h2>wpStoreCart General Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
+                        <div style="clear:both;"></div>';
+
+                        echo '<div id="tab1" class="tab_content">
+			<h2>wpStoreCart General Options <a href="http://wpstorecart.com/documentation/settings/general-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
 			';
 			
 			echo '<table class="widefat">
@@ -810,7 +1249,7 @@ if (!class_exists("wpStoreCart")) {
 			';			
 
 			echo '
-			<tr><td><h3>wpStoreCart Main Page: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">wpStoreCart uses pages, and needs a single pre-existing page to act as the main page from which most other wpStoreCart pages descend from.  For example, all product pages will be subpages of this page.</div></h3></td>
+			<tr><td><h3>wpStoreCart Main Page: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">wpStoreCart uses pages, and needs a single pre-existing page to act as the main page from which most other wpStoreCart pages descend from.  For example, all product pages will be subpages of this page.</div></h3></td>
 			<td class="tableDescription"><p>You need to use a Page as the base for wpStoreCart.  Insert the POST ID of that page here: </p></td>
 			<td><select name="wpStoreCartmainpage"> 
 			 <option value="">
@@ -834,7 +1273,7 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>
 
-			<tr><td><h3>Checkout Page: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The checkout page can be any page you specify.  This is the page customers will visit to pay for the products they have added to their cart.</div></h3></td>
+			<tr><td><h3>Checkout Page: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The checkout page can be any page you specify.  This is the page customers will visit to pay for the products they have added to their cart.</div></h3></td>
 			<td class="tableDescription"><p>You need to use a Page that customers will use during checkout.  Insert the POST ID of that page here:</p></td>
 			<td><select name="checkoutpage"> 
 			 <option value="">
@@ -858,12 +1297,37 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>			
 			
-			<tr><td><h3>Turn wpStoreCart on? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">If you want to disable wpStoreCart without deactivating the plugin, then set this to No.  This is useful if you want to disable products and purchasing, but not remove the records or uninstall anything.</div></h3></td>
+			<tr><td><h3>Turn wpStoreCart on? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">If you want to disable wpStoreCart without deactivating the plugin, then set this to No.  This is useful if you want to disable products and purchasing, but not remove the records or uninstall anything.</div></h3></td>
 			<td class="tableDescription"><p>Selecting "No" will turn off wpStoreCart, but will not deactivate it.</p></td>
 			<td><p><label for="turnwpStoreCartOn_yes"><input type="radio" id="turnwpStoreCartOn_yes" name="turnwpStoreCartOn" value="true" '; if ($devOptions['turnon_wpstorecart'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="turnwpStoreCartOn_no"><input type="radio" id="turnwpStoreCartOn_no" name="turnwpStoreCartOn" value="false" '; if ($devOptions['turnon_wpstorecart'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
 			</td></tr>
 
-			<tr><td><h3>Google Analytics UA: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4000" /><div class="tooltip-content" id="example-content-4000">Insert your Google Analytics UA code in order to track ecommerce conversions using Google Analytics.  Leave this blank if you\'re not using Google Analytics.  Note, this does not insert tracking code anywhere except when a customer purchases something.</div></h3></td>
+			<tr><td><h3>Store Type <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6999866" /><div class="tooltip-content" id="example-content-6999866">Setting this to mixed will allow products to be either physical or digital.  Setting this to Physical only will hide the product downloads.  Setting this to Digital Only will hide the shipping options, as well as weight, height, length, etc.</div></h3></td>
+			<td class="tableDescription"><p>What type of goods do you sell, digital, phyiscal, or both?</p></td>
+			<td>
+                        <select name="storetype">
+';
+
+                        $theOptions[0] = 'Mixed (physical and digital)';
+                        $theOptions[1] = 'Physical Goods Only';
+                        $theOptions[2] = 'Digital Goods Only';
+                        foreach ($theOptions as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['storetype']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOption;
+				$option .= '</option>';
+				echo $option;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Google Analytics UA: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4000" /><div class="tooltip-content" id="example-content-4000">Insert your Google Analytics UA code in order to track ecommerce conversions using Google Analytics.  Leave this blank if you\'re not using Google Analytics.  Note, this does not insert tracking code anywhere except when a customer purchases something.</div></h3></td>
 			<td class="tableDescription"><p>Insert your Google Analytics UA-XXXXX-XX code here to keep track of sales using Google Analytics.  Leave blank if you don\'t use Google Analytics.</p></td>
 			<td><input type="text" name="ga_trackingnum" value="'; _e(apply_filters('format_to_edit',$devOptions['ga_trackingnum']), 'wpStoreCart'); echo'" />
 			</td></tr>
@@ -872,32 +1336,32 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab2" class="tab_content">
-			<h2>EMail Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
+			<h2>EMail Options <a href="http://wpstorecart.com/documentation/settings/email-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
 
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-			<tr><td><h3>Email Address <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">wpStoreCart attempts to send emails when a customer purchasing something.  Whatever email address you enter here will be used as the FROM address.  Set this to an email address where you will expect to receive customer replies.</div></h3></td>
+			<tr><td><h3>Email Address <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">wpStoreCart attempts to send emails when a customer purchasing something.  Whatever email address you enter here will be used as the FROM address.  Set this to an email address where you will expect to receive customer replies.</div></h3></td>
 			<td class="tableDescription"><p>The email address that you wish to send and recieve all customer emails.</p></td>
 			<td><input type="text" name="wpStoreCartEmail" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartEmail']), 'wpStoreCart'); echo'" />
 			</td></tr>	
 
-			<tr><td><h3>Email Sent On Purchase <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-40" /><div class="tooltip-content" id="example-content-40">wpStoreCart attempts to send an email directly after a purchase is made.  This gives the customer feedback that their purchase was successful, and should also inform them that there will be a delay pending the approval of the purchase from a store admin.</div></h3></td>
+			<tr><td><h3>Email Sent On Purchase <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-40" /><div class="tooltip-content" id="example-content-40">wpStoreCart attempts to send an email directly after a purchase is made.  This gives the customer feedback that their purchase was successful, and should also inform them that there will be a delay pending the approval of the purchase from a store admin.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when a customer purchases something.</p></td>
 			<td><textarea name="emailonpurchase" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonpurchase']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>	
 
-			<tr><td><h3>Email Sent On Approval <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-41" /><div class="tooltip-content" id="example-content-41">wpStoreCart attempts to send an email once the order has been approved by an admin.  This lets the customer know that their order is fulfilled, and for digital downloads, it means they now have immediate access to their order.  Physical products are not yet shipped at this stage.</div></h3></td>
+			<tr><td><h3>Email Sent On Approval <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-41" /><div class="tooltip-content" id="example-content-41">wpStoreCart attempts to send an email once the order has been approved by an admin.  This lets the customer know that their order is fulfilled, and for digital downloads, it means they now have immediate access to their order.  Physical products are not yet shipped at this stage.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when an admin approves an order.</p></td>
 			<td><textarea name="emailonapproval" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonapproval']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>	
 
-			<tr><td><h3>Email Sent When Shipped <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-42" /><div class="tooltip-content" id="example-content-42">wpStoreCart attempts to send an email after you\'ve marked an order shipped.  This let\'s customers know the status of their order.  You will need to manually send or update tracking information at this time.</div></h3></td>
+			<tr><td><h3>Email Sent When Shipped <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-42" /><div class="tooltip-content" id="example-content-42">wpStoreCart attempts to send an email after you\'ve marked an order shipped.  This let\'s customers know the status of their order.  You will need to manually send or update tracking information at this time.</div></h3></td>
 			<td class="tableDescription"><p>The email address that you wish to send and recieve all customer emails.</p></td>
 			<td><textarea name="emailonshipped" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonshipped']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>				
 			
-			<tr><td><h3>Email Signature <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-43" /><div class="tooltip-content" id="example-content-43">The bottom of your emails sent will always contain the same footer or signiture.  Fill that out here.</div></h3></td>
+			<tr><td><h3>Email Signature <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43" /><div class="tooltip-content" id="example-content-43">The bottom of your emails sent will always contain the same footer or signiture.  Fill that out here.</div></h3></td>
 			<td class="tableDescription"><p>This is always included at the bottom of each email sent out.</p></td>
 			<td><textarea name="emailsig" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailsig']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>				
@@ -906,14 +1370,19 @@ if (!class_exists("wpStoreCart")) {
 			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab3" class="tab_content">
-			<h2>Display Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
+			<h2>Display Options <a href="http://wpstorecart.com/documentation/settings/display-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
 			';
 			
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
 
                         echo '
-			<tr><td><h3>jQuery UI Theme <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
+			<tr><td><h3>Number of products/categories per page <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-444999" /><div class="tooltip-content" id="example-content-444999">The number of items and/or categories you want to be displayed per page.  Default is 10.</div></h3></td>
+			<td class="tableDescription"><p>The number of items to display on each page.</p></td>
+			<td><input type="text" name="itemsperpage" value="'; _e(apply_filters('format_to_edit',$devOptions['itemsperpage']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>jQuery UI Theme <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
 			<td class="tableDescription"><p>jQuery UI Theme</p></td>
 			<td>
                         <select name="wpscjQueryUITheme">
@@ -952,7 +1421,7 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>
 
-			<tr><td><h3>wpStoreCart Theme <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-431" /><div class="tooltip-content" id="example-content-431">You can style your shopping cart, products, and other wpStoreCart related elements here, but is recommended that you do it in your theme\'s CSS file to keep all CSS in one place.</div></h3></td>
+			<tr><td><h3>wpStoreCart Additional CSS <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-431" /><div class="tooltip-content" id="example-content-431">You can style your shopping cart, products, and other wpStoreCart related elements here, but is recommended that you do it in your theme\'s CSS file to keep all CSS in one place.</div></h3></td>
 			<td class="tableDescription"><p>Optional CSS styles for wpStoreCart. Choose the CSS file to theme wpStoreCart with.  For a full list of IDs and Classes to use with wpStoreCart, check out <a href="http://wpstorecart.com/documentation/styles-designs/" target="_blank">this webpage.</a></p></td>
 			<td>
                         <select name="wpscCss">
@@ -995,18 +1464,37 @@ if (!class_exists("wpStoreCart")) {
 			<td>Width: <input type="text" name="wpStoreCartwidth" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartwidth']), 'wpStoreCart'); echo'" />  <br />Height: <input type="text" name="wpStoreCartheight" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartheight']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			<tr><td><h3>(Product Page) Display thumbnail under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">This effects the product short tag (and thus, the default product pages as well.)  If set to yes, the products thumbnail will be displayed underneath the product.</div></h3></td>
+			</table>
+			<br style="clear:both;" /><br />
+                        <h2>Product Page</h2>
+              			';
+
+			echo '<table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
+
+                        echo '
+
+			<tr><td><h3>Display thumbnail under product? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">This effects the product short tag (and thus, the default product pages as well.)  If set to yes, the products thumbnail will be displayed underneath the product.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the thumbnail for the product will be displayed underneath the product itself</p></td>
 			<td><p><label for="showproductthumbnail"><input type="radio" id="showproductthumbnail_yes" name="showproductthumbnail" value="true" '; if ($devOptions['showproductthumbnail'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="showproductthumbnail_no"><input type="radio" id="showproductthumbnail_no" name="showproductthumbnail" value="false" '; if ($devOptions['showproductthumbnail'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
 			</td></tr>
 
-			<tr><td><h3>(Product Page) Display description under product? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">This also effects the product short tag (including the default product pages.)  If set to yes, the products description will be written underneath the product thumbnail (if its enabled.)</div></h3></td>
+			<tr><td><h3>Display description under product? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">This also effects the product short tag (including the default product pages.)  If set to yes, the products description will be written underneath the product thumbnail (if its enabled.)</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the description for the product is written underneath the product, after the thumbnail.</p></td>
 			<td><p><label for="showproductdescription"><input type="radio" id="showproductdescription_yes" name="showproductdescription" value="true" '; if ($devOptions['showproductdescription'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="showproductdescription_no"><input type="radio" id="showproductdescription_no" name="showproductdescription" value="false" '; if ($devOptions['showproductdescription'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
 
+			</table>
+			<br style="clear:both;" /><br />
+                        <h2>Main Page</h2>
+              			';
 
-			<tr><td><h3>(Main Page) Content of the Main Page <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6999" /><div class="tooltip-content" id="example-content-6999">The main page of your store can either list products, or the categories of the site.  It can also display the products either by newest first, or most popular first.</div></h3></td>
+			echo '<table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
+
+                        echo '
+
+			<tr><td><h3>Content of the Main Page <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6999" /><div class="tooltip-content" id="example-content-6999">The main page of your store can either list products, or the categories of the site.  It can also display the products either by newest first, or most popular first.</div></h3></td>
 			<td class="tableDescription"><p>Changing this will effect what is displayed on the main page of your store.</p></td>
 			<td>
                         <select name="frontpageDisplays">
@@ -1014,8 +1502,9 @@ if (!class_exists("wpStoreCart")) {
 
                         $theOptions[0] = 'List all products';
                         $theOptions[1] = 'List all categories';
-                        $theOptions[2] = 'List newest products';
-                        $theOptions[3] = 'List most popular products';
+                        $theOptions[2] = 'List all categories (Ascending)';
+                        $theOptions[3] = 'List newest products';
+                        $theOptions[4] = 'List most popular products';
                         foreach ($theOptions as $theOption) {
 
 				$option = '<option value="'.$theOption.'"';
@@ -1032,22 +1521,22 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>
 
-			<tr><td><h3>(Main Page) Display thumbnails on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554" /><div class="tooltip-content" id="example-content-5554">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category thumbnails will be displayed on the Main Page/Category page.</div></h3></td>
+			<tr><td><h3>Display thumbnails on Main Page? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5554" /><div class="tooltip-content" id="example-content-5554">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category thumbnails will be displayed on the Main Page/Category page.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the thumbnail for the products or categories will be displayed on the Main Page and Category pages.</p></td>
 			<td><p><label for="displayThumb"><input type="radio" id="displayThumb_yes" name="displayThumb" value="true" '; if ($devOptions['displayThumb'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayThumb_no"><input type="radio" id="displayThumb_no" name="displayThumb" value="false" '; if ($devOptions['displayThumb'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
 
-			<tr><td><h3>(Main Page) Display titles on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55544" /><div class="tooltip-content" id="example-content-55544">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category title will be displayed on the Main Page/Category page.</div></h3></td>
+			<tr><td><h3>Display titles on Main Page? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-55544" /><div class="tooltip-content" id="example-content-55544">This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category title will be displayed on the Main Page/Category page.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the title of the products or categories will be displayed on the Main Page and Category pages.</p></td>
 			<td><p><label for="displayTitle"><input type="radio" id="displayTitle_yes" name="displayTitle" value="true" '; if ($devOptions['displayTitle'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayTitle_no"><input type="radio" id="displayTitle_no" name="displayTitle" value="false" '; if ($devOptions['displayTitle'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
 
-			<tr><td><h3>(Main Page) Display small descriptions on Main Page? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55545" /><div class="tooltip-content" id="example-content-55545">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to yes, the product or category introductory description will be displayed on the Main Page/Category page.</div></h3></td>
+			<tr><td><h3>Display small descriptions on Main Page? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-55545" /><div class="tooltip-content" id="example-content-55545">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to yes, the product or category introductory description will be displayed on the Main Page/Category page.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the introductory description of the products or categories will be displayed on the Main Page and Category pages.</p></td>
 			<td><p><label for="displayintroDesc"><input type="radio" id="displayintroDesc_yes" name="displayintroDesc" value="true" '; if ($devOptions['displayintroDesc'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayintroDesc_no"><input type="radio" id="displayintroDesc_no" name="displayintroDesc" value="false" '; if ($devOptions['displayintroDesc'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
 
-			<tr><td><h3>(Main Page) Display Type <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7999" /><div class="tooltip-content" id="example-content-7999">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to grid, the product or category will be displayed within a grid format, or if it\'s set to list, they will be presented in a top down, one at a time list view on the Main Page/Category page.</div></h3></td>
+			<tr><td><h3>Display Type <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7999" /><div class="tooltip-content" id="example-content-7999">This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to grid, the product or category will be displayed within a grid format, or if it\'s set to list, they will be presented in a top down, one at a time list view on the Main Page/Category page.</div></h3></td>
 			<td class="tableDescription"><p>If set to grid, will display products or categories in a grid format, if set to list, will display them in an ordered list.</p></td>
 			<td>
                         <select name="displayType">
@@ -1072,9 +1561,141 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>
 			</table>
 			<br style="clear:both;" /><br />
+
+                        <h2>Checkout Page</h2>
+              			';
+
+			echo '<table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
+
+                        echo '
+
+			<tr><td><h3>Display shipping total? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-500055" /><div class="tooltip-content" id="example-content-500055">Displays shipping cost on the checkout page.  This will automatically be disabled for Digital Only stores, regardless of the setting here.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, shipping will be displayed in shopping carts.</p></td>
+			<td><p><label for="displayshipping"><input type="radio" id="displayshipping_yes" name="displayshipping" value="true" '; if ($devOptions['displayshipping'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayshipping_no"><input type="radio" id="displayshipping_no" name="displayshipping" value="false" '; if ($devOptions['displayshipping'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Display subtotal? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-600055" /><div class="tooltip-content" id="example-content-600055">Displays subtotal, without shipping on the checkout page.  This will be identical to the total for all items without shipping, and may be reduntant on Digital Only stores.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, the subtotal will be displayed in shopping carts.</p></td>
+			<td><p><label for="displaysubtotal"><input type="radio" id="displaysubtotal_yes" name="displaysubtotal" value="true" '; if ($devOptions['displaysubtotal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displaysubtotal_no"><input type="radio" id="displaysubtotal_no" name="displaysubtotal" value="false" '; if ($devOptions['displaysubtotal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Display final total? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-700055" /><div class="tooltip-content" id="example-content-700055">Displays the total, including any calculated shipping, on the checkout page. Recommended.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, the final total will be displayed in shopping carts.</p></td>
+			<td><p><label for="displaytotal"><input type="radio" id="displaytotal_yes" name="displaytotal" value="true" '; if ($devOptions['displaytotal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displaytotal_no"><input type="radio" id="displaytotal_no" name="displaytotal" value="false" '; if ($devOptions['displaytotal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Enable Coupons &amp; display form? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-706055" /><div class="tooltip-content" id="example-content-706055">Enables coupons during checkout and displays the coupon input.</div></h3></td>
+			<td class="tableDescription"><p>Yes to enable or No to disable coupons.</p></td>
+			<td><p><label for="enablecoupons"><input type="radio" id="enablecoupons_yes" name="enablecoupons" value="true" '; if ($devOptions['enablecoupons'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablecoupons_no"><input type="radio" id="enablecoupons_no" name="enablecoupons" value="false" '; if ($devOptions['enablecoupons'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			</table>
+
+                        </div>
+                        <div id="tab6" class="tab_content">
+			<h2>Shipping Options <a href="http://wpstorecart.com/documentation/settings/shipping-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
+
+                        if($devOptions['storetype']=='Digital Goods Only') {
+
+                            echo '<i>Your store is set to only sell digital items, therefore shipping has been disabled.  If you would like to enable shipping, please goto the <a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1">General Settings</a>, and change Store Type to Mixed (physical and digital).  Then click the Update Settings button and return to this page.</i>';
+
+                        } else {
+
+                            if (@!extension_loaded('curl')) {
+                                $curl_is_disabled = true;
+                            } else {
+                                if (@!function_exists('curl_init')) {
+                                    $curl_is_disabled = true;
+                                } else {
+                                    $curl_is_disabled = false;
+                                }
+                            }
+
+
+
+                            echo '<h2>Flat Rate Shipping</h2>
+                            <table class="widefat">
+                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
+                            <tr><td><h3>Flat Rate Type: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7999777" /><div class="tooltip-content" id="example-content-7999777">When each product "has it\'s own flat rate amount", it means that when you add or edit a product, the flat rate amount you specify there is what will be charged each time the product is added to the cart.  <br /><br />  If you select "There is one flat rate, but each item in cart adds the flat rate to the shipping cost", that means all items in your store have the exact same flat rate shipping charge, and that each item in the cart adds that charge to the total shipping. <br /> <br /> If you select "There is one flat rate that is charged, regardless of the number of items in the cart" then no matter how little or how much is added to the cart, there will only be one shipping charge.</div></h3></td>
+                            <td class="tableDescription"><p>Allows you to use several different types of flat rate shipping or to disable it.</p></td>
+                            <td>
+                            <select name="flatrateshipping" id="flatrateshipping" onclick="if(jQuery(\'#flatrateshipping\').val()==\'individual\' || jQuery(\'#flatrateshipping\').val()==\'off\'){jQuery(\'#flatratetr\').fadeOut(\'slow\');} else {jQuery(\'#flatratetr\').fadeIn(\'slow\');}">
+                            ';
+
+                            $theOptionzr[0] = 'individual'; $theOptionzrr[0] = 'Each product has it\'s own flat rate amount';
+                            $theOptionzr[1] = 'all_single'; $theOptionzrr[1] = 'There is one flat rate, but each item in cart adds the flat rate to the shipping cost';
+                            $theOptionzr[2] = 'all_global'; $theOptionzrr[2] = 'There is one flat rate that is charged, regardless of the number of items in the cart';
+                            $theOptionzr[3] = 'off'; $theOptionzrr[3] = 'Off.  Flat rate shipping is completely disabled';
+                            $icounter = 0;
+                            foreach ($theOptionzr as $theOption) {
+
+                                    $option = '<option value="'.$theOption.'"';
+                                    if($theOption == $devOptions['flatrateshipping']) {
+                                            $option .= ' selected="selected"';
+                                    }
+                                    $option .='>';
+                                    $option .= $theOptionzrr[$icounter];
+                                    $option .= '</option>';
+                                    echo $option;
+                                    $icounter++;
+                            }
+
+                            echo '
+                            </select>
+                            ';
+
+                            echo '
+                            <tr id="flatratetr"><td><h3>Flat Rate Amount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-444333" /><div class="tooltip-content" id="example-content-444333">The flat rate that is charged based on the setting above.</div></h3></td>
+                            <td class="tableDescription"><p>The global flat rate shipping cost.</p></td>
+                            <td><input type="text" name="flatrateamount" value="'; _e(apply_filters('format_to_edit',$devOptions['flatrateamount']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+
+                            </table>';
+
+                            if($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='individual') {
+                                echo '<script type="text/javascript">jQuery(\'#flatratetr\').hide();</script>';
+                            }
+
+                            if($curl_is_disabled == true) {
+                                echo '<br /><div class="fade"><p><strong>CURL is either not installed or not enabled.  Contact a system administrator and have them enable CURL for your server.  Until then, the "Shipping Services" shipping options on this page cannot be used and have been disabled.</strong></p></div>';
+                            }
+
+                            echo '<h2>Shipping Services</h2>
+                            <table class="widefat"';if($curl_is_disabled == true) {echo ' style="opacity:0.5;"';} echo '>
+                            <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
+                            <tr><td><h3>Zip code you ship FROM <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-438333" /><div class="tooltip-content" id="example-content-438333">The 5 digit zip code where you ship your packages from.  This is used in shipping calculation to determine price.</div></h3></td>
+                            <td class="tableDescription"><p>The 5 digit zip code where you ship your products FROM.</p></td>
+                            <td><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="text" name="shipping_zip_origin" value="'; _e(apply_filters('format_to_edit',$devOptions['shipping_zip_origin']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+
+                            <tr><td><h3>Enable USPS Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81234" /><div class="tooltip-content" id="example-content-81234">If your business is based out of the United States, this allows you to ship via USPS and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for USPS.</p></td>
+                            <td><p><label for="enableusps"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableusps_yes" name="enableusps" value="true" '; if ($devOptions['enableusps'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableusps_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableusps_no" name="enableusps" value="false" '; if ($devOptions['enableusps'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                                Username: <input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="text" name="uspsapiname" value="'; _e(apply_filters('format_to_edit',$devOptions['uspsapiname']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+
+                            <tr style="display:none;"><td><h3>Enable UPS Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81235" /><div class="tooltip-content" id="example-content-81235">This allows you to ship via UPS and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for UPS.</p></td>
+                            <td><p><label for="enableups"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_yes" name="enableups" value="true" '; if ($devOptions['enableups'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableups_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_no" name="enableups" value="false" '; if ($devOptions['enableups'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            <tr style="display:none;"><td><h3>Enable FedEx Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81236" /><div class="tooltip-content" id="example-content-81236">This allows you to ship via FedEx and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
+                            <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for FedEx.</p></td>
+                            <td><p><label for="enablefedex"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_yes" name="enablefedex" value="true" '; if ($devOptions['enablefedex'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablefedex_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_no" name="enablefedex" value="false" '; if ($devOptions['enablefedex'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                            </td></tr>
+
+                            </table>';
+
+                        }
+
+                        echo '
+			<br style="clear:both;" /><br />
                         </div>
                         <div id="tab4" class="tab_content">
-			<h2>Payment Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
+			<h2>Payment Options <a href="http://wpstorecart.com/documentation/settings/payment-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
 
 
                         if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/updater.pro.php') ) {
@@ -1086,22 +1707,22 @@ if (!class_exists("wpStoreCart")) {
                         <h3>PayPal Payment Gateway</h3>
                         <table class="widefat">
                                                 <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
-			<tr><td><h3>Accept PayPal Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Want to accept PayPal payments?  Then set this to yes!</div></h3></td>
+			<tr><td><h3>Accept PayPal Payments? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Want to accept PayPal payments?  Then set this to yes!</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using PayPal.</p></td>
 			<td><p><label for="allowpaypal"><input type="radio" id="allowpaypal_yes" name="allowpaypal" value="true" '; if ($devOptions['allowpaypal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowpaypal_no"><input type="radio" id="allowpaypal_no" name="allowpaypal" value="false" '; if ($devOptions['allowpaypal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
 			</td></tr>
 
-			<tr><td><h3>Turn on PayPal Test Mode? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If you need to do tests with the PayPal Sandbox then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
+			<tr><td><h3>Turn on PayPal Test Mode? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If you need to do tests with the PayPal Sandbox then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, all transactions are done using the PayPal sandbox.</p></td>
 			<td><p><label for="paypaltestmode"><input type="radio" id="paypaltestmode_yes" name="paypaltestmode" value="true" '; if ($devOptions['paypaltestmode'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="paypaltestmode_no"><input type="radio" id="paypaltestmode_no" name="paypaltestmode" value="false" '; if ($devOptions['paypaltestmode'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>		
 			</td></tr>			
 			
-			<tr><td><h3>PayPal Email Address <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The PayPal email address you wish to recieve payments to.  Make sure you have already registered this email address with PayPal.</div></h3></td>
+			<tr><td><h3>PayPal Email Address <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The PayPal email address you wish to recieve payments to.  Make sure you have already registered this email address with PayPal.</div></h3></td>
 			<td class="tableDescription"><p>The email address you wish to receive PayPal payments.</p></td>
 			<td><input type="text" name="paypalemail" value="'; _e(apply_filters('format_to_edit',$devOptions['paypalemail']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			<tr><td><h3>Currency <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-941" /><div class="tooltip-content" id="example-content-941">Change this to whatever currency your shop is in.  Note that this is currently only supported in PayPal payments.</div></h3></td>
+			<tr><td><h3>Currency <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-941" /><div class="tooltip-content" id="example-content-941">Change this to whatever currency your shop is in.  Note that this is currently only supported in PayPal payments.</div></h3></td>
 			<td class="tableDescription"><p>The type of currency that your store uses.</p></td>
 			<td>
                         <select name="currency_code">
@@ -1110,9 +1731,9 @@ if (!class_exists("wpStoreCart")) {
                         $theOptionsz[0] = 'USD';$theOptionszName[0] = 'U.S. Dollars ($)';
                         $theOptionsz[1] = 'AUD';$theOptionszName[1] = 'Australian Dollars (A $)';
                         $theOptionsz[2] = 'CAD';$theOptionszName[2] = 'Canadian Dollars (C $)';
-                        $theOptionsz[3] = 'EUR';$theOptionszName[3] = 'Euros (�)';
-                        $theOptionsz[4] = 'GBP';$theOptionszName[4] = 'Pounds Sterling (�)';
-                        $theOptionsz[5] = 'JPY';$theOptionszName[5] = 'Yen (�)';
+                        $theOptionsz[3] = 'EUR';$theOptionszName[3] = 'Euros (&#8364)';
+                        $theOptionsz[4] = 'GBP';$theOptionszName[4] = 'Pounds Sterling (&#163)';
+                        $theOptionsz[5] = 'JPY';$theOptionszName[5] = 'Yen (&#165)';
                         $theOptionsz[6] = 'NZD';$theOptionszName[6] = 'New Zealand Dollar ($)';
                         $theOptionsz[7] = 'CHF';$theOptionszName[7] = 'Swiss Franc';
                         $theOptionsz[8] = 'HKD';$theOptionszName[8] = 'Hong Kong Dollar ($)';
@@ -1162,12 +1783,12 @@ if (!class_exists("wpStoreCart")) {
                         <h3>Check/Money Order/COD Payments</h3>
                         <table class="widefat">
                                                 <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
-			<tr><td><h3>Accept Payments via Mail? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></h3></td>
+			<tr><td><h3>Accept Payments via Mail? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, customers can purchase using Check, Money Order or COD</p></td>
 			<td><p><label for="allowcheckmoneyorder"><input type="radio" id="allowcheckmoneyorder_yes" name="allowcheckmoneyorder" value="true" '; if ($devOptions['allowcheckmoneyorder'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowcheckmoneyorder_no"><input type="radio" id="allowcheckmoneyorder_no" name="allowcheckmoneyorder" value="false" '; if ($devOptions['allowcheckmoneyorder'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
 
-			<tr><td><h3>Text to Display <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></h3></td>
+			<tr><td><h3>Text to Display <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></h3></td>
 			<td class="tableDescription"><p>The text/html that is displayed to customers who choose to pay via check or money order.</p></td>
 			<td><textarea name="checkmoneyordertext" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['checkmoneyordertext']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>
@@ -1182,22 +1803,22 @@ if (!class_exists("wpStoreCart")) {
                             <table class="widefat">
                             <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-                            <tr><td><h3>Accept Authorize.NET Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-70099" /><div class="tooltip-content" id="example-content-70099">Want to accept Authorize.NET payments?  Then set this to yes!</div></h3></td>
+                            <tr><td><h3>Accept Authorize.NET Payments? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-70099" /><div class="tooltip-content" id="example-content-70099">Want to accept Authorize.NET payments?  Then set this to yes!</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using Authorize.NET.</p></td>
                             <td><p><label for="allowauthorizenet"><input type="radio" id="allowauthorizenet_yes" name="allowauthorizenet" value="true" '; if ($devOptions['allowauthorizenet'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowauthorizenet_no"><input type="radio" id="allowauthorizenet_no" name="allowauthorizenet" value="false" '; if ($devOptions['allowauthorizenet'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
-                            <tr><td><h3>Turn on Authorize.NET Test Mode? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-81111" /><div class="tooltip-content" id="example-content-81111">If you need to do tests with Authorize.NET then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
+                            <tr><td><h3>Turn on Authorize.NET Test Mode? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81111" /><div class="tooltip-content" id="example-content-81111">If you need to do tests with Authorize.NET then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, all transactions are tests done using Authorize.NET.</p></td>
                             <td><p><label for="authorizenettestmode"><input type="radio" id="authorizenettestmode_yes" name="authorizenettestmode" value="true" '; if ($devOptions['authorizenettestmode'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="authorizenettestmode_no"><input type="radio" id="authorizenettestmode_no" name="authorizenettestmode" value="false" '; if ($devOptions['authorizenettestmode'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
-                            <tr><td><h3>API Login ID <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9666" /><div class="tooltip-content" id="example-content-9666">The Authorize.NET API Login ID assigned to you.  </div></h3></td>
+                            <tr><td><h3>API Login ID <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9666" /><div class="tooltip-content" id="example-content-9666">The Authorize.NET API Login ID assigned to you.  </div></h3></td>
                             <td class="tableDescription"><p>The API Login ID you are assigned to use access your Authorize.NET account.</p></td>
                             <td><input type="text" name="authorizenetemail" value="'; _e(apply_filters('format_to_edit',$devOptions['authorizenetemail']), 'wpStoreCart'); echo'" />
                             </td></tr>
 
-                            <tr><td><h3>Secret Key <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9667" /><div class="tooltip-content" id="example-content-9667">The Authorize.NET secret key which is used to authenticate your shop.</div></h3></td>
+                            <tr><td><h3>Secret Key <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9667" /><div class="tooltip-content" id="example-content-9667">The Authorize.NET secret key which is used to authenticate your shop.</div></h3></td>
                             <td class="tableDescription"><p>The Authorize.NET secret key md5 hash value.</p></td>
                             <td><input type="text" name="authorizenetsecretkey" value="'; _e(apply_filters('format_to_edit',$devOptions['authorizenetsecretkey']), 'wpStoreCart'); echo'" />
                             </td></tr>
@@ -1209,17 +1830,17 @@ if (!class_exists("wpStoreCart")) {
                             <table class="widefat">
                             <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-                            <tr><td><h3>Accept 2CheckOut Payments? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-700992" /><div class="tooltip-content" id="example-content-700992">Want to accept 2CheckOut payments?  Then set this to yes!</div></h3></td>
+                            <tr><td><h3>Accept 2CheckOut Payments? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-700992" /><div class="tooltip-content" id="example-content-700992">Want to accept 2CheckOut payments?  Then set this to yes!</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, customers can purchase during checkout using 2CheckOut.</p></td>
                             <td><p><label for="allow2checkout"><input type="radio" id="allow2checkout_yes" name="allow2checkout" value="true" '; if ($devOptions['allow2checkout'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allow2checkout_no"><input type="radio" id="allow2checkout_no" name="allow2checkout" value="false" '; if ($devOptions['allow2checkout'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
-                            <tr><td><h3>Turn on 2CheckOut Test Mode? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8111166" /><div class="tooltip-content" id="example-content-8111166">If you need to do tests with 2CheckOut then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
+                            <tr><td><h3>Turn on 2CheckOut Test Mode? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8111166" /><div class="tooltip-content" id="example-content-8111166">If you need to do tests with 2CheckOut then set this to yes.  Warning!  These payments are not real, so any purchases made under the Sandbox will result in live sales with no money!  You can delete test orders in the Orders tab above.</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, all transactions are tests done using 2CheckOut.</p></td>
                             <td><p><label for="2checkouttestmode"><input type="radio" id="2checkouttestmode_yes" name="2checkouttestmode" value="true" '; if ($devOptions['2checkouttestmode'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="2checkouttestmode_no"><input type="radio" id="2checkouttestmode_no" name="2checkouttestmode" value="false" '; if ($devOptions['2checkouttestmode'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
-                            <tr><td><h3>2CheckOut Vendor ID <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-966644" /><div class="tooltip-content" id="example-content-966644">The 2CheckOut Vendor ID assigned to you.  </div></h3></td>
+                            <tr><td><h3>2CheckOut Vendor ID <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-966644" /><div class="tooltip-content" id="example-content-966644">The 2CheckOut Vendor ID assigned to you.  </div></h3></td>
                             <td class="tableDescription"><p>The 2CheckOut Vendor ID you are assigned to use access your 2CheckOut account.</p></td>
                             <td><input type="text" name="2checkoutemail" value="'; _e(apply_filters('format_to_edit',$devOptions['2checkoutemail']), 'wpStoreCart'); echo'" />
                             </td></tr>
@@ -1231,24 +1852,29 @@ if (!class_exists("wpStoreCart")) {
                             ';
                         }
 
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/lr/lb_form.php')) {
+                            global $devOptions;
+                            include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/lr/lb_form.php');
+                        }
+
                         echo '
         		
 			
 			
                         </div>
                         <div id="tab5" class="tab_content">
-                        <h2>Text &amp; Language Options <a href="http://wpstorecart.com/documentation/settings/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
+                        <h2>Text &amp; Language Options <a href="http://wpstorecart.com/documentation/settings/language-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
 
 
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-			<tr><td><h3>Successful Payment Text <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-400" /><div class="tooltip-content" id="example-content-400">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after successfully completing the payment.</div></h3></td>
+			<tr><td><h3>Successful Payment Text <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-400" /><div class="tooltip-content" id="example-content-400">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after successfully completing the payment.</div></h3></td>
 			<td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after successfully paying.</p></td>
 			<td><textarea name="success_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['success_text']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>
 
-			<tr><td><h3>Failed Payment Text<img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-401" /><div class="tooltip-content" id="example-content-401">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after failing to complete the payment.</div></h3></td>
+			<tr><td><h3>Failed Payment Text<img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-401" /><div class="tooltip-content" id="example-content-401">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after failing to complete the payment.</div></h3></td>
 			<td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after failing the payment process.</p></td>
 			<td><textarea name="failed_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['failed_text']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>
@@ -1271,6 +1897,21 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>Subtotal</h3></td>
 			<td class="tableDescription"><p>Default: <i>Subtotal</i></p></td>
 			<td><input type="text" name="subtotal" value="'; _e(apply_filters('format_to_edit',$devOptions['subtotal']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Total</h3></td>
+			<td class="tableDescription"><p>Default: <i>Total</i></p></td>
+			<td><input type="text" name="total" value="'; _e(apply_filters('format_to_edit',$devOptions['total']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Shipping</h3></td>
+			<td class="tableDescription"><p>Default: <i>Shipping</i></p></td>
+			<td><input type="text" name="shipping" value="'; _e(apply_filters('format_to_edit',$devOptions['shipping']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Calculate Shipping</h3></td>
+			<td class="tableDescription"><p>Default: <i>Calculate Shipping</i></p></td>
+			<td><input type="text" name="calculateshipping" value="'; _e(apply_filters('format_to_edit',$devOptions['calculateshipping']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
 			<tr><td><h3>Update Button</h3></td>
@@ -1306,6 +1947,13 @@ if (!class_exists("wpStoreCart")) {
                             <tr><td><h3>Checkout 2checkout Button</h3></td>
                             <td class="tableDescription"><p>Default: <i>Checkout with 2Checkout</i></p></td>
                             <td><input type="text" name="checkout_2checkout_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_2checkout_button']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Checkout Liberty Reserve Button</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Checkout with Liberty Reserve</i></p></td>
+                            <td><input type="text" name="checkout_libertyreserve_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_libertyreserve_button']), 'wpStoreCart'); echo'" />
                             </td></tr>
                             ';
 
@@ -1362,11 +2010,181 @@ if (!class_exists("wpStoreCart")) {
 			<td><input type="text" name="out_of_stock" value="'; _e(apply_filters('format_to_edit',$devOptions['out_of_stock']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			</table>
-			<br style="clear:both;" />
-                        </div><br />';
+                        <tr><td><h3>Login</h3></td>
+			<td class="tableDescription"><p>Default: <i>Login</i></p></td>
+			<td><input type="text" name="login" value="'; _e(apply_filters('format_to_edit',$devOptions['login']), 'wpStoreCart'); echo'" />
+			</td></tr>
 
-                        echo '
+                        <tr><td><h3>Logout</h3></td>
+			<td class="tableDescription"><p>Default: <i>Logout</i></p></td>
+			<td><input type="text" name="logout" value="'; _e(apply_filters('format_to_edit',$devOptions['logout']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Register</h3></td>
+			<td class="tableDescription"><p>Default: <i>Register</i></p></td>
+			<td><input type="text" name="register" value="'; _e(apply_filters('format_to_edit',$devOptions['register']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Username</h3></td>
+			<td class="tableDescription"><p>Default: <i>Username</i></p></td>
+			<td><input type="text" name="username" value="'; _e(apply_filters('format_to_edit',$devOptions['username']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Password</h3></td>
+			<td class="tableDescription"><p>Default: <i>Password</i></p></td>
+			<td><input type="text" name="password" value="'; _e(apply_filters('format_to_edit',$devOptions['password']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Email</h3></td>
+			<td class="tableDescription"><p>Default: <i>Email</i></p></td>
+			<td><input type="text" name="email" value="'; _e(apply_filters('format_to_edit',$devOptions['email']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>My Orders &amp; Purchases</h3></td>
+			<td class="tableDescription"><p>Default: <i>My Orders &amp; Purchases</i></p></td>
+			<td><input type="text" name="myordersandpurchases" value="'; _e(apply_filters('format_to_edit',$devOptions['myordersandpurchases']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Required Symbol</h3></td>
+			<td class="tableDescription"><p>Default: <i>*</i></p></td>
+			<td><input type="text" name="required_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['required_symbol']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+                        <tr><td><h3>Required Symbol Description</h3></td>
+			<td class="tableDescription"><p>Default: <i>* - Fields with an asterick are required.</i></p></td>
+			<td><input type="text" name="required_help" value="'; _e(apply_filters('format_to_edit',$devOptions['required_help']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			</table>
+			<br style="clear:both;" /><br />
+                        </div>
+                        <div id="tab7" class="tab_content">
+			<h2>Customer Options <a href="http://wpstorecart.com/documentation/settings/customer-settings/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
+
+			echo '<table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
+			<tr style="display:none;"><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.</div></h3></td>
+			<td class="tableDescription"><p>Controls whether or not your site requires registration before checkout completes.</p></td>
+			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+                        </table>
+
+                        <h2>Required Information At Checkout:</h2>
+
+                         <script type="text/javascript">
+
+                            function addwpscfield() {
+                                jQuery.ajax({ url: "'.plugins_url('/php/addfield.php' , __FILE__).'", type:"POST", data:"createnewfieldname="+jQuery("#createnewfieldname").val()+"&createnewfieldtype="+jQuery("#createnewfieldtype").val()+"&createnewfieldrequired="+jQuery("input:radio[name=createnewfieldrequired]:checked").val(), success: function(txt){
+                                    jQuery("#requiredul").prepend("<li style=\'font-size:90%;cursor:move;background: url('.plugins_url('/images/sort.png' , __FILE__).') top left no-repeat;width:523px;min-width:523px;height:35px;min-height:35px;padding:4px 0 0 30px;margin-bottom:-8px;\' id=\'requiredinfo_"+txt+"\'><img onclick=\'delwpscfield("+txt+");\' style=\'cursor:pointer;position:relative;top:4px;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /><input type=\'text\' value=\'"+jQuery("#createnewfieldname").val()+"\' name=\'required_info_name[]\' /><input type=\'hidden\' name=\'required_info_key[]\' value=\'"+txt+"\' /><select name=\'required_info_type[]\' id=\'ri_"+txt+"\'><option value=\'input (text)\'>Input (text)</option><option value=\'input (numeric)\'>Input (numeric)</option><option value=\'textarea\'>Input Textarea</option><option value=\'states\'>Input US States</option><option value=\'countries\'>Input Countries</option><option value=\'email\'>Input Email Address</option><option value=\'separator\'>--- Separator ---</option><option value=\'header\'>Header &lt;h2&gt;&lt;/h2&gt;</option><option value=\'text\'>Text &lt;p&gt;&lt;/p&gt;</option></select><label for=\'required_info_required_"+txt+"\'><input type=\'radio\' id=\'required_info_required_"+txt+"_yes\' name=\'required_info_required_"+txt+"\' value=\'required\' /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for=\'required_info_required_"+txt+"_no\'><input type=\'radio\' id=\'required_info_required_"+txt+"_no\' name=\'required_info_required_"+txt+"\' value=\'optional\' /> Optional</label></li>");
+                                    jQuery("#ri_"+txt).val(jQuery("#createnewfieldtype").val());
+                                    if(jQuery("input:radio[name=createnewfieldrequired]:checked").val()=="required") {
+                                        jQuery(\'input[name="required_info_required_\'+txt+\'"][value="required"]\').attr("checked", true);
+                                    } else {
+                                        jQuery(\'input[name="required_info_required_\'+txt+\'"][value="optional"]\').attr("checked", true);
+                                    }
+                                    
+                                    jQuery("ri_"+txt).val(jQuery("#createnewfieldname").val());
+
+                                }});
+                            }
+
+                            function delwpscfield(keytodel) {
+                                jQuery.ajax({ url: "'.plugins_url('/php/delfield.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
+                                    jQuery("#requiredinfo_"+keytodel).remove();
+                                }});
+                            }
+
+                            jQuery(document).ready(function(){
+
+                                    jQuery(function() {
+
+                                            jQuery("#requiredsort ul").sortable({ opacity: 0.6, cursor: \'move\', update: function() {
+                                                    var order = jQuery(this).sortable("serialize") + \'&action=updateRecordsListings\';
+                                                    jQuery.post("'.plugins_url('/php/sortfields.php' , __FILE__).'", order, function(theResponse){
+                                                            jQuery("#requiredsort ul").sortable(\'refresh\');
+                                                    });
+                                            }
+                                            });
+
+                                    });
+
+
+                            });
+                        </script>
+                        ';
+                        
+                        /**
+                             * The options for the checkout fields
+                             */
+                        $theOptionszz[0] = 'input (text)';$theOptionszzName[0] = 'Input (text)';
+                        $theOptionszz[1] = 'input (numeric)';$theOptionszzName[1] = 'Input (numeric)';
+                        $theOptionszz[2] = 'textarea';$theOptionszzName[2] = 'Input Textarea';
+                        $theOptionszz[3] = 'states';$theOptionszzName[3] = 'Input US States';
+                        $theOptionszz[4] = 'countries';$theOptionszzName[4] = 'Input Countries';
+                        $theOptionszz[5] = 'email';$theOptionszzName[5] = 'Input Email Address';
+                        $theOptionszz[6] = 'separator';$theOptionszzName[6] = '--- Separator ---';
+                        $theOptionszz[7] = 'header';$theOptionszzName[7] = 'Header &lt;h2&gt;&lt;/h2&gt;';
+                        $theOptionszz[8] = 'text';$theOptionszzName[8] = 'Text &lt;p&gt;&lt;/p&gt;';
+                        //$theOptionszz[9] = 'dropdown';$theOptionszzName[9] = 'Drop down list';
+                        //$theOptionszz[10] = 'checkbox';$theOptionszzName[10] = 'Input Checkbox';
+
+                        echo'
+                        Add new field: <strong>Name: </strong><input type="text" name="createnewfieldname" id="createnewfieldname" value="" /> <strong>Type: </strong><select name="createnewfieldtype" id="createnewfieldtype"><br />';
+
+                        $icounter = 0;
+                        foreach ($theOptionszz as $theOption) {
+
+                                $option = '<option value="'.$theOption.'"';
+                                $option .='>';
+                                $option .= $theOptionszzName[$icounter];
+                                $option .= '</option>';
+                                echo $option;
+                                $icounter++;
+                        }
+
+                        echo '</select><label for="createnewfieldrequired_yes"><input type="radio" id="createnewfieldrequired_yes" name="createnewfieldrequired" value="required" checked="checked" /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="createnewfieldrequired_no"><input type="radio" id="createnewfieldrequired_no" name="createnewfieldrequired" value="optional" /> Optional</label> <img style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" onclick="addwpscfield();" /><br /><br />
+                        <div id="requiredsort" >
+                            <ul id="requiredul">
+                            ';
+
+                            $table_name33 = $wpdb->prefix . "wpstorecart_meta";
+                            $grabrecord = "SELECT * FROM `{$table_name33}` WHERE `type`='requiredinfo' ORDER BY `foreignkey` ASC;";
+
+                            $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                            if(isset($results)) {
+                                    foreach ($results as $result) {
+                                        $theKey = $result['primkey'];
+                                        $exploder = explode('||', $result['value']);
+                                        echo '<li style="font-size:90%;cursor:move;background: url(\''.plugins_url('/images/sort.png' , __FILE__).'\') top left no-repeat;width:523px;min-width:523px;height:35px;min-height:35px;padding:4px 0 0 30px;margin-bottom:-8px;" id="requiredinfo_'.$theKey.'"><img onclick="delwpscfield('.$theKey.');" style="cursor:pointer;position:relative;top:4px;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /><input type="text" value="'.$exploder[0];echo '" name="required_info_name[]" /><input type="hidden" name="required_info_key[]" value="'.$theKey.'" /><select name="required_info_type[]">';
+
+                                        $icounter = 0;
+                                        foreach ($theOptionszz as $theOption) {
+
+                                                $option = '<option value="'.$theOption.'"';
+                                                if($theOption == $exploder[2]) {
+                                                        $option .= ' selected="selected"';
+                                                }
+                                                $option .='>';
+                                                $option .= $theOptionszzName[$icounter];
+                                                $option .= '</option>';
+                                                echo $option;
+                                                $icounter++;
+                                        }
+
+                                        echo '</select><label for="required_info_required_'.$theKey.'"><input type="radio" id="required_info_required_'.$theKey.'_yes" name="required_info_required_'.$theKey.'" value="required" '; if ($exploder[1]=='required') { _e('checked="checked"', "wpStoreCart"); }; echo '/> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="required_info_required_'.$theKey.'_no"><input type="radio" id="required_info_required_'.$theKey.'_no" name="required_info_required_'.$theKey.'" value="optional" '; if ($exploder[1]=='optional') { _e('checked="checked"', "wpStoreCart"); }; echo '/> Optional</label>'; echo '</li>
+                                            ';
+                                    }
+                            }
+
+                            echo '
+                            </ul>
+                        </div>
+                        <br style="clear:both;" /><br />
+                        <div id="contentRight">
+                        </div>
+			<br style="clear:both;" /><br />
+                        </div>
 			<div class="submit">
 			<input type="submit" name="update_wpStoreCartSettings" value="'; _e('Update Settings', 'wpStoreCart'); echo'" /></div>
 			</form>
@@ -1511,7 +2329,7 @@ if (!class_exists("wpStoreCart")) {
                                     var swfu;
                                     window.onload = function () {
                                             var settings_object = {
-                                                    upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+                                                    upload_url : "'.plugins_url('/php/upload.php' , __FILE__).'",
                                                     post_params: {"PHPSESSID" : "'.session_id().'"},
                                                     flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
                                                     file_size_limit : "2048 MB",
@@ -1520,7 +2338,7 @@ if (!class_exists("wpStoreCart")) {
                                                     file_upload_limit : "1",
                                                     file_post_name: "Filedata",
                                                     button_placeholder_id : "spanSWFUploadButton4",
-                                                    button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+                                                    button_image_url : "'.plugins_url('/images/XPButtonUploadText_61x22.png' , __FILE__).'",
                                                     button_width: 61,
                                                     button_height: 22,
                                                     debug : false,
@@ -1564,7 +2382,8 @@ if (!class_exists("wpStoreCart")) {
                                     echo '
                                         <script type="text/javascript">
                                         <!--
-                                        window.open("'.WP_PLUGIN_URL.'/wpstorecart/php/exportcsv.php");
+                                        window.open("'.plugins_url('/php/exportcsv.php' , __FILE__).'");
+
                                         //-->
                                         </script>
                                         ';
@@ -1574,7 +2393,7 @@ if (!class_exists("wpStoreCart")) {
                                     echo '
                                         <script type="text/javascript">
                                         <!--
-                                        window.open("'.WP_PLUGIN_URL.'/wpstorecart/php/exportsql.php");
+                                        window.open("'.plugins_url('/php/exportsql.php' , __FILE__).'");
                                         //-->
                                         </script>
                                         ';
@@ -1632,7 +2451,13 @@ if (!class_exists("wpStoreCart")) {
 		
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_products";
-			
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+
+                        // New products will have any available shipping options available.
+                        $flatrateshipping_checked = 'yes';
+                        $usps_checked = 'yes';
+                        $ups_checked = 'yes';
+                        $fedex_checked = 'yes';
 
 			
 			// For new products
@@ -1642,13 +2467,17 @@ if (!class_exists("wpStoreCart")) {
 				$wpStoreCartproduct_introdescription = '';
 				$wpStoreCartproduct_description = '';
 				$wpStoreCartproduct_thumbnail = '';
-				$wpStoreCartproduct_price = 0.00;
-				$wpStoreCartproduct_shipping = 0.00;
+				$wpStoreCartproduct_price = '0.00';
+				$wpStoreCartproduct_shipping = '0.00';
 				$wpStoreCartproduct_download = '';
 				$wpStoreCartproduct_tags = '';
 				$wpStoreCartproduct_category = 0;
 				$wpStoreCartproduct_inventory = 0;
                                 $wpStoreCartproduct_useinventory = 1;
+                                $wpStoreCartproduct_weight = 0;
+                                $wpStoreCartproduct_length = 0;
+                                $wpStoreCartproduct_width = 0;
+                                $wpStoreCartproduct_height = 0;
 				$keytoedit=0;
 				$_GET['keytoedit'] = 0;
                                 $wpStoreCartproduct_donation = 'false';
@@ -1659,9 +2488,132 @@ if (!class_exists("wpStoreCart")) {
 			$isanedit = false;
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
 				$isanedit = true;
-				
+
+                                // Shipping options are saved here
+                                // Flat rate on/off for this product?
+                                $results_flatrateshipping = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_flatrateshipping' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_flatrateshipping==false ) {
+                                    $flatrateshipping_checked = 'no';
+                                } else {
+                                    if($results_flatrateshipping[0][0]=='yes') {
+                                        $flatrateshipping_checked = 'yes';
+                                    } else {
+                                        $flatrateshipping_checked = 'no';
+                                    }
+                                }
+
+                                // USPS on/off for this product?
+                                $results_usps = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_usps' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_usps==false ) {
+                                    $usps_checked = 'no';
+                                } else {
+                                    if($results_usps[0][0]=='yes') {
+                                        $usps_checked = 'yes';
+                                    } else {
+                                        $usps_checked = 'no';
+                                    }
+                                }
+
+                                // UPS on/off for this product?
+                                $results_ups = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_ups' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_ups==false ) {
+                                    $ups_checked = 'no';
+                                } else {
+                                    if($results_ups[0][0]=='yes') {
+                                        $ups_checked = 'yes';
+                                    } else {
+                                        $ups_checked = 'no';
+                                    }
+                                }
+
+                                // FedEx on/off for this product?
+                                $results_fedex = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_fedex' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_fedex==false ) {
+                                    $fedex_checked = 'no';
+                                } else {
+                                    if($results_fedex[0][0]=='yes') {
+                                        $fedex_checked = 'yes';
+                                    } else {
+                                        $fedex_checked = 'no';
+                                    }
+                                }
+
+
 				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
-					$wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
+                                        // Flat rate on/off for this product?
+                                        if(isset($_POST['wpsc_product_flatrateshipping']) && $_POST['wpsc_product_flatrateshipping']=='yes') {
+                                            $flatrateshipping_checked = 'yes';
+                                            if($results_flatrateshipping==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_flatrateshipping', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'yes' WHERE `type`='wpsc_product_flatrateshipping' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        } else {
+                                            $flatrateshipping_checked = 'no';
+                                            if($results_flatrateshipping==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_flatrateshipping', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'no' WHERE `type`='wpsc_product_flatrateshipping' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        }
+
+                                        // USPS on/off for this product?
+
+                                        if(isset($_POST['wpsc_product_usps']) && $_POST['wpsc_product_usps']=='yes') {
+                                            $usps_checked = 'yes';
+                                            if($results_usps==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_usps', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'yes' WHERE `type`='wpsc_product_usps' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        } else {
+                                            $usps_checked = 'no';
+                                            if($results_usps==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_usps', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'no' WHERE `type`='wpsc_product_usps' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        }
+
+
+                                        // UPS on/off for this product?
+
+                                        if(isset($_POST['wpsc_product_ups']) && $_POST['wpsc_product_ups']=='yes') {
+                                            $ups_checked = 'yes';
+                                            if($results_ups==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_ups', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'yes' WHERE `type`='wpsc_product_ups' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        } else {
+                                            $ups_checked = 'no';
+                                            if($results_ups==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_ups', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'no' WHERE `type`='wpsc_product_ups' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        }
+
+
+                                        // FedEx on/off for this product?
+
+                                        if(isset($_POST['wpsc_product_fedex']) && $_POST['wpsc_product_fedex']=='yes') {
+                                            $fedex_checked = 'yes';
+                                            if($results_fedex==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_fedex', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'yes' WHERE `type`='wpsc_product_fedex' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        } else {
+                                            $fedex_checked = 'no';
+                                            if($results_fedex==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_fedex', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'no' WHERE `type`='wpsc_product_fedex' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        }
+
+                                        $wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
 					$wpStoreCartproduct_introdescription = $wpdb->prepare($_POST['wpStoreCartproduct_introdescription']);
 					$wpStoreCartproduct_description = $wpdb->prepare($_POST['wpStoreCartproduct_description']);
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
@@ -1674,6 +2626,10 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
                                         $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
                                         $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
+                                        $wpStoreCartproduct_weight = $wpdb->escape($_POST['wpStoreCartproduct_weight']);
+                                        $wpStoreCartproduct_length = $wpdb->escape($_POST['wpStoreCartproduct_length']);
+                                        $wpStoreCartproduct_width = $wpdb->escape($_POST['wpStoreCartproduct_width']);
+                                        $wpStoreCartproduct_height = $wpdb->escape($_POST['wpStoreCartproduct_height']);
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
 		
 
@@ -1690,7 +2646,11 @@ if (!class_exists("wpStoreCart")) {
 					`category` = '{$wpStoreCartproduct_category}', 
 					`inventory` = '{$wpStoreCartproduct_inventory}',
                                         `useinventory` = '{$wpStoreCartproduct_useinventory}',
-                                        `donation` =  '{$wpStoreCartproduct_donation}'
+                                        `donation` =  '{$wpStoreCartproduct_donation}',
+                                        `weight` = '{$wpStoreCartproduct_weight}',
+                                        `length` = '{$wpStoreCartproduct_length}',
+                                        `width` = '{$wpStoreCartproduct_width}',
+                                        `height` = '{$wpStoreCartproduct_height}'
 					WHERE `primkey` ={$cleanKey} LIMIT 1 ;				
 					";
 
@@ -1730,6 +2690,10 @@ if (!class_exists("wpStoreCart")) {
 						$wpStoreCartproduct_inventory = stripslashes($result['inventory']);
                                                 $wpStoreCartproduct_useinventory = stripslashes($result['useinventory']);
                                                 $wpStoreCartproduct_donation =  stripslashes($result['donation']);
+                                                $wpStoreCartproduct_weight = stripslashes($result['weight']);
+                                                $wpStoreCartproduct_length = stripslashes($result['length']);
+                                                $wpStoreCartproduct_width = stripslashes($result['width']);
+                                                $wpStoreCartproduct_height = stripslashes($result['height']);
 					}
 				} else {
 					echo '<div class="updated"><p><strong>';
@@ -1738,7 +2702,7 @@ if (!class_exists("wpStoreCart")) {
 				}
 			}
 			
-			if (isset($_POST['addNewwpStoreCart_product']) && $isanedit == false) {
+			if (isset($_POST['addNewwpStoreCart_product']) && $isanedit == false) { // New Products
 			
 				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
 					$wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
@@ -1754,6 +2718,10 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
                                         $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
                                         $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
+                                        $wpStoreCartproduct_weight = $wpdb->escape($_POST['wpStoreCartproduct_weight']);
+                                        $wpStoreCartproduct_length = $wpdb->escape($_POST['wpStoreCartproduct_length']);
+                                        $wpStoreCartproduct_width = $wpdb->escape($_POST['wpStoreCartproduct_width']);
+                                        $wpStoreCartproduct_height = $wpdb->escape($_POST['wpStoreCartproduct_height']);
 	
 					$devOptions = $this->getAdminOptions();
 					
@@ -1770,15 +2738,16 @@ if (!class_exists("wpStoreCart")) {
 					$thePostID = wp_insert_post( $my_post );	
 					if($thePostID==0) {
 						echo '<div class="updated"><p><strong>';
-						_e("ERROR 4: wpStoreCart didn't like your data and failed to create a page for it!", "wpStoreCart");
+						_e("ERROR 4: wpStoreCart didn't like your data and failed to create a page for it! Make sure you create a product with at least a title.", "wpStoreCart");
 						echo $wpdb->print_error();
 						echo '</strong></p></div>';	
 						return false;
 					}
-	
+
+
 					// Now insert the product into the wpStoreCart database
 					$insert = "
-					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`) VALUES
+					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`, `weight`, `length`, `width`, `height`) VALUES
 					(NULL, 
 					'{$wpStoreCartproduct_name}', 
 					'{$wpStoreCartproduct_introdescription}', 
@@ -1796,13 +2765,40 @@ if (!class_exists("wpStoreCart")) {
 					0,
 					0,
                                         {$wpStoreCartproduct_useinventory},
-                                        {$wpStoreCartproduct_donation});
+                                        {$wpStoreCartproduct_donation},
+                                        {$wpStoreCartproduct_weight},
+                                        {$wpStoreCartproduct_length},
+                                        {$wpStoreCartproduct_width},
+                                        {$wpStoreCartproduct_height}
+                                        );
 					";					
 					
 					$results = $wpdb->query( $insert );
 					$lastID = $wpdb->insert_id;
 					$keytoedit = $lastID;
-	
+
+                                        // Shipping options are saved here
+                                        if(isset($_POST['wpsc_product_flatrateshipping']) && $_POST['wpsc_product_flatrateshipping']=='yes') {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_flatrateshipping', '{$lastID}');");
+                                        } else {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_flatrateshipping', '{$lastID}');");
+                                        }
+                                        if(isset($_POST['wpsc_product_usps']) && $_POST['wpsc_product_usps']=='yes') {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_usps', '{$lastID}');");
+                                        } else {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_usps', '{$lastID}');");
+                                        }
+                                        if(isset($_POST['wpsc_product_ups']) && $_POST['wpsc_product_ups']=='yes') {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_ups', '{$lastID}');");
+                                        } else {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_ups', '{$lastID}');");
+                                        }
+                                        if(isset($_POST['wpsc_product_fedex']) && $_POST['wpsc_product_fedex']=='yes') {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_fedex', '{$lastID}');");
+                                        } else {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_fedex', '{$lastID}');");
+                                        }
+
 					// Now that we've inserted both the PAGE and the product, let's update and publish our post with the correct content
 					$my_post = array();
 					$my_post['ID'] = $thePostID;
@@ -1869,7 +2865,7 @@ if (!class_exists("wpStoreCart")) {
                         } else {
                             echo '<h2>Edit';
                         }
-			echo ' a Product <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
+			echo ' a Product <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
 
                         if($isanedit == true) {
                             echo ' <a href="'.get_permalink($result['postid']).'" target="_blank">View Product Page</a>';
@@ -1881,22 +2877,14 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 			<tr>
-			<td><h3>Product Name: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">The name of the product.  We do not recommend stuffing this with keywords, unless you don\'t mind those keywords being repeated everytime the product is mentioned.  Instead, simply keep this as the actual name of the product.</div></h3></td>
-			<td><input type="text" name="wpStoreCartproduct_name" style="width: 80%;" value="'.$wpStoreCartproduct_name.'" /></td>
+			<td><h3>Product<br />Name: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">The name of the product.  We do not recommend stuffing this with keywords, unless you don\'t mind those keywords being repeated everytime the product is mentioned.  Instead, simply keep this as the actual name of the product.</div></h3></td>
+			<td><input type="text" name="wpStoreCartproduct_name" style="width: 80%;height:35px;font-size:22px;" value="'.$wpStoreCartproduct_name.'" /></td>
 			<td><div style="width:300px;">The title of the product.</div></td>
 			</tr>';			
 
 			echo '
 			<tr>
-			<td><h3>Price & Shipping: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  In this early version of wpStoreCart, only flat shipping is available.  In future version, full shipping options and providers will be added.  Set shipping to 0 for digital downloads.</div></h3></td>
-			<td>Price: <input type="text" name="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Shipping: <input type="text" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" /><p><strong>Accept Donations? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
-			<td><div style="width:300px;">The price and shipping cost of the product.</div></td>
-			</tr>';			
-
-
-			echo '
-			<tr>
-			<td><h3>Introduction Description: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">Keep this short and concise, as this text will be used in several places as a quick description of the product.  For higher sales and conversions, sum up the main features and benefits and include a direct call to action.</div></h3></td>
+			<td><h3>Introduction<br />Description: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">Keep this short and concise, as this text will be used in several places as a quick description of the product.  For higher sales and conversions, sum up the main features and benefits and include a direct call to action.</div></h3></td>
 			<td><textarea class="wpStoreCartproduct_introdescription" id="wpStoreCartproduct_introdescription" name="wpStoreCartproduct_introdescription" style="width: 80%;">'.$wpStoreCartproduct_introdescription.'</textarea>  </td>
 			<td><div style="width:300px;">A short introduction to the product. </div></td>
 			</tr>';	
@@ -1904,29 +2892,50 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 			<tr>
-			<td><h3>Description: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">Put your complete sales pitch here.  There are many techniques which can help make your product\'s sale page more effective.  At the very least, most sales pages include at least some of the features and benefits of the product, and include one or more calls to action.</div></h3></td>
+			<td><h3>Description: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">Put your complete sales pitch here.  There are many techniques which can help make your product\'s sale page more effective.  At the very least, most sales pages include at least some of the features and benefits of the product, and include one or more calls to action.</div></h3></td>
 			<td><textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="width: 80%;">'.$wpStoreCartproduct_description.'</textarea>  </td>
 			<td><div style="width:300px;">You should be very detailed and include not only the backstory of the product, but also helpful information like instructions, controls, and objectives.</div></td>
 			</tr>';			
 
+			echo '
+			<tr>
+			<td><h3>Price'; if($devOptions['storetype']!='Digital Goods Only') { echo '<br />& Shipping';} echo ': <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  You can also enter a flat rate shipping amount here, which will only be used if you do not offer other shipping options, such as FedEx or UPS.  If the shipping options are not here, that means the General Setting > Store Type is set to Digital Only.  Change that setting to restore the shipping options here.</div></h3></td>
+			<td><br /><div style=";display:block;float:left;">Price: '.$devOptions['currency_symbol'].'<input type="text" name="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].'  &nbsp; &nbsp; &nbsp; &nbsp; '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
+			<td><div style="width:300px;">The price and shipping cost of the product.</div></td>
+			</tr>';
+
                         echo '
-			<tr><td><h3>Use Inventory? <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-333" /><div class="tooltip-content" id="example-content-333">Does this product have a limited number available?  If so, set this to yes to use the inventory to tell customers when your product is out of stock.</div></h3></td>
-			<td><p><label for="wpStoreCartproduct_useinventory_yes"><input type="radio" id="wpStoreCartproduct_useinventory_yes" name="wpStoreCartproduct_useinventory" value="1" '; if ($wpStoreCartproduct_useinventory == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_useinventory_no"><input type="radio" id="wpStoreCartproduct_useinventory_no" name="wpStoreCartproduct_useinventory" value="false" '; if ($wpStoreCartproduct_useinventory == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
+			<tr';if($devOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'><td><h3>Use<br />Inventory? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333" /><div class="tooltip-content" id="example-content-333">Does this product have a limited number available?  If so, set this to yes to use the inventory to tell customers when your product is out of stock.</div></h3></td>
+			<td><br /><p><label for="wpStoreCartproduct_useinventory_yes"><input type="radio" id="wpStoreCartproduct_useinventory_yes" name="wpStoreCartproduct_useinventory" value="1" '; if ($wpStoreCartproduct_useinventory == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_useinventory_no"><input type="radio" id="wpStoreCartproduct_useinventory_no" name="wpStoreCartproduct_useinventory" value="false" '; if ($wpStoreCartproduct_useinventory == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label>';
+
+                        
+			echo '
+                        <div style="margin-right:0px;position:relative;top:-40px;display:block;float:right;min-width:200px;min-height:40px;width:200px;height:40px;">
+			<div';if($devOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'>
+			<strong>Inventory Quantity:</strong> <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">If you\'re selling a limited number of a product (for example, a tangible item with a limited stock, or a digital product that you are only selling a limited number of copies.)</div><br />
+			<input type="text" name="wpStoreCartproduct_inventory" style="width: 120px;" value="'.$wpStoreCartproduct_inventory.'" />  <br />
+			</div>
+                        </div>
+                        ';
+
+                        echo '</p></td>
 			<td class="tableDescription"><p>Set to no for unlimited purchases or<br /> yes if you have a limited amount to sell.</p></td>
 			</td></tr>
                         ';
 
 			echo '
-			<tr>
-			<td><h3>Inventory Quantity: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5">If you\'re selling a limited number of a product (for example, a tangible item with a limited stock, or a digital product that you are only selling a limited number of copies.)</div></h3></td>
-			<td><input type="text" name="wpStoreCartproduct_inventory" style="width: 120px;" value="'.$wpStoreCartproduct_inventory.'" />  </td>
-			<td><div style="width:300px;">The quantity of items</div></td>
-			</tr>';	
+			<tr';if($devOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'>
+			<td><h3>Weight &<br />Dimensions: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2995" /><div class="tooltip-content" id="example-content-2995">If this is a physical product, enter in the products width, length, height, and weight.  If it is a digital product, keep these values at 0.</div></h3></td>
+			<td><div id="wpscdimensions"><br />Weight: <input type="text" name="wpStoreCartproduct_weight" style="width: 58px;" value="'.$wpStoreCartproduct_weight.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Length: <input type="text" name="wpStoreCartproduct_length" style="width: 58px;" value="'.$wpStoreCartproduct_length.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Width: <input type="text" name="wpStoreCartproduct_width" style="width: 58px;" value="'.$wpStoreCartproduct_width.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Height: <input type="text" name="wpStoreCartproduct_height" style="width: 58px;" value="'.$wpStoreCartproduct_height.'" /></div></td>
+			<td><div style="width:300px;">The physical details of the product.</div></td>
+			</tr>';
 
 			echo '
 			<tr>
-			<td><h3>Category <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">Categories allow you to keep products in logically seperated order so that they are easier to find.</div></h3></td>
-			<td><select name="wpStoreCartproduct_category"> 
+			<td><h3>Category <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">Categories allow you to keep products in logically seperated order so that they are easier to find.</div></h3>
+                        <h3>Tags <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Think of a word or phrase that describes your product: that is a tag.  Now use a comma to seperate each of these tags.</div></h3>
+                        </td>
+			<td><br /><select name="wpStoreCartproduct_category">
 			 <option value="">
 						';
 			
@@ -1948,21 +2957,16 @@ if (!class_exists("wpStoreCart")) {
 					echo $option;
 				}
 			}
+                        
 			echo '
-			</select></td>
-			<td><div style="width:300px;">The category the product belongs to.</div></td>
+			</select> &nbsp; &nbsp; &nbsp; Tags: <input type="text" name="wpStoreCartproduct_tags" style="width: 200px;" value="'.$wpStoreCartproduct_tags.'" />
+                        </td>
+			<td><div style="width:300px;">The category the product belongs to.  Use a comma seperated list of tags to add additional categories.</div></td>
 			</tr>';	
-			
+
 			echo '
-			<tr>
-			<td><h3>Tags <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7">Think of a word or phrase that describes your product: that is a tag.  Now use a comma to seperate each of these tags.</div></h3></td>
-			<td><input type="text" name="wpStoreCartproduct_tags" style="width: 200px;" value="'.$wpStoreCartproduct_tags.'" />  </td>
-			<td><div style="width:300px;">Comma seperated list of tags.  In wpStoreCart, tags serve as an additional way to add organization to your products.</div></td>
-			</tr>';	
-	
-			echo '
-			<tr>
-			<td><h3>Downloadable Files: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
+			<tr';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
+			<td><h3>Downloadable<br />Files: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
 			<td>File: <input type="text" name="wpStoreCartproduct_download" style="width: 200px;" value="'.$wpStoreCartproduct_download.'" /> or<br />
 			Upload a file: <span id="spanSWFUploadButton"></span>
                         <div id="upload-progressbar-container">
@@ -1974,11 +2978,11 @@ if (!class_exists("wpStoreCart")) {
 			</tr>';			
 			
                         if($wpStoreCartproduct_thumbnail==''||!isset($wpStoreCartproduct_thumbnail)) {
-                            $wpStoreCartproduct_thumbnail = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                            $wpStoreCartproduct_thumbnail = plugins_url('/images/default_product_img.jpg' , __FILE__);
                         }
 			echo '
 			<tr>
-			<td><h3>Product Thumbnail: <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.</div></h3></td>
+			<td><h3>Product<br />Thumbnail: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.</div></h3></td>
 			<td>URL: <input type="text" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /> or<br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
                         <div id="upload-progressbar-container2">
@@ -2001,14 +3005,14 @@ if (!class_exists("wpStoreCart")) {
                             <script type="text/javascript">
 
                                 function delvar(keytodel) {
-                                    jQuery.ajax({ url: "'.WP_PLUGIN_URL.'/wpstorecart/php/delvar.php", type:"POST", data:"delete="+keytodel, success: function(){
+                                    jQuery.ajax({ url: "'.plugins_url('/php/delvar.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
                                         jQuery("#"+keytodel).remove();
                                     }});
                                 }
 
                                 function addvar() {
-                                    jQuery.ajax({ url: "'.WP_PLUGIN_URL.'/wpstorecart/php/addvar.php", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
-                                        jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.WP_PLUGIN_URL.'/wpstorecart/images/cross.png\' /> "+jQuery("#createnewvar").val()+"</td><td>"+jQuery("#varvalue").val()+"</td><td>"+jQuery("#varprice").val()+"</td><td>"+jQuery("#vardesc").val()+"</td></tr>");
+                                    jQuery.ajax({ url: "'.plugins_url('/php/addvar.php' , __FILE__).'", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
+                                        jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> "+jQuery("#createnewvar").val()+"</td><td>"+jQuery("#varvalue").val()+"</td><td>"+jQuery("#varprice").val()+"</td><td>"+jQuery("#vardesc").val()+"</td></tr>");
                                     }});
                                 }
                             </script>
@@ -2016,8 +3020,8 @@ if (!class_exists("wpStoreCart")) {
                             <br style="clear:both;" />
                             <h2>Product Variations &amp; Attributes</h2>
                             <table class="widefat">
-                            <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th><th>Downloads</th></tr></thead><tbody>
-                            <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.WP_PLUGIN_URL.'/wpstorecart/images/add.png" /> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td>
+                            <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th><th';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>Downloads</th></tr></thead><tbody>
+                            <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" /> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
                             <input type="text" id="wpStoreCartproduct_variation" name="wpStoreCartproduct_variation" style="width: 200px;" value="" />
                             Upload a file: <span id="spanSWFUploadButton3"></span>
                             <div id="upload-progressbar-container3">
@@ -2043,7 +3047,7 @@ if (!class_exists("wpStoreCart")) {
                                         foreach ($results as $result) {
                                             $theKey = $result['primkey'];
                                             $exploder = explode('||', $result['value']);
-                                            echo '<tr id="'.$theKey.'"><td><img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png" /> '.$exploder[0].'</td><td>'.$exploder[1].'</td><td>'.$exploder[2].'</td><td>'.$exploder[3].'</td></tr>';
+                                            echo '<tr id="'.$theKey.'"><td><img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> '.$exploder[0].'</td><td>'.$exploder[1].'</td><td>'.$exploder[2].'</td><td>'.$exploder[3].'</td></tr>';
                                         }
                                 }
 
@@ -2142,7 +3146,7 @@ if (!class_exists("wpStoreCart")) {
 
 			</script>
 			
-			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>
+			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
 			
 			<form method="post" name="myForm">
 			<select name="bulkactions">
@@ -2445,7 +3449,7 @@ if (!class_exists("wpStoreCart")) {
                             }
                         </script>
                         <table class="widefat">
-			<thead><tr><th> </th><th>Order Status <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>"Dropped" means they added it to their cart, but never completed checkout.  "Order Recieved" means the customer successfully completed the checkout process, but an admin hasn\'t verified and approved the order yet.  "Pending" means the order is delayed until an admin changes the order status.  "Canceled" means the order was manually canceled by an admin.  "Completed" means the order is fulfilled, the payment was successfully recieved and approved.</h3></div></th><th>Cart Contents <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>The items that were in the customers shopping cart.  You can add or remove items if you need to modify or fulfill an order manually.</h3></div></th><th>Processor <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The payment gateway that was used in the transaction.</h3></div></th><th>Price <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>The total price of everything added together in the shopping cart.</h3></div></th><th>Shipping <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The total shipping of everything in the shopping cart.</h3></div></th><th>User <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The Wordpress User ID of the purchaser.</h3></div></th><th>Email <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8"><h3>The email address the customer used to make the purchase.</h3></div></th><th  style="display:none;">Affiliate <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The Wordpress user ID of the affiliate who is credited with driving the sale.</h3></div></th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Order Status <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>"Dropped" means they added it to their cart, but never completed checkout.  "Order Recieved" means the customer successfully completed the checkout process, but an admin hasn\'t verified and approved the order yet.  "Pending" means the order is delayed until an admin changes the order status.  "Canceled" means the order was manually canceled by an admin.  "Completed" means the order is fulfilled, the payment was successfully recieved and approved.</h3></div></th><th>Cart Contents <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>The items that were in the customers shopping cart.  You can add or remove items if you need to modify or fulfill an order manually.</h3></div></th><th>Processor <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The payment gateway that was used in the transaction.</h3></div></th><th>Price <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>The total price of everything added together in the shopping cart.</h3></div></th><th>Shipping <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The total shipping of everything in the shopping cart.</h3></div></th><th>User <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The Wordpress User ID of the purchaser.</h3></div></th><th>Email <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8"><h3>The email address the customer used to make the purchase.</h3></div></th><th  style="display:none;">Affiliate <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The Wordpress user ID of the affiliate who is credited with driving the sale.</h3></div></th></tr></thead><tbody>
 			';
 			
 			echo '
@@ -2519,7 +3523,7 @@ if (!class_exists("wpStoreCart")) {
                                     }
                             }
                             echo '
-                            </select><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/add.png" style="cursor:pointer;" onclick="addItemToCart(jQuery(\'#addNewProduct\').val());" ></a><br />'.$this->splitOrderIntoProduct($keytoedit, 'edit');
+                            </select><img src="'.plugins_url('/images/add.png' , __FILE__).'" style="cursor:pointer;" onclick="addItemToCart(jQuery(\'#addNewProduct\').val());" ></a><br />'.$this->splitOrderIntoProduct($keytoedit, 'edit');
                         }
 
                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
@@ -2610,7 +3614,7 @@ if (!class_exists("wpStoreCart")) {
 										
 					echo "
 					<tr>
-					<td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".WP_PLUGIN_URL."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
+					<td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"\" /></a></td>
 					<td>{$wpStoreCartorderstatus}</td>
 					<td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
 					<td>{$wpStoreCartpaymentprocessor}</td>
@@ -2837,7 +3841,7 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			echo '<table class="widefat">
-			<thead><tr><th> </th><th>Category <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Thumb</th><th>Description</th><th>Page</th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Category <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Thumb</th><th>Description</th><th>Page</th></tr></thead><tbody>
 			';
 			
 			echo '
@@ -2949,8 +3953,12 @@ if (!class_exists("wpStoreCart")) {
 		
 			$devOptions = $this->getAdminOptions();
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
-			
 
+                        // Allows us to turn the coupon system off or on from this page
+                        if(@isset($_POST['enablecoupons'])) {
+                            $devOptions['enablecoupons'] = $wpdb->escape($_POST['enablecoupons']);
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+                        }
 
 			// @todo Theres a bug here where this will keep saying this over and over again.
 			if(isset($_GET['keytodelete']) && is_numeric($_GET['keytodelete']))  {
@@ -3121,19 +4129,28 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			$this->spHeader();
+
+
 			
+			if ($isanedit != true) {
+				echo '<h2>Add a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
+			} else {
+				echo '<h2>Edit a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
+			}
+
+
+                        echo '
+			<form method="post" action="'. $_SERVER["REQUEST_URI"].'" name="wpstorecartcouponsetting">
+                        <p>Coupons are enabled? <label for="enablecoupons"><input type="radio" id="enablecoupons_yes" name="enablecoupons" value="true" '; if ($devOptions['enablecoupons'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablecoupons_no"><input type="radio" id="enablecoupons_no" name="enablecoupons" value="false" '; if ($devOptions['enablecoupons'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label> &nbsp;<input type="submit" value="Update" /></p>
+                        </form>';
+
+
 			echo '
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
-			
-			if ($isanedit != true) {
-				echo '<h2>Add a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>';
-			} else {
-				echo '<h2>Edit a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/bighelp.png" /></a></h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
-			}
-			
+
 			echo '<table class="widefat">
-			<thead><tr><th>Coupon Code <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>Don\'t use spaces! This is what people should type or paste into the coupon box during checkout in order to recieve a discount.  As such, this should be a short code, with no spaces, all alpha numeric characters, etc.</h3></div></th><th>Flat Discount <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>A flat amount to deduct when the coupon code is used.  You can combine this with the Pecentage Discount, but for simplicities sake, we recommend choosing either a flat discount or a percentage, but not both.</h3></div></th><!--<th>Percentage Dicount <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The percentage of the price to deduct from the purchase.</h3></div></th>--><th>Description <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>Take a note of what your coupon is meant to do by writing a description here.</h3></div></th><th>Product <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The product you want the coupon to apply to.  <!--Set to 0 for the coupon to work on all products in the store.--></h3></div></th><th>Start Date <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The day which the coupon starts working.  Before this date, the coupon is invalid.</h3></div></th><th>Expiration Date <img src="'.WP_PLUGIN_URL.'/wpstorecart/images/help.png" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The date which the coupon code stops working.  After this date, the coupon is invalid.</h3></div></th></tr></thead><tbody>
+			<thead><tr><th>Coupon Code <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>Don\'t use spaces! This is what people should type or paste into the coupon box during checkout in order to recieve a discount.  As such, this should be a short code, with no spaces, all alpha numeric characters, etc.</h3></div></th><th>Flat Discount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>A flat amount to deduct when the coupon code is used.  You can combine this with the Pecentage Discount, but for simplicities sake, we recommend choosing either a flat discount or a percentage, but not both.</h3></div></th><!--<th>Percentage Dicount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The percentage of the price to deduct from the purchase.</h3></div></th>--><th>Description <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>Take a note of what your coupon is meant to do by writing a description here.</h3></div></th><th>Product <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The product you want the coupon to apply to.  <!--Set to 0 for the coupon to work on all products in the store.--></h3></div></th><th>Start Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The day which the coupon starts working.  Before this date, the coupon is invalid.</h3></div></th><th>Expiration Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The date which the coupon code stops working.  After this date, the coupon is invalid.</h3></div></th></tr></thead><tbody>
 			';
 
 			
@@ -3265,6 +4282,11 @@ if (!class_exists("wpStoreCart")) {
 
 			$devOptions = $this->getAdminOptions();
 
+                        if(isset($_GET['wpscaction']) && $_GET['wpscaction']=='removecurl') {
+                            $devOptions['checkcurl']='false';
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+                        }
+
                         if(isset($_GET['wpscaction']) && $_GET['wpscaction']=='createpages') {
                             if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage']) || $devOptions['mainpage']==0) {
                                 // Insert the PAGE into the WP database
@@ -3319,11 +4341,36 @@ if (!class_exists("wpStoreCart")) {
 		
 			$this->spHeader();
 
-                        echo '<h2>Overview</h2>';
+
+                        echo '<div style="float:left;display:block;padding:10px;width:333px;max-width:333px;"><h2>Overview</h2>';
 
 			$this->wpstorecart_main_dashboard_widget_function();
 
-                        echo '
+                        echo '</div><div style="float:left;display:block;padding:10px;width:333px;max-width:333px;background:;"><h2>News</h2>';
+			include_once(ABSPATH . WPINC . '/feed.php');
+                        $rss = fetch_feed('http://wpstorecart.com/category/blog/feed/');
+                        if (!is_wp_error( $rss ) ) : // Checks that the object is created correctly
+                            // Figure out how many total items there are, but limit it to 2.
+                            $maxitems = $rss->get_item_quantity(2);
+
+                            // Build an array of all the items, starting with element 0 (first element).
+                            $rss_items = $rss->get_items(0, $maxitems);
+                        endif;
+
+
+                        echo '<ul>';
+                            if ($maxitems == 0) {
+                                echo '<li>No items.</li>';
+                            } else {
+                                // Loop through each feed item and display each item as a hyperlink.
+                                foreach ( $rss_items as $item ) {
+                                    echo '<li><a style="font-weight:bold;font-size:120%;" target="_blank" href="'. $item->get_permalink() .'" title="Posted "'.$item->get_date('j F Y | g:i a').'">'.$item->get_title().'</a><br />'.$item->get_description().'</li>';
+                                }
+                            }
+                        echo '</ul>';
+
+                        echo '</div><br style="clear:both;" />
+                            <h2>Basic Stats</h2>
 <table >
 	<caption>This Week In Sales</caption>
 	<thead>
@@ -3553,7 +4600,7 @@ if (!class_exists("wpStoreCart")) {
 			$lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 			
 			echo '<ul>';
-                        echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart v'.$wpstorecart_version.' :</strong></span> <a href="'.$permalink.'" target="_blank">'.get_bloginfo('name').'</a> with '.$totalrecords.' product(s).</u></li>';
+                        echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart v'.$wpstorecart_version.' :</strong></span> with '.$totalrecords.' product(s).</u></li>';
                         echo '<li><strong>Gross Revenue last 30 days: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong></li>';
                         echo '<li><strong>All Time Gross Revenue: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
                         echo "<li><span style=\"float:left;padding:0 10px 0 0;border-right:1px #CCC solid;\"><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"http://chart.apis.google.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
@@ -3571,20 +4618,23 @@ if (!class_exists("wpStoreCart")) {
 		function  addHeaderCode() {
                         
 			//echo '<!-- wpStoreCart BEGIN -->';
-			wp_enqueue_script('wpsc', WP_PLUGIN_URL.'/wpstorecart/php/wpsc-1.1/wpsc/wpsc-javascript.php', array('jquery'),'1.3.2' );
+
+			wp_enqueue_script('wpsc', plugins_url('/php/wpsc-1.1/wpsc/wpsc-javascript.php' , __FILE__), array('jquery'),'1.3.2' );
                     
 
                         $devOptions = $this->getAdminOptions();
 
                         if($devOptions['wpscjQueryUITheme']!='') {
-                            $myStyleUrl = WP_PLUGIN_URL . '/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+
+                            $myStyleUrl = plugins_url('/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css' , __FILE__);
                             $myStyleFile = WP_PLUGIN_DIR . '/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
                             if ( file_exists($myStyleFile) ) {
                                 wp_register_style('myStyleSheets', $myStyleUrl);
                                 wp_enqueue_style( 'myStyleSheets');
                             }
 
-                            wp_enqueue_script('jqueryui-new', WP_PLUGIN_URL.'/wpstorecart/jqueryui/js/jquery-ui-1.8.7.custom.min.js', array('jquery'),'1.3.2' );
+
+                            wp_enqueue_script('jqueryui-new', plugins_url('/jqueryui/js/jquery-ui-1.8.7.custom.min.js' , __FILE__), array('jquery'),'1.3.2' );
 
                             echo '
                             <script type="text/javascript">
@@ -3655,24 +4705,28 @@ if (!class_exists("wpStoreCart")) {
 		   if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
 			  
 			$sql = "
-				CREATE TABLE {$table_name} (
-				`primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-				`name` VARCHAR(512) NOT NULL, 
-				`introdescription` TEXT NOT NULL, 
-				`description` TEXT NOT NULL, 
-				`thumbnail` VARCHAR(512) NOT NULL, 
-				`price` DECIMAL(9,2) NOT NULL, 
-				`shipping` DECIMAL(9,2) NOT NULL, 
-				`download` VARCHAR(512) NOT NULL, 
-				`tags` TEXT NOT NULL, `category` INT NOT NULL, 
-				`inventory` INT NOT NULL,
-				`dateadded` INT( 8 ) NOT NULL,
-				`postid` INT NOT NULL,
-				`timesviewed` INT NOT NULL,  
-				`timesaddedtocart` INT NOT NULL, 
-				`timespurchased` INT NOT NULL,
-                `useinventory` BOOL NOT NULL DEFAULT '1',
-				`donation` BOOL NOT NULL DEFAULT '0'
+                                CREATE TABLE {$table_name} (
+                                `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                `name` VARCHAR(512) NOT NULL,
+                                `introdescription` TEXT NOT NULL,
+                                `description` TEXT NOT NULL,
+                                `thumbnail` VARCHAR(512) NOT NULL,
+                                `price` DECIMAL(9,2) NOT NULL,
+                                `shipping` DECIMAL(9,2) NOT NULL,
+                                `download` VARCHAR(512) NOT NULL,
+                                `tags` TEXT NOT NULL, `category` INT NOT NULL,
+                                `inventory` INT NOT NULL,
+                                `dateadded` INT( 8 ) NOT NULL,
+                                `postid` INT NOT NULL,
+                                `timesviewed` INT NOT NULL,  
+                                `timesaddedtocart` INT NOT NULL,
+                                `timespurchased` INT NOT NULL,
+                                `useinventory` BOOL NOT NULL DEFAULT '1',
+                                `donation` BOOL NOT NULL DEFAULT '0',
+                                `weight` int(7) NOT NULL DEFAULT '0',
+                                `length` int(7) NOT NULL DEFAULT '0',
+                                `width` int(7) NOT NULL DEFAULT '0',
+                                `height` int(7) NOT NULL DEFAULT '0'
 				);			
 				";
 			  
@@ -3794,11 +4848,19 @@ if (!class_exists("wpStoreCart")) {
 			extract(shortcode_atts(array(
 				'display' => NULL,
 				'primkey' => '0',
-				'quantity' => '10',
+				'quantity' => 'unset',
 				'usetext' => 'true',
 				'usepictures' => 'false',
                                 'thecategory' => '',
 			), $atts));
+
+                        // Adds page pagination
+                        if($quantity=='unset') {
+                            $itemsperpage = $devOptions['itemsperpage'];
+                            $quantity = $devOptions['itemsperpage'];
+                        } else {
+                            $itemsperpage = $quantity;
+                        }
 
                         // Adds this shortcode: [wpstorecart display="orders"]
                         if ($display=='orders') {
@@ -3862,6 +4924,7 @@ if (!class_exists("wpStoreCart")) {
 				case 'recentproducts': // Recent product shortcode =========================================================
 					$output .= '<div class="wpsc-recent-products">';
                                         if(is_numeric($quantity)){
+
 						$sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, {$quantity};";
 						$results = $wpdb->get_results( $sql , ARRAY_A );
 						if(isset($results)) {
@@ -3913,6 +4976,7 @@ if (!class_exists("wpStoreCart")) {
 						$results = $wpdb->get_results( $sql , ARRAY_A );
                                             if(isset($results)) {
                                                     foreach ($results as $result) {
+
                                                             $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                             if($devOptions['displayType']=='grid'){
                                                                     $output .= '<div class="wpsc-grid wpsc-categories">';
@@ -3937,6 +5001,7 @@ if (!class_exists("wpStoreCart")) {
                                                                             <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
                                                                             <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
                                                                             <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                            <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                             <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
                                                                     ';
@@ -4086,6 +5151,13 @@ if (!class_exists("wpStoreCart")) {
                                                         }
                                                         // Product variations
 
+                                                        // Flat rate shipping implmented here:
+                                                        if($devOptions['flatrateshipping']=='all_single') {
+                                                            $result['shipping'] = $devOptions['flatrateamount'];
+                                                        } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                                            $result['shipping'] = '0.00';
+                                                        }
+
 							$output .= '
 							<form method="post" action="">
 							 
@@ -4093,6 +5165,7 @@ if (!class_exists("wpStoreCart")) {
 								<input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
 								<input type="hidden" id="my-item-name" name="my-item-name" value="'.$results[0]['name'].'" />
 								<input type="hidden" id="my-item-price" name="my-item-price" value="'.$results[0]['price'].'" />
+                                                                <input type="hidden" id="my-item-shipping" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                 <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
 
 								<ul class="wpsc-product-info">
@@ -4132,19 +5205,39 @@ if (!class_exists("wpStoreCart")) {
 					break;
                                 default: // Default shortcode
                                     if(!isset($_GET['wpsc'])) {
+
+                                        if( !isset( $_GET['cpage'] ) || !is_numeric($_GET['cpage'])) {
+                                            $startat = 0;
+                                        } else {
+                                            $startat = ($_GET['cpage'] - 1) * $quantity;
+                                        }
+
                                         if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
-                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT 0, {$quantity};";
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT {$startat}, {$quantity};";
+                                            $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `dateadded` DESC;");
                                         }
                                         if($devOptions['frontpageDisplays']=='List most popular products') {
-                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, {$quantity};";
+                                            $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT {$startat}, {$quantity};";
+                                             $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC;");
+                                        }
+                                        if($devOptions['frontpageDisplays']=='List all categories (Ascending)') {
+                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
+                                            $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC;");
+                                            $secondcss = 'wpsc-categories';
+                                        } else {
+                                            $secondcss = 'wpsc-products';
                                         }
                                         if($devOptions['frontpageDisplays']=='List all categories') {
-                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT 0, {$quantity};";
+                                            $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+                                            $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC;");
                                             $secondcss = 'wpsc-categories';
                                         } else {
                                             $secondcss = 'wpsc-products';
                                         }
                                         $results = $wpdb->get_results( $sql , ARRAY_A );
+
+                                        
+
 
                                         if($devOptions['displayThumb']=='true') {
                                             $usepictures='true';
@@ -4156,11 +5249,11 @@ if (!class_exists("wpStoreCart")) {
                                         }
 
                                         // If we're dealing with categories, we have different fields to deal with than products.
-                                        if($devOptions['frontpageDisplays']=='List all categories') {
+                                        if($devOptions['frontpageDisplays']=='List all categories' || $devOptions['frontpageDisplays']=='List all categories (Ascending)') {
                                             if(isset($results)) {
                                                     foreach ($results as $result) {
                                                             if(trim($result['thumbnail']=='')) {
-                                                                $result['thumbnail'] = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                                                                $result['thumbnail'] = plugins_url('/images/default_product_img.jpg' , __FILE__);
                                                             }
                                                             if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
                                                                 if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
@@ -4210,6 +5303,14 @@ if (!class_exists("wpStoreCart")) {
                                                                     $output .= '<p>'.$result['introdescription'].'</p>';
                                                             }
                                                             if($devOptions['displayAddToCart']=='true'){
+                                                                
+                                                                    // Flat rate shipping implmented here:
+                                                                    if($devOptions['flatrateshipping']=='all_single') {
+                                                                        $result['shipping'] = $devOptions['flatrateamount'];
+                                                                    } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                                                        $result['shipping'] = '0.00';
+                                                                    }
+
                                                                     $output .= '
                                                                     <form method="post" action="">
 
@@ -4217,6 +5318,7 @@ if (!class_exists("wpStoreCart")) {
                                                                             <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
                                                                             <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
                                                                             <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                            <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                             <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
                                                                     ';
@@ -4233,8 +5335,27 @@ if (!class_exists("wpStoreCart")) {
                                                                     ';
                                                             }
 
+
                                                             $output .= '</div>';
                                                     }
+
+                                                    $output .= '<div class="wpsc-clear"></div>';
+                                                    $output .= '<div class="wpsc-navigation">';
+
+                                                    $comments_per_page = $quantity;
+                                                    $page = isset( $_GET['cpage'] ) ? abs( (int) $_GET['cpage'] ) : 1;
+
+                                                    $output .= paginate_links( array(
+                                                        'base' => add_query_arg( 'cpage', '%#%' ),
+                                                        'format' => '',
+                                                        'prev_text' => __('&laquo;'),
+                                                        'next_text' => __('&raquo;'),
+                                                        'total' => ceil($total / $comments_per_page),
+                                                        'current' => $page
+                                                    ));
+
+                                                    $output .= '</div>';
+
                                                     $output .= '<div class="wpsc-clear"></div>';
                                             }
                                         }
@@ -4469,6 +5590,78 @@ if (!class_exists("wpStoreCart")) {
 			return $posts;
 		}		
 
+                function overlay_css() {
+                    global $APjavascriptQueue, $hasOverlayCss;
+
+                    if(!isset($hasOverlayCss)) {
+                        $APjavascriptQueue .= '
+
+                            <script type="text/javascript">
+                                jQuery.noConflict();
+                                jQuery(window).load(function() {
+
+                                        jQuery("a[rel]").overlay({
+
+                                                effect: \'apple\',
+                                                mask: {
+                                                    color: \'#91d8ff\',
+                                                    loadSpeed: 2000,
+                                                    opacity: 0.93
+                                                },
+                                                onBeforeLoad: function() {
+                                                        var wrap = this.getOverlay().find(".contentWrap");
+                                                        wrap.load(this.getTrigger().attr("href"));
+                                                }
+
+                                        });
+                                });
+                            </script>
+
+                            <style type="text/css">
+                            .apple_overlay {
+                                    display:none;
+                                    width:640px;
+                                    padding:0px;
+                                    font-size:11px;
+                                    z-index:99999;
+                                    position: absolute;
+                            }
+
+
+                            .apple_overlay .close {
+                                    background-image:url('.plugins_url('/images/wizard/button_cancel.png' , __FILE__).');
+                                    position:absolute; right:8px; top:11px;
+                                    cursor:pointer;
+                                    height:32px;
+                                    width:33px;
+                            }
+                            #overlay {
+                                    position: absolute;
+                                    z-index:99999;
+                                    background-image:url('.plugins_url('/images/wizard/background.png' , __FILE__).');
+                                    color:#efefef;
+                                    width:640px;
+                                    height:480px;
+                            }
+
+                            /* container for external content. uses vertical scrollbar, if needed */
+                            div.contentWrap {
+                                    height:480px;
+                                    z-index:99999;
+                                    position: absolute;
+
+                            }
+
+                            div.contentWrap a:hover{
+                                opacity:0.8;
+                            }
+                            </style>
+                        ';
+                        $hasOverlayCss = 'isset';
+                    }
+                }
+
+
                 function my_import_scripts() {
                     wp_enqueue_script('swfupload');
                 }
@@ -4476,31 +5669,14 @@ if (!class_exists("wpStoreCart")) {
 		function my_mainpage_scripts() {
 			global $APjavascriptQueue;
 
-                        /*
-			wp_enqueue_script('sparkline',WP_PLUGIN_URL . '/wpstorecart/js/jquery.sparkline.min.js',array('jquery'),'1.4' );
-		
-			$APjavascriptQueue .= '
-			<script type="text/javascript">
-			//<![CDATA[
-				jQuery(document).ready(function($) {
-					$(".inlinepie").sparkline("html", {type: "pie", width: "16px", height:"16px"} );
-					$(".inlinepie").sparkline(); 				
-					$(".inlinebar").sparkline("html", {type: "bar", barColor: "red", width: "10px", height:"16px"} );
-					$(".inlinebar").sparkline(); 
-					
-				});
-			//]]>
-			</script>					
-			';
-                        */
-                        
+            
                         $APjavascriptQueue .= '
                             <link href="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/basic.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/_shared/EnhanceJS/enhance.js"></script>
 	<script type="text/javascript">
 		// Run capabilities test
-var $ = jQuery.noConflict();
-$(document).ready(function() {
+
+jQuery(document).ready(function($) {
 		enhance({
 			loadScripts: [
 				\''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/js/excanvas.js\',
@@ -4516,12 +5692,24 @@ $(document).ready(function() {
     </script>
                         ';
 
+
+                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        $this->overlay_css();
+
 		}		
 		
 		function my_tooltip_script() {
 			global $APjavascriptQueue;
-		
+
+                        wp_enqueue_script('jquery-ui-core',array('jquery'),'1.4');
+                        wp_enqueue_script('jquery-ui-sortable',array('jquery'),'1.4');
 			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        $this->overlay_css();
 
 			$APjavascriptQueue .= '
 			<style type="text/css">
@@ -4551,9 +5739,13 @@ $(document).ready(function() {
 
 		function admin_script_anytime() {
 			global $APjavascriptQueue;
-		
+
+                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
 			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
 			wp_enqueue_script('anytime',WP_PLUGIN_URL . '/wpstorecart/js/anytime/anytimec.js',array('jquery'),'1.4' );
+                        $this->overlay_css();
 		
 			$APjavascriptQueue .= '<link type="text/css" rel="stylesheet" href="' . WP_PLUGIN_URL . '/wpstorecart/js/anytime/anytimec.css" />
 			<style type="text/css">
@@ -4586,7 +5778,7 @@ $(document).ready(function() {
                     $devOptions = $this->getAdminOptions();
 
                     if($devOptions['wpscCss']!='') {
-                        $myStyleUrl = WP_PLUGIN_URL . '/wpstorecart/themes/'.$devOptions['wpscCss'];
+                        $myStyleUrl = plugins_url('/themes/'.$devOptions['wpscCss'] , __FILE__);
                         $myStyleFile = WP_PLUGIN_DIR . '/wpstorecart/themes/'.$devOptions['wpscCss'];
                         if ( file_exists($myStyleFile) ) {
                             wp_register_style('myStyleSheets', $myStyleUrl);
@@ -4595,7 +5787,7 @@ $(document).ready(function() {
                     }
 
                     if($devOptions['wpscjQueryUITheme']!='') {
-                        $myStyleUrljQUI = WP_PLUGIN_URL . '/wpstorecart/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
+                        $myStyleUrljQUI = plugins_url('/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css' , __FILE__); 
                         $myStyleFilejQUI = WP_PLUGIN_DIR . '/wpstorecart/jqueryui/css/'.$devOptions['wpscjQueryUITheme'].'/jquery-ui-1.8.7.custom.css';
                         if ( file_exists($myStyleFilejQUI) ) {
                             wp_register_style('myStyleSheetsjQUI', $myStyleUrljQUI);
@@ -4605,15 +5797,21 @@ $(document).ready(function() {
 
                 }
 
+                function enqueue_my_scripts() {
+                   wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
+                }
+
 		function my_admin_scripts(){
 			global $APjavascriptQueue;
-		 
+
+                        
 			wp_tiny_mce( false , // true makes the editor "teeny"
 				array(
 					"editor_selector" => "wpStoreCartproduct_description"
 				)
 			);		 
-		 
+
+                        wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
 			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
 			
@@ -4862,22 +6060,48 @@ $(document).ready(function() {
 			</script>			
 			';
 
+                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        $this->overlay_css();
+
 		}			
-				
+
+                function placeAdminFooter() {
+                    echo '			<!-- overlayed element -->
+                        <div class="apple_overlay" id="overlay">
+
+                                <!-- the external content is loaded inside this tag -->
+                                <div class="contentWrap"></div>
+
+                        </div>';
+                }
+
+                function placeAdminHeaderEnqueue() {
+                    wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+
+                }
+
 		function placeAdminHeaderCode() {
 			global $APjavascriptQueue;
 
-                        wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+                        $this->overlay_css();
 
                         $APjavascriptQueue .= '
+
                         <style type="text/css">
+
+
+
                         /* menu styles */
                         #jsddm
                         {	margin: 0;
                                 padding: 0
                                 position:relative;
-                                z-index:99999;
-                                font: 12px Tahoma, Arial
+                                z-index:999;
+                                font: 11px "Segoe UI", Tahoma, Arial;
                         }
 
                                 #jsddm li
@@ -4885,19 +6109,20 @@ $(document).ready(function() {
                                         list-style: none;
                                         
                                 position:relative;
-                                z-index:99999;
+                                z-index:999;
 }
 
                                 #jsddm li a
                                 {	display: block;
                                         background: #FFF url("'.get_option( 'siteurl' ).'/wp-admin/images/gray-grad.png") repeat;
-                                        padding: 5px 12px;
+                                        padding: 4px 10px;
                                         text-decoration: none;
                                         border-right: 1px solid white;
                                         color: #000;
                                         white-space: nowrap;
-                                position:relative;
-                                z-index:99999;
+                                        position:relative;
+                                        z-index:999;
+                                        font: 11px "Segoe UI", Tahoma, Arial;
                                 }
 
 
@@ -4916,7 +6141,7 @@ $(document).ready(function() {
                                                 position: absolute;
                                                 visibility: hidden;
                                                 border-top: 1px solid white
-                                                z-index:99999;
+                                                z-index:999;
                                         }
 
                                                 #jsddm li ul li
@@ -5057,92 +6282,378 @@ $(document).ready(function() {
                     return $output;
                 }
 
+        function slug($str) {
+                $str = strtolower(trim($str));
+                $str = preg_replace('/[^a-z0-9-]/', '_', $str);
+                $str = preg_replace('/-+/', "_", $str);
+                return $str;
+        }
+
+        function grab_custom_reg_fields() {
+            global $wpdb;
+            $table_name = $wpdb->prefix . "wpstorecart_meta";
+            if($this->wpStoreCartRegistrationFields==null) {
+                $sql = "SELECT * FROM `{$table_name}` WHERE `type`='requiredinfo' ORDER BY `foreignkey` ASC;";
+                $results = $wpdb->get_results( $sql , ARRAY_A );
+                $this->wpStoreCartRegistrationFields = $results;
+            } 
+
+            return $this->wpStoreCartRegistrationFields;
+            
+        }
 
         function add_custom_contactmethod( $contactmethods ) {
-            // Add Contact Fields
-            $contactmethods['address'] = 'Address';
-            $contactmethods['city'] = 'City';
-            $contactmethods['state'] = 'State';
-            $contactmethods['postalcode'] = 'Postal Code';
+            global $wpdb;
+
+            $fields = $this->grab_custom_reg_fields();
+            foreach ($fields as $field) {
+                $specific_items = explode("||", $field['value']);
+                    if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
+                        $slug = $this->slug($specific_items[0]);
+                        $contactmethods[$slug] = $wpdb->escape($specific_items[0]); // This makes something like this: $contactmethods['address'] = 'Address';
+                    }
+
+            }
 
             return $contactmethods;
         }
 
-        function show_first_name_field(){
+        function show_custom_reg_fields(){
+            $devOptions = $this->getAdminOptions();
+            
+            $fields = $this->grab_custom_reg_fields();
+            foreach ($fields as $field) {
+                $specific_items = explode("||", $field['value']);
+                    // $contactmethods[$this->slug($specific_item[0])] = $specific_item[0];
+                    if($specific_items[2]=='input (text)') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><input class="input" id="'.$this->slug($specific_items[0]).'" type="text" size="25" value="'.$_SESSION['wpsc_'.$this->slug($specific_items[0])].'" name="'.$this->slug($specific_items[0]).'" /></label>';
+                    }
+                    if($specific_items[2]=='input (numeric)') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><input class="input" id="'.$this->slug($specific_items[0]).'" type="text" size="25" value="'.$_SESSION['wpsc_'.$this->slug($specific_items[0])].'" name="'.$this->slug($specific_items[0]).'" /></label>';
+                    }
+                    if($specific_items[2]=='textarea') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><textarea class="input" id="'.$this->slug($specific_items[0]).'" name="'.$this->slug($specific_items[0]).'">'.$_SESSION['wpsc_'.$this->slug($specific_items[0])].'</textarea></label>';
+                    }
+                    if($specific_items[2]=='states') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><select class="input" name="'.$this->slug($specific_items[0]).'">
+                        <option value="not applicable">Other (Non-US)</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="DC">District Of Columbia</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                        </select></label>';
+                    }
+                    if($specific_items[2]=='countries') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><select class="input" name="'.$this->slug($specific_items[0]).'">
+                        <option value="United States" selected="selected">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="United Kingdom" >United Kingdom</option>
+                        <option value="Ireland" >Ireland</option>
+                        <option value="Australia" >Australia</option>
+                        <option value="New Zealand" >New Zealand</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Albania">Albania</option>
+                        <option value="Algeria">Algeria</option>
+                        <option value="American Samoa">American Samoa</option>
+                        <option value="Andorra">Andorra</option>
+                        <option value="Angola">Angola</option>
+                        <option value="Anguilla">Anguilla</option>
+                        <option value="Antarctica">Antarctica</option>
+                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Armenia">Armenia</option>
+                        <option value="Aruba">Aruba</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Azerbaijan">Azerbaijan</option>
+                        <option value="Bahamas">Bahamas</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="Barbados">Barbados</option>
+                        <option value="Belarus">Belarus</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Belize">Belize</option>
+                        <option value="Benin">Benin</option>
+                        <option value="Bermuda">Bermuda</option>
+                        <option value="Bhutan">Bhutan</option>
+                        <option value="Bolivia">Bolivia</option>
+                        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                        <option value="Botswana">Botswana</option>
+                        <option value="Bouvet Island">Bouvet Island</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                        <option value="Brunei Darussalam">Brunei Darussalam</option>
+                        <option value="Bulgaria">Bulgaria</option>
+                        <option value="Burkina Faso">Burkina Faso</option>
+                        <option value="Burundi">Burundi</option>
+                        <option value="Cambodia">Cambodia</option>
+                        <option value="Cameroon">Cameroon</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Cape Verde">Cape Verde</option>
+                        <option value="Cayman Islands">Cayman Islands</option>
+                        <option value="Central African Republic">Central African Republic</option>
+                        <option value="Chad">Chad</option>
+                        <option value="Chile">Chile</option>
+                        <option value="China">China</option>
+                        <option value="Christmas Island">Christmas Island</option>
+                        <option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Comoros">Comoros</option>
+                        <option value="Congo">Congo</option>
+                        <option value="Congo, The Democratic Republic of The">Congo, The Democratic Republic of The</option>
+                        <option value="Cook Islands">Cook Islands</option>
+                        <option value="Costa Rica">Costa Rica</option>
+                        <option value="Cote D\'ivoire">Cote D\'ivoire</option>
+                        <option value="Croatia">Croatia</option>
+                        <option value="Cuba">Cuba</option>
+                        <option value="Cyprus">Cyprus</option>
+                        <option value="Czech Republic">Czech Republic</option>
+                        <option value="Denmark">Denmark</option>
+                        <option value="Djibouti">Djibouti</option>
+                        <option value="Dominica">Dominica</option>
+                        <option value="Dominican Republic">Dominican Republic</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="El Salvador">El Salvador</option>
+                        <option value="Equatorial Guinea">Equatorial Guinea</option>
+                        <option value="Eritrea">Eritrea</option>
+                        <option value="Estonia">Estonia</option>
+                        <option value="Ethiopia">Ethiopia</option>
+                        <option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+                        <option value="Faroe Islands">Faroe Islands</option>
+                        <option value="Fiji">Fiji</option>
+                        <option value="Finland">Finland</option>
+                        <option value="France">France</option>
+                        <option value="French Guiana">French Guiana</option>
+                        <option value="French Polynesia">French Polynesia</option>
+                        <option value="French Southern Territories">French Southern Territories</option>
+                        <option value="Gabon">Gabon</option>
+                        <option value="Gambia">Gambia</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Gibraltar">Gibraltar</option>
+                        <option value="Greece">Greece</option>
+                        <option value="Greenland">Greenland</option>
+                        <option value="Grenada">Grenada</option>
+                        <option value="Guadeloupe">Guadeloupe</option>
+                        <option value="Guam">Guam</option>
+                        <option value="Guatemala">Guatemala</option>
+                        <option value="Guinea">Guinea</option>
+                        <option value="Guinea-bissau">Guinea-bissau</option>
+                        <option value="Guyana">Guyana</option>
+                        <option value="Haiti">Haiti</option>
+                        <option value="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option>
+                        <option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+                        <option value="Honduras">Honduras</option>
+                        <option value="Hong Kong">Hong Kong</option>
+                        <option value="Hungary">Hungary</option>
+                        <option value="Iceland">Iceland</option>
+                        <option value="India">India</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+                        <option value="Iraq">Iraq</option>
+                        <option value="Ireland">Ireland</option>
+                        <option value="Israel">Israel</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Jamaica">Jamaica</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Kazakhstan">Kazakhstan</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="Kiribati">Kiribati</option>
+                        <option value="Korea, Democratic People\'s Republic of">Korea, Democratic People\'s Republic of</option>
+                        <option value="Korea, Republic of">Korea, Republic of</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Kyrgyzstan">Kyrgyzstan</option>
+                        <option value="Lao People\'s Democratic Republic">Lao People\'s Democratic Republic</option>
+                        <option value="Latvia">Latvia</option>
+                        <option value="Lebanon">Lebanon</option>
+                        <option value="Lesotho">Lesotho</option>
+                        <option value="Liberia">Liberia</option>
+                        <option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+                        <option value="Liechtenstein">Liechtenstein</option>
+                        <option value="Lithuania">Lithuania</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                        <option value="Macao">Macao</option>
+                        <option value="Macedonia, The Former Yugoslav Republic of">Macedonia, The Former Yugoslav Republic of</option>
+                        <option value="Madagascar">Madagascar</option>
+                        <option value="Malawi">Malawi</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Maldives">Maldives</option>
+                        <option value="Mali">Mali</option>
+                        <option value="Malta">Malta</option>
+                        <option value="Marshall Islands">Marshall Islands</option>
+                        <option value="Martinique">Martinique</option>
+                        <option value="Mauritania">Mauritania</option>
+                        <option value="Mauritius">Mauritius</option>
+                        <option value="Mayotte">Mayotte</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Micronesia, Federated States of">Micronesia, Federated States of</option>
+                        <option value="Moldova, Republic of">Moldova, Republic of</option>
+                        <option value="Monaco">Monaco</option>
+                        <option value="Mongolia">Mongolia</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Morocco">Morocco</option>
+                        <option value="Mozambique">Mozambique</option>
+                        <option value="Myanmar">Myanmar</option>
+                        <option value="Namibia">Namibia</option>
+                        <option value="Nauru">Nauru</option>
+                        <option value="Nepal">Nepal</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Netherlands Antilles">Netherlands Antilles</option>
+                        <option value="New Caledonia">New Caledonia</option>
+                        <option value="New Zealand">New Zealand</option>
+                        <option value="Nicaragua">Nicaragua</option>
+                        <option value="Niger">Niger</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Niue">Niue</option>
+                        <option value="Norfolk Island">Norfolk Island</option>
+                        <option value="Northern Mariana Islands">Northern Mariana Islands</option>
+                        <option value="Norway">Norway</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Palau">Palau</option>
+                        <option value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+                        <option value="Panama">Panama</option>
+                        <option value="Papua New Guinea">Papua New Guinea</option>
+                        <option value="Paraguay">Paraguay</option>
+                        <option value="Peru">Peru</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Pitcairn">Pitcairn</option>
+                        <option value="Poland">Poland</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="Puerto Rico">Puerto Rico</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Reunion">Reunion</option>
+                        <option value="Romania">Romania</option>
+                        <option value="Russian Federation">Russian Federation</option>
+                        <option value="Rwanda">Rwanda</option>
+                        <option value="Saint Helena">Saint Helena</option>
+                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                        <option value="Saint Lucia">Saint Lucia</option>
+                        <option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+                        <option value="Saint Vincent and The Grenadines">Saint Vincent and The Grenadines</option>
+                        <option value="Samoa">Samoa</option>
+                        <option value="San Marino">San Marino</option>
+                        <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Senegal">Senegal</option>
+                        <option value="Serbia and Montenegro">Serbia and Montenegro</option>
+                        <option value="Seychelles">Seychelles</option>
+                        <option value="Sierra Leone">Sierra Leone</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Slovakia">Slovakia</option>
+                        <option value="Slovenia">Slovenia</option>
+                        <option value="Solomon Islands">Solomon Islands</option>
+                        <option value="Somalia">Somalia</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="South Georgia and The South Sandwich Islands">South Georgia and The South Sandwich Islands</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Sri Lanka">Sri Lanka</option>
+                        <option value="Sudan">Sudan</option>
+                        <option value="Suriname">Suriname</option>
+                        <option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+                        <option value="Swaziland">Swaziland</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Syrian Arab Republic">Syrian Arab Republic</option>
+                        <option value="Taiwan, Province of China">Taiwan, Province of China</option>
+                        <option value="Tajikistan">Tajikistan</option>
+                        <option value="Tanzania, United Republic of">Tanzania, United Republic of</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Timor-leste">Timor-leste</option>
+                        <option value="Togo">Togo</option>
+                        <option value="Tokelau">Tokelau</option>
+                        <option value="Tonga">Tonga</option>
+                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                        <option value="Tunisia">Tunisia</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="Turkmenistan">Turkmenistan</option>
+                        <option value="Turks and Caicos Islands">Turks and Caicos Islands</option>
+                        <option value="Tuvalu">Tuvalu</option>
+                        <option value="Uganda">Uganda</option>
+                        <option value="Ukraine">Ukraine</option>
+                        <option value="United Arab Emirates">United Arab Emirates</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="United States">United States</option>
+                        <option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Uzbekistan">Uzbekistan</option>
+                        <option value="Vanuatu">Vanuatu</option>
+                        <option value="Venezuela">Venezuela</option>
+                        <option value="Viet Nam">Viet Nam</option>
+                        <option value="Virgin Islands, British">Virgin Islands, British</option>
+                        <option value="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
+                        <option value="Wallis and Futuna">Wallis and Futuna</option>
+                        <option value="Western Sahara">Western Sahara</option>
+                        <option value="Yemen">Yemen</option>
+                        <option value="Zambia">Zambia</option>
+                        <option value="Zimbabwe">Zimbabwe</option>
+                        </select></label>';
+                    }
+                    if($specific_items[2]=='email') {
+                        echo '<label><span>'. $specific_items[0] .' ';if($specific_items[1]=='required'){echo '<div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div>';} echo'</span><input class="input" id="'.$this->slug($specific_items[0]).'" type="text" size="25" value="'.$_SESSION['wpsc_'.$this->slug($specific_items[0])].'" name="'.$this->slug($specific_items[0]).'" /></label>';
+                    }
+                    if($specific_items[2]=='separator') {
+                        echo $specific_items[0] .'<br />';
+                    }
+                    if($specific_items[2]=='header') {
+                        echo '<h2>'.$specific_items[0] .'</h2>';
+                    }
+                    if($specific_items[2]=='text') {
+                        echo '<p>'.$specific_items[0] .'</p>';
+                    }
+                
+            }
 
-            echo '
-            First Name
-            <input id="user_email" type="text" size="25" value="" name="first" />
-
-            Last Name
-            <input id="user_email" type="text" size="25" value="" name="last" />
-
-            Address
-            <input id="user_email" type="text" size="25" value="" name="address" />
-
-            City
-            <input id="user_email" type="text" size="25" value="" name="city" />
-
-            State
-<select name="state">
-<option value="" selected="selected">Select a State</option>
-<option value="not applicable">Other (Non-US)</option>
-<option value="AL">Alabama</option>
-<option value="AK">Alaska</option>
-<option value="AZ">Arizona</option>
-<option value="AR">Arkansas</option>
-<option value="CA">California</option>
-<option value="CO">Colorado</option>
-<option value="CT">Connecticut</option>
-<option value="DE">Delaware</option>
-<option value="DC">District Of Columbia</option>
-<option value="FL">Florida</option>
-<option value="GA">Georgia</option>
-<option value="HI">Hawaii</option>
-<option value="ID">Idaho</option>
-<option value="IL">Illinois</option>
-<option value="IN">Indiana</option>
-<option value="IA">Iowa</option>
-<option value="KS">Kansas</option>
-<option value="KY">Kentucky</option>
-<option value="LA">Louisiana</option>
-<option value="ME">Maine</option>
-<option value="MD">Maryland</option>
-<option value="MA">Massachusetts</option>
-<option value="MI">Michigan</option>
-<option value="MN">Minnesota</option>
-<option value="MS">Mississippi</option>
-<option value="MO">Missouri</option>
-<option value="MT">Montana</option>
-<option value="NE">Nebraska</option>
-<option value="NV">Nevada</option>
-<option value="NH">New Hampshire</option>
-<option value="NJ">New Jersey</option>
-<option value="NM">New Mexico</option>
-<option value="NY">New York</option>
-<option value="NC">North Carolina</option>
-<option value="ND">North Dakota</option>
-<option value="OH">Ohio</option>
-<option value="OK">Oklahoma</option>
-<option value="OR">Oregon</option>
-<option value="PA">Pennsylvania</option>
-<option value="RI">Rhode Island</option>
-<option value="SC">South Carolina</option>
-<option value="SD">South Dakota</option>
-<option value="TN">Tennessee</option>
-<option value="TX">Texas</option>
-<option value="UT">Utah</option>
-<option value="VT">Vermont</option>
-<option value="VA">Virginia</option>
-<option value="WA">Washington</option>
-<option value="WV">West Virginia</option>
-<option value="WI">Wisconsin</option>
-<option value="WY">Wyoming</option>
-</select>
-
-            Postal Code
-            <input id="user_email" type="text" size="25" value="" name="postalcode" />
-            ';
 
         }
 
@@ -5153,20 +6664,125 @@ $(document).ready(function() {
             } else {
                 $userdata = array();
                 $userdata['ID'] = $user_id;
-                $userdata['first_name'] = $_POST['first'];
-                $userdata['last_name'] = $_POST['last'];
                 wp_update_user($userdata);
-                update_usermeta( $user_id, 'address', $wpdb->escape($_POST['address']) );
-                update_usermeta( $user_id, 'city', $wpdb->escape($_POST['city']) );
-                update_usermeta( $user_id, 'state', $wpdb->escape($_POST['state']) );
-                update_usermeta( $user_id, 'postalcode', $wpdb->escape($_POST['postalcode']) );
+
+                $fields = $this->grab_custom_reg_fields();
+                foreach ($fields as $field) {
+                    $specific_items = explode("||", $field['value']);
+                    foreach ($specific_items as $specific_item) {
+                        if($specific_item[2]!='separator' && $specific_item[2]!='header' && $specific_item[2]!='text') {
+                            update_usermeta( $user_id, $this->slug($specific_item[0]), $wpdb->escape($_POST[$this->slug($specific_item[0])]) );
+                        }
+                    }
+                }
+
+
             }
+        }
+
+        function check_fields($login, $email, $errors) {
+                global $wpdb;
+
+                // Make sure errors are displayed for empty fields which are marked as required
+                $fields = $this->grab_custom_reg_fields();
+                foreach ($fields as $field) {
+                    $specific_items = explode("||", $field['value']);
+
+                    if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
+                        $current_field = trim($_POST[$this->slug($specific_items[0])]);
+                        if ($specific_items[1]=='required' && $current_field=='') {
+                            $_SESSION['wpsc_'.$this->slug($specific_items[0])]=$_POST[$this->slug($specific_items[0])]; // This allows us to save data in case the form needs to be refilled out due to it being incomplete
+                            $errors->add('empty_'.$this->slug($specific_items[0]), "<strong>ERROR</strong>: Please Enter in {$specific_items[0]}");
+                        }
+                    }
+
+                }
+
+        }
+
+        function USPSParcelRate($weight,$dest_zip) {
+
+            $devOptions = $this->getAdminOptions();
+
+            // This script was written by Mark Sanborn at http://www.marksanborn.net
+            // If this script benefits you are your business please consider a donation
+            // You can donate at http://www.marksanborn.net/donate.
+
+            // ========== CHANGE THESE VALUES TO MATCH YOUR OWN ===========
+
+            $userName = $devOptions['uspsapiname']; // Your USPS Username
+            $orig_zip = $devOptions['shipping_zip_origin']; // Zipcode you are shipping FROM
+
+            // =============== DON'T CHANGE BELOW THIS LINE ===============
+
+            $url = "http://Production.ShippingAPIs.com/ShippingAPI.dll";
+            $ch = curl_init();
+
+            // set the target url
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+
+            // parameters to post
+            curl_setopt($ch, CURLOPT_POST, 1);
+
+            $data = "API=RateV3&XML=<RateV3Request USERID=\"$userName\"><Package ID=\"1ST\"><Service>PRIORITY</Service><ZipOrigination>$orig_zip</ZipOrigination><ZipDestination>$dest_zip</ZipDestination><Pounds>$weight</Pounds><Ounces>0</Ounces><Size>REGULAR</Size><Machinable>TRUE</Machinable></Package></RateV3Request>";
+
+            // send the POST values to USPS
+            curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
+
+            $result=curl_exec ($ch);
+            $data = strstr($result, '<?');
+            // echo '<!-- '. $data. ' -->'; // Uncomment to show XML in comments
+            $xml_parser = xml_parser_create();
+            xml_parse_into_struct($xml_parser, $data, $vals, $index);
+            xml_parser_free($xml_parser);
+            $params = array();
+            $level = array();
+            foreach ($vals as $xml_elem) {
+                    if ($xml_elem['type'] == 'open') {
+                            if (array_key_exists('attributes',$xml_elem)) {
+                                    list($level[$xml_elem['level']],$extra) = array_values($xml_elem['attributes']);
+                            } else {
+                            $level[$xml_elem['level']] = $xml_elem['tag'];
+                            }
+                    }
+                    if ($xml_elem['type'] == 'complete') {
+                    $start_level = 1;
+                    $php_stmt = '$params';
+                    while($start_level < $xml_elem['level']) {
+                            $php_stmt .= '[$level['.$start_level.']]';
+                            $start_level++;
+                    }
+                    $php_stmt .= '[$xml_elem[\'tag\']] = $xml_elem[\'value\'];';
+                    eval($php_stmt);
+                    }
+            }
+            curl_close($ch);
+            //echo '<pre>'; print_r($params); echo'</pre>'; // Uncomment to see xml tags
+            return $params['RATEV3RESPONSE']['1ST']['1']['RATE'];
+        }
+
+        function wpstorecart_needs_to_start_sessions_before_anything_else() {
+                global $cart;
+                require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+                require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+                require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+                if(!isset($_SESSION)) {
+                        @session_start();
+                }
+                if(@!is_object($cart)) {
+                    $cart =& $_SESSION['wpsc'];
+                    if(@!is_object($cart)) {
+                        $cart = new wpsc();
+                    }
+                }
         }
 
 
     }
 
- /**
+ /*
  * ===============================================================================================================
  * End Main wpStoreCart Class
  */	
@@ -5175,6 +6791,7 @@ $(document).ready(function() {
 
 if (class_exists("wpStoreCart")) {
     $wpStoreCart = new wpStoreCart();
+
 }
  
  
@@ -5227,7 +6844,7 @@ if (class_exists("WP_Widget")) {
                                                 }
 						if($widgetShowproductImages=='true') {
                                                         if(trim($result['thumbnail']=='')) {
-                                                            $result['thumbnail'] = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                                                            $result['thumbnail'] = plugins_url('/images/default_product_img.jpg' , __FILE__);
                                                         }
 							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['category'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
 						}
@@ -5281,7 +6898,20 @@ if (class_exists("WP_Widget")) {
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {
-			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled;
+			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled, $wpscWidgetSettings;
+                        $wpscWidgetSettings = array();
+
+			extract( $args );
+			$title = apply_filters('widget_title', $instance['title']);
+                        $widgetShowproductImages = empty($instance['widgetShowproductImages']) ? 'false' : $instance['widgetShowproductImages'];
+                        $widgetShowSubtotal = empty($instance['widgetShowSubtotal']) ? 'true' : $instance['widgetShowSubtotal'];
+                        $widgetShowTotal = empty($instance['widgetShowTotal']) ? 'true' : $instance['widgetShowTotal'];
+                        $widgetShowShipping = empty($instance['widgetShowShipping']) ? 'true' : $instance['widgetShowShipping'];
+                        $wpscWidgetSettings['iswidget']=true;
+                        $wpscWidgetSettings['widgetShowSubtotal']=$widgetShowSubtotal;
+                        $wpscWidgetSettings['widgetShowTotal']=$widgetShowTotal;
+                        $wpscWidgetSettings['widgetShowShipping']=$widgetShowShipping;
+                        
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
@@ -5296,9 +6926,7 @@ if (class_exists("WP_Widget")) {
                             }
                         }
 			$output = NULL;
-			extract( $args );
-			$title = apply_filters('widget_title', $instance['title']);
-                        $widgetShowproductImages = empty($instance['widgetShowproductImages']) ? 'false' : $instance['widgetShowproductImages'];
+
 			echo $before_widget;
 			if ( $title ) { echo $before_title . $title . $after_title; }
 			$old_checkout = $is_checkout;
@@ -5317,6 +6945,9 @@ if (class_exists("WP_Widget")) {
 		function update($new_instance, $old_instance) {
 			$instance['title']= strip_tags(stripslashes($new_instance['title']));
                         $instance['widgetShowproductImages'] = strip_tags(stripslashes($new_instance['widgetShowproductImages']));
+                        $instance['widgetShowShipping'] = strip_tags(stripslashes($new_instance['widgetShowShipping']));
+                        $instance['widgetShowSubtotal'] = strip_tags(stripslashes($new_instance['widgetShowSubtotal']));
+                        $instance['widgetShowTotal'] = strip_tags(stripslashes($new_instance['widgetShowTotal']));
 			return $instance;
 		}
 
@@ -5324,8 +6955,14 @@ if (class_exists("WP_Widget")) {
 		function form($instance) {
 			@$title = esc_attr($instance['title']);
                         @$widgetShowproductImages = htmlspecialchars($instance['widgetShowproductImages']);
+                        @$widgetShowShipping = htmlspecialchars($instance['widgetShowShipping']);
+                        @$widgetShowSubtotal = htmlspecialchars($instance['widgetShowSubtotal']);
+                        @$widgetShowTotal = htmlspecialchars($instance['widgetShowTotal']);
 			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Use as the final checkout:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Use as the final checkout:') . '<br /><label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowShipping') . '">' . __('Show shipping costs:') . '<br /><label for="' . $this->get_field_name('widgetShowShipping') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_yes" name="' . $this->get_field_name('widgetShowShipping') . '" value="true" '; if ($widgetShowShipping == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowShipping') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_no" name="' . $this->get_field_name('widgetShowShipping') . '" value="false" '; if ($widgetShowShipping == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowSubtotal') . '">' . __('Show subtotal without shipping:') . '<br /><label for="' . $this->get_field_name('widgetShowSubtotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_yes" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="true" '; if ($widgetShowSubtotal == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowSubtotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_no" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="false" '; if ($widgetShowSubtotal == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowTotal') . '">' . __('Show total, including any shipping:') . '<br /><label for="' . $this->get_field_name('widgetShowTotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_yes" name="' . $this->get_field_name('widgetShowTotal') . '" value="true" '; if ($widgetShowTotal == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowTotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_no" name="' . $this->get_field_name('widgetShowTotal') . '" value="false" '; if ($widgetShowTotal == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
 		}
 
 	}
@@ -5359,90 +6996,22 @@ if (class_exists("WP_Widget")) {
                                     $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
                                 }
                                 $output .= '<ul>';
-                                $output .= '<li><a href="'.$permalink.'">My Orders &amp; Purchases</a></li>';
-                                $output .= '<li><a href="'.wp_logout_url(get_permalink()).'">Logout</a></li>';
+                                $output .= '<li><a href="'.$permalink.'">'.$devOptions['myordersandpurchases'].'</a></li>';
+                                $output .= '<li><a href="'.wp_logout_url(get_permalink()).'">'.$devOptions['logout'].'</a></li>';
                                 $output .= '</ul>';
                         } else {
 
                              $output .= '
-<strong>Login</strong><br />
-<form id="login" method="post" action="'. wp_login_url( get_permalink() ) .'">
-                                        <fieldset>
-                                                <label>Username
-                                                <input type="text" value="" name="log" /></label>
-                                                <label>Password</label>
-                                                <input type="password" value="" name="pwd"  /></label>
-                                                <input type="submit" value="Login" />
-                                        </fieldset>
-                                </form>
-<br />
-<strong>Register</strong><br />
-<form name="registerform" action="'. WP_PLUGIN_URL.'/wpstorecart/php/register.php" method="post">
-	<fieldset>
-		<label>E-mail
-		<input type="text" name="email" value="" /></label>
-                <input type="hidden" name="redirect_to" value="'.$_SERVER['REQUEST_URI'].'" />
-                <label>Password
-		<input type="password" name="user_pass" value="" /></label>
-<select name="wpstate" style="display:none;">
-<option value="" selected="selected">Select a State</option>
-<option value="not applicable">Other (Non-US)</option>
-<option value="AL">Alabama</option>
-<option value="AK">Alaska</option>
-<option value="AZ">Arizona</option>
-<option value="AR">Arkansas</option>
-<option value="CA">California</option>
-<option value="CO">Colorado</option>
-<option value="CT">Connecticut</option>
-<option value="DE">Delaware</option>
-<option value="DC">District Of Columbia</option>
-<option value="FL">Florida</option>
-<option value="GA">Georgia</option>
-<option value="HI">Hawaii</option>
-<option value="ID">Idaho</option>
-<option value="IL">Illinois</option>
-<option value="IN">Indiana</option>
-<option value="IA">Iowa</option>
-<option value="KS">Kansas</option>
-<option value="KY">Kentucky</option>
-<option value="LA">Louisiana</option>
-<option value="ME">Maine</option>
-<option value="MD">Maryland</option>
-<option value="MA">Massachusetts</option>
-<option value="MI">Michigan</option>
-<option value="MN">Minnesota</option>
-<option value="MS">Mississippi</option>
-<option value="MO">Missouri</option>
-<option value="MT">Montana</option>
-<option value="NE">Nebraska</option>
-<option value="NV">Nevada</option>
-<option value="NH">New Hampshire</option>
-<option value="NJ">New Jersey</option>
-<option value="NM">New Mexico</option>
-<option value="NY">New York</option>
-<option value="NC">North Carolina</option>
-<option value="ND">North Dakota</option>
-<option value="OH">Ohio</option>
-<option value="OK">Oklahoma</option>
-<option value="OR">Oregon</option>
-<option value="PA">Pennsylvania</option>
-<option value="RI">Rhode Island</option>
-<option value="SC">South Carolina</option>
-<option value="SD">South Dakota</option>
-<option value="TN">Tennessee</option>
-<option value="TX">Texas</option>
-<option value="UT">Utah</option>
-<option value="VT">Vermont</option>
-<option value="VA">Virginia</option>
-<option value="WA">Washington</option>
-<option value="WV">West Virginia</option>
-<option value="WI">Wisconsin</option>
-<option value="WY">Wyoming</option>
-</select>
-		<input type="submit" name="wp-submit" value="Register" />
-	</fieldset>
-</form>
-';
+                            <strong>'.$devOptions['login'].'</strong><br />
+                            <form id="login" method="post" action="'. wp_login_url( get_permalink() ) .'">
+                                                                    
+                                <label>'.$devOptions['username'].' <input type="text" value="" name="log" /></label>
+                                <label>'.$devOptions['password'].' <input type="password" value="" name="pwd"  /></label>
+                                <input type="submit" value="Login" />
+
+                            </form>
+
+                            ';
                         }
 
 			echo $output;
@@ -5631,27 +7200,29 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             return;
         }
         if (function_exists('add_menu_page')) {
-			$mainPage = add_menu_page('wpStoreCart - Open Source WP Shopping Cart &amp; eCommerce Plugin', 'wpStoreCart', 'activate_plugins', 'wpstorecart-admin', array(&$wpStoreCart, 'printAdminPageOverview'), WP_PLUGIN_URL.'/wpstorecart/images/controller.png');
-			$settingsPage = add_submenu_page('wpstorecart-admin','Settings - wpStoreCart ', 'Settings', 'activate_plugins', 'wpstorecart-settings', array(&$wpStoreCart, 'printAdminPage'));
-			$page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'activate_plugins', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
-			add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'activate_plugins', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
-			if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
-				$importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'activate_plugins', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
-				add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
-			}
-			$categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'activate_plugins', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
-			$ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'activate_plugins', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
-			$page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'activate_plugins', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
-			add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'activate_plugins', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
-			$statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'activate_plugins', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
-			add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'activate_plugins', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
-			add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
-			add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_tooltip_script') );
-			add_action("admin_print_scripts-$ordersPage", array(&$wpStoreCart, 'my_tooltip_script') );
-			add_action("admin_print_scripts-$page", array(&$wpStoreCart, 'my_admin_scripts') );
-			add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
-			add_action("admin_print_scripts-$mainPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
+            $mainPage = add_menu_page('wpStoreCart - Open Source WP Shopping Cart &amp; eCommerce Plugin', 'wpStoreCart', 'activate_plugins', 'wpstorecart-admin', array(&$wpStoreCart, 'printAdminPageOverview'), plugins_url('/images/controller.png' , __FILE__));
+            $settingsPage = add_submenu_page('wpstorecart-admin','Settings - wpStoreCart ', 'Settings', 'activate_plugins', 'wpstorecart-settings', array(&$wpStoreCart, 'printAdminPage'));
+            $page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'activate_plugins', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
+            $editproductpage = add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'activate_plugins', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
+            if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
+                $importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'activate_plugins', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
+                add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
+            }
+            $categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'activate_plugins', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
+            $ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'activate_plugins', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
+            $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'activate_plugins', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
+            $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'activate_plugins', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
+            $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'activate_plugins', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
+            add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'activate_plugins', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
+            add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
+            add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_tooltip_script') );
+            add_action("admin_print_scripts-$ordersPage", array(&$wpStoreCart, 'my_tooltip_script') );
+            add_action("admin_print_scripts-$page", array(&$wpStoreCart, 'my_admin_scripts') );
+            add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
+            add_action("admin_print_scripts-$mainPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
             add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
+            add_action("admin_print_scripts-$affiliatespage", array(&$wpStoreCart, 'my_tooltip_script') );
+            add_action("admin_print_scripts-$editproductpage", array(&$wpStoreCart, 'my_admin_scripts') );
         }
     }   
 }
@@ -5666,18 +7237,22 @@ if (!function_exists("wpStoreCartAdminPanel")) {
  * Call everything
  */
 
-
-
-
 //Actions and Filters   
 if (isset($wpStoreCart)) {
     //Actions
+
+
+
+        /* Disable the Admin Bar for all but admins. */
+        if(!current_user_can('administrator')) {
+            //show_admin_bar(false);
+        }
+
         require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
         require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
 	require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
 	if(!isset($_SESSION)) {
 		@session_start();
-		
 	}
         if(@!is_object($cart)) {
             $cart =& $_SESSION['wpsc'];
@@ -5687,6 +7262,7 @@ if (isset($wpStoreCart)) {
         }
 
 	register_activation_hook(__FILE__, array(&$wpStoreCart, 'wpstorecart_install')); // Install DB schema
+        add_action('plugins_loaded', array(&$wpStoreCart, 'wpstorecart_needs_to_start_sessions_before_anything_else'), 1); // Trys to insure that wpStoreCart is the first plugin that starts a session,  but may not be possible :(
 	add_action('init', array(&$wpStoreCart, 'register_custom_init')); //
         add_action('wpstorecart/wpstorecart.php',  array(&$wpStoreCart, 'init')); // Create options on activation
 	add_action('admin_menu', 'wpStoreCartAdminPanel'); // Create admin panel
@@ -5700,15 +7276,25 @@ if (isset($wpStoreCart)) {
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
 
 	add_shortcode('wpstorecart', array(&$wpStoreCart, 'wpstorecart_mainshortcode'));
-	add_action('admin_head', array(&$wpStoreCart, 'placeAdminHeaderCode')); // Place wpStoreCart comment into header
+        add_action('wp_print_scripts', array(&$wpStoreCart, 'enqueue_my_scripts'));
         add_action( 'wp_print_styles', array(&$wpStoreCart, 'enqueue_my_styles') );
 
-        add_filter('user_contactmethods', array(&$wpStoreCart, 'add_custom_contactmethod'),10,1);
-        add_action('register_form', array(&$wpStoreCart, 'show_first_name_field'));
-        //add_action('register_post','check_fields',10,3);
-        add_action('user_register',  array(&$wpStoreCart, 'register_extra_fields'));
+        // Allows us to place the Setup Wizard in all admin pages
+        add_action('admin_init', array(&$wpStoreCart, 'placeAdminHeaderEnqueue')); 
+	add_action('admin_head', array(&$wpStoreCart, 'placeAdminHeaderCode'));
+        add_filter('admin_notices', array(&$wpStoreCart, 'placeAdminFooter'));
+        
 
-    //Filters
+
+        /**
+         * Adds the custom registration fields
+         */
+        add_filter('user_contactmethods', array(&$wpStoreCart, 'add_custom_contactmethod'),10,1);
+        add_action('register_form', array(&$wpStoreCart, 'show_custom_reg_fields'));
+        add_action('user_register',  array(&$wpStoreCart, 'register_extra_fields'));
+        add_action('register_post',array(&$wpStoreCart, 'check_fields'),10,3);
+
+        //Filters
 	add_filter('the_posts', array(&$wpStoreCart, 'add_script_swfobject')); 
 
 

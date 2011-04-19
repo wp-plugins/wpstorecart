@@ -1,7 +1,10 @@
 <?php
 // wpStoreCart, (c) 2010 wpStoreCart.com.  All rights reserved.
 
-error_reporting(0);
+global $wpsc_error_reporting;
+if($wpsc_error_reporting==false) {
+    error_reporting(0);
+}
 global $wpdb, $wpStoreCart;
 
 if (!function_exists('add_action'))

@@ -3,9 +3,9 @@ Contributors: jquindlen
 Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell
 Requires at least: 2.8.0
-Tested up to: 3.1.0
-Stable tag: 2.1.8
-Version: 2.1.8
+Tested up to: 3.1.1
+Stable tag: 2.2.0
+Version: 2.2.0
 
 == Description ==
 
@@ -41,9 +41,46 @@ Or, if you want to install manually:
 
 == Screenshots ==
  
-1. No picture
+1. The optional "Setup Wizard"
+
+2. More of the "Setup Wizard", this time asking what type of stuff you sell
+
+3. Screenshot of the included deafult wpStoreCart Wordpress theme
+
+4. Registration options
+
+5. More registration options
+
+6. Shipping options
 
 == Changelog ==
+
+= 2.2.0 =
+* Added page pagination for products and categories
+* Added the ability to make registration optional (still a work in progress)
+* Added the ability to turn coupons on or off globally and to hide the coupon form when they are disabled
+* Added the ability to create, edit, delete, and reorder optional and required profile fields for registration and/or checkout
+* Added the "Setup Wizard", a new, user friendly way to quickly and easily setup wpStoreCart
+* Initial "wpStoreCart needs to be configured" error message now prompts first time users to run the Setup Wizard.
+* Added UPS, FedEx, and USPS shipping options with calculations (disabled on digital only stores) (work in progress)
+* Added weight, length, width, and height attributes to products (disabled on digital only stores)
+* Added shipping to the checkout information
+* Added $devOptions['storetype'] which configures the site for physical, digital, or mixed stores
+* Added integration with the wpStoreCartTheme wordpress theme.
+* Added Username, Password, Email, Total, Shipping, Login, Logout, My Orders and Purchases, Required Symbol, Required Symbol Description, and Register to the language menu
+* Added the ability to display shipping, subtotal, and total in the checkout page and widget, configurable from the Display Settings admin page
+* Started the process of adding phpDoc blocks to the source code of wpStoreCart, for better readability and 3rd party code additions
+* Removed usage of WP_PLUGIN_URL and replaced with plugins_url() to help make wpStoreCart more SSL friendly (front end only, admin not finished)
+* Changes the logo to wpStoreCart PRO when PRO is installed, changed most admin images
+* Disables the Wordpress 3.1 admin bar for users who are not administrators, for compatibilities sake
+* Reorganized the Display Settings admin page
+* Loads the Wordpress core file pluggable.php to insure compatibility
+* Fixed default value missing for PayPal active
+* Fixed a bug with Authorize.NET and 2CheckOut not getting the right price for multiple items
+* wpStoreCart News added to the overview page
+* Added advanced error reporting tools for developers working with wpStoreCart
+* Added configurable page pagination
+* By request, added the ability to accept Liberty Reserve with wpscPayments PRO and wpStoreCart PRO
 
 = 2.1.8 =
 * Fixed more issues with the downloads not working correctly
