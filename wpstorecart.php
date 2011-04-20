@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.1
+Version: 2.2.2
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.1
+ * @version 2.2.2
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,9 +52,9 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.1';
-$wpstorecart_version_int = 202001; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
-$wpstorecart_db_version = '2.2.1'; // Indicates the last version in which the database schema was altered
+$wpstorecart_version = '2.2.2';
+$wpstorecart_version_int = 202002; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = '2.2.2'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
@@ -1655,7 +1655,11 @@ if (!class_exists("wpStoreCart")) {
                             </table>';
 
                             if($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='individual') {
-                                echo '<script type="text/javascript">jQuery(\'#flatratetr\').hide();</script>';
+                                echo '<script type="text/javascript">
+                                    /* <![CDATA[ */
+                                    jQuery(\'#flatratetr\').hide();
+                                    /* ]]> */
+                                    </script>';
                             }
 
                             if($curl_is_disabled == true) {
@@ -2073,6 +2077,7 @@ if (!class_exists("wpStoreCart")) {
                         <h2>Required Information At Checkout:</h2>
 
                          <script type="text/javascript">
+                            /* <![CDATA[ */
 
                             function addwpscfield() {
                                 jQuery.ajax({ url: "'.plugins_url('/php/addfield.php' , __FILE__).'", type:"POST", data:"createnewfieldname="+jQuery("#createnewfieldname").val()+"&createnewfieldtype="+jQuery("#createnewfieldtype").val()+"&createnewfieldrequired="+jQuery("input:radio[name=createnewfieldrequired]:checked").val(), success: function(txt){
@@ -2111,6 +2116,8 @@ if (!class_exists("wpStoreCart")) {
 
 
                             });
+
+                           /* ]]> */
                         </script>
                         ';
                         
@@ -2235,7 +2242,7 @@ if (!class_exists("wpStoreCart")) {
                                 }
                             </style>
                             <script type="text/javascript">
-
+                            /* <![CDATA[ */
 
 
                                     var productUploadStartEventHandler = function (file) {
@@ -2369,7 +2376,7 @@ if (!class_exists("wpStoreCart")) {
                                         }
                                         return true;
                                     }
-
+                            /* ]]> */
                             </script>
                             <br />';
 
@@ -2381,10 +2388,10 @@ if (!class_exists("wpStoreCart")) {
                                 if($_POST['exportformat']=='csv') {
                                     echo '
                                         <script type="text/javascript">
-                                        <!--
+                                        /* <![CDATA[ */
                                         window.open("'.plugins_url('/php/exportcsv.php' , __FILE__).'");
 
-                                        //-->
+                                        /* ]]> */
                                         </script>
                                         ';
                                 }
@@ -2392,9 +2399,9 @@ if (!class_exists("wpStoreCart")) {
                                 if($_POST['exportformat']=='sql') {
                                     echo '
                                         <script type="text/javascript">
-                                        <!--
+                                        /* <![CDATA[ */
                                         window.open("'.plugins_url('/php/exportsql.php' , __FILE__).'");
-                                        //-->
+                                        /* ]]> */
                                         </script>
                                         ';
                                 }
@@ -3003,7 +3010,7 @@ if (!class_exists("wpStoreCart")) {
                         if($isanedit) {
                             echo '
                             <script type="text/javascript">
-
+                                /* <![CDATA[ */
                                 function delvar(keytodel) {
                                     jQuery.ajax({ url: "'.plugins_url('/php/delvar.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
                                         jQuery("#"+keytodel).remove();
@@ -3015,6 +3022,7 @@ if (!class_exists("wpStoreCart")) {
                                         jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> "+jQuery("#createnewvar").val()+"</td><td>"+jQuery("#varvalue").val()+"</td><td>"+jQuery("#varprice").val()+"</td><td>"+jQuery("#vardesc").val()+"</td></tr>");
                                     }});
                                 }
+                                /* ]]> */
                             </script>
                             
                             <br style="clear:both;" />
@@ -3124,12 +3132,12 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 		
-			<script type="text/javascript">	
+			<script type="text/javascript">
+                            /* <![CDATA[ */
 			
-			var ischecked = false;
-			
-			function SetAllCheckBoxes(FormName, FieldName, CheckValue)
-				{
+                            var ischecked = false;
+
+                            function SetAllCheckBoxes(FormName, FieldName, CheckValue) {
 					if(!document.forms[FormName])
 						return;
 					var objCheckBoxes = document.forms[FormName].elements[FieldName];
@@ -3143,7 +3151,7 @@ if (!class_exists("wpStoreCart")) {
 						for(var i = 0; i < countCheckBoxes; i++)
 							objCheckBoxes[i].checked = CheckValue;
 				}
-
+                            /* ]]> */
 			</script>
 			
 			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
@@ -3429,6 +3437,7 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
                         <script type="text/javascript">
+                            /* <![CDATA[ */
                             function deleteItemInCart(primkey) {
                                 var re = new RegExp(primkey + "\\\*[0-9]+," );
                                 if(jQuery("#wpStoreCartcartcontents").val().match(re)) {
@@ -3447,6 +3456,7 @@ if (!class_exists("wpStoreCart")) {
                                     }
                                 }
                             }
+                            /* ]]> */
                         </script>
                         <table class="widefat">
 			<thead><tr><th> </th><th>Order Status <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>"Dropped" means they added it to their cart, but never completed checkout.  "Order Recieved" means the customer successfully completed the checkout process, but an admin hasn\'t verified and approved the order yet.  "Pending" means the order is delayed until an admin changes the order status.  "Canceled" means the order was manually canceled by an admin.  "Completed" means the order is fulfilled, the payment was successfully recieved and approved.</h3></div></th><th>Cart Contents <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>The items that were in the customers shopping cart.  You can add or remove items if you need to modify or fulfill an order manually.</h3></div></th><th>Processor <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The payment gateway that was used in the transaction.</h3></div></th><th>Price <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>The total price of everything added together in the shopping cart.</h3></div></th><th>Shipping <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The total shipping of everything in the shopping cart.</h3></div></th><th>User <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The Wordpress User ID of the purchaser.</h3></div></th><th>Email <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8"><h3>The email address the customer used to make the purchase.</h3></div></th><th  style="display:none;">Affiliate <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The Wordpress user ID of the affiliate who is credited with driving the sale.</h3></div></th></tr></thead><tbody>
@@ -4196,10 +4206,12 @@ if (!class_exists("wpStoreCart")) {
 			</table>
 			
 			<script type="text/javascript">
+                        /* <![CDATA[ */
 			  AnyTime.picker( "wpStoreCartstartdate", 
 				  { format: "%Y%m%d" } );
 			  AnyTime.picker( "wpStoreCartenddate", 
 				  { format: "%Y%m%d" } );
+                                  /* ]]> */
 			</script>
 			
 			<br style="clear:both;" />
@@ -5080,6 +5092,7 @@ if (!class_exists("wpStoreCart")) {
 
                                                         $output .= '
                                                         <script type="text/javascript">
+                                                        /* <![CDATA[ */
                                                             var alteredPrice = [];var alteredName = [];
                                                             alteredPrice[0] = 0;alteredName[0]="";
                                                             alteredPrice[1] = 0;alteredName[1]="";
@@ -5095,6 +5108,7 @@ if (!class_exists("wpStoreCart")) {
                                                             alteredPrice[11] = 0;alteredName[11]="";
                                                             alteredPrice[12] = 0;alteredName[12]="";
                                                             alteredPrice[13] = 0;alteredName[13]="";
+                                                        /* ]]> */
                                                         </script>
                                                         ';
                                                         $variationTest = array();
@@ -5105,6 +5119,7 @@ if (!class_exists("wpStoreCart")) {
                                                                         if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
                                                                         $output .= '
                                                                         <script type="text/javascript">
+                                                                            /* <![CDATA[ */
                                                                             alteredPrice['.$variationCounter.'] = 0;
                                                                             alteredName['.$variationCounter.'] = "";
 
@@ -5125,6 +5140,7 @@ if (!class_exists("wpStoreCart")) {
                                                                                 jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
                                                                                 
                                                                             }
+                                                                            /* ]]> */
                                                                         </script>
                                                                         ';
                                                                          $voutput .= '
@@ -5530,11 +5546,14 @@ if (!class_exists("wpStoreCart")) {
                                                 @$reason_code = $_POST['reason_code'];
                                             echo '
                                             <script type="text/javascript">
+                                                /* <![CDATA[ */
                                               var gaJsHost = (("https:" == document.location.protocol ) ? "https://ssl." : "http://www.");
                                               document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));
+                                              /* ]]> */
                                             </script>';
                                             echo '
                                             <script type="text/javascript">
+                                            /* <![CDATA[ */
                                             try{
                                               var pageTracker = _gat._getTracker("'.$devOptions['ga_trackingnum'].'");
                                               pageTracker._trackPageview();
@@ -5564,6 +5583,7 @@ if (!class_exists("wpStoreCart")) {
 
                                                pageTracker._trackTrans(); //submits transaction to the Analytics servers
                                             } catch(err) {}
+                                            /* ]]> */
                                             </script>
                                             ';
                                             }
@@ -5597,6 +5617,7 @@ if (!class_exists("wpStoreCart")) {
                         $APjavascriptQueue .= '
 
                             <script type="text/javascript">
+                            /* <![CDATA[ */
                                 jQuery.noConflict();
                                 jQuery(window).load(function() {
 
@@ -5615,6 +5636,7 @@ if (!class_exists("wpStoreCart")) {
 
                                         });
                                 });
+                                /* ]]> */
                             </script>
 
                             <style type="text/css">
@@ -5674,6 +5696,7 @@ if (!class_exists("wpStoreCart")) {
                             <link href="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/basic.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/_shared/EnhanceJS/enhance.js"></script>
 	<script type="text/javascript">
+        /* <![CDATA[ */
 		// Run capabilities test
 
 jQuery(document).ready(function($) {
@@ -5689,6 +5712,7 @@ jQuery(document).ready(function($) {
 			]
 		});
 });
+/* ]]> */
     </script>
                         ';
 
@@ -6157,6 +6181,7 @@ jQuery(document).ready(function($) {
                                                 {	background: #8EA344}
                         </style>
                         <script type="text/javascript">
+                            /* <![CDATA[ */
                             var timeout    = 1000;
                             var closetimer = 0;
                             var ddmenuitem = 0;
@@ -6182,6 +6207,7 @@ jQuery(document).ready(function($) {
                                jQuery(\'#jsddm > li\').bind(\'mouseout\',  jsddm_timer)});
 
                             document.onclick = jsddm_close;
+                            /* ]]> */
                         </script>
                         ';
 

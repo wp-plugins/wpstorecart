@@ -475,9 +475,9 @@ class wpsc {
 		// DISPLAY THE CART HEADER
                         if($hidden==false) {
                             if($wpscIsCheckoutPage==true) {
-                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc' class='wpsc-checkout-page-contents'>\n";
+                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"' class='wpsc-checkout-page-contents'>\n";
                             } else {
-                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc'>\n";
+                                echo "<!-- BEGIN wpsc -->\n<div id='wpsc"; if(isset($wpscWidgetSettings)) {echo '-widget';} echo"'>\n";
                             }
                         } else {
                             echo '<!-- BEGIN wpsc -->
@@ -543,8 +543,8 @@ class wpsc {
                         </form>
                         <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
                             <br /><strong>'. $text['register'] .'</strong><br />
-                                        <label><span>'. $text['email'] .' <div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                        <label><span>'. $text['password'] .' <div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
+                                        <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                        <label><span>'. $text['password'] .'<ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
 
                                         $wpStoreCart->show_custom_reg_fields();
 
@@ -708,13 +708,16 @@ class wpsc {
                             echo '<button id="wpsc-calculate-shipping-button'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'">'. $text['calculateshipping'] .'</button>';
                         } else {
                             echo '  <script type="text/javascript">
+                                        /* <![CDATA[ */
                                         jQuery(document).ready(function($) {
                                             $("#toggle_shipping_form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").hide();
                                         });
+                                        /* ]]> */
                                     </script>';
                         }
                         echo '</div>';
                         echo '  <script type="text/javascript">
+                                    /* <![CDATA[ */
                                     jQuery(document).ready(function($) {
                                         $("#wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").toggle();
                                         $("#wpsc-shipping-calculation-form'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'").toggle();
@@ -767,6 +770,7 @@ class wpsc {
                                             return false;
                                         });
                                     });
+                                    /* ]]> */
                                 </script>';
 
 
@@ -848,11 +852,13 @@ class wpsc {
 
                                     if($shipping_needs_calculation==true  && $devOptions['storetype']!='Digital Goods Only') {
                                         echo '  <script type="text/javascript">
+                                                /* <![CDATA[ */
                                                     jQuery(".wpsc-checkmoneyordercheckout").hide();
                                                     jQuery(".wpsc-paypalcheckout").hide();
                                                     jQuery(".wpsc-authorizenetcheckout").hide();
                                                     jQuery(".wpsc-2checkoutcheckout").hide();
                                                     jQuery(".wpsc-libertyreservecheckout").hide();
+                                                /* ]]> */
                                                 </script>
                                             ';
                                     }
@@ -865,7 +871,11 @@ class wpsc {
 		// IF UPDATING AN ITEM, FOCUS ON ITS QTY INPUT AFTER THE CART IS LOADED (DOESN'T SEEM TO WORK IN IE7)
 		if (isset($_POST['wpsc_update_item']))
 			{
-			echo "\t" . '<script type="text/javascript">jQuery(function(){jQuery("#wpsc-item-id-' . $_POST['item_id'] . '").focus()});</script>' . "\n";
+			echo "\t" . '<script type="text/javascript">
+                                        /* <![CDATA[ */
+                                        jQuery(function(){jQuery("#wpsc-item-id-' . $_POST['item_id'] . '").focus()});
+                                        /* ]]> */
+                                    </script>' . "\n";
 			}
 
 		echo "</div>\n<!-- END wpsc -->\n";

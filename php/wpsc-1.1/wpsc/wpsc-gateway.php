@@ -225,13 +225,13 @@ else
                     }
 
                     echo '<script type="text/javascript">
-                    <!--';
+                    /* <![CDATA[ */';
                     if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
                         echo 'window.location = "'.get_permalink($devOptions['mainpage']).'?wpsc=manual&order='.$keytoedit.'&price='.$totalPrice.'";';
                     } else {
                         echo 'window.location = "'.get_permalink($devOptions['mainpage']).'&wpsc=manual&order='.$keytoedit.'&price='.$totalPrice.'";';
                     }
-                    echo '//-->
+                    echo '/* ]]> */
                     </script>
                     ';
                 }

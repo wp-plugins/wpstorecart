@@ -14,6 +14,7 @@ body { margin:0px; background-color:#f4f4f4; background-image:url(img/bg.jpg); b
 a {color:#0f91ff; text-decoration:none; }
 a:hover {color:#2fB3ff; text-decoration:underline;}
 a img {border:none;}
+ins {text-decoration:none;border:none;}
 .wrapper { margin:0 auto; width:1000px; height:auto;}
 .header { width:100%; height:70px;}
 .header h6 { color:#3d3d3d; font-size:40px; text-transform:uppercase; padding-top:17px; margin:0px;}

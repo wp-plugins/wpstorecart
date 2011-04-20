@@ -4,8 +4,8 @@ Donate link: http://www.wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.1
-Stable tag: 2.2.1
-Version: 2.2.1
+Stable tag: 2.2.2
+Version: 2.2.2
 
 == Description ==
 
@@ -54,6 +54,9 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.2 =
+* wpStoreCart and the wpStoreCart Theme now (mostly) passes w3c validation for XHTML 1.0 Transitional, although there's still an issue left
 
 = 2.2.1 =
 * Turned the advanced error reporting off by default (it was left on by mistake.)

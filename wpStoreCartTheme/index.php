@@ -32,7 +32,7 @@ if(!isset($_SESSION)) {
 											$the_link_url = $explodedagain[1];										
 										}
 										if($the_img_url!='') {
-											echo '<a href="'.$the_link_url.'"><img src="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$the_img_url.'" alt=""/></a>';
+											echo '<a href="'.$the_link_url.'"><img src="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$the_img_url.'" alt="" /></a>';
 										}
 									}
 								}
@@ -40,6 +40,7 @@ if(!isset($_SESSION)) {
 						?>						
    					</div>
        			   <script type="text/javascript">
+				   /* <![CDATA[ */
          		   jQuery(document).ready(function($) {
 						$('#theslider').nivoSlider({
 							effect:'<?PHP echo $wpscThemeOptions['slider_effect']; ?>', 
@@ -53,16 +54,17 @@ if(!isset($_SESSION)) {
 							pauseOnHover:true
 						 });
            		    });
+					/* ]]> */
           		   </script>
                 
                 </div><!-- Slider End -->
             <?PHP } // End is home ?>
 				<?php if(have_posts()) {while ( have_posts() ) : the_post() ?>
 				<?PHP if(isset($wpStoreCart)) {if($post->ID != $devOptions['mainpage'] || isset($_GET['wpsc'])) { ?>
-				<header class="post-header">
+				<div class="post-header">
 					<h1 class="post-title"><a class="post-title-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h1>
 					<?PHP if(get_post_type()=='post') { ?>Posted <time class="post-date"><?php the_time('F d, Y'); ?></time> in <?PHP the_category(','); ?> by <?PHP the_author(); ?> <?PHP edit_post_link('(Edit)'); }?>
-				</header>
+				</div>
 				<div class="post-content">
 					<?PHP
 					global $post;
@@ -169,7 +171,7 @@ if(!isset($_SESSION)) {
 													echo '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
 											}
 											if($usepictures=='true' || $result['thumbnail']!='' ) {
-													echo '<center><a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></center>';
+													echo '<center><a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.htmlentities($result['category']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></center>';
 											}
 											if($devOptions['displayintroDesc']=='true'){
 													echo '<p style="display:none;">'.$result['description'].'</p>';
@@ -189,13 +191,13 @@ if(!isset($_SESSION)) {
 													echo '<div class="wpsc-list wpsc-products">';
 											}
 											if($usetext=='true') {
-													echo '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
+													echo '<a href="'.$permalink.'"><ins><h1 class="wpsc-h1">'.$result['name'].'</h1></ins></a>';
 											}
 											if($usepictures=='true') {
-													echo '<center><div style="min-width:128px;min-height:125px;width:128px;height:125px;"><a href="'.$permalink.'"><img id="example-target-'.$result['primkey'].'" class="wpsc-thumbnail tooltip-target" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></div></center>';
+													echo '<center><div style="min-width:128px;min-height:125px;width:128px;height:125px;"><a href="'.$permalink.'"><img id="example-target-'.$result['primkey'].'" class="wpsc-thumbnail tooltip-target" src="'.$result['thumbnail'].'" alt="'.htmlentities($result['name']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></div></center>';
 											}
 											if($devOptions['displayintroDesc']=='true'){
-													echo '<div class="tooltip-content" id="example-content-'.$result['primkey'].'"><center><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'" class="insideimg" /></center><br />'.substr($result['introdescription'], 0, 255).'...</div>';
+													echo '<div class="tooltip-content" id="example-content-'.$result['primkey'].'"><center><img src="'.$result['thumbnail'].'" alt="'.htmlentities($result['name']).'" class="insideimg" /></center><br />'.substr($result['introdescription'], 0, 255).'...</div>';
 											}
 											if($devOptions['displayAddToCart']=='true'){
 															// Flat rate shipping implmented here:
@@ -210,7 +212,7 @@ if(!isset($_SESSION)) {
 
 															<input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
 															<input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
-															<input type="hidden" name="my-item-name" value="'.$result['name'].'" />
+															<input type="hidden" name="my-item-name" value="'.htmlentities($result['name']).'" />
 															<input type="hidden" name="my-item-price" value="'.$result['price'].'" />
 															<input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
 															<input type="hidden" name="my-item-qty" value="1" />
@@ -219,7 +221,7 @@ if(!isset($_SESSION)) {
 													';
 
 													if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
-														echo '<div class="buttons"><input type="image" src="'; bloginfo('template_directory'); echo '/img/AddToCart.jpg" style="margin-left:12px;width:67px;height:25px;" id="my-add-button-fake" name="my-add-button-fake" value="" /><a href="'.$permalink.'"><img src="'; bloginfo('template_directory'); echo '/img/ViewInfo.jpg" style="margin-left:10px;" /></a></div>';
+														echo '<div class="buttons"><input type="image" src="'; bloginfo('template_directory'); echo '/img/AddToCart.jpg" style="margin-left:12px;width:67px;height:25px;" class="my-add-button-fake" name="my-add-button-fake" alt=""  /><a href="'.$permalink.'"><img src="'; bloginfo('template_directory'); echo '/img/ViewInfo.jpg" style="margin-left:10px;" alt="" /></a></div>';
 													} else {
 														echo $devOptions['out_of_stock'];
 													}
