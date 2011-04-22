@@ -107,8 +107,14 @@ else
                 global $current_user, $wpdb, $paymentGateway, $paymentGatewayOptions,$cart;
                 get_currentuserinfo();
 
-                @$shipping_type = $_POST['wpsc-shipping-type'];
-                @$shipping_type_widget = $_POST['wpsc-shipping-type-widget'];
+
+                if(isset($_POST['wpsc-shipping-type']) ||isset($_POST['wpsc-shipping-type-widget']) ) {
+                    @$shipping_type = $_POST['wpsc-shipping-type'];
+                    @$shipping_type_widget = $_POST['wpsc-shipping-type-widget'];
+                } else {
+                    $shipping_type='shipping_offered_by_flatrate';
+                    $shipping_type_widget='shipping_offered_by_flatrate';
+                }
                 
                 // USPS shipping calculations are done here, if applicable.
                 if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
@@ -117,6 +123,9 @@ else
 
                                     // IF ANY ITEMS IN THE CART
                                     if($cart->itemcount > 0) {
+
+                                            $newsplit = explode('-', $item['id'] );
+                                            $item['id'] = $newsplit[0];
 
                                             // DISPLAY LINE ITEMS
                                             foreach($cart->get_contents() as $item) {
@@ -200,11 +209,11 @@ else
 
 
                             $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
-                            $totalPrice = $totalPrice + $item['price'];
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
 
                     }
 
-                    $totalPrice = $totalPrice - $amountToSubtractFromCart + $totalShipping; // Apply the coupon plus shipping
+                    $totalPrice = $totalPrice - $amountToSubtractFromCart; // Apply the coupon plus shipping
                     $cartContents = $cartContents . '0*0';
 
                     // Insert the order into the database
@@ -229,6 +238,9 @@ else
                         $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
                     }
                     $keytoedit = $lastID;
+
+                    $totalPrice = $totalPrice  + $totalShipping; // Apply the coupon plus shipping
+
                     $cart->empty_cart();
                     
                     @header ('HTTP/1.1 301 Moved Permanently');
@@ -303,7 +315,6 @@ else
 
                     }
 
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
                     $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
 
                     $cartContents = $cartContents . '0*0';
@@ -335,6 +346,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
 
                     //
                     $cart->empty_cart();
@@ -392,7 +404,6 @@ else
 
                     }
 
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
                     $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
 
                     $cartContents = $cartContents . '0*0';
@@ -421,6 +432,7 @@ else
                         $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
                     }
                     $keytoedit = $lastID;
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
@@ -486,7 +498,6 @@ else
 
                     }
 
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
                     $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
 
                     $cartContents = $cartContents . '0*0';
@@ -518,6 +529,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
+                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
 
                     //
                     $cart->empty_cart();
@@ -612,7 +624,7 @@ else
 
 
                             $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
-                            $totalPrice = $totalPrice + $item['price'];
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
 
                             // INCREMENT THE COUNTER
                             ++$paypal_count;

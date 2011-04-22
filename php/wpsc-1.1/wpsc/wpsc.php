@@ -504,9 +504,12 @@ class wpsc {
                                 $isLoggedIn = true;
                             } else {
                                 echo '
-                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                    <form name="wpsc-registerform" id="wpsc-guestcheckoutform" action="#" method="post">
+                                        <br /><strong>'. $text['guestcheckout'] .'</strong><br />
                                         <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                        <input type="submit" value="'. $text['checkout_button'] .'" class="wpsc-button wpsc-checkout" />
                                     </form>
+                                    <br />
                                     ';
                                 $isLoggedIn = false;
 
@@ -515,8 +518,8 @@ class wpsc {
                            $isLoggedIn = false;
                         }
                         
-                     // Only shown if registration is required and the user is not logged in
-                     if($devOptions['requireregistration']=='true') {
+                     // Only shown if the user is not logged in
+                     if($isLoggedIn == false) {
                             /*
                              * Show error messages, then remove the wpscregerror from the URI
                              * @todo Add these into the language options of wpStoreCart
@@ -563,6 +566,7 @@ class wpsc {
                                         <input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" />
                                         <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
                             </form>
+                            <br />
                             <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
                                 <br /><strong>'. $text['register'] .'</strong><br />
                                             <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
@@ -572,7 +576,9 @@ class wpsc {
 
                             echo '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
                                             <label><span class="wpsc-required-help">'.$text['required_help'].'</span><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></label>
-                            </form>';
+                            </form>
+                            <br />
+                            ';
                         }
                     }
                 }
@@ -614,7 +620,9 @@ class wpsc {
                             foreach($this->get_contents() as $item)
                                     {
 
-                                    
+                                    $newsplit = explode('-', $item['id'] );
+                                    $item['id'] = $newsplit[0];
+
                                     if($shipping_offered_by_flatrate) {
                                         $results_flatrateshipping = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='wpsc_product_flatrateshipping' AND `foreignkey`={$item['id']};", ARRAY_N);
                                         if(@$results_flatrateshipping[0][0]=='yes'){$shipping_offered_by_flatrate = true;} else {$shipping_offered_by_flatrate = false;}
@@ -634,7 +642,7 @@ class wpsc {
                                     }
 
                                     // If flat rate is disabled and any of the other shipping services are enabled, then we need to calculate shipping
-                                    if(($results_flatrateshipping==false || $results_flatrateshipping[0][0]=='no') && (($results_usps || $results_usps[0][0]=='yes') || ($results_ups || $results_ups[0][0]='yes') || ($results_fedex || $results_fedex[0][0]=='yes'))) {
+                                    if(($shipping_offered_by_flatrate==false || $results_flatrateshipping[0][0]=='no') && (($results_usps || $results_usps[0][0]=='yes') || ($results_ups || $results_ups[0][0]='yes') || ($results_fedex || $results_fedex[0][0]=='yes'))) {
                                         $shipping_needs_calculation = true;
                                     }
 
@@ -701,11 +709,11 @@ class wpsc {
 
                     echo '<br />';
 
-                    if($devOptions['storetype']=='Digital Goods Only') {
-                        // if we're dealing with digital goods, let's put shipping down to 0
+                    if(!isset($totalshipping)) {
                         $totalshipping = 0;
                     }
-                    if(!isset($totalshipping)) {
+                    if($devOptions['storetype']=='Digital Goods Only') {
+                        // if we're dealing with digital goods, let's put shipping down to 0
                         $totalshipping = 0;
                     }
                     if($devOptions['flatrateshipping']=='all_global' || $devOptions['flatrateshipping']=='all_single') {
@@ -719,6 +727,11 @@ class wpsc {
                         } else {
                             $totalshipping = 0;
                         }
+                    }
+
+                    // Disable shipping calculations if all items can be shipped by flatrate, or if it's a digital only store, or if no shipping options are enabled.
+                    if($devOptions['storetype']=='Digital Goods Only' || (!$shipping_offered_by_flatrate && !$shipping_offered_by_usps && !$shipping_offered_by_ups && !$shipping_offered_by_fedex)) {
+                        $shipping_needs_calculation = false;
                     }
 
                     if($shipping_needs_calculation == true) {

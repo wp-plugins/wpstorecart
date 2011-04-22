@@ -62,7 +62,8 @@ if (isset($wpStoreCart)) {
         $wpsc['text']['currency_symbol_right']					= $devOptions['currency_symbol_right'];		
 
 	$wpsc['text']['update_button']				= $devOptions['update_button'];		// update
-	$wpsc['text']['checkout_button']			= $devOptions['checkout_button'];		// checkout
+	$wpsc['text']['checkout_button']			= $devOptions['checkout_button'];
+        $wpsc['text']['guestcheckout']			= $devOptions['guestcheckout'];// checkout
 	$wpsc['text']['checkout_paypal_button']	= $devOptions['checkout_paypal_button'];		// Checkout with PayPal
         @$wpsc['text']['checkout_authorizenet_button']	= $devOptions['checkout_authorizenet_button'];
         @$wpsc['text']['checkout_2checkout_button']	= $devOptions['checkout_2checkout_button'];

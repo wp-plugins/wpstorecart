@@ -4,8 +4,8 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.1
-Stable tag: 2.2.3
-Version: 2.2.3
+Stable tag: 2.2.4
+Version: 2.2.4
 
 == Description ==
 
@@ -54,6 +54,12 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.4 =
+* Fixed a bug with shipping calculations not working on product variations
+* Fixed a bug with the Calculate Shipping prompt appearing when all items are flat rate shipped
+* Added a new text field: Guest Checkout, which is displayed when registration is optional before checkout
+* Fixed a number of minor issues
 
 = 2.2.3 =
 * Fixed a bug with shipping calculations coming up blank with flat rate shipping selected

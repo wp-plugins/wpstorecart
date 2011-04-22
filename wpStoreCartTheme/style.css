@@ -110,11 +110,12 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 .wpsc-pagination a, .wpsc-pagination a:visited{display:block;text-decoration: none; background-color:#F5F5F5;color:#0072bc;width:22px;min-width:22px;height:22px;max-height:22px;text-align:center;}
 .wpsc-pagination a:hover{background-color:#DDEEFF;}
 #c_left .post-title-link {position:relative;z-index:2;}
-#wpsc-registerform, #wpsc-loginform  {text-align:left;position:relative;top:-45px;}
-#wpsc-registerform input, #wpsc-registerform select, #wpsc-loginform input {width:155px; max-width:155px; min-height:23px; height:23px; border:0px; font-size:10px; font-family:"Arial"; color:#adadad; background-image:url(img/username_and_password_bg.jpg);text-indent:8px;}
+#wpsc-registerform, #wpsc-loginform, #wpsc-guestcheckoutform  {text-align:left;position:relative;top:-45px;}
+#wpsc-registerform input, #wpsc-registerform select, #wpsc-loginform input, #wpsc-guestcheckoutform input {width:155px; max-width:155px; min-height:23px; height:23px; border:0px; font-size:10px; font-family:"Arial"; color:#adadad; background-image:url(img/username_and_password_bg.jpg);text-indent:8px;}
 #wpsc-registerform select {text-indent:0px;min-height:25px; height:25px;}
 #wpsc-registerform h2 {clear:both;}
-#wpsc-registerform label, #wpsc-loginform label  {display:block;margin-bottom:10px;color:#555555;}
-#wpsc-registerform label span, #wpsc-loginform label span {display:block;float:left;padding-right:6px;width:170px;text-align:left;clear:both;margin-left:20px;}
+#wpsc-registerform label, #wpsc-loginform label, #wpsc-guestcheckoutform label  {display:block;margin-bottom:10px;color:#555555;}
+#wpsc-registerform label span, #wpsc-loginform label span, #wpsc-guestcheckoutform label span {display:block;float:left;padding-right:6px;width:170px;text-align:left;clear:both;margin-left:20px;}
 #wpsc-registerform .wpsc-register-button{background:url('img/register.jpg') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:0 0 0 272px;}
 #wpsc-loginform .wpsc-login-button{background:url('img/login.jpg') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:10px 0 0 272px;}
+#wpsc-guestcheckoutform .wpsc-checkout{background:url('img/checkout.png') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:0 0 0 272px;}
