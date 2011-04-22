@@ -21,7 +21,7 @@ $totalweight = 0;
                         // DISPLAY LINE ITEMS
                         foreach($cart->get_contents() as $item) {
                             $results = $wpdb->get_results('SELECT `weight` FROM `'.$table_name.'` WHERE `primkey`='.$item['id'].';', ARRAY_N);
-                            $totalweight = $totalweight + $results[0][0];
+                            $totalweight = $totalweight + ($results[0][0] * $item['qty']);
                             unset($results);
                         }
 

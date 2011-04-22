@@ -493,64 +493,87 @@ class wpsc {
                     if ( is_user_logged_in() ) {
                         $isLoggedIn = true;
                     } else {
-                        $isLoggedIn = false;
 
-                        /*
-                         * Show error messages, then remove the wpscregerror from the URI
-                         * @todo Add these into the language options of wpStoreCart
-                         */
-                        $servrequest_uri = $_SERVER['REQUEST_URI'] ;
-                        if(@isset($_GET['wpscregerror'])) {
-                            if($_GET['wpscregerror']=='1') {
-                                echo '<div class="wpscerror">'. $text['username'] .' taken.</div>';
-                                $servrequest_uri = str_replace("&wpscregerror=1", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=1", "", $servrequest_uri);
+
+                        // ** Here's where we disable the user login system during checkout if registration is not required
+                        if($devOptions['requireregistration']=='false') {
+                            if(@isset($_POST['guest_email'])) {
+                                $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
                             }
-                            if($_GET['wpscregerror']=='2') {
-                                echo '<div class="wpscerror">'. $text['username'] .' invalid.</div>';
-                                $servrequest_uri = str_replace("&wpscregerror=2", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=2", "", $servrequest_uri);
+                            if(@isset($_SESSION['wpsc_email'])) {
+                                $isLoggedIn = true;
+                            } else {
+                                echo '
+                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                        <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                    </form>
+                                    ';
+                                $isLoggedIn = false;
+
                             }
-                            if($_GET['wpscregerror']=='3') {
-                               echo '<div class="wpscerror">'. $text['email'] .' is invalid.</div>';
-                                $servrequest_uri = str_replace("&wpscregerror=3", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=3", "", $servrequest_uri);
-                            }
-                            if($_GET['wpscregerror']=='4') {
-                                $servrequest_uri = str_replace("&wpscregerror=4", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=4", "", $servrequest_uri);
-                                echo '<div class="wpscerror">'. $text['email'] .' is already registered.</div>';
-                            }
-                            if($_GET['wpscregerror']=='5') {
-                                $servrequest_uri = str_replace("&wpscregerror=5", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=5", "", $servrequest_uri);
-                                echo '<div class="wpscerror">Wordpress could not create the account, alert the admin to enable registrations.</div>';
-                            }
-                            if($_GET['wpscregerror']=='6') {
-                                $servrequest_uri = str_replace("&wpscregerror=6", "", $servrequest_uri );
-                                $servrequest_uri = str_replace("?wpscregerror=6", "", $servrequest_uri);
-                                echo '<div class="wpscerror">Not all of the required fields were filled out.  Please fill out all the required information and try again.</div>';
-                            }
+                        } else {
+                           $isLoggedIn = false;
                         }
+                        
+                     // Only shown if registration is required and the user is not logged in
+                     if($devOptions['requireregistration']=='true') {
+                            /*
+                             * Show error messages, then remove the wpscregerror from the URI
+                             * @todo Add these into the language options of wpStoreCart
+                             */
+                            $servrequest_uri = $_SERVER['REQUEST_URI'] ;
+                            if(@isset($_GET['wpscregerror'])) {
+                                if($_GET['wpscregerror']=='1') {
+                                    echo '<div class="wpscerror">'. $text['username'] .' taken.</div>';
+                                    $servrequest_uri = str_replace("&wpscregerror=1", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=1", "", $servrequest_uri);
+                                }
+                                if($_GET['wpscregerror']=='2') {
+                                    echo '<div class="wpscerror">'. $text['username'] .' invalid.</div>';
+                                    $servrequest_uri = str_replace("&wpscregerror=2", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=2", "", $servrequest_uri);
+                                }
+                                if($_GET['wpscregerror']=='3') {
+                                   echo '<div class="wpscerror">'. $text['email'] .' is invalid.</div>';
+                                    $servrequest_uri = str_replace("&wpscregerror=3", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=3", "", $servrequest_uri);
+                                }
+                                if($_GET['wpscregerror']=='4') {
+                                    $servrequest_uri = str_replace("&wpscregerror=4", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=4", "", $servrequest_uri);
+                                    echo '<div class="wpscerror">'. $text['email'] .' is already registered.</div>';
+                                }
+                                if($_GET['wpscregerror']=='5') {
+                                    $servrequest_uri = str_replace("&wpscregerror=5", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=5", "", $servrequest_uri);
+                                    echo '<div class="wpscerror">Wordpress could not create the account, alert the admin to enable registrations.</div>';
+                                }
+                                if($_GET['wpscregerror']=='6') {
+                                    $servrequest_uri = str_replace("&wpscregerror=6", "", $servrequest_uri );
+                                    $servrequest_uri = str_replace("?wpscregerror=6", "", $servrequest_uri);
+                                    echo '<div class="wpscerror">Not all of the required fields were filled out.  Please fill out all the required information and try again.</div>';
+                                }
+                            }
 
-                        echo '
-                        <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">
-                            <br /><strong>'. $text['login'] .'</strong><br />
-                                    <label><span>'. $text['username'] .' </span><input type="text" value="" name="log" /></label>
-                                    <label><span>'. $text['password'] .' </span><input type="password" value="" name="pwd"  /></label>
-                                    <input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" />
-                                    <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                        </form>
-                        <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
-                            <br /><strong>'. $text['register'] .'</strong><br />
-                                        <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                        <label><span>'. $text['password'] .'<ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
+                            echo '
+                            <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">
+                                <br /><strong>'. $text['login'] .'</strong><br />
+                                        <label><span>'. $text['username'] .' </span><input type="text" value="" name="log" /></label>
+                                        <label><span>'. $text['password'] .' </span><input type="password" value="" name="pwd"  /></label>
+                                        <input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" />
+                                        <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                            </form>
+                            <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
+                                <br /><strong>'. $text['register'] .'</strong><br />
+                                            <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                            <label><span>'. $text['password'] .'<ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
 
-                                        $wpStoreCart->show_custom_reg_fields();
+                                            $wpStoreCart->show_custom_reg_fields();
 
-                        echo '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                                        <label><span class="wpsc-required-help">'.$text['required_help'].'</span><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></label>
-                        </form>';
+                            echo '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                                            <label><span class="wpsc-required-help">'.$text['required_help'].'</span><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></label>
+                            </form>';
+                        }
                     }
                 }
 
@@ -685,9 +708,14 @@ class wpsc {
                     if(!isset($totalshipping)) {
                         $totalshipping = 0;
                     }
-                    if($devOptions['flatrateshipping']=='all_global') {
+                    if($devOptions['flatrateshipping']=='all_global' || $devOptions['flatrateshipping']=='all_single') {
                         if($this->itemcount > 0) {
-                            $totalshipping = number_format($devOptions['flatrateamount'], 2);
+                            if($devOptions['flatrateshipping']=='all_global') {
+                                $totalshipping = number_format($devOptions['flatrateamount'], 2);
+                            } else {
+                                $totalshipping = number_format($devOptions['flatrateamount'] * $this->itemcount, 2);
+                            }
+                            $shipping_needs_calculation = false;
                         } else {
                             $totalshipping = 0;
                         }
@@ -704,7 +732,7 @@ class wpsc {
                         if($shipping_offered_by_usps) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_usps" /> United States Postal Service <div id="wpsc-zipcode'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'"> Zipcode: <input type="text" id="wpsc-zipcode-input'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" name="wpsc-zipcode-input" /></div><br />';$firstone = false;}
                         if($shipping_offered_by_ups) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_ups" /> UPS Shipping<br />';$firstone = false;}
                         if($shipping_offered_by_fedex) {echo '<input class="wpsc-shipping-form-radio" type="radio" '; if($firstone){echo 'checked="checked" ';} echo 'name="wpsc-shipping-type'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'" value="shipping_offered_by_fedex" /> FedEx Shipping<br />';$firstone = false;}
-                        if($shipping_offered_by_flatrate || $shipping_offered_by_usps || $shipping_offered_by_ups || $shipping_offered_by_fedex) {
+                        if($shipping_offered_by_usps || $shipping_offered_by_ups || $shipping_offered_by_fedex) {
                             echo '<button id="wpsc-calculate-shipping-button'; if(isset($wpscWidgetSettings)) {echo '-widget';} echo'">'. $text['calculateshipping'] .'</button>';
                         } else {
                             echo '  <script type="text/javascript">

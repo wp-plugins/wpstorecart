@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.2
+Version: 2.2.3
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.2
+ * @version 2.2.3
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,9 +52,9 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.2';
-$wpstorecart_version_int = 202002; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
-$wpstorecart_db_version = '2.2.2'; // Indicates the last version in which the database schema was altered
+$wpstorecart_version = '2.2.3';
+$wpstorecart_version_int = 202003; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = '2.2.3'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
@@ -222,7 +222,7 @@ function copyr($source, $dest)
 
 // Copy the theme if needed
 if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/index.php')) {
-    copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
+    @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
 }
 
 // Try and fix things for people who have magic quotes on
@@ -2068,7 +2068,7 @@ if (!class_exists("wpStoreCart")) {
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-			<tr style="display:none;"><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.</div></h3></td>
+			<tr><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.</div></h3></td>
 			<td class="tableDescription"><p>Controls whether or not your site requires registration before checkout completes.</p></td>
 			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
 			</td></tr>
@@ -3619,7 +3619,7 @@ if (!class_exists("wpStoreCart")) {
                                         }
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
                                             $user_info3 = get_userdata($wpStoreCartwpuser);
-                                        }
+                                        } 
                                         $wpStoreCartdate = $result['date'];
 										
 					echo "
@@ -3632,11 +3632,15 @@ if (!class_exists("wpStoreCart")) {
 					<td>";
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
                                             echo "<a href=\"user-edit.php?user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
+                                        } else {
+                                            echo '<strong>Guest</strong><br />'.$wpStoreCartemail.'</td>';
                                         }
                                         echo "
 					<td>";
                                         if(isset($wpStoreCartaffiliate) && $wpStoreCartaffiliate!=0) {
                                             echo "<a href=\"user-edit.php?user_id={$wpStoreCartaffiliate}\">{$user_info4->user_login}</a></td>";
+                                        } else {
+                                            echo '</td>';
                                         }
                                         echo "</td>
 					</tr>";	
@@ -5420,14 +5424,44 @@ if (!class_exists("wpStoreCart")) {
                                             $affiliatemanager = false;
                                         }
                                         if($_GET['wpsc']=='orders') {
-                                            $output .= 'Your orders';
-                                            
-                                            if ( 0 == $current_user->ID ) {
+                                            $output .= $devOptions['myordersandpurchases'];
+
+                                            // ** Here's where we disable the user login system during checkout if registration is not required
+                                            if ( is_user_logged_in() ) {
+                                                $isLoggedIn = true;
+                                            } else {
+                                                if($devOptions['requireregistration']=='false') {
+                                                    if(@isset($_POST['guest_email'])) {
+                                                        $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
+                                                    }
+                                                    if(@isset($_SESSION['wpsc_email'])) {
+                                                        $isLoggedIn = true;
+                                                    } else {
+                                                        $output .= '
+                                                            <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                <input type="submit">
+                                                            </form>
+                                                            ';
+                                                        $isLoggedIn = false;
+
+                                                    }
+                                                } else {
+                                                   $isLoggedIn = false;
+                                                }
+                                            }
+
+                                            if ( $isLoggedIn == false ) {
                                                 // Not logged in.
                                             } else {
                                                 // Logged in.
                                                 $table_name3 = $wpdb->prefix . "wpstorecart_orders";
-                                                $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='{$current_user->ID}' ORDER BY `date` DESC;";
+                                                if ( is_user_logged_in()  ) { // for logged in users
+                                                    $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='{$current_user->ID}' ORDER BY `date` DESC;";
+                                                } else { // For guests
+                                                    $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='0' AND `email`='{$_SESSION['wpsc_email']}' ORDER BY `date` DESC;";
+                                                }
+
                                                 $results = $wpdb->get_results( $sql , ARRAY_A );
                                                 if(isset($results)) {
                                                         $output .= '<table><tr><td>Order Status</td><td>Date</td><td>Items</td><td>Total Price</td></tr>';
@@ -5436,14 +5470,24 @@ if (!class_exists("wpStoreCart")) {
                                                         }
                                                         $output .= '</table>';
                                                 }
-                                                
-                                                $output .= '<br />';
-                                                $output .= 'Username: ' . $current_user->user_login . '<br />';
-                                                $output .= 'Email: ' . $current_user->user_email . '<br />';
-                                                $output .= 'First name: ' . $current_user->user_firstname . '<br />';
-                                                $output .= 'Last name: ' . $current_user->user_lastname . '<br />';
-                                                $output .= 'Display name: ' . $current_user->display_name . '<br />';
-                                                $output .= 'User ID: ' . $current_user->ID . '<br />';
+
+                                                if ( is_user_logged_in()  ) {
+                                                    $output .= '<br />';
+                                                    $output .= 'Username: ' . $current_user->user_login . '<br />';
+                                                    $output .= 'Email: ' . $current_user->user_email . '<br />';
+                                                    $output .= 'First name: ' . $current_user->user_firstname . '<br />';
+                                                    $output .= 'Last name: ' . $current_user->user_lastname . '<br />';
+                                                    $output .= 'Display name: ' . $current_user->display_name . '<br />';
+                                                    $output .= 'User ID: ' . $current_user->ID . '<br />';
+                                                } else {
+                                                    $output .= '<br />Email: ' . $_SESSION['wpsc_email'] . '<br />';
+                                                    $output .= '
+                                                        <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                            <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                            <input type="submit">
+                                                        </form>
+                                                        ';
+                                                }
 
                                             }
                                         }
@@ -7015,15 +7059,18 @@ if (class_exists("WP_Widget")) {
 			echo $before_widget;
 			if ( $title ) { echo $before_title . $title . $after_title; }
 
+
+                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
+                        } else {
+                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
+                        }
+                        
                         if ( is_user_logged_in() ) {
-                                if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
-                                    $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
-                                } else {
-                                    $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
-                                }
                                 $output .= '<ul>';
                                 $output .= '<li><a href="'.$permalink.'">'.$devOptions['myordersandpurchases'].'</a></li>';
                                 $output .= '<li><a href="'.wp_logout_url(get_permalink()).'">'.$devOptions['logout'].'</a></li>';
+
                                 $output .= '</ul>';
                         } else {
 
@@ -7031,13 +7078,19 @@ if (class_exists("WP_Widget")) {
                             <strong>'.$devOptions['login'].'</strong><br />
                             <form id="login" method="post" action="'. wp_login_url( get_permalink() ) .'">
                                                                     
-                                <label>'.$devOptions['username'].' <input type="text" value="" name="log" /></label>
-                                <label>'.$devOptions['password'].' <input type="password" value="" name="pwd"  /></label>
+                                <label>'.$devOptions['username'].' <input type="text" value="" name="log" /></label><br />
+                                <label>'.$devOptions['password'].' <input type="password" value="" name="pwd"  /></label><br />
                                 <input type="submit" value="Login" />
 
                             </form>
 
                             ';
+                             if($devOptions['requireregistration']=='false') {
+                                $output .= '<ul>';
+                                $output .= '<li><a href="'.$permalink.'">'.$devOptions['myordersandpurchases'].'</a></li>';
+                                $output .= '</ul>';
+
+                             }
                         }
 
 			echo $output;

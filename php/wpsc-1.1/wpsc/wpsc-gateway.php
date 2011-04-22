@@ -139,6 +139,20 @@ else
                     
                 }
 
+                // Allows us to bypass registration and have guest only checkout
+                if($devOptions['requireregistration']=='false') {
+                    if(@isset($_SESSION['wpsc_email'])) {
+                        $purchaser_user_id = 0;
+                        $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
+                    } else {
+                        $purchaser_user_id = $current_user->ID;
+                        $purchaser_email = $current_user->user_email;
+                    }
+                } else {
+                        $purchaser_user_id = $current_user->ID;
+                        $purchaser_email = $current_user->user_email;
+                }
+
 
                 $paymentGateway = 'checkmoneyorder';
 
@@ -206,7 +220,7 @@ else
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'Check/Money Order', '{$totalPrice}', '{$totalShipping}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', 'Check/Money Order', '{$totalPrice}', '{$totalShipping}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
@@ -303,13 +317,13 @@ else
                         $affiliateid = $_COOKIE['wpscPROaff'];
                         //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
                     }
-                    $paymentGatewayOptions['userid'] = $current_user->ID;
+                    $paymentGatewayOptions['userid'] = $purchaser_user_id;
 
                     $insert = "
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'Authorize.Net', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', 'Authorize.Net', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
@@ -392,13 +406,13 @@ else
                         $affiliateid = $_COOKIE['wpscPROaff'];
                         //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
                     }
-                    $paymentGatewayOptions['userid'] = $current_user->ID;
+                    $paymentGatewayOptions['userid'] = $purchaser_user_id;
 
                     $insert = "
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', '2CheckOut', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', '2CheckOut', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
@@ -486,13 +500,13 @@ else
                         $affiliateid = $_COOKIE['wpscPROaff'];
                         //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
                     }
-                    $paymentGatewayOptions['userid'] = $current_user->ID;
+                    $paymentGatewayOptions['userid'] = $purchaser_user_id;
 
                     $insert = "
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'Liberty Reserve', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', 'Liberty Reserve', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
@@ -636,7 +650,7 @@ else
                     INSERT INTO `{$table_name}`
                     (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
                     `wpuser`, `email`, `affiliate`, `date`) VALUES
-                    (NULL, 'Pending', '{$cartContents}', 'PayPal', '{$totalPrice}', '{$totalShipping}', '{$current_user->ID}', '{$current_user->user_email}', '{$affiliateid}', '{$timestamp}');
+                    (NULL, 'Pending', '{$cartContents}', 'PayPal', '{$totalPrice}', '{$totalShipping}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
                     ";
 
                     $results = $wpdb->query( $insert );
