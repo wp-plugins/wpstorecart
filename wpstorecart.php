@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.4
+Version: 2.2.5
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.4
+ * @version 2.2.5
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,9 +52,9 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.4';
-$wpstorecart_version_int = 202004; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
-$wpstorecart_db_version = '2.2.4'; // Indicates the last version in which the database schema was altered
+$wpstorecart_version = '2.2.5';
+$wpstorecart_version_int = 202005; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = '2.2.5'; // Indicates the last version in which the database schema was altered
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL

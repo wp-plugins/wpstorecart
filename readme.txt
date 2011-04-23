@@ -4,15 +4,40 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.1
-Stable tag: 2.2.4
-Version: 2.2.4
+Stable tag: 2.2.5
+Version: 2.2.5
+
+The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
 == Description ==
 
 [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") wpStoreCart is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
 
-[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is an open source eCommerce solution for WordPress that allows you to quickly and easily sell your physical and digital downloads using your new or existing WordPress website. [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") was developed only after we had spent a few years being totally frustrated with other WordPress eCommerce plugins, which we found to be generally either unprofessional, hard to use, or would break everytime we’d upgrade the plugin, not to mention most of them cost a lot money. So, we spent the last year developing [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") to be THE free, open source, easy to use, yet extremely powerful eCommerce plugin for WordPress that everyone has always dreamed of.  We're always looking for criticisms, suggestions, and tips on how we can make our plugin the best, so feel free to contact us on our [support forums](http://wpstorecart.com/forum/ "wpStoreCart Support Forums").  We also do custom Wordpress themes, plugins, modifications, consultation, business support, and more.  [Contact us by clicking here](http://wpstorecart.com/design-mods-support/ " ") today with your project details.
+**Hightlighted Features:**
+
+* Web based "Setup Wizard"
+* Unlimited number of products &amp; categories
+* Product Variations such as size & color
+* Product properties such as weight & dimensions
+* Fully configurable product & category display
+* Search products using default Wordpress search
+* USPS shipping integration
+* Multi-language & currency support
+* Works with any theme
+* Includes dedicated high end, Premium Wordpress theme for free
+* Optional coupon and discount system
+* Includes several widgets
+* Customizable registration process
+* Run your shop as "Digital Products Only", "Physical Products Only" or with both
+* Products support limited or unlimited quantities
+* PayPal payments (more payment processors available)
+* **and much, much MORE!**
+
+![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
+
+**About wpStoreCart:**
+[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is an open source eCommerce solution for WordPress that allows you to quickly and easily sell your physical and digital downloads using your new or existing WordPress website. [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") was developed only after we had spent a few years being totally frustrated with other WordPress eCommerce plugins, which we found to be generally either unprofessional, hard to use, or would break every time we’d upgrade the plugin, not to mention most of them cost a lot money. So, in March 2010, we began developing [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") to be THE free, open source, easy to use, yet extremely powerful eCommerce plugin for WordPress that everyone has always dreamed of.  That's a difficult thing to achieve, and to that end, we're always looking for criticisms, suggestions, and tips on how we can make our plugin the best.  Please feel free to contact us on our [support forums](http://wpstorecart.com/forum/ "wpStoreCart Support Forums").  We also do custom Wordpress themes, plugins, modifications, consultation, business support, and more.  [Contact us by clicking here](http://wpstorecart.com/design-mods-support/ " ") today with your requirements.
 == Installation ==
 
 For complete detail and initial configuration tutorials and documentation, please visit the [Installation Documentation](http://wpstorecart.com/documentation/installation/ "wpStoreCart Installation")
@@ -54,6 +79,9 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.5 =
+* Updated the readme.txt file
 
 = 2.2.4 =
 * Fixed a bug with shipping calculations not working on product variations
