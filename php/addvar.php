@@ -24,6 +24,10 @@ if ( 0 == $current_user->ID ) {
     $varvalue = $wpdb->escape($_POST['varvalue']);
     $varprice = $wpdb->escape($_POST['varprice']);
     $vardesc = $wpdb->escape($_POST['vardesc']);
+    $vartype = $wpdb->escape($_POST['vartype']);
+    if($vartype=='false'){
+        $vartype = 'advanced';
+    }
     $vardownloads = $wpdb->escape($_POST['vardownloads']);
     $keytoedit = $wpdb->escape($_POST['keytoedit']);
 
@@ -32,7 +36,7 @@ if ( 0 == $current_user->ID ) {
     `primkey`, `value`, `type`, `foreignkey`)
     VALUES (
             NULL,
-            '{$createnewvar}||{$varvalue}||{$varprice}||{$vardesc}||{$vardownloads}',
+            '{$createnewvar}||{$varvalue}||{$varprice}||{$vardesc}||{$vardownloads}||{$vartype}',
             'productvariation',
             '{$keytoedit}'
     );

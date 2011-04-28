@@ -3,9 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
-Tested up to: 3.1.1
-Stable tag: 2.2.5
-Version: 2.2.5
+Tested up to: 3.1.2
+Stable tag: 2.2.6
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -29,6 +28,7 @@ It is easy to use, lightweight, heavily supported and constantly updated with ne
 * Optional coupon and discount system
 * Includes several widgets
 * Customizable registration process
+* Guest checkout
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
 * PayPal payments (more payment processors available)
@@ -79,6 +79,12 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.6 =
+* Product admin area now has a tabbed interface
+* Inline editing of variations using Ajax (previously editing variations was not possible)
+* Added Advanced Variations, including a new database table: wpstorecart_av
+* Updated the system that checks for updates, and depreciated the database versioning system in favor of using $wpstorecart_version_int
 
 = 2.2.5 =
 * Updated the readme.txt file

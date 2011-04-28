@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.5
+Version: 2.2.6
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.5
+ * @version 2.2.6
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,9 +52,9 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.5';
-$wpstorecart_version_int = 202005; // M_m_u_ which is 2 digits for Major, minor, and updates, so version 2.0.14 would be 200014
-$wpstorecart_db_version = '2.2.5'; // Indicates the last version in which the database schema was altered
+$wpstorecart_version = '2.2.6';
+$wpstorecart_version_int = 202006; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
@@ -177,6 +177,7 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
  * copyr
  *
  * Copy a file, or recursively copy a folder and its contents
+ * The public domain license applies only to the copyr function
  *
  * @author      Aidan Lister <aidan@php.net>
  * @version     1.0.1
@@ -186,38 +187,39 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
  * @return      bool     Returns TRUE on success, FALSE on failure
  * @license     public domain
  */
-function copyr($source, $dest)
-{
-    // Check for symlinks
-    if (is_link($source)) {
-        return symlink(readlink($source), $dest);
-    }
-
-    // Simple copy for a file
-    if (is_file($source)) {
-        return copy($source, $dest);
-    }
-
-    // Make destination directory
-    if (!is_dir($dest)) {
-        mkdir($dest);
-    }
-
-    // Loop through the folder
-    $dir = dir($source);
-    while (false !== $entry = $dir->read()) {
-        // Skip pointers
-        if ($entry == '.' || $entry == '..') {
-            continue;
+if(!function_exists(copyr)) {
+    function copyr($source, $dest) {
+        // Check for symlinks
+        if (is_link($source)) {
+            return symlink(readlink($source), $dest);
         }
 
-        // Deep copy directories
-        copyr("$source/$entry", "$dest/$entry");
-    }
+        // Simple copy for a file
+        if (is_file($source)) {
+            return copy($source, $dest);
+        }
 
-    // Clean up
-    $dir->close();
-    return true;
+        // Make destination directory
+        if (!is_dir($dest)) {
+            mkdir($dest);
+        }
+
+        // Loop through the folder
+        $dir = dir($source);
+        while (false !== $entry = $dir->read()) {
+            // Skip pointers
+            if ($entry == '.' || $entry == '..') {
+                continue;
+            }
+
+            // Deep copy directories
+            copyr("$source/$entry", "$dest/$entry");
+        }
+
+        // Clean up
+        $dir->close();
+        return true;
+    }
 }
 
 // Copy the theme if needed
@@ -280,12 +282,12 @@ if (!class_exists("wpStoreCart")) {
          * @global string $wpstorecart_db_version
          */
         function wpStoreCart() { //constructor
-            global $wpdb, $wpstorecart_db_version;
+            global $wpdb, $wpstorecart_db_version, $wpstorecart_version_int;
 
             $devOptions = $this->getAdminOptions();
 
             $devOptions['run_updates']='true';
-            if ($devOptions['database_version']=='2.2.0') {
+            if (intval(str_replace('.','',$devOptions['database_version']))==$wpstorecart_version_int) { // This will force wpStoreCart to run the Update method if we're not using the latest version. the intval/str_replace stuff is there because we used to use a 2.1.9 format, and now we use 201009 format.
                 $devOptions['run_updates']='false';
             }
 
@@ -341,7 +343,7 @@ if (!class_exists("wpStoreCart")) {
          * @global string $wpstorecart_db_version
          */
        function wpscUpdate() {
-            global $wpdb, $wpstorecart_db_version;
+            global $wpdb, $wpstorecart_db_version, $wpstorecart_version_int;
 
             $devOptions = $this->getAdminOptions();
 
@@ -356,36 +358,54 @@ if (!class_exists("wpStoreCart")) {
                 $table_name = $wpdb->prefix . "wpstorecart_categories";
                 $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
                 $results = $wpdb->query( $sql );
-                $devOptions['database_version'] = $wpstorecart_db_version;
-                update_option('wpStoreCartAdminOptions', $devOptions);
             }
 
-                      $table_name = $wpdb->prefix . "wpstorecart_meta";
-                   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+          /**
+             * Let's make sure the the meta table exists for those who are upgrading from a previous version
+             */
+           $table_name = $wpdb->prefix . "wpstorecart_meta";
+           if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
 
-                        $sql = "
-                                CREATE TABLE IF NOT EXISTS {$table_name} (
-                                `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                `value` TEXT NOT NULL,
-                                `type` VARCHAR(32) NOT NULL,
-                                `foreignkey` INT NOT NULL
-                                );
-                                ";
+                $sql = "
+                        CREATE TABLE IF NOT EXISTS {$table_name} (
+                        `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        `value` TEXT NOT NULL,
+                        `type` VARCHAR(32) NOT NULL,
+                        `foreignkey` INT NOT NULL
+                        );
+                        ";
 
 
-                        $results = $wpdb->query( $sql );
-                        $devOptions['database_version'] = $wpstorecart_db_version;
-                        update_option('wpStoreCartAdminOptions', $devOptions);
-                        }
+                $results = $wpdb->query( $sql );
+            }
 
+          /**
+             * Let's make sure the the av table exists for those who are upgrading from a previous version
+             */
+           $table_name = $wpdb->prefix . "wpstorecart_av";
+           if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                $sql = "
+                        CREATE TABLE IF NOT EXISTS {$table_name} (
+                            `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+                            `productkey` INT NOT NULL ,
+                            `values` TEXT NOT NULL ,
+                            `price` DECIMAL( 9, 2 ) NOT NULL
+                        );
+                        ";
+
+
+                $results = $wpdb->query( $sql );
+            }
 
             if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
                         $table_name = $wpdb->prefix . "wpstorecart_products";
                         $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
                         $results = $wpdb->query( $sql );
-                        $devOptions['database_version'] = $wpstorecart_db_version;
-                        update_option('wpStoreCartAdminOptions', $devOptions);
             }
+
+            // This little block of code insures that we don't run this update routine again until the next time wpStoreCart is updated.
+            $devOptions['database_version'] = $wpstorecart_version_int;
             $devOptions['run_updates']='false'; // These updates only need to be ran once.
             update_option('wpStoreCartAdminOptions', $devOptions);
        }
@@ -2873,6 +2893,56 @@ if (!class_exists("wpStoreCart")) {
 				$codeForKeyToEdit = '&keytoedit='.$lastID;
 			}
 			
+                        echo '
+                        <script type="text/javascript">
+                            //<![CDATA[
+			jQuery(document).ready(function($) {
+                                //When page loads...
+                                ';
+
+                        if(@!isset($_POST['theCurrentTab']) || @$_POST['theCurrentTab']=='') {
+                            $theCurrentTab = '#tab1';
+                        } else {
+                            $theCurrentTab = $_POST['theCurrentTab'];
+                        }
+                        if(@isset($_GET['theCurrentTab']) || @$_GET['theCurrentTab']!='') {
+                            $theCurrentTab = '#'.$_GET['theCurrentTab'];
+                        }
+                        echo 'var theCurrentTab = \''.$theCurrentTab.'\';';
+
+                        echo '
+                                $(".tab_content").hide(); //Hide all content
+
+                                $("ul.tabs "+theCurrentTab).addClass("active").show(); //Activate first tab
+                                $(theCurrentTab).show(); //Show first tab content
+
+                                //On Click Event
+                                $("ul.tabs li").click(function() {
+
+                                        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+                                        $(this).addClass("active"); //Add "active" class to selected tab
+                                        $(".tab_content").hide(); //Hide all tab content
+
+                                        var activeTab = $(this).find("a").attr("href"); //Find the href attribute value to identify the active tab + content
+                                        $(activeTab).fadeIn(); //Fade in the active ID content
+                                        return false;
+                                });
+
+                        });
+                        //]]>
+                        </script>
+
+                        <ul class="tabs">
+                            <li style="display:inline;"><a href="#tab1"><img src="'.plugins_url('/images/buttons_product_info.jpg' , __FILE__).'" /></a></li>
+                            <li style="display:inline;"><a href="#tab2"><img src="'.plugins_url('/images/buttons_variation.jpg' , __FILE__).'" /></a></li>';
+                            if($isanedit == true) {
+                                echo '<a href="'.get_permalink($result['postid']).'"><img src="'.plugins_url('/images/buttons_view_page.jpg' , __FILE__).'" style="display:inline;" /></a>';
+                            }
+                        echo '
+                        </ul>
+
+                        <div id="tab1" class="tab_content">   ';
+
 			echo '
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">';
 
@@ -2882,10 +2952,6 @@ if (!class_exists("wpStoreCart")) {
                             echo '<h2>Edit';
                         }
 			echo ' a Product <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
-
-                        if($isanedit == true) {
-                            echo ' <a href="'.get_permalink($result['postid']).'" target="_blank">View Product Page</a>';
-                        }
 
 			echo '<table class="widefat">
 			<thead><tr><th>Product Attribute</th><th>Value</th><th>Description</th></tr></thead><tbody>
@@ -2983,8 +3049,8 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<tr';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
 			<td><h3>Downloadable<br />Files: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
-			<td>File: <input type="text" name="wpStoreCartproduct_download" style="width: 200px;" value="'.$wpStoreCartproduct_download.'" /> or<br />
-			Upload a file: <span id="spanSWFUploadButton"></span>
+			<td><input type="hidden" name="wpStoreCartproduct_download" style="width: 200px;" value="'.$wpStoreCartproduct_download.'" /><br />
+			Upload file(s): <span id="spanSWFUploadButton"></span>
                         <div id="upload-progressbar-container">
                             <div id="upload-progressbar">
                             </div>
@@ -2999,7 +3065,7 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<tr>
 			<td><h3>Product<br />Thumbnail: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.</div></h3></td>
-			<td>URL: <input type="text" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /> or<br />
+			<td><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /><br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
                         <div id="upload-progressbar-container2">
                             <div id="upload-progressbar2">
@@ -3027,20 +3093,69 @@ if (!class_exists("wpStoreCart")) {
                                 }
 
                                 function addvar() {
-                                    jQuery.ajax({ url: "'.plugins_url('/php/addvar.php' , __FILE__).'", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
-                                        jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> "+jQuery("#createnewvar").val()+"</td><td>"+jQuery("#varvalue").val()+"</td><td>"+jQuery("#varprice").val()+"</td><td>"+jQuery("#vardesc").val()+"</td></tr>");
+                                    jQuery.ajax({ url: "'.plugins_url('/php/addvar.php' , __FILE__).'", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"&vartype="+jQuery("#vartype_yes").is(":checked")+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
+                                        if(jQuery("#vartype_yes").is(":checked")) {
+                                            jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'>"+jQuery("#createnewvar").val()+"</p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+jQuery("#varvalue").val()+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>"+jQuery("#varprice").val()+"</p></td><td><p class=\'edit_area\' id=\'vardesc_"+txt+"\'>"+jQuery("#vardesc").val()+"</p></td></tr>");
+                                        } else {
+                                            jQuery("#varholder2").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'>"+jQuery("#createnewvar").val()+"</p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+jQuery("#varvalue").val()+"</p></td><td><p class=\'edit_area\' id=\'vardesc_"+txt+"\'>"+jQuery("#vardesc").val()+"</p></td></tr>");
+                                        }
                                     }});
                                 }
+
+                                jQuery(document).ready(function($) {
+                                    $(".edit").live("click", function() {
+                                         $(".edit").editable("'.plugins_url('/php/varedit.php' , __FILE__).'", {
+                                             indicator : "Saving...",
+                                             tooltip   : "Click to edit...",
+                                             cancel    : "Cancel",
+                                             submit    : "OK",
+                                             style     : "cursor: pointer;"
+                                         });
+                                    });
+
+                                    $(".edit_area").live("click", function() {
+                                         $(".edit_area").editable("'.plugins_url('/php/varedit.php' , __FILE__).'", {
+                                             type      : "textarea",
+                                             cancel    : "Cancel",
+                                             submit    : "OK",
+                                             style     : "cursor: pointer;",
+                                             indicator : "<img src=\"'.plugins_url('/images/loader.gif' , __FILE__).'\">",
+                                             tooltip   : "Click to edit..."
+                                         });
+                                    });
+
+                                     $(".edit").editable("'.plugins_url('/php/varedit.php' , __FILE__).'", {
+                                         indicator : "Saving...",
+                                         tooltip   : "Click to edit...",
+                                         cancel    : "Cancel",
+                                         submit    : "OK",
+                                         style     : "cursor: pointer;"
+                                     });
+                                     $(".edit_area").editable("'.plugins_url('/php/varedit.php' , __FILE__).'", {
+                                         type      : "textarea",
+                                         cancel    : "Cancel",
+                                         submit    : "OK",
+                                         style     : "cursor: pointer;",
+                                         indicator : "<img src=\"'.plugins_url('/images/loader.gif' , __FILE__).'\">",
+                                         tooltip   : "Click to edit..."
+                                     });
+
+                                 });
+
                                 /* ]]> */
                             </script>
                             
                             <br style="clear:both;" />
+
+                            </div>
+                            <div id="tab2" class="tab_content">
+
                             <h2>Product Variations &amp; Attributes</h2>
                             <table class="widefat">
-                            <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th><th';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>Downloads</th></tr></thead><tbody>
-                            <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" /> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
-                            <input type="text" id="wpStoreCartproduct_variation" name="wpStoreCartproduct_variation" style="width: 200px;" value="" />
-                            Upload a file: <span id="spanSWFUploadButton3"></span>
+                            <thead><tr><th>Simple or Advanced</th><th>Variation Category</th><th>One Possible Value</th><th id="varpriceth">Price Variation</th><th>Description</th><th';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>Downloads</th></tr></thead><tbody>
+                            <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" /><br /><br /><br /><p><label for="vartype_yes"><input onclick="jQuery(\'#varpricetd\').show(\'slow\');jQuery(\'#varpriceth\').show(\'slow\');" type="radio" id="vartype_yes" name="vartype" value="simple" checked="checked" /> Simple</label><br /><label for="vartype_no"><input type="radio" onclick="jQuery(\'#varpricetd\').hide(\'slow\');jQuery(\'#varpriceth\').hide(\'slow\');" id="vartype_no" name="vartype" value="advanced" /> Advanced</label></td><td> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td id="varpricetd"><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
+                            <input type="hidden" id="wpStoreCartproduct_variation" name="wpStoreCartproduct_variation" style="width: 180px;" value="" />
+                            Upload file(s): <span id="spanSWFUploadButton3"></span>
                             <div id="upload-progressbar-container3">
                                 <div id="upload-progressbar3">
                                 </div>
@@ -3053,6 +3168,7 @@ if (!class_exists("wpStoreCart")) {
                             </table>
 
                             <br style="clear:both;" />
+                            <h3>Simple Variations</h3>
                             <table class="widefat" id="varholder">
                                 <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Price Variation</th><th>Description</th></tr></thead><tbody>';
 
@@ -3064,7 +3180,9 @@ if (!class_exists("wpStoreCart")) {
                                         foreach ($results as $result) {
                                             $theKey = $result['primkey'];
                                             $exploder = explode('||', $result['value']);
-                                            echo '<tr id="'.$theKey.'"><td><img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> '.$exploder[0].'</td><td>'.$exploder[1].'</td><td>'.$exploder[2].'</td><td>'.$exploder[3].'</td></tr>';
+                                            if($exploder[5]!='advanced') {
+                                                echo '<tr id="'.$theKey.'"><td> <img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> <p class="edit" id="varcat_'.$theKey.'">'.$exploder[0].'</p></td><td><p class="edit" id="varvalue_'.$theKey.'">'.$exploder[1].'</p></td><td><p class="edit" id="varprice_'.$theKey.'">'.$exploder[2].'</td><td><p class="edit_area" id="vardesc_'.$theKey.'">'.$exploder[3].'</p></td></tr>';
+                                            }
                                         }
                                 }
 
@@ -3072,15 +3190,163 @@ if (!class_exists("wpStoreCart")) {
                             </table>
                             <br style="clear:both;" />
                             ';
+
+                            echo '
+                            <h3>Advanced Variations</h3>
+                            <table class="widefat" id="varholder2">
+                                <thead><tr><th>Variation Category</th><th>One Possible Value</th><th>Description</th></tr></thead><tbody>';
+
+                                $table_name3 = $wpdb->prefix . "wpstorecart_meta";
+                                $grabrecord = "SELECT * FROM `{$table_name3}` WHERE `type`='productvariation' AND `foreignkey`={$_GET['keytoedit']} ORDER BY `value` ASC;";
+
+                                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                                if(isset($results)) {
+                                        foreach ($results as $result) {
+                                            $theKey = $result['primkey'];
+
+                                            $exploder = explode('||', $result['value']);
+
+                                            if($exploder[5]=='advanced') {
+                                                if(!isset($numberOfCategory[$this->slug($exploder[0])])) {
+                                                    $numberOfCategory[$this->slug($exploder[0])] = 0; // will be 1 in just a second
+                                                }
+                                                $numberOfCategory[$exploder[0]] =  $numberOfCategory[$exploder[0]] + 1;
+                                                echo '<tr id="'.$theKey.'"><td> <img onclick="delvar('.$theKey.');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> <p class="edit" id="varcat_'.$theKey.'">'.$exploder[0].'</p></td><td><p class="edit" id="varvalue_'.$theKey.'">'.$exploder[1].'</p></td><td><p class="edit_area" id="vardesc_'.$theKey.'">'.$exploder[3].'</p></td></tr>';
+                                            }
+                                        }
+                                }
+
+                            echo '
+                            </table>
+                            <br style="clear:both;" />
+                            ';
+                            echo '
+                            <h3>Prices for Advanced Variations </h3>
+                            <p>Don\'t assign prices here until you\'re done adding new "Variation Categories", or you will invalidate all the previously set prices. If you\'ve recently added additional Advanced Variations then resubmit the product to assign prices to the newly added variations.</p>
+                            <ul>';
+
+                            // Product variations
+                            $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                            $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$_GET['keytoedit']} ORDER BY `value` ASC;";
+
+                            $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                            if(isset($vresults)) {
+                                $voutput = NULL;
+                                $variationStorage = array();
+                                $varStorageCounter = 0;
+                                foreach ($vresults as $vresult) {
+                                    $theKey = $vresult['primkey'];
+                                    $exploder = explode('||', $vresult['value']);
+                                    if($exploder[5]=='advanced') {
+                                        $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
+                                        $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
+                                        $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
+                                        $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
+                                        $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                        $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
+                                        //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
+                                        $varStorageCounter++;
+                                    }
+                                }
+                            }
+
+                             $output .= '
+                                <script type="text/javascript">
+                                    //<![CDATA[
+                                        
+                                        var registerAdvVarName = new Array();
+
+                                        function updateAdvVarPrice() {
+                                            var query_string = "advvarprice=" + jQuery("#advvarprice").val() + "&advvarkey='.$_GET['keytoedit'].'";
+                                            for(var i in registerAdvVarName)
+                                            {
+                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                            }
+                                            jQuery.ajax({ url: "'.plugins_url('/php/updateadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(){
+                                                
+                                            }});
+                                        }
+
+                                        function loadAdvVarPrice() {
+                                            var query_string = "advvarkey='.$_GET['keytoedit'].'";
+                                            for(var i in registerAdvVarName)
+                                            {
+                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                            }
+                                            jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
+                                                jQuery("#advvarprice").val(txt);
+                                            }});
+                                        }
+
+                                    //]]>
+                                </script>
+                             ';
+                            $variationTest = array();
+                            $variationCounter = 0;
+                            if(@is_array($variationStorage) && @isset($variationStorage[0])) {
+                                if(isset($variationStorage)) {
+                                        foreach ($variationStorage as $variationStorageCycle) {
+                                            if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+
+                                             $output .= '
+                                                <script type="text/javascript">
+                                                    //<![CDATA[
+                                                        registerAdvVarName['.$variationCounter.'] = "'.$this->slug($variationStorageCycle['variationname']).'";
+                                                    //]]>
+                                                </script>
+                                             ';
+                                             $voutput .= '
+                                                <li>'.$variationStorageCycle['variationname'].' - <select name="variation_'.$this->slug($variationStorageCycle['variationname']).'" id="variation_'.$this->slug($variationStorageCycle['variationname']).'" onblur="updateAdvVarPrice();" onchange="loadAdvVarPrice();">';
+
+                                            }
+                                            if(isset($variationStorage)) {
+                                                    foreach ($variationStorage as $currentVariation) {
+                                                            if (($currentVariation['variationtype']=='advanced' && $currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$this->slug($variationStorageCycle['variationname'])]!=true) {
+                                                                $option = '<option value="'.$this->slug($currentVariation['variationvalue']).'"';
+                                                                $option .='>';
+                                                                $option .= $currentVariation['variationvalue'];
+                                                                $option .= '</option>';
+                                                                $voutput .=  $option;
+                                                            }
+                                                    }
+                                            }
+
+                                            if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+                                                $voutput .=  '
+                                                </select>   </li>';
+                                                $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                            }
+                                            $variationCounter++;
+                                            $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                        }
+
+
+                                    }
+                            }
+                            // Product variations
+
+                            echo $output;
+                            echo $voutput;
+
+                            echo '
+                            </ul>
+                            <strong>Price for this variation combination:</strong> '.$devOptions['currency_symbol'].'<input type="text" value="" style="width:75px;" id="advvarprice" onclick="updateAdvVarPrice();" onblur="updateAdvVarPrice();" onchange="updateAdvVarPrice();" />'.$devOptions['currency_symbol_right'].'
+
+                            <br style="clear:both;" />
+                            ';
+
                         } else {
                             echo '
                             <br style="clear:both;" />
+                            </div>
+                            <div id="tab2" class="tab_content">
                             <h2>Product Variations &amp; Attributes</h2>
                             <p>Once you\'ve created your product, then you are able to create variations such as multiple sizes, colors, versions, upgrades, and downgrades, all with specific prices.  Save the product now to begin adding variations to it.</p>
                             ';
                         }
                         
-                        echo '
+                        echo '</div>
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
 			</form>
@@ -3138,7 +3404,76 @@ if (!class_exists("wpStoreCart")) {
 			}
 
 			$this->spHeader();
-			
+
+                       echo '
+
+			<style type="text/css">
+				.tableDescription {
+					width:200px;
+					max-width:200px;
+				}
+
+                        .tabs {
+                            position:relative;
+                            z-index:1;
+                        }
+
+                        ul.tabs {
+                                margin: 0 0 -5px 8px;
+                                padding: 0;
+                                float: left;
+                                list-style: none;
+                                height: 40px;
+                                max-height: 40px;
+                                width: 100%;
+                                width:812px;
+                                min-width:812px;
+                            position:relative;
+                            z-index:1;
+                        }
+                        ul.tabs li {
+                                float: left;
+                                margin: 0;
+                                padding: 0;
+                                height: 39px; /*--Subtract 1px from the height of the unordered list--*/
+                                line-height: 39px; /*--Vertically aligns the text within the tab--*/
+                                border:  none;
+                                margin-bottom: -1px; /*--Pull the list item down 1px--*/
+                                overflow: hidden;
+                                position: relative;
+                                z-index:1;
+                        }
+                        ul.tabs li a {
+                                text-decoration: none;
+                                color: #000;
+                                display: block;
+                                font-size: 1.2em;
+                                position: relative;
+                                z-index:1;
+                                outline: none;
+                        }
+                        ul.tabs li a:hover {
+                                opacity:.80;
+                        }
+                        html ul.tabs li.active, html ul.tabs li.active a:hover  { /*--Makes sure that the active tab does not listen to the hover properties--*/
+
+
+                        }
+                        .tab_container {
+                                border: none;
+                                overflow: hidden;
+                                clear: both;
+                                float: left; width: 100%;
+                                position: relative;
+                                z-index:1;
+                        }
+                        .tab_content {
+                                padding: 10px;
+
+                        }
+			</style>';
+
+
 			echo '
 		
 			<script type="text/javascript">
@@ -3159,10 +3494,11 @@ if (!class_exists("wpStoreCart")) {
 						// set the check value for all check boxes
 						for(var i = 0; i < countCheckBoxes; i++)
 							objCheckBoxes[i].checked = CheckValue;
-				}
-                            /* ]]> */
-			</script>
-			
+
+
+                        //]]>
+                        </script>
+
 			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
 			
 			<form method="post" name="myForm">
@@ -4855,6 +5191,22 @@ if (!class_exists("wpStoreCart")) {
 		   }
 
 
+                   $table_name = $wpdb->prefix . "wpstorecart_av";
+                   if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                        $sql = "
+                                CREATE TABLE IF NOT EXISTS `{$table_name}` (
+                                    `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+                                    `productkey` INT NOT NULL ,
+                                    `values` TEXT NOT NULL ,
+                                    `price` DECIMAL( 9, 2 ) NOT NULL
+                                );
+                                ";
+
+
+                        dbDelta($sql);
+                    }
+
 		   
 		}
 		// END Installation ==============================================================================================
@@ -5098,14 +5450,19 @@ if (!class_exists("wpStoreCart")) {
                                                                 $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
                                                                 $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
                                                                 $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                                                $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
                                                                 //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
                                                                 $varStorageCounter++;
                                                             }
                                                         }
 
+
+
                                                         $output .= '
                                                         <script type="text/javascript">
                                                         /* <![CDATA[ */
+                                                            var advancedVariationPrice = 0;
+                                                            var advancedVariationName = "";
                                                             var alteredPrice = [];var alteredName = [];
                                                             alteredPrice[0] = 0;alteredName[0]="";
                                                             alteredPrice[1] = 0;alteredName[1]="";
@@ -5129,40 +5486,42 @@ if (!class_exists("wpStoreCart")) {
                                                         if(@is_array($variationStorage) && @isset($variationStorage[0])) {
                                                             if(isset($variationStorage)) {
                                                                     foreach ($variationStorage as $variationStorageCycle) {
-                                                                        if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
-                                                                        $output .= '
-                                                                        <script type="text/javascript">
-                                                                            /* <![CDATA[ */
-                                                                            alteredPrice['.$variationCounter.'] = 0;
-                                                                            alteredName['.$variationCounter.'] = "";
+                                                                        if($variationStorageCycle['variationtype']!='advanced') {
+                                                                            if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
+                                                                            $output .= '
+                                                                            <script type="text/javascript">
+                                                                                /* <![CDATA[ */
+                                                                                alteredPrice['.$variationCounter.'] = 0;
+                                                                                alteredName['.$variationCounter.'] = "";
 
-                                                                            function changePrice'.$variationCounter.'(amount) {
-                                                                                price = amount.split("||");
-                                                                                theprice = parseFloat(price[0]);
-                                                                                thename = price[1];
-                                                                                thekey = price[2];
-                                                                                alteredPrice['.$variationCounter.'] = theprice;
-                                                                                alteredName['.$variationCounter.'] = thename;
-                                                                                oldAmount = parseFloat('.$results[0]['price'].');
-                                                                                newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13]) *100)/100;
-                                                                                newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13];
-                                                                                jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
-                                                                                jQuery("#my-item-price").val(newAmount.toFixed(2));
-                                                                                jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
-                                                                                jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
-                                                                                jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
-                                                                                
+                                                                                function changePrice'.$variationCounter.'(amount) {
+                                                                                    price = amount.split("||");
+                                                                                    theprice = parseFloat(price[0]);
+                                                                                    thename = price[1];
+                                                                                    thekey = price[2];
+                                                                                    alteredPrice['.$variationCounter.'] = theprice;
+                                                                                    alteredName['.$variationCounter.'] = thename;
+                                                                                    oldAmount = parseFloat('.$results[0]['price'].');
+                                                                                    newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
+                                                                                    newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
+                                                                                    jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
+                                                                                    jQuery("#my-item-price").val(newAmount.toFixed(2));
+                                                                                    jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
+                                                                                    jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
+                                                                                    jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
+
+                                                                                }
+                                                                                /* ]]> */
+                                                                            </script>
+                                                                            ';
+                                                                             $voutput .= '
+                                                                                <li>'.$variationStorageCycle['variationname'].' - '.$variationStorageCycle['variationdesc'].'  <select name="variation_'.$variationStorageCycle['variationname'].'" onclick="changePrice'.$variationCounter.'(this.value);" onchange="changePrice'.$variationCounter.'(this.value);">';
+
                                                                             }
-                                                                            /* ]]> */
-                                                                        </script>
-                                                                        ';
-                                                                         $voutput .= '
-                                                                            <li>'.$variationStorageCycle['variationname'].' - '.$variationStorageCycle['variationdesc'].'  <select name="variation_'.$variationStorageCycle['variationname'].'" onclick="changePrice'.$variationCounter.'(this.value);" onchange="changePrice'.$variationCounter.'(this.value);">';
-                                                                            
                                                                         }
                                                                         if(isset($variationStorage)) {
                                                                                 foreach ($variationStorage as $currentVariation) {
-                                                                                        if (($currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$variationStorageCycle['variationname']]!=true) {
+                                                                                        if (($currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$variationStorageCycle['variationname']]!=true && $currentVariation['variationtype']!='advanced') {
                                                                                             $option = '<option value="'.$currentVariation['variationprice'].'||'.$currentVariation['variationvalue'].'||'.$currentVariation['variationkey'].'"';
                                                                                             $option .='>';
                                                                                             $option .= $currentVariation['variationvalue'] .' ('. $currentVariation['variationprice'].')';
@@ -5175,10 +5534,144 @@ if (!class_exists("wpStoreCart")) {
                                                                         </select>   </li>';
                                                                         $variationCounter++;
                                                                         $variationTest[$variationStorageCycle['variationname']] = true;
+
+
+                                                                        /**
+                                                                                     * Advanced Variations
+                                                                                     */
+
+
+                                                                        // Product variations
+                                                                        $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                                        $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey} ORDER BY `value` ASC;";
+
+                                                                        $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                                                        $atLeastOneAdv = false;
+                                                                        
+                                                                        if(isset($vresults)) {
+                                                                            
+                                                                            $variationStorage = array();
+                                                                            $varStorageCounter = 0;
+                                                                            foreach ($vresults as $vresult) {
+                                                                                $theKey = $vresult['primkey'];
+                                                                                $exploder = explode('||', $vresult['value']);
+                                                                                if($exploder[5]=='advanced') {
+                                                                                    $atLeastOneAdv = true;
+                                                                                    $voutput = NULL;
+                                                                                    $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
+                                                                                    $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
+                                                                                    $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
+                                                                                    $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
+                                                                                    $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                                                                    $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
+                                                                                    //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
+                                                                                    $varStorageCounter++;
+                                                                                }
+                                                                            }
+
+                                                                        }
+
+                                                                        if($atLeastOneAdv) {
+
+                                                                         $output .= '
+                                                                            <script type="text/javascript">
+                                                                                //<![CDATA[
+
+                                                                                    var registerAdvVarName = new Array();
+
+
+                                                                                    function loadAdvVarPrice() {
+                                                                                        var query_string = "advvarkey='.$primkey.'";
+                                                                                        var var_string = "";
+                                                                                        for(var i in registerAdvVarName)
+                                                                                        {
+                                                                                            query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                                                            var_string += " " + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                                                        }
+                                                                                        jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
+                                                                                            advancedVariationPrice = parseFloat(txt);
+                                                                                            oldAmount = parseFloat('.$results[0]['price'].');
+                                                                                            newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
+                                                                                            advancedVariationName = var_string;
+                                                                                            newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
+                                                                                            jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
+                                                                                            jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
+                                                                                            jQuery("#my-item-price").val(newAmount.toFixed(2));
+                                                                                        }});
+                                                                                    }
+
+                                                                                //]]>
+                                                                            </script>
+                                                                         ';
+                                                                        $variationTest = array();
+                                                                        $variationCounter = 0;
+                                                                        if(@is_array($variationStorage) && @isset($variationStorage[0])) {
+                                                                            if(isset($variationStorage)) {
+                                                                                 
+                                                                                    foreach ($variationStorage as $variationStorageCycle) {
+                                                                                        if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+
+                                                                                         $output .= '
+                                                                                            <script type="text/javascript">
+                                                                                                //<![CDATA[
+                                                                                                    registerAdvVarName['.$variationCounter.'] = "'.$this->slug($variationStorageCycle['variationname']).'";
+                                                                                                //]]>
+                                                                                            </script>
+                                                                                         ';
+                                                                                         $voutput .= '
+                                                                                            <li>'.$variationStorageCycle['variationname'].' - <select name="variation_'.$this->slug($variationStorageCycle['variationname']).'" id="variation_'.$this->slug($variationStorageCycle['variationname']).'" onchange="loadAdvVarPrice();">';
+
+                                                                                        }
+                                                                                        if(isset($variationStorage)) {
+                                                                                                foreach ($variationStorage as $currentVariation) {
+                                                                                                        if (($currentVariation['variationtype']=='advanced' && $currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$this->slug($variationStorageCycle['variationname'])]!=true) {
+                                                                                                            $option = '<option value="'.$this->slug($currentVariation['variationvalue']).'"';
+                                                                                                            $option .='>';
+                                                                                                            $option .= $currentVariation['variationvalue'];
+                                                                                                            $option .= '</option>';
+                                                                                                            $voutput .=  $option;
+                                                                                                        }
+                                                                                                }
+                                                                                        }
+
+                                                                                        if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+                                                                                            $voutput .=  '
+                                                                                            </select>   </li>';
+                                                                                            $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                                                                        }
+                                                                                        $variationCounter++;
+                                                                                        $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                                                                    }
+
+
+                                                                                }
+                                                                        }
+
+                                                                    // Product variations
+                                                                        if($atLeastOneAdv) {
+                                                                           $voutput .= '
+                                                                                <script type="text/javascript">
+                                                                                    //<![CDATA[
+
+                                                                                        loadAdvVarPrice();
+
+                                                                                    //]]>
+                                                                                </script>
+                                                                             ';
+                                                                        }
+                                                                        // Product variations
+
+
                                                                     }
+                                                                } // This is the end of $atLeastOneAdv is true, meaning that we're using advanced variations instead of simple
+
                                                                 }
+
+
                                                         }
-                                                        // Product variations
+
+
 
                                                         // Flat rate shipping implmented here:
                                                         if($devOptions['flatrateshipping']=='all_single') {
@@ -5202,9 +5695,13 @@ if (!class_exists("wpStoreCart")) {
 								  <li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>
 								  <li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
 
+                                                                if($goutput!=NULL) {
+                                                                    $output .= $goutput;
+                                                                }
                                                                 if($voutput!=NULL) {
                                                                     $output .= $voutput;
                                                                 }
+
 
                                                         $output .= '
 								 </ul>
@@ -5799,7 +6296,8 @@ jQuery(document).ready(function($) {
 					max-width:345px;
 					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
                                         z-index:999999;
-				}			
+				}
+
 			</style>
 			
 			<script type="text/javascript">
@@ -5888,10 +6386,12 @@ jQuery(document).ready(function($) {
 				)
 			);		 
 
+                        wp_enqueue_script('jeditable-wpsc', WP_PLUGIN_URL .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
 			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
-			
+                        wp_enqueue_script('jquery-ui-core',array('jquery'),'1.4');
+                        wp_enqueue_script('jquery-ui-sortable',array('jquery'),'1.4');
 
 			if (session_id() == "") {@session_start();};
 			
