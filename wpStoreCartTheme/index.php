@@ -219,12 +219,36 @@ if(!isset($_SESSION)) {
 															<input type="hidden" name="my-add-button" value="" />
 
 													';
+													echo '<div class="buttons">';
+													if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                                                        $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                                        $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$result['primkey']};";
 
-													if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
-														echo '<div class="buttons"><input type="image" src="'; bloginfo('template_directory'); echo '/img/AddToCart.jpg" style="margin-left:12px;width:67px;height:25px;" class="my-add-button-fake" name="my-add-button-fake" alt=""  /><a href="'.$permalink.'"><img src="'; bloginfo('template_directory'); echo '/img/ViewInfo.jpg" style="margin-left:10px;" alt="" /></a></div>';
+                                                                        $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                                                        if(isset($vresults)) {
+                                                                            $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name30}` WHERE `type`='disableaddtocart' AND `foreignkey`={$result['primkey']};", ARRAY_N);
+                                                                            if($results_disable_add_to_cart==false ) {
+                                                                                $display_add_to_cart_at_all_times = 'no';
+                                                                            } else {
+                                                                                if($results_disable_add_to_cart[0][0]=='yes') {
+                                                                                    $display_add_to_cart_at_all_times = 'yes';
+                                                                                } else {
+                                                                                    $display_add_to_cart_at_all_times = 'no';
+                                                                                }
+                                                                            }
+                                                                            if($display_add_to_cart_at_all_times=='no') { // will display the Add to Cart if there are no variations or if it is set to display automatically.
+                                                                                echo '<input type="image" src="'; bloginfo('template_directory'); echo '/img/AddToCart.jpg" style="margin-left:12px;width:67px;height:25px;" id="my-add-button-fake" name="my-add-button-fake" value="" />';
+                                                                            }
+																			
+                                                                        }													
+														
 													} else {
 														echo $devOptions['out_of_stock'];
 													}
+													
+													echo '<a href="'.$permalink.'"><img src="'; bloginfo('template_directory'); echo '/img/ViewInfo.jpg" style="margin-left:10px;" /></a></div>';
+
 											
 
 													echo '

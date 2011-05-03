@@ -4,7 +4,10 @@ global $wpsc_error_reporting;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
-@apache_setenv('no-gzip', '1');
+
+if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
+    @apache_setenv('no-gzip', '1');
+}
 @ini_set('zlib.output_compression', 'Off');
 
 if (get_magic_quotes_gpc()) {
@@ -64,6 +67,15 @@ if ( 0 == $current_user->ID ) {
                                 $xpart = 1;
                                 foreach ($results2 as $result2) {
                                     if($result2['download']!='') {
+                                        if(class_exists('ThreeWP_Activity_Monitor')) {
+                                            do_action('threewp_activity_monitor_new_activity', array(
+                                                'activity_type' => 'wpsc-download',
+                                                'tr_class' => '',
+                                                'activity' => array(
+                                                    "" => "%user_display_name_with_link% has downloaded {$result2['download']}",
+                                                ),
+                                            ));
+                                        }
                                         $multidownloads = explode('||', $result2['download']);
                                         if(@isset($_GET['isvariation']) && @isset($_GET['variationdl']) && @$_GET['isvariation']=="true") {
                                             // Variation download
@@ -133,6 +145,7 @@ if ( 0 == $current_user->ID ) {
     header("Accept-Ranges: bytes");
     header("Content-Disposition: attachment; filename=\"" . $header_file . "\";");
     header("Content-Transfer-Encoding: binary");
+    header("X-Compression: None");
     //header("Content-Length: " . filesize($file_real));
     // Send file for download
     if ($stream = fopen($file_real, 'rb')){

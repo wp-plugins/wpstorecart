@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.6
+Version: 2.2.7
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.6
+ * @version 2.2.7
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.6';
-$wpstorecart_version_int = 202006; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.2.7';
+$wpstorecart_version_int = 202007; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -2495,6 +2495,8 @@ if (!class_exists("wpStoreCart")) {
                         $ups_checked = 'yes';
                         $fedex_checked = 'yes';
 
+                        // New products will also by default display the Add to Cart button, even if there are variations
+                        $display_add_to_cart_at_all_times = 'no';
 			
 			// For new products
 			if(!isset($_GET['keytoedit'])) {
@@ -2524,6 +2526,17 @@ if (!class_exists("wpStoreCart")) {
 			$isanedit = false;
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
 				$isanedit = true;
+
+                                $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='disableaddtocart' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_disable_add_to_cart==false ) {
+                                    $display_add_to_cart_at_all_times = 'no';
+                                } else {
+                                    if($results_disable_add_to_cart[0][0]=='yes') {
+                                        $display_add_to_cart_at_all_times = 'yes';
+                                    } else {
+                                        $display_add_to_cart_at_all_times = 'no';
+                                    }
+                                }
 
                                 // Shipping options are saved here
                                 // Flat rate on/off for this product?
@@ -2576,6 +2589,26 @@ if (!class_exists("wpStoreCart")) {
 
 
 				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
+
+                                        // Add to Cart on/off for this product?
+
+                                        if(isset($_POST['enableproduct_display_add_to_cart_variations']) && $_POST['enableproduct_display_add_to_cart_variations']=='yes') {
+                                            $display_add_to_cart_at_all_times = 'yes';
+                                            if($results_disable_add_to_cart==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'disableaddtocart', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'yes' WHERE `type`='disableaddtocart' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        } else {
+                                            $display_add_to_cart_at_all_times = 'no';
+                                            if($display_add_to_cart_at_all_times==false ) {
+                                                $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'disableaddtocart', '{$_GET['keytoedit']}');");
+                                            } else {
+                                                $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = 'no' WHERE `type`='disableaddtocart' AND `foreignkey` = {$_GET['keytoedit']};");
+                                            }
+                                        }
+
+
                                         // Flat rate on/off for this product?
                                         if(isset($_POST['wpsc_product_flatrateshipping']) && $_POST['wpsc_product_flatrateshipping']=='yes') {
                                             $flatrateshipping_checked = 'yes';
@@ -2812,6 +2845,12 @@ if (!class_exists("wpStoreCart")) {
 					$results = $wpdb->query( $insert );
 					$lastID = $wpdb->insert_id;
 					$keytoedit = $lastID;
+
+                                        if(isset($_POST['enableproduct_display_add_to_cart_variations']) && $_POST['enableproduct_display_add_to_cart_variations']=='yes') {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'disableaddtocart', '{$lastID}');");
+                                        } else {
+                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'disableaddtocart', '{$lastID}');");
+                                        }
 
                                         // Shipping options are saved here
                                         if(isset($_POST['wpsc_product_flatrateshipping']) && $_POST['wpsc_product_flatrateshipping']=='yes') {
@@ -3149,8 +3188,15 @@ if (!class_exists("wpStoreCart")) {
 
                             </div>
                             <div id="tab2" class="tab_content">
+                                                        <h2>Product Variations &amp; Attributes</h2>
+                            ';
 
-                            <h2>Product Variations &amp; Attributes</h2>
+                            echo '
+                            <p style="width:433px;max-width:533px;">Only display the Add to Cart button for this product when the variations are also displayed?<br />&nbsp; &nbsp; &nbsp; &nbsp; <label for="enableproduct_display_add_to_cart_variations"><input type="radio" id="enableproduct_display_add_to_cart_variations_yes" name="enableproduct_display_add_to_cart_variations" value="yes" '; if ($display_add_to_cart_at_all_times == "yes") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableproduct_display_add_to_cart_variations_no"><input type="radio" id="enableproduct_display_add_to_cart_variations_no" name="enableproduct_display_add_to_cart_variations" value="no" '; if ($display_add_to_cart_at_all_times == "no") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No (always displays add to cart buttons)</label> </p>
+                            ';
+
+                            echo'
+
                             <table class="widefat">
                             <thead><tr><th>Simple or Advanced</th><th>Variation Category</th><th>One Possible Value</th><th id="varpriceth">Price Variation</th><th>Description</th><th';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>Downloads</th></tr></thead><tbody>
                             <tr><td><img onclick="addvar();" style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" /><br /><br /><br /><p><label for="vartype_yes"><input onclick="jQuery(\'#varpricetd\').show(\'slow\');jQuery(\'#varpriceth\').show(\'slow\');" type="radio" id="vartype_yes" name="vartype" value="simple" checked="checked" /> Simple</label><br /><label for="vartype_no"><input type="radio" onclick="jQuery(\'#varpricetd\').hide(\'slow\');jQuery(\'#varpriceth\').hide(\'slow\');" id="vartype_no" name="vartype" value="advanced" /> Advanced</label></td><td> <input type="text" style="width:80%;" name="createnewvar" id="createnewvar" /><br /><i>The name of the variation or attribute, for example: color, size, version, etc.</i></td><td><input type="text" name="varvalue" style="width:80%;" id="varvalue" /><br /><i>Here you should put one of the possible variations.  For example, if your variation was <strong>Color</strong>, then here you put a color, such as <strong>Red</strong>.</i></td><td id="varpricetd"><input type="text" name="varprice" id="varprice" value="0.00" /><br /><i>The amount that the price changes when a customer selects this variation.  Put 0 here if the price is the same as normal, put -21.90 to subtract from the total, or 35.99 to add to the cost of the item.</i></td><td><textarea id="vardesc" name="vardesc" style="width:80%;"></textarea><br /><i>An explaination of the variation so that customers know what to choose.</i></td><td';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
@@ -4331,7 +4377,7 @@ if (!class_exists("wpStoreCart")) {
 			if(!isset($_GET['keytoedit'])) {
 				// Default form values
 				$wpStoreCartcode = '';
-				$wpStoreCartamount = 0.00;
+				$wpStoreCartamount = '0.00';
 				$wpStoreCartpercent = 0;
 				$wpStoreCartdescription = 'Describe your coupon here';
 				$wpStoreCartproduct = 0;
@@ -4509,24 +4555,20 @@ if (!class_exists("wpStoreCart")) {
 			';
 
 			echo '<table class="widefat">
-			<thead><tr><th>Coupon Code <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>Don\'t use spaces! This is what people should type or paste into the coupon box during checkout in order to recieve a discount.  As such, this should be a short code, with no spaces, all alpha numeric characters, etc.</h3></div></th><th>Flat Discount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>A flat amount to deduct when the coupon code is used.  You can combine this with the Pecentage Discount, but for simplicities sake, we recommend choosing either a flat discount or a percentage, but not both.</h3></div></th><!--<th>Percentage Dicount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The percentage of the price to deduct from the purchase.</h3></div></th>--><th>Description <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>Take a note of what your coupon is meant to do by writing a description here.</h3></div></th><th>Product <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The product you want the coupon to apply to.  <!--Set to 0 for the coupon to work on all products in the store.--></h3></div></th><th>Start Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The day which the coupon starts working.  Before this date, the coupon is invalid.</h3></div></th><th>Expiration Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The date which the coupon code stops working.  After this date, the coupon is invalid.</h3></div></th></tr></thead><tbody>
+			<thead><tr><th>Coupon Code <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>Don\'t use spaces! This is what people should type or paste into the coupon box during checkout in order to recieve a discount.  As such, this should be a short code, with no spaces, all alpha numeric characters, etc.</h3></div></th><th>Flat<br /> Discount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>A flat amount to deduct when the coupon code is used.  You can combine this with the Pecentage Discount, but for simplicities sake, we recommend choosing either a flat discount or a percentage, but not both.</h3></div></th><th>Percentage<br />Discount <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3"><h3>The percentage of the price to deduct from the purchase.</h3></div></th><th>Description <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4"><h3>Take a note of what your coupon is meant to do by writing a description here.</h3></div></th><th>Product <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-5" /><div class="tooltip-content" id="example-content-5"><h3>The product you want the coupon to apply to.  <!--Set to 0 for the coupon to work on all products in the store.--></h3></div></th><th>Start Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6"><h3>The day which the coupon starts working.  Before this date, the coupon is invalid.</h3></div></th><th>Expiration Date <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-7" /><div class="tooltip-content" id="example-content-7"><h3>The date which the coupon code stops working.  After this date, the coupon is invalid.</h3></div></th></tr></thead><tbody>
 			';
 
 			
 			echo '
 			<tr>
 			<td><input type="text" name="wpStoreCartcode" style="width: 80%;" value="'.$wpStoreCartcode.'" /></td>
-			<td><input type="text" name="wpStoreCartamount" style="width: 80%;" value="'.$wpStoreCartamount.'" /></td>
-			<td style="display:none;"><input type="hidden" name="wpStoreCartpercent" style="width: 80%;" value="'.$wpStoreCartpercent.'" /></td>
-			<td><input type="text" name="wpStoreCartdescription" style="width: 80%;" value="'.$wpStoreCartdescription.'" /></td>
+			<td>'.$devOptions['currency_symbol'].'<input type="text" name="wpStoreCartamount" style="width: 60px;" value="'.$wpStoreCartamount.'" />'.$devOptions['currency_symbol_right'].'</td>
+			<td><input type="text" name="wpStoreCartpercent" style="width: 40px;" value="'.$wpStoreCartpercent.'" /> %</td>
+			<td><textarea name="wpStoreCartdescription">'.$wpStoreCartdescription.'</textarea></td>
 			<td>
-<!--<input type="text" name="wpStoreCartproduct" style="width: 80%;" value="'.$wpStoreCartproduct.'" />-->
-<select name="wpStoreCartproduct">
-			 <option value="">
-						';
-			
-			attribute_escape(__('Select product'));
-			echo '</option>'; 
+
+                        <select name="wpStoreCartproduct">
+			 <option value="0">(Any &amp; All Products)</option>';
 			
 			$table_name2 = $wpdb->prefix . "wpstorecart_products";
 			$grabCats = "SELECT * FROM `{$table_name2}`;";
@@ -4546,8 +4588,8 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			</select>
 </td>
-			<td><input type="text" name="wpStoreCartstartdate" id="wpStoreCartstartdate" style="width: 80%;" value="'.$wpStoreCartstartdate.'" /></td>
-			<td><input type="text" name="wpStoreCartenddate" id="wpStoreCartenddate" style="width: 80%;" value="'.$wpStoreCartenddate.'" /></td>			
+			<td><input type="text" name="wpStoreCartstartdate" id="wpStoreCartstartdate" style="width: 100px;" value="'.$wpStoreCartstartdate.'" /></td>
+			<td><input type="text" name="wpStoreCartenddate" id="wpStoreCartenddate" style="width: 100px;" value="'.$wpStoreCartenddate.'" /></td>
 			</tr>';			
 			
 			echo '
@@ -4574,7 +4616,7 @@ if (!class_exists("wpStoreCart")) {
 			<h2>Edit Coupons</h2>';
 			
 			echo '<table class="widefat">
-			<thead><tr><th>Key</th><th>The Coupon Code</th><th>Flat Discount</th><!--<th>Percentage Dicount</th>--><th>Description</th><th>Product</th><th>Start Date</th><th>Expiration Date</th></tr></thead><tbody>
+			<thead><tr><th>Key</th><th>The Coupon Code</th><th>Flat Discount</th><th>Percentage Dicount</th><th>Description</th><th>Product</th><th>Start Date</th><th>Expiration Date</th></tr></thead><tbody>
 			';
 
 
@@ -4588,8 +4630,8 @@ if (!class_exists("wpStoreCart")) {
 					<tr>
 					<td>[ ".$result['primkey']." | <a href=\"admin.php?page=wpstorecart-coupon&keytoedit=".$result['primkey']."\">Edit</a> | <a onclick=\"if (! confirm('Are you sure you want to delete this coupon?')) { return false;}\" href=\"admin.php?page=wpstorecart-coupon&keytodelete=".$result['primkey']."\">Delete</a> ]</td>
 					<td>".$result['code']."</td>
-					<td>".$result['amount']."</td>
-					<!--<td>".$result['percent']."</td>-->
+					<td>{$devOptions['currency_symbol']}".$result['amount']."{$devOptions['currency_symbol_right']}</td>
+					<td>".$result['percent']."%</td>
 					<td>".$result['description']."</td>
 					<td>".$result['product']."</td>
 					<td>".$result['startdate']."</td>
@@ -5383,7 +5425,7 @@ if (!class_exists("wpStoreCart")) {
 
                                                                     ';
 
-                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
+                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
                                                                         $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
                                                                     } else {
                                                                         $output .= $devOptions['out_of_stock'];
@@ -5707,7 +5749,7 @@ if (!class_exists("wpStoreCart")) {
 								 </ul>
                                                         ';
 
-                                                        if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) ) {
+                                                        if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
                                                             $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
                                                         } else {
                                                             $output .= $devOptions['out_of_stock'];
@@ -5721,10 +5763,27 @@ if (!class_exists("wpStoreCart")) {
 								$output .= $results[0]['introdescription'] . '&nbsp; &nbsp;';
 								$output .= $results[0]['description'];
 							}							
-							  
+
+                                                        if ( 0 == $current_user->ID ) {
+                                                            $activity_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
+                                                        } else {
+                                                            $activity_display_name = '%user_display_name_with_link%';
+                                                        }
+
+                                                        if(class_exists('ThreeWP_Activity_Monitor')) {
+                                                            do_action('threewp_activity_monitor_new_activity', array(
+                                                                'activity_type' => 'wpsc-product-view',
+                                                                'tr_class' => '',
+                                                                'activity' => array(
+                                                                    "" => "{$activity_display_name} has viewed the product {$results[0]['name']}",
+                                                                ),
+                                                            ));
+                                                        }
+
 						} else {
 							$output .= '<div class="wpsc-error">This product has been removed, but the shortcode associated with it was not.</div>';
 						}
+
 					} else {
 						$output .= 'wpStoreCart did not like the primkey in your shortcode!  The primkey field contained non-numeric data. Please fix your page or consult the wpStoreCart documentation for help.';
 					}
@@ -5849,8 +5908,28 @@ if (!class_exists("wpStoreCart")) {
 
                                                                     ';
 
-                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) ) {
-                                                                        $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                                                                                                                // Product variations
+                                                                        $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                                        $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
+
+                                                                        $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                                                        if(isset($vresults)) {
+                                                                            $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name30}` WHERE `type`='disableaddtocart' AND `foreignkey`={$primkey};", ARRAY_N);
+                                                                            if($results_disable_add_to_cart==false ) {
+                                                                                $display_add_to_cart_at_all_times = 'no';
+                                                                            } else {
+                                                                                if($results_disable_add_to_cart[0][0]=='yes') {
+                                                                                    $display_add_to_cart_at_all_times = 'yes';
+                                                                                } else {
+                                                                                    $display_add_to_cart_at_all_times = 'no';
+                                                                                }
+                                                                            }
+                                                                            if($display_add_to_cart_at_all_times=='no') { // will display the Add to Cart if there are no variations or if it is set to display automatically.
+                                                                                $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                            }
+                                                                        }
                                                                     } else {
                                                                         $output .= $devOptions['out_of_stock'];
                                                                     }
@@ -5888,6 +5967,17 @@ if (!class_exists("wpStoreCart")) {
                                     } else {
                                         if($_GET['wpsc']=='affiliate') {
                                             global $affiliatemanager, $affiliatesettings, $affiliatepurchases;
+
+                                            if(class_exists('ThreeWP_Activity_Monitor')) {
+                                                do_action('threewp_activity_monitor_new_activity', array(
+                                                    'activity_type' => 'wpsc-affiliate-view',
+                                                    'tr_class' => '',
+                                                    'activity' => array(
+                                                        "" => "%user_display_name_with_link% has viewed the affiliate management page.",
+                                                    ),
+                                                ));
+                                            }
+
                                             $affiliatemanager = true;
                                             $affiliatesettings['current_user'] = $current_user->ID;
                                             $affiliatesettings['available_products']  = NULL;
@@ -5935,6 +6025,16 @@ if (!class_exists("wpStoreCart")) {
                                             // ** Here's where we disable the user login system during checkout if registration is not required
                                             if ( is_user_logged_in() ) {
                                                 $isLoggedIn = true;
+                                                if(class_exists('ThreeWP_Activity_Monitor')) {
+                                                    do_action('threewp_activity_monitor_new_activity', array(
+                                                        'activity_type' => 'wpsc-orders-view',
+                                                        'tr_class' => '',
+                                                        'activity' => array(
+                                                            "" => "%user_display_name_with_link% has viewed their Downloads and Orders page.",
+                                                        ),
+                                                    ));
+                                                }
+
                                             } else {
                                                 if($devOptions['requireregistration']=='false') {
                                                     if(@isset($_POST['guest_email'])) {

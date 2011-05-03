@@ -79,6 +79,17 @@ if($invalid_detected==false) {
         }
         
     }
+
+    if(class_exists('ThreeWP_Activity_Monitor')) {
+        do_action('threewp_activity_monitor_new_activity', array(
+            'activity_type' => 'wpsc-checkout-register',
+            'tr_class' => 'first_action_class second_action_class',
+            'activity' => array(
+                "" => "%user_display_name_with_link% registered during checkout",
+            ),
+        ));
+    }
+
     wp_safe_redirect($redirect_to);
     exit();
 }
@@ -88,6 +99,9 @@ if(strpos($redirect_to,'?')===false) {
 } else {
     $redirect_to_with_errors = $redirect_to .'&wpscregerror='.urlencode($invalid_detected);
 }
+
+
+
 
 wp_safe_redirect($redirect_to_with_errors);
 exit();

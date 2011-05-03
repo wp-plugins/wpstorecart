@@ -108,6 +108,8 @@ else
                 get_currentuserinfo();
 
 
+
+
                 if(isset($_POST['wpsc-shipping-type']) ||isset($_POST['wpsc-shipping-type-widget']) ) {
                     @$shipping_type = $_POST['wpsc-shipping-type'];
                     @$shipping_type_widget = $_POST['wpsc-shipping-type-widget'];
@@ -153,20 +155,37 @@ else
                     if(@isset($_SESSION['wpsc_email'])) {
                         $purchaser_user_id = 0;
                         $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
+                        $purchasing_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
                     } else {
                         $purchaser_user_id = $current_user->ID;
                         $purchaser_email = $current_user->user_email;
+                        $purchasing_display_name = '%user_display_name_with_link%';
                     }
                 } else {
                         $purchaser_user_id = $current_user->ID;
                         $purchaser_email = $current_user->user_email;
+                        $purchasing_display_name = '%user_display_name_with_link%';
+                }
+
+
+                if(class_exists('ThreeWP_Activity_Monitor')) {
+                    do_action('threewp_activity_monitor_new_activity', array(
+                        'activity_type' => 'wpsc-checkout',
+                        'tr_class' => '',
+                        'activity' => array(
+                            "" => "{$purchasing_display_name} has finished checkout and has been sent to pay for their shopping cart.",
+                            "Email" => $purchaser_email,
+                            "Payment Gateway: " => "{$wpdb->escape($_POST['paymentGateway'])}",
+                            "Cart price: " => $cart->itemcount. ' item costing '.$devOptions['currency_symbol'] .number_format($cart->total, 2) .$devOptions['currency_symbol_right'],
+                        ),
+                    ));
                 }
 
 
                 $paymentGateway = 'checkmoneyorder';
 
                 if(@isset($_POST['paymentGateway'])) {
-                    $paymentGateway = $_POST['paymentGateway'];
+                    $paymentGateway = $wpdb->escape($_POST['paymentGateway']);
                 }
 
                 if($paymentGateway == 'checkmoneyorder') {

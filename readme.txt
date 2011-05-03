@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.2
-Stable tag: 2.2.6
+Stable tag: 2.2.7
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -79,6 +79,14 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.7 =
+* Coupons can now have a percentage discount, a flat rate discount, or both.
+* Coupons can now be used on the entire cart, as well as being limited to specific products
+* Added support for ThreeWP Activity Monitor plugin: http://wordpress.org/extend/plugins/threewp-activity-monitor/
+* ThreeWP Activity Monitor shows all: product views, downloads, checkouts, affiliate page views, orders page views for logged in users
+* Fixed a bug that happened when using "Store Mode" set to "Digital Products Only".  The bug was that inventory was not disabled in the front end, but it was disabled in the back end.
+* Products now have the option to not display an "Add to Cart" button unless you're viewing the product on the products page. This setting is in the Variations tab, when editing products
 
 = 2.2.6 =
 * Product admin area now has a tabbed interface

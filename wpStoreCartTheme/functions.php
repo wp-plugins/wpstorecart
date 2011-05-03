@@ -106,6 +106,7 @@ function wpsct_init() {
 } 
 
 
+
 function update_small_cart_callback() {
 	global $wpStoreCart, $cart, $wpscThemeOptions;
 

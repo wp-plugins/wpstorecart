@@ -152,23 +152,16 @@ class wpsc {
 		if(@isset($_POST['ccoupon'])) {
 			global $wpdb;
 
-			
-			/*if (@isset($_SESSION['validcoupon'])) {
-				$thecoupon = $_SESSION['validcoupon'];
-			} else
-			*/
-			if (@isset($_POST['ccoupon'])) {
-				$thecoupon = $_POST['ccoupon'];
-			}			
+			$thecoupon = $_POST['ccoupon'];
+		
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 			// Try adding the coupon hooks here
 			$grabrecord = "SELECT * FROM {$table_name} WHERE `startdate` < ".date("Ymd")." AND `enddate` > ".date("Ymd")." AND `code`='{$thecoupon}' AND `product`={$item_id};";					
-			//echo $grabrecord;
-			//exit;
 			
 
+                        $recordFound = false;
 			$results = $wpdb->get_results( $grabrecord , ARRAY_A );		
-			if(isset($results)) {
+			if(isset($results)) { // This will give us any valid coupons for the specific product
 				@$_SESSION['validcoupon'] = $_POST['ccoupon'];
 				
 				foreach ($results as $result) {
@@ -178,10 +171,44 @@ class wpsc {
 					@$_SESSION['validcouponid'] = $result['product'];
                                         @$_SESSION['validcouponamount'] = $result['amount'];
                                         @$_SESSION['validcouponpercent'] = $result['percent'];
-                                        
+                                        if($discount_percent > 0) {
+                                            $discount_price = $discount_price + ($this->itemqtys[$item_id] * $this->itemprices[$item_id]) * ($discount_percent / 100); // Here we calculate the amount deducted
+                                        }
+                                        $recordFound = true;
 				}
 
-			}
+			} 
+                        
+                        if($recordFound == false){ // Down here we're looking for valid coupons that are global
+                            $grabrecord = "SELECT * FROM {$table_name} WHERE `startdate` < ".date("Ymd")." AND `enddate` > ".date("Ymd")." AND `code`='{$thecoupon}' AND `product`=0;";
+
+                            $results2 = $wpdb->get_results( $grabrecord , ARRAY_A );
+                            if(isset($results2)) { // This will give us any valid coupons for the specific product
+                                    @$_SESSION['validcoupon'] = $_POST['ccoupon'];
+
+                                    $theRunningtotal = 0;
+                                    if(sizeof($this->items > 0)) {
+                                            foreach($this->items as $item) {
+                                                        $theRunningtotal = $theRunningtotal + ($this->itemprices[$item] * $this->itemqtys[$item]);
+                                            }
+                                    }
+
+                                    foreach ($results2 as $result) {
+                                            $discount_price = $result['amount'];
+                                            $discount_percent = $result['percent'];
+
+                                            @$_SESSION['validcouponid'] = 0;
+                                            @$_SESSION['validcouponamount'] = $result['amount'];
+                                            @$_SESSION['validcouponpercent'] = $result['percent']; 
+                                            if($discount_percent > 0) {
+                                                $discount_price = $discount_price + $theRunningtotal * ($discount_percent / 100); // Here we calculate the amount deducted
+                                            }
+
+
+                                    }
+
+                            }
+                        }
 
 		}
 
@@ -664,7 +691,6 @@ class wpsc {
 
                                     if ($newAmount != $finalAmount) {
 
-                                            //if(number_format($item['subtotal'],2) != (number_format(($item['subtotal'] - $this->update_coupon($item['id'])),2) )){
                                             $tempAmount = '<strike>'.number_format($item['subtotal'],2).'</strike> '. $newAmount;
                                             $finalAmount = $tempAmount;
                                     }
