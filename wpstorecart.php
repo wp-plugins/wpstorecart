@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.7
+Version: 2.2.8
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.7
+ * @version 2.2.8
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.7';
-$wpstorecart_version_int = 202007; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.2.8';
+$wpstorecart_version_int = 202008; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -5909,6 +5909,7 @@ if (!class_exists("wpStoreCart")) {
                                                                     ';
 
                                                                     if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                       
                                                                                                                                 // Product variations
                                                                         $table_name30 = $wpdb->prefix . "wpstorecart_meta";
                                                                         $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
@@ -5916,8 +5917,8 @@ if (!class_exists("wpStoreCart")) {
                                                                         $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
 
                                                                         if(isset($vresults)) {
-                                                                            $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name30}` WHERE `type`='disableaddtocart' AND `foreignkey`={$primkey};", ARRAY_N);
-                                                                            if($results_disable_add_to_cart==false ) {
+                                                                            $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name30}` WHERE `type`='disableaddtocart' AND `foreignkey`={$result['primkey']};", ARRAY_N);
+                                                                            if(!isset($results_disable_add_to_cart[0][0]) ) {
                                                                                 $display_add_to_cart_at_all_times = 'no';
                                                                             } else {
                                                                                 if($results_disable_add_to_cart[0][0]=='yes') {
