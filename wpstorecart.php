@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.2.8
+Version: 2.2.9
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.2.8
+ * @version 2.2.9
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -45,20 +45,23 @@ Boston, MA 02111-1307 USA
  * @global boolean $wpsc_error_reporting - Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
  * @global string $wpstorecart_db_version - Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
  */
-global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level;
+global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
+
+
 
 if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
     require_once(ABSPATH . 'wp-includes/pluggable.php');
 }
 
 //Global variables:
-$wpstorecart_version = '2.2.8';
-$wpstorecart_version_int = 202008; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.2.9';
+$wpstorecart_version_int = 202009; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
 $APjavascriptQueue = NULL;
+$wpsc_cart_type = 'session';
 
 if($wpsc_error_reporting==true) {
 
@@ -784,6 +787,7 @@ if (!class_exists("wpStoreCart")) {
 		
             $apAdminOptions = array('mainpage' => '',
                                     'checkoutpage' => '',
+                                    'orderspage' => '',
                                     'checkoutpageurl' => '',
                                     'turnon_wpstorecart' => 'true',
                                     'wpStoreCartEmail' => get_bloginfo('admin_email'),
@@ -816,10 +820,11 @@ if (!class_exists("wpStoreCart")) {
                                     'allowlibertyreserve' => 'false',
                                     'libertyreserveaccount' => '',
                                     'libertyreservestore' => '',
-                                    'emailonpurchase' => 'Dear [customername], thanks for your recent order from [sitename].  Your order has been submitted to our staff for approval.  This process can take as little as an hour to as long as a few weeks depending on how quickly your payment clears, and whether there are other issues which may cause a delay.',
-                                    'emailonapproval' => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been approved.  For physical products, this does not mean that they have been shipped yet; as you will get another email when the order is shipped.  If you ordered a digital download, your download is now available.  .',
+                                    'emailonpurchase' => 'Dear [customername], thanks for your recent order from [sitename].  Your order has been submitted to our staff for approval.  This process can take as little as an hour to as long as a few weeks depending on how quickly your payment clears, and whether there are other issues which may cause a delay.  You can view your order status here: [downloadurl] ',
+                                    'emailonapproval' => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been approved.  For physical products, this does not mean that they have been shipped yet; as you will get another email when the order is shipped.  If you ordered a digital download, your download is now available.  You can view your order status here: [downloadurl] ',
                                     'emailonshipped'  => 'Dear [customername], thanks again for your recent order from [sitename].  This email is to inform you that your order has been shipped.',
                                     'emailsig' => 'Thanks again, [sitename] Management',
+                                    'emailserialnumber' => 'Dear [customername], thanks for your recent order from [sitename].  You can view your order status here: [downloadurl]   A serial number for [productname] has been issued to you.  Please keep this email for future reference.  Your serial number is [serialnumber] ',
                                     'cart_title' => 'Shopping Cart',
                                     'single_item' => 'Item',
                                     'multiple_items' => 'Items',
@@ -920,7 +925,10 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['checkoutpage'])) {
 					$devOptions['checkoutpage'] = $wpdb->escape($_POST['checkoutpage']);
 					$devOptions['checkoutpageurl'] = get_permalink($devOptions['checkoutpage']);
-				} 					
+				}
+				if (isset($_POST['orderspage'])) {
+					$devOptions['orderspage'] = $wpdb->escape($_POST['orderspage']);
+                                }
 				if (isset($_POST['turnwpStoreCartOn'])) {
 					$devOptions['turnon_wpstorecart'] = $wpdb->escape($_POST['turnwpStoreCartOn']);
 				}   
@@ -1025,7 +1033,10 @@ if (!class_exists("wpStoreCart")) {
 				}	
 				if (isset($_POST['emailsig'])) {
 					$devOptions['emailsig'] = $wpdb->escape($_POST['emailsig']);
-				}					
+				}
+				if (isset($_POST['emailserialnumber'])) {
+					$devOptions['emailserialnumber'] = $wpdb->escape($_POST['emailserialnumber']);
+				}
 				if (isset($_POST['cart_title'])) {
  					$devOptions['cart_title'] = $wpdb->escape($_POST['cart_title']);
 				}
@@ -1274,7 +1285,7 @@ if (!class_exists("wpStoreCart")) {
 
 			echo '
 			<tr><td><h3>wpStoreCart Main Page: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">wpStoreCart uses pages, and needs a single pre-existing page to act as the main page from which most other wpStoreCart pages descend from.  For example, all product pages will be subpages of this page.</div></h3></td>
-			<td class="tableDescription"><p>You need to use a Page as the base for wpStoreCart.  Insert the POST ID of that page here: </p></td>
+			<td class="tableDescription"><p>The main page that wpStoreCart will use to display products and other wpStoreCart related pages. </p></td>
 			<td><select name="wpStoreCartmainpage"> 
 			 <option value="">
 						';
@@ -1298,7 +1309,7 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>
 
 			<tr><td><h3>Checkout Page: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The checkout page can be any page you specify.  This is the page customers will visit to pay for the products they have added to their cart.</div></h3></td>
-			<td class="tableDescription"><p>You need to use a Page that customers will use during checkout.  Insert the POST ID of that page here:</p></td>
+			<td class="tableDescription"><p>The page that customers will use during checkout.  The page must have this shortcode in it: [wpstorecart display="checkout"]</p></td>
 			<td><select name="checkoutpage"> 
 			 <option value="">
 						';
@@ -1309,6 +1320,31 @@ if (!class_exists("wpStoreCart")) {
 			  foreach ($pages as $pagg) {
 				$option = '<option value="'.$pagg->ID.'"';
 				if($pagg->ID==$devOptions['checkoutpage']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $pagg->post_title;
+				$option .= '</option>';
+				echo $option;
+			  }
+
+
+			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Orders Page: <i>(optional)</i> <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-211145" /><div class="tooltip-content" id="example-content-211145">The Orders &amp; Downloads page, which is optional.  However, if you wish to use the [downloadurl] code in emails, to tell your customers the URL they need to visit in order to download their orders, then this setting must be set.</div></h3></td>
+			<td class="tableDescription"><p>The page where customers can view their orders, must have this shortcode in it: [wpstorecart display="orders"]</p></td>
+			<td><select name="orderspage">
+			 <option value="">
+						';
+			  attribute_escape(__('Select page'));
+			  echo '</option>';
+
+			  $pages = get_pages();
+			  foreach ($pages as $pagg) {
+				$option = '<option value="'.$pagg->ID.'"';
+				if($pagg->ID==$devOptions['orderspage']) {
 					$option .= ' selected="selected"';
 				}
 				$option .='>';
@@ -1381,10 +1417,15 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>	
 
 			<tr><td><h3>Email Sent When Shipped <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-42" /><div class="tooltip-content" id="example-content-42">wpStoreCart attempts to send an email after you\'ve marked an order shipped.  This let\'s customers know the status of their order.  You will need to manually send or update tracking information at this time.</div></h3></td>
-			<td class="tableDescription"><p>The email address that you wish to send and recieve all customer emails.</p></td>
+			<td class="tableDescription"><p>The email to send when you\'ve shipped a product.</p></td>
 			<td><textarea name="emailonshipped" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonshipped']), 'wpStoreCart'); echo'</textarea>
 			</td></tr>				
-			
+
+			<tr><td><h3>Email Sent When Issuing Serial Number <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-429998987" /><div class="tooltip-content" id="example-content-429998987">wpStoreCart attempts to send an email when a serial number is issued for a product. Each serial number issued has a separate email.</div></h3></td>
+			<td class="tableDescription"><p>The email to send when issuing a serial number</p></td>
+			<td><textarea name="emailserialnumber" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailserialnumber']), 'wpStoreCart'); echo'</textarea>
+			</td></tr>
+
 			<tr><td><h3>Email Signature <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43" /><div class="tooltip-content" id="example-content-43">The bottom of your emails sent will always contain the same footer or signiture.  Fill that out here.</div></h3></td>
 			<td class="tableDescription"><p>This is always included at the bottom of each email sent out.</p></td>
 			<td><textarea name="emailsig" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailsig']), 'wpStoreCart'); echo'</textarea>
@@ -2475,7 +2516,9 @@ if (!class_exists("wpStoreCart")) {
 
         }
 		//END Prints out the admin page ================================================================================
-		
+
+
+
 		
 		//Prints out the Add products admin page =======================================================================
         function printAdminPageAddproducts() {
@@ -2519,6 +2562,8 @@ if (!class_exists("wpStoreCart")) {
 				$keytoedit=0;
 				$_GET['keytoedit'] = 0;
                                 $wpStoreCartproduct_donation = 'false';
+                                $wpStoreCartproduct_serial_numbers = '';
+                                $wpStoreCartproduct_serial_numbers_used = '';
 			} 
 			
 			
@@ -2527,6 +2572,37 @@ if (!class_exists("wpStoreCart")) {
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
 				$isanedit = true;
 
+                                // Grabs the serial numbers
+                                $results_serial_numbers = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='serialnumbers' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_serial_numbers!=false ) {
+                                    $wpStoreCartproduct_serial_numbers = $results_serial_numbers[0][0];
+                                    if(isset($_POST['wpStoreCartproduct_serial_numbers'])) {
+                                        $wpStoreCartproduct_serial_numbers = $_POST['wpStoreCartproduct_serial_numbers'];
+                                        $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = '".base64_encode($_POST['wpStoreCartproduct_serial_numbers'])."' WHERE `type`='serialnumbers' AND `foreignkey` = {$_GET['keytoedit']};");
+                                    }
+                                } else {
+                                    if(isset($_POST['wpStoreCartproduct_serial_numbers'])) {
+                                        $wpStoreCartproduct_serial_numbers = $_POST['wpStoreCartproduct_serial_numbers'];
+                                        $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".base64_encode($_POST['wpStoreCartproduct_serial_numbers'])."', 'serialnumbers', '{$_GET['keytoedit']}');");
+                                    }
+                                }
+
+                                // Grabs the used serial numbers
+                                $results_serial_numbers_used = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='serialnumbersused' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
+                                if($results_serial_numbers_used!=false ) {
+                                    $wpStoreCartproduct_serial_numbers_used = $results_serial_numbers_used[0][0];
+                                    if(isset($_POST['wpStoreCartproduct_serial_numbers_used'])) {
+                                        $wpStoreCartproduct_serial_numbers_used = $_POST['wpStoreCartproduct_serial_numbers_used'];
+                                        $results = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = '".base64_encode($_POST['wpStoreCartproduct_serial_numbers_used'])."' WHERE `type`='serialnumbersused' AND `foreignkey` = {$_GET['keytoedit']};");
+                                    }
+                                } else {
+                                    if(isset($_POST['wpStoreCartproduct_serial_numbers_used'])) {
+                                        $wpStoreCartproduct_serial_numbers_used = $_POST['wpStoreCartproduct_serial_numbers_used'];
+                                        $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".base64_encode($_POST['wpStoreCartproduct_serial_numbers_used'])."', 'serialnumbersused', '{$_GET['keytoedit']}');");
+                                    }
+                                }
+
+                                // Disables the Add to Cart if needed
                                 $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='disableaddtocart' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
                                 if($results_disable_add_to_cart==false ) {
                                     $display_add_to_cart_at_all_times = 'no';
@@ -2972,8 +3048,14 @@ if (!class_exists("wpStoreCart")) {
                         </script>
 
                         <ul class="tabs">
-                            <li style="display:inline;"><a href="#tab1"><img src="'.plugins_url('/images/buttons_product_info.jpg' , __FILE__).'" /></a></li>
-                            <li style="display:inline;"><a href="#tab2"><img src="'.plugins_url('/images/buttons_variation.jpg' , __FILE__).'" /></a></li>';
+                            <li style="display:inline;"><a href="#tab1"><img src="'.plugins_url('/images/buttons_product_info.jpg' , __FILE__).'" /></a></li>';
+                            if($isanedit==true) {
+                                echo '<li style="display:inline;"><a href="#tab2"><img src="'.plugins_url('/images/buttons_variation.jpg' , __FILE__).'" /></a></li>
+                                    ';
+                            }
+                            if($devOptions['storetype']!='Physical Goods Only' && $isanedit==true){
+                                echo '<li style="display:inline;"><a href="#tab3"><img src="'.plugins_url('/images/buttons_download.jpg' , __FILE__).'" /></a></li>';
+                            }
                             if($isanedit == true) {
                                 echo '<a href="'.get_permalink($result['postid']).'"><img src="'.plugins_url('/images/buttons_view_page.jpg' , __FILE__).'" style="display:inline;" /></a>';
                             }
@@ -3392,7 +3474,26 @@ if (!class_exists("wpStoreCart")) {
                             ';
                         }
                         
-                        echo '</div>
+                        echo '</div>';
+                        if($devOptions['storetype']!='Physical Goods Only' && $isanedit==true){
+                            echo ' <div id="tab3" class="tab_content">   ';
+
+                            echo '
+                            <h3>Downloads</h3>
+                            ';
+
+                            echo $this->listProductDownloads($_GET['keytoedit']);
+
+                            echo '<br style="clear:both;" />
+                            <h3>Serial Numbers</h3>
+                            <p>Leave blank if you do not need to issue serial numbers for each purchase, otherwise, place each serial number on it\'s own line, then each time a customer buys this product, they will be issued that serial number and it will be made unavailable</p>
+
+                            Unused serial numbers:<br /> <textarea style="width:400px;height:125px" name="wpStoreCartproduct_serial_numbers">'.base64_decode($wpStoreCartproduct_serial_numbers).'</textarea><br /><br />
+                            Used serial numbers:<br /> <textarea style="width:400px;height:125px" name="wpStoreCartproduct_serial_numbers_used">'.base64_decode($wpStoreCartproduct_serial_numbers_used).'</textarea><br />
+                            ';
+                            echo '</div> <br style="clear:both;" />';
+                        }
+                        echo '
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
 			</form>
@@ -5064,7 +5165,7 @@ if (!class_exists("wpStoreCart")) {
         }
 
         function addFooterCode(){
-                        global $is_checkout, $cart, $wpscCarthasBeenCalled, $wpsc;
+                        global $is_checkout, $cart, $wpscCarthasBeenCalled, $wpsc, $wpsc_cart_type;
 
                         $output = '';
 
@@ -5072,14 +5173,26 @@ if (!class_exists("wpStoreCart")) {
                             require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
                             require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
                             require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-                            if(!isset($_SESSION)) {
-                                    @session_start();
-
-                            }
-                            if(@!is_object($cart)) {
-                                $cart =& $_SESSION['wpsc'];
+                            if($wpsc_cart_type == 'session') {
+                                if(!isset($_SESSION)) {
+                                        @session_start();
+                                }
                                 if(@!is_object($cart)) {
-                                    $cart = new wpsc();
+                                    $cart =& $_SESSION['wpsc'];
+                                    if(@!is_object($cart)) {
+                                        $cart = new wpsc();
+                                    }
+                                }
+                            }
+
+                            if($wpsc_cart_type == 'cookie') {
+                                if(!isset($_SESSION)) { @session_start(); }
+                                if(@!is_object($cart)) {
+                                    if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+                                    if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+                                        $cart = new wpsc();
+                                        $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+                                    }
                                 }
                             }
                             $old_checkout = $is_checkout;
@@ -5331,13 +5444,33 @@ if (!class_exists("wpStoreCart")) {
 
                                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
                                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
-                                        if(@!is_object($cart)) {
-                                            require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+
+                                        require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+                                        
+                                        global $wpsc_cart_type;
+                                        if($wpsc_cart_type == 'session') {
                                             if(!isset($_SESSION)) {
                                                     @session_start();
                                             }
-                                            $cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
+                                            if(@!is_object($cart)) {
+                                                $cart =& $_SESSION['wpsc'];
+                                                if(@!is_object($cart)) {
+                                                    $cart = new wpsc();
+                                                }
+                                            }
                                         }
+
+                                        if($wpsc_cart_type == 'cookie') {
+                                            if(!isset($_SESSION)) { @session_start(); }
+                                            if(@!is_object($cart)) {
+                                                if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+                                                if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+                                                    $cart = new wpsc();
+                                                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+                                                }
+                                            }
+                                        }
+
 					$output .= $cart->display_cart($wpsc);
 					break;			
 				case 'recentproducts': // Recent product shortcode =========================================================
@@ -6868,14 +7001,100 @@ jQuery(document).ready(function($) {
 			echo $APjavascriptQueue;
 		}
 				
-                function makeEmailTxt($theEmail) {
+                function makeEmailTxt($theEmail, $theEmailAddressOrderID = 0) {
                     global $current_user, $wpdb;
                     get_currentuserinfo();
-                    
-                    $theEmail = str_replace("[customername]", $current_user->display_name, $theEmail);
-                    $theEmail = str_replace("[sitename]", get_bloginfo(), $theEmail);
 
+                    $devOptions = $this->getAdminOptions();
+
+                    if($theEmailAddressOrderID == 0) {
+                        $theEmail = str_replace("[customername]", $current_user->display_name, $theEmail);
+                    } else {
+                        $table_name = $wpdb->prefix . "wpstorecart_orders";
+                        $sql = "SELECT `email` FROM `{$table_name}` WHERE `primkey`={$theEmailAddressOrderID};";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        $theEmailAddress = 'Customer';
+                        if(isset($results)) {
+                            $theEmailAddress = $results[0]['email'];
+                        }
+                        $theEmail = str_replace("[customername]", $theEmailAddress, $theEmail);
+                    }
+                    $theEmail = str_replace("[sitename]", get_bloginfo(), $theEmail);
+                    if(trim($devOptions['orderspage'])!='') {
+                        $theEmail = str_replace("[downloadurl]", get_permalink($devOptions['orderspage']), $theEmail);
+                    } else {
+                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
+                        } else {
+                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
+                        }
+                        $theEmail = str_replace("[downloadurl]", $permalink, $theEmail);
+                    }
+                    
                     return $theEmail;
+                }
+
+                /**
+                     *  Assign a serial number to an order and email them the serial number
+                     *
+                     * @global object $wpdb
+                     * @param integer $productid The product that you are pulling the serial number from
+                     * @param integer $orderid The order that has the serial number associated with it
+                     */
+                function assignSerialNumber($productid, $orderid=0) {
+                    global $wpdb;
+                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                    $table_name2 = $wpdb->prefix . "wpstorecart_products";
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+
+                    $devOptions = $this->getAdminOptions();
+
+                    // Grabs the serial numbers
+                    $results_serial_numbers = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='serialnumbers' AND `foreignkey`={$productid};", ARRAY_N);
+                    $results_serial_numbers_used = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='serialnumbersused' AND `foreignkey`={$productid};", ARRAY_N);
+                    if($results_serial_numbers!=false ) {
+                        $wpStoreCartproduct_serial_numbers = base64_decode($results_serial_numbers[0][0]);
+                        if($results_serial_numbers!=false ) {
+                            $wpStoreCartproduct_serial_numbers_used  = base64_decode($results_serial_numbers_used[0][0]);
+                        } else {
+                            $wpStoreCartproduct_serial_numbers_used  = '';
+                        }
+                        $grab_one = explode("\n",$wpStoreCartproduct_serial_numbers);
+                        $wpStoreCartproduct_serial_numbers_used = $grab_one[0]."\n".$wpStoreCartproduct_serial_numbers_used;
+                        $wpStoreCartproduct_serial_numbers = str_replace($grab_one[0]."\n", "", $wpStoreCartproduct_serial_numbers);
+                        $results111 = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".base64_encode($grab_one[0])."', 'serialnumberassigned', '{$orderid}');");
+                        $results222 = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = '".base64_encode($wpStoreCartproduct_serial_numbers)."' WHERE `type`='serialnumbers' AND `foreignkey` = {$productid};");
+                        if($results_serial_numbers!=false ) {
+                            $results333 = $wpdb->query("UPDATE `{$table_name_meta}` SET `value` = '".base64_encode($wpStoreCartproduct_serial_numbers_used)."' WHERE `type`='serialnumbersused' AND `foreignkey` = {$productid};");
+                        } else {
+                            $results333 = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".base64_encode($wpStoreCartproduct_serial_numbers_used)."', 'serialnumberassigned', '{$productid}');");
+                        }
+                        if($results111 && $results222 && $results333 && $orderid!=0) {
+                            // Do the email here
+                            $sql2 = "SELECT `name` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
+                            $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
+                            $theProductsName = $devOptions['single_item'];
+                            if(isset($moreresults) && $moreresults[0]['name']!='') {
+                                    $theProductsName = $moreresults[0]['name'];
+                            }
+                            $theEmail = $devOptions['emailserialnumber'];
+                            $theEmail = str_replace("[productname]", $theProductsName, $theEmail);
+                            $theEmail = str_replace("[serialnumber]", $grab_one[0], $theEmail);
+                            $message = $theEmail;
+
+                            $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                                'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                                'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                            // Send an email when purchase is submitted
+                            $sql = "SELECT `email` FROM `{$table_name}` WHERE `primkey`={$orderid};";
+                            $results = $wpdb->get_results( $sql , ARRAY_A );
+                            if(isset($results)) {
+                                mail($results[0]['email'], 'The serial number for your recent purchase', $message, $headers);
+                            }
+                        }
+                    }
+
                 }
 
                 function splitOrderIntoProduct($keyToLookup, $type="default") {
@@ -6961,6 +7180,61 @@ jQuery(document).ready(function($) {
                     }
                     return $output;
                 }
+
+        function listProductDownloads($primkey, $type="download") {
+            global $wpdb;
+            $table_name = $wpdb->prefix . "wpstorecart_orders";
+            $table_name2 = $wpdb->prefix . "wpstorecart_products";
+            $table_name3 = $wpdb->prefix . "wpstorecart_meta";
+            $thevariationdetail[0] = NULL;
+            $thevariationdetail[1] = NULL;
+            $output = NULL;
+            $sql3 = "SELECT * FROM `{$table_name3}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
+            $moreresults3 = $wpdb->get_results( $sql3 , ARRAY_A );
+            if(@isset($moreresults3[0])) {
+                    $thevariationdetail = explode('||',$moreresults3[0]['value']);
+                    if(@isset($thevariationdetail[4])) { // If the variation has downloads associated with it
+                            $variationdownloads = explode('****',$thevariationdetail[4]);
+                    }
+            }
+
+            $sql2 = "SELECT `primkey`, `name`, `download`, `postid` FROM `{$table_name2}` WHERE `primkey`={$primkey};";
+            $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
+
+            if($type=="download" && isset($moreresults[0])) {
+                    $output .= ', <br />';
+                    if($output==', <br />') {$output = '';}
+                    if($moreresults[0]['download']=='') { // Non-downloads products below:
+                            $output .= $moreresults[0]['download'].' '.$thevariationdetail[0].' '.$thevariationdetail[1];
+                    } else { // Download products below:
+                            if(@isset($variationdownloads)) { // If we've got variations that have downloads
+                                    foreach ($variationdownloads as $variationdownload) {
+                                            if($variationdownload!='') {
+                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$variationdownload.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$variationdownload.'</a> (Variation Download)<br />';
+                                            }
+                                    }
+                            }
+
+                            $multidownloads = explode('||', $moreresults[0]['download']);
+                            if(@isset($multidownloads[0]) && @isset($multidownloads[1])) {
+                                    $downloadcount = 0;
+                                    foreach($multidownloads as $multidownload) {
+                                            if($multidownload!='') {
+                                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$multidownload.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
+                                            }
+                                                    $downloadcount++;
+                                    }
+                            } else {
+                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$moreresults[0]['download'].'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
+                            }
+                    }
+
+            }
+
+            return $output;
+
+        }
+
 
         function slug($str) {
                 $str = strtolower(trim($str));
@@ -7444,19 +7718,35 @@ jQuery(document).ready(function($) {
         }
 
         function wpstorecart_needs_to_start_sessions_before_anything_else() {
-                global $cart;
+                global $cart, $wpsc_cart_type;
                 require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
                 require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
                 require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-                if(!isset($_SESSION)) {
-                        @session_start();
-                }
-                if(@!is_object($cart)) {
-                    $cart =& $_SESSION['wpsc'];
+                if($wpsc_cart_type == 'session') {
+                    if(!isset($_SESSION)) {
+                            @session_start();
+                    }
                     if(@!is_object($cart)) {
-                        $cart = new wpsc();
+                        $cart =& $_SESSION['wpsc'];
+                        if(@!is_object($cart)) {
+                            $cart = new wpsc();
+                        }
                     }
                 }
+
+                if($wpsc_cart_type == 'cookie') {
+                    if(!isset($_SESSION)) { @session_start(); }
+                    if(@!is_object($cart)) {
+                        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+                        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+                            $cart = new wpsc();
+                            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+                        }
+                    }
+                }
+               
+            //echo '<!-- /**'.var_dump(unserialize(base64_decode($_COOKIE['wpsccart']))).' **/ -->';
+
         }
 
 
@@ -7578,7 +7868,7 @@ if (class_exists("WP_Widget")) {
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {
-			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled, $wpscWidgetSettings;
+			global $wpdb, $cart, $wpsc, $is_checkout,$wpscCarthasBeenCalled, $wpscWidgetSettings, $wpsc_cart_type;
                         $wpscWidgetSettings = array();
 
 			extract( $args );
@@ -7595,14 +7885,26 @@ if (class_exists("WP_Widget")) {
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
                         require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-                        if(!isset($_SESSION)) {
-                                @session_start();
-
-                        }
-                        if(@!is_object($cart)) {
-                            $cart =& $_SESSION['wpsc'];
+                        if($wpsc_cart_type == 'session') {
+                            if(!isset($_SESSION)) {
+                                    @session_start();
+                            }
                             if(@!is_object($cart)) {
-                                $cart = new wpsc();
+                                $cart =& $_SESSION['wpsc'];
+                                if(@!is_object($cart)) {
+                                    $cart = new wpsc();
+                                }
+                            }
+                        }
+
+                        if($wpsc_cart_type == 'cookie') {
+                            if(!isset($_SESSION)) { @session_start(); }
+                            if(@!is_object($cart)) {
+                                if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+                                if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+                                    $cart = new wpsc();
+                                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+                                }
                             }
                         }
 			$output = NULL;
@@ -7940,15 +8242,31 @@ if (isset($wpStoreCart)) {
         require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
         require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
 	require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-	if(!isset($_SESSION)) {
-		@session_start();
-	}
-        if(@!is_object($cart)) {
-            $cart =& $_SESSION['wpsc'];
+
+
+        if($wpsc_cart_type == 'session') {
+            if(!isset($_SESSION)) {
+                    @session_start();
+            }
             if(@!is_object($cart)) {
-                $cart = new wpsc();
+                $cart =& $_SESSION['wpsc'];
+                if(@!is_object($cart)) {
+                    $cart = new wpsc();
+                }
             }
         }
+
+        if($wpsc_cart_type == 'cookie') {
+            if(!isset($_SESSION)) { @session_start(); }
+            if(@!is_object($cart)) {
+                if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+                if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+                    $cart = new wpsc();
+                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+                }
+            }
+        }
+
 
 	register_activation_hook(__FILE__, array(&$wpStoreCart, 'wpstorecart_install')); // Install DB schema
         add_action('plugins_loaded', array(&$wpStoreCart, 'wpstorecart_needs_to_start_sessions_before_anything_else'), 1); // Trys to insure that wpStoreCart is the first plugin that starts a session,  but may not be possible :(

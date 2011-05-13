@@ -9,7 +9,7 @@
 
 // INCLUDE wpsc BEFORE SESSION START
 
-global $wpsc_error_reporting;
+global $wpsc_error_reporting, $wpsc_cart_type;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
@@ -30,7 +30,18 @@ if(isset($wpStoreCart)) {
 }
 
 // INITIALIZE wpsc AFTER SESSION START
-$cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
+if($wpsc_cart_type == 'session') {
+    $cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
+}
+if($wpsc_cart_type == 'cookie') {
+    if(@!is_object($cart)) {
+        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+            $cart = new wpsc();
+            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+        }
+    }
+}
 
 // WHEN JAVASCRIPT IS DISABLED THE UPDATE AND EMPTY BUTTONS ARE DISPLAYED
 // RE-DISPLAY THE CART IF THE VISITOR CLICKS EITHER BUTTON
@@ -595,7 +606,7 @@ else
                     $totalPrice = 0;
                     $totalShipping = 0;
                     $couponset = false;
-                    $donation = true;
+                    $donation = false;
                     foreach ($cart->get_contents() as $item) {
                             // BUILD THE QUERY STRING
                             // Specify the product information
@@ -610,8 +621,8 @@ else
                             $table_name = $wpdb->prefix . "wpstorecart_products";
                             $results = $wpdb->get_results( "SELECT `shipping`, `donation` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
                             if(isset($results)) {
-                                if($results[0]['donation']==0) {
-                                    $donation = false;
+                                if($results[0]['donation']=='1') {
+                                    $donation = true;
                                 }
                                 if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
                                     if($results[0]['shipping']!='0.00') {
@@ -702,6 +713,9 @@ else
                             // Let's start the train!
                             echo '<center><img src="../../../images/redirect.gif" alt="redirecting" />';
                             $myPaypal->submitPayment();
+                            //$myPaypal->echoFields(); // Uncomment this and comment the line above if you need to diagnose a problem with the paypal payment gateway
+                            //if(session_id()){echo "Session started!";}else{echo "Session not started!";} // To see if sessions are started here, uncomment this and comment the line that is 2 above this one, which reads: $myPaypal->submitPayment();
+                            //print_r ($_SESSION); print_r ($cart); // To see what's in the cart and sessions
 
                             echo '</center>';
                             // EMPTY THE CART

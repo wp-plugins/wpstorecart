@@ -115,7 +115,7 @@ abstract class PaymentGateway
 
         echo "<html>\n";
         echo "<head><title>Processing Payment...</title></head>\n";
-        echo "<body onLoad=\"document.forms['gateway_form'].submit();\">\n";
+        echo "<body onload=\"document.forms['gateway_form'].submit();\">\n";
         echo "<p style=\"text-align:center;\"><h2>Please wait, your order is being processed and you";
         echo " will be redirected to the payment website.</h2></p>\n";
         echo "<form method=\"POST\" name=\"gateway_form\" ";
@@ -134,6 +134,18 @@ abstract class PaymentGateway
         echo "</form>\n";
         echo "</body></html>\n";
     }
+
+    /**
+     * Echoes the current values of all the fields.  Useful for debugging, added in wpStoreCart 2.2.9
+     */
+    public function echoFields() {
+        echo '<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+        foreach ($this->fields as $name => $value) {
+             echo "<tr><td>$name</td><td>$value</td></tr>";
+        }
+        echo '</tbody></table>';
+    }
+
 
     /**
      * Perform any pre-posting actions

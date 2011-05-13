@@ -43,7 +43,7 @@ if ($myPaypal->validateIpn())
 
             // If we've got a successful payment and we are using the inventory:
             if($myPaypal->ipnData['payment_status']=='Completed') {
-                $sql = "SELECT `cartcontents` FROM `{$table_name}` WHERE `primkey`={$keyToLookup};";
+                $sql = "SELECT `cartcontents`, `email` FROM `{$table_name}` WHERE `primkey`={$keyToLookup};";
 		$results = $wpdb->get_results( $sql , ARRAY_A );
                 if(isset($results)) {
                     $specific_items = explode(",", $results[0]['cartcontents']);
@@ -52,6 +52,7 @@ if ($myPaypal->validateIpn())
                             $current_item = explode('*', $specific_item);
                             if(isset($current_item[0]) && isset($current_item[1])) {
                                 $sql2 = "SELECT `primkey`, `inventory`, `useinventory` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
+                                $wpStoreCart->assignSerialNumber($current_item[0], $keyToLookup);
                                 $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
                                 if(isset($moreresults) && $moreresults[0]['useinventory']==1) {
                                         $newInventory = $moreresults[0]['inventory'] - $current_item[1];
@@ -71,8 +72,9 @@ if ($myPaypal->validateIpn())
                 'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
             // Send an email when purchase is submitted
-            mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
-
+            if(isset($results)) {
+                mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+            }
             }
      }
 }

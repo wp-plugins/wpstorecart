@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.2
-Stable tag: 2.2.8
+Stable tag: 2.2.9
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -32,6 +32,7 @@ It is easy to use, lightweight, heavily supported and constantly updated with ne
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
 * PayPal payments (more payment processors available)
+* Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, and Safari 5
 * **and much, much MORE!**
 
 ![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
@@ -79,6 +80,16 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.2.9 =
+* Added the ability to issue serial numbers and other information with each downloadable product.  Use the Edit Products > Downloads tab to add serial numbers
+* Added the ability to specify an Orders & Downloads page in General Settings
+* New email added: Email Sent When Issuing Serial Number
+* Fixed a bug that had caused the emails that were to be sent after an order is approved to fail
+* Added a new tab for product editing: downloads
+* Fixed a bug that caused PayPal donations to be activated when they should not be
+* Added the echoFields() method to the PaymentGateway() class for debugging problems in the payment gateway
+* Started adding a new mode to the cart that uses Cookies instead of Sessions to store the carts contents
 
 = 2.2.8 =
 * Fixed a bug that prevented the add to cart button from being hidden when it is set to be hidden
