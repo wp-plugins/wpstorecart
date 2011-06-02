@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.0
+Version: 2.3.1
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.0
+ * @version 2.3.1
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.0';
-$wpstorecart_version_int = 203000; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.1';
+$wpstorecart_version_int = 203001; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -5878,7 +5878,7 @@ if (!class_exists("wpStoreCart")) {
                     $preresults = $wpdb->get_results("SELECT * FROM {$table_name} WHERE `type`='wpsc_product_gallery' AND `foreignkey`='{$productid}'", ARRAY_A);
 
                     if(isset($preresults[0]['value'])) {
-                        $theExploded = explode('||', $preresults[0]['value']);
+                        $theExploded = explode('||', str_replace('<<<','',$preresults[0]['value']));
                         foreach($theExploded as $theExplosion) {
                             if(trim($theExplosion!='')) {
                                 $output .= '<a href="'.get_bloginfo('url'). '/wp-content/uploads/wpstorecart/'.$theExplosion.'" class="thickbox" rel="gallery-'.$productid.'"><img src="'.get_bloginfo('url'). '/wp-content/uploads/wpstorecart/'.$theExplosion.'" class="thickbox wpsc-gallery-thumbnail" ';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= ' /></a>';
