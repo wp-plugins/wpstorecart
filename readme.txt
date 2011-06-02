@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
-Tested up to: 3.1.2
-Stable tag: 2.2.9
+Tested up to: 3.1.3
+Stable tag: 2.3.0
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,15 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.0 =
+* wpStoreCart Desktop Alert API added for wpStoreCart PRO users
+* Added an optional lightbox for product thumbnail
+* Added a new shortcode: [wpstorecart display="gallery" primkey="X"]
+* Did some minor UI updates to the admin panel
+* Added ShareYourCart.com integration for social networking marketing
+* Fixed bug with store on/off feature not actually disabling the store.
+* Fixed an issue with the coupons not applying during checkout at PayPal
 
 = 2.2.9 =
 * Added the ability to issue serial numbers and other information with each downloadable product.  Use the Edit Products > Downloads tab to add serial numbers

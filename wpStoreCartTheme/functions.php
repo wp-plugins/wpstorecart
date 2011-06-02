@@ -1,21 +1,27 @@
-<?PHP
-global $wpstorecart_is_active, $wpscThemeOptions, $themename, $shortname, $wpdb;
+<?php
+global $wpstorecart_is_active, $wpscThemeOptions, $themename, $shortname, $wpdb, $content_width, $wpStoreCart;
 
 $themename = "wpStoreCartTheme";
 $shortname = "wpsct";
 $version = "1.0";
 
-show_admin_bar(false); // This theme does not support the Wordpress 3.1 admin bar
 
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-if(!isset($_SESSION)) {
-        @session_start();
 
+if(isset($wpStoreCart)) {
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+    if(!isset($_SESSION)) {
+            @session_start();
+
+    }
 }
 
-add_theme_support( 'post-thumbnails' ); // wpStoreCartTheme supports post thumbnails
+// Theme support stuff here
+show_admin_bar(false); // This theme does not support the Wordpress 3.1 admin bar
+//add_theme_support( 'post-thumbnails' ); // wpStoreCartTheme supports post thumbnails
+add_theme_support('automatic-feed-links');
+$content_width = 680;
 
 // Directory for the slider image uploads.
 if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
@@ -84,7 +90,7 @@ register_sidebar(array(
 ));
 
 // Testing to see if wpStoreCart is installed
-if (file_exists(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart.php')) {
+if (file_exists(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart.php') && isset($wpStoreCart)) {
 	$wpstorecart_is_active = true; //plugin is installed
 } else {
 	$wpstorecart_is_active = false;
@@ -92,17 +98,17 @@ if (file_exists(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart.php')) {
 
 function wpsct_init() {
 	wp_enqueue_script( 'jquery' );
-    if (!is_admin()) {	
-		global $wpscThemeOptions;
-		wp_enqueue_style( 'wpsctstylesheet',  get_bloginfo('stylesheet_url'));
-		wp_enqueue_style( 'wpsctnivo',  get_bloginfo('stylesheet_directory'). '/nivo-slider.css');
-		wp_enqueue_script('cufonyui', get_bloginfo('template_directory') . '/js/cufon-yui.js');
-		wp_enqueue_script('thefont', get_bloginfo('template_directory') . '/js/'.$wpscThemeOptions['font']);
-		wp_enqueue_script('jquerynivosp', get_bloginfo('template_directory') . '/js/jquery.nivo.slider.pack.js');
-		if($wpscThemeOptions['use_product_preview']=='true') {
-			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
-		}
-    }
+        if (!is_admin()) {
+                    global $wpscThemeOptions, $wpStoreCart;
+                    wp_enqueue_style( 'wpsctstylesheet',  get_bloginfo('stylesheet_url'));
+                    wp_enqueue_style( 'wpsctnivo',  get_bloginfo('stylesheet_directory'). '/nivo-slider.css');
+                    wp_enqueue_script('cufonyui', get_bloginfo('template_directory') . '/js/cufon-yui.js');
+                    wp_enqueue_script('thefont', get_bloginfo('template_directory') . '/js/'.$wpscThemeOptions['font']);
+                    wp_enqueue_script('jquerynivosp', get_bloginfo('template_directory') . '/js/jquery.nivo.slider.pack.js');
+                    if($wpscThemeOptions['use_product_preview']=='true' && isset($wpStoreCart)) {
+                            wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+                    }
+        }
 } 
 
 
@@ -110,14 +116,15 @@ function wpsct_init() {
 function update_small_cart_callback() {
 	global $wpStoreCart, $cart, $wpscThemeOptions;
 
-	require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
-	require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
-	require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-	if(!isset($_SESSION)) {
-			@session_start();
+        if(@isset($wpStoreCart)) {
+            require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+            require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+            require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+            if(!isset($_SESSION)) {
+                            @session_start();
 
-	}
-	
+            }
+        }
 	if(isset($wpStoreCart)) {
 		$devOptions = $wpStoreCart->getAdminOptions();
 	} else {
@@ -130,8 +137,64 @@ function update_small_cart_callback() {
 	exit();
 }
 
+if ( ! function_exists( 'twentyten_comment' ) ) :
+/**
+ * Template for comments and pingbacks.
+ *
+ * To override this walker in a child theme without modifying the comments template
+ * simply create your own twentyten_comment(), and that function will be used instead.
+ *
+ * Used as a callback by wp_list_comments() for displaying the comments.
+ *
+ * @since Twenty Ten 1.0
+ */
+function twentyten_comment( $comment, $args, $depth ) {
+	$GLOBALS['comment'] = $comment;
+	switch ( $comment->comment_type ) :
+		case '' :
+	?>
+	<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
+		<div id="comment-<?php comment_ID(); ?>">
+		<div class="comment-author vcard">
+			<?php echo get_avatar( $comment, 40 ); ?>
+			<?php printf( __( '%s <span class="says">says:</span>', 'twentyten' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
+		</div><!-- .comment-author .vcard -->
+		<?php if ( $comment->comment_approved == '0' ) : ?>
+			<em class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'twentyten' ); ?></em>
+			<br />
+		<?php endif; ?>
+
+		<div class="comment-meta commentmetadata"><a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
+			<?php
+				/* translators: 1: date, 2: time */
+				printf( __( '%1$s at %2$s', 'twentyten' ), get_comment_date(),  get_comment_time() ); ?></a><?php edit_comment_link( __( '(Edit)', 'twentyten' ), ' ' );
+			?>
+		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><?php comment_text(); ?></div>
+
+		<div class="reply">
+			<?php comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
+		</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	<?php
+			break;
+		case 'pingback'  :
+		case 'trackback' :
+	?>
+	<li class="post pingback">
+		<p><?php _e( 'Pingback:', 'twentyten' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'twentyten' ), ' ' ); ?></p>
+	<?php
+			break;
+	endswitch;
+}
+endif;
+
+
 function wpsct_create_menu() {
-	$wpsctadminpage2 = add_submenu_page('themes.php','Theme Settings - wpStoreCart ', 'Theme Settings', 'activate_plugins', 'wpstorecarttheme-settings', 'wpsct_settings_page');
+        $wpsctadminpage2 = add_theme_page('Theme Settings - wpStoreCart ', 'Theme Settings', 'activate_plugins', 'wpstorecarttheme-settings', 'wpsct_settings_page');
+	//$wpsctadminpage2 = add_submenu_page('themes.php','Theme Settings - wpStoreCart ', 'Theme Settings', 'activate_plugins', 'wpstorecarttheme-settings', 'wpsct_settings_page');
 	add_action("admin_print_scripts-$wpsctadminpage2", 'wpsct_admin_scripts');
 	add_action( 'admin_init', 'wpscThemeAdminOptions' );
 }
@@ -329,7 +392,7 @@ function wpsct_admin_scripts() {
 				var settings_object = { 
 					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php", 
 					post_params: {"PHPSESSID" : "'.session_id().'"},
-					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
+					flash_url : "'.site_url().'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "2048 MB",
 					file_types : "*.*",
 					file_types_description : "Any file type",
@@ -357,20 +420,29 @@ function wpsct_admin_scripts() {
 			</script>			
 			
 	';
-	wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-	wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-	wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
-	$wpStoreCart->overlay_css();	
+
+        if(isset($wpStoreCart)) {
+            wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+            wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+            wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+            $wpStoreCart->overlay_css();
+        }
 	echo $APjavascriptQueue;	
 }
 
 function wpsct_settings_page() {
 	global $wpscThemeOptions, $wpStoreCart, $wpdb;
-	
+
+        if(!current_user_can('edit_theme_options')) {
+            exit();
+        }
+
+
+
 	if(isset($wpStoreCart)) {
 		$devOptions = $wpStoreCart->getAdminOptions();
 	} else {
-		exit();
+                echo '<ul><li>This Theme requires the free and open source wpStoreCart <a href="http://wpstorecart.com" title="Wordpress eCommerce Plugin">Wordpress eCommerce Plugin</a></li></ul>';
 	}	
 	
 
@@ -379,13 +451,17 @@ function wpsct_settings_page() {
 	$results = $wpdb->get_results("SELECT * FROM {$table_name} WHERE `type`='wpsct_slideshow';", ARRAY_A);	
 
 	if(isset($_POST['display_home_link'])) {
+                $nonce=$_REQUEST['_wpnonce'];
+                if (! wp_verify_nonce($nonce, 'wpsct-nonce-field') ) die('Security check');
 		$wpscThemeOptions['display_home_link'] = $wpdb->escape($_POST['display_home_link']);
 		$wpscThemeOptions['font'] = $wpdb->escape($_POST['font']);
 		$wpscThemeOptions['use_product_preview'] = $wpdb->escape($_POST['use_product_preview']);
 		$wpscThemeOptions['use_slider'] = $wpdb->escape($_POST['use_slider']);
 		$wpscThemeOptions['slider_effect'] = $wpdb->escape($_POST['slider_effect']);
 		$wpscThemeOptions['slider_effect_speed'] = $wpdb->escape($_POST['slider_effect_speed']);
-		$wpscThemeOptions['turnon_wpstorecart'] = $wpdb->escape($_POST['turnon_wpstorecart']);
+                if(isset($_POST['turnon_wpstorecart'])){
+                    $wpscThemeOptions['turnon_wpstorecart'] = $wpdb->escape($_POST['turnon_wpstorecart']);
+                }
 		$wpscThemeOptions['slider_pause_time'] = $wpdb->escape($_POST['slider_pause_time']);
 		$wpscThemeOptions['text_view_cart'] = $wpdb->escape($_POST['text_view_cart']);
 		$wpscThemeOptions['text_check_out'] = $wpdb->escape($_POST['text_check_out']);
@@ -426,32 +502,43 @@ function wpsct_settings_page() {
 	}
 	
 
-	
-	$wpStoreCart->spHeader();
-	$wpStoreCart->spSettings();
-	
-	echo'
-			<h2> </h2>
-			<ul class="tabs">
-				<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab1\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
-				<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab2\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>';
+	if(isset($wpStoreCart)) {
+            $wpStoreCart->spHeader();
+            $wpStoreCart->spSettings();
 
-			echo '<li><a href="admin.php?page=wpstorecarttheme-settings" onclick="window.location = \'admin.php?page=wpstorecarttheme-settings\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_theme.jpg" /></a></li>';
-			
+            echo'
+            <h2> </h2>
+            <ul class="tabs">
+                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab1\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
+                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab2\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>';
 
-			echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab3\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>';
+            echo '<li><a href="admin.php?page=wpstorecarttheme-settings" onclick="window.location = \'admin.php?page=wpstorecarttheme-settings\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_theme.jpg" /></a></li>';
 
-			if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
-				echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab6\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_shipping.jpg" /></a></li>';
-			}
-			echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab4\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
-				<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab5\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
-				<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab7\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_customers.jpg" /></a></li>
-			</ul>
-			<div style="clear:both;"></div>';
+
+            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab3\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>';
+
+            if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
+                    echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab6\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_shipping.jpg" /></a></li>';
+            }
+            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab4\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
+                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab5\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
+                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab7\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_customers.jpg" /></a></li>
+            </ul>
+            <div style="clear:both;"></div>';
+            echo '<h2>wpStoreCart Theme Options <a href="http://wpstorecart.com/documentation/settings/theme-settings/" target="_blank"><img src="'.plugins_url('/wpstorecart/images/bighelp.png').'" alt="" /></a></h2>';
+        } else {
+            echo '<h2>wpStoreCart Theme Options</h2>';
+        }
 	
-	echo '<h2>wpStoreCart Theme Options <a href="http://wpstorecart.com/documentation/settings/theme-settings/" target="_blank"><img src="'.plugins_url('/wpstorecart/images/bighelp.png').'" alt="" /></a></h2>';
+	
 	echo '<form method="post" action="#" name="wpstorecartaddproductform">';
+
+        // Nonces done here:
+        if ( function_exists('wp_nonce_field') ) {
+            wp_nonce_field('wpsct-nonce-field');
+
+        }
+        
 	echo '<table class="widefat">
 	<thead><tr><th>Option</th><th>Value</th></tr></thead><tbody>
 	';
@@ -462,12 +549,12 @@ function wpsct_settings_page() {
 	</td></tr>'; 
 	
 	echo '<tr><td>Logo Font (h6): </td><td><select name="font" id="font" style="width:135px;">
-		<option style="width:135px;" value="Raleway_250.font.js"';if($wpscThemeOptions['font']==='Raleway_250.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/raleway.png"> Raleway</option>
-		<option style="width:135px;" value="ChunkFive_400.font.js"';if($wpscThemeOptions['font']==='ChunkFive_400.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/chunkfive.png"> ChunkFive</option>	
-		<option style="width:135px;" value="Fanwood_400.font.js"';if($wpscThemeOptions['font']==='Fanwood_400.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/fanwood.png"> Fanwood</option>
-		<option style="width:135px;" value="Goudy_Bookletter_1911_400.font.js"';if($wpscThemeOptions['font']==='Goudy_Bookletter_1911_400.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/goudy.png"> Goudy</option>
-		<option style="width:135px;" value="Junction_400.font.js"';if($wpscThemeOptions['font']==='Junction_400.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/junction.png"> Junction</option>
-		<option style="width:135px;" value="League_Gothic_400.font.js"';if($wpscThemeOptions['font']==='League_Gothic_400.font.js'){echo ' selected="SELECTED"';}echo ' title="'.get_bloginfo('template_directory').'/img/fonts/leaguegothic.png"> League Gothic</option>
+		<option style="width:135px;" value="Raleway_250.font.js"';selected($wpscThemeOptions['font'],'Raleway_250.font.js') ;echo ' title="'.get_bloginfo('template_directory').'/img/fonts/raleway.png"> Raleway</option>
+		<option style="width:135px;" value="ChunkFive_400.font.js"';selected($wpscThemeOptions['font'],'ChunkFive_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/chunkfive.png"> ChunkFive</option>
+		<option style="width:135px;" value="Fanwood_400.font.js"';selected($wpscThemeOptions['font'],'Fanwood_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/fanwood.png"> Fanwood</option>
+		<option style="width:135px;" value="Goudy_Bookletter_1911_400.font.js"';selected($wpscThemeOptions['font'],'Goudy_Bookletter_1911_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/goudy.png"> Goudy</option>
+		<option style="width:135px;" value="Junction_400.font.js"';selected($wpscThemeOptions['font'],'Junction_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/junction.png"> Junction</option>
+		<option style="width:135px;" value="League_Gothic_400.font.js"';selected($wpscThemeOptions['font'],'League_Gothic_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/leaguegothic.png"> League Gothic</option>
 	</select>
 	<script type="text/javascript">
 	//<![CDATA[
@@ -513,8 +600,8 @@ function wpsct_settings_page() {
 	<option value="slideInLeft"';if($wpscThemeOptions['slider_effect']=='sliceInLeft'){echo ' SELECTED';}echo '>slideInLeft</option>
 	</select></td></tr>'; 
 	
-	echo '<tr><td>Speed of slider: </td><td><input type="text" value="'.$wpscThemeOptions['slider_effect_speed'].'" name="slider_effect_speed" /></td></tr>'; 
-	echo '<tr><td>Time between slides: </td><td><input type="text" value="'.$wpscThemeOptions['slider_pause_time'].'" name="slider_pause_time" /></td></tr>'; 	
+	echo '<tr><td>Speed of slider: </td><td><input type="text" value="'.esc_attr($wpscThemeOptions['slider_effect_speed']).'" name="slider_effect_speed" /></td></tr>';
+	echo '<tr><td>Time between slides: </td><td><input type="text" value="'.esc_attr($wpscThemeOptions['slider_pause_time']).'" name="slider_pause_time" /></td></tr>';
 	echo '<tr><td>Images to use in the slideshow:</td><td><input type="hidden" name="wpStoreCartproduct_download" id="wpStoreCartproduct_download" style="width: 200px;" value="" /><br />
 				Upload a file: <span id="spanSWFUploadButton"></span>
 							<div id="upload-progressbar-container">

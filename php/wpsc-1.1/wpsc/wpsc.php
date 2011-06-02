@@ -56,6 +56,14 @@ class wpsc {
 
 	// CONSTRUCTOR FUNCTION
         function __construct() {}
+
+        function __destruct() {
+            global $wpsc_cart_type;
+            if($wpsc_cart_type == 'cookie') {
+                $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+                setcookie('wpsccart', base64_encode(serialize($this)), time()+7222, '/', $xdomain, false);
+            }
+        }
         
 	function cart() {}
 
@@ -81,13 +89,9 @@ class wpsc {
  
 			$item['id'] = $tmp_item;
 			$item['qty'] = $this->itemqtys[$tmp_item];
-                        
                         $item['price'] = $this->itemprices[$tmp_item];
-
 			$item['name'] = $this->itemname[$tmp_item];
-			
                         $item['shipping'] = $this->itemshipping[$tmp_item]; // Added in wpStoreCart 2.2.0
-                        
                         $item['subtotal'] = $item['qty'] * $item['price'];
                         
 			$items[] = $item;
@@ -176,7 +180,7 @@ class wpsc {
 					$discount_price = $result['amount'];
 					$discount_percent = $result['percent'];
 					
-					@$_SESSION['validcouponid'] = $result['product'];
+					@$_SESSION['validcouponid'] = $item_id;
                                         @$_SESSION['validcouponamount'] = $result['amount'];
                                         @$_SESSION['validcouponpercent'] = $result['percent'];
                                         if($discount_percent > 0) {

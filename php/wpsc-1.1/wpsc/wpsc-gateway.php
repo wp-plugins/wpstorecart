@@ -9,7 +9,7 @@
 
 // INCLUDE wpsc BEFORE SESSION START
 
-global $wpsc_error_reporting, $wpsc_cart_type;
+global $wpsc_error_reporting, $wpsc_cart_type, $cart;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
@@ -647,8 +647,15 @@ else
                             if(@!isset($_SESSION)) {
                                     @session_start();
                             }
-                            if(@$_SESSION['validcouponid']==$item['id']) {
-                                @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                            //echo 'SES: '.$_SESSION['validcouponid'] .'<br />';echo 'ID: '.$item['id'];exit();
+                            if($couponset==false && (@$_SESSION['validcouponid']==$item['id'])) {
+                                if(isset($_SESSION['validcouponamount'])) {
+                                    @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                                }
+                                if(isset($_SESSION['validcouponpercent'])) { //
+                                    $discount_priceper = round(($item['qty'] * $item['price']) * ($_SESSION['validcouponpercent'] / 100), 2);
+                                    @$myPaypal->addField('discount_amount_cart', $discount_priceper);
+                                }
                                 $couponset = true;
                             }
 
@@ -673,7 +680,12 @@ else
                     
 
                     if(@isset($_SESSION['validcouponamount']) && $couponset==false) {
-                        @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                        if(isset($_SESSION['validcouponamount'])) {
+                            @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                        }
+                        if(isset($_SESSION['validcouponpercent'])) { //
+                            @$myPaypal->addField('discount_rate_cart', $_SESSION['validcouponpercent']);
+                        }
                         $couponset = true;
                     }
 

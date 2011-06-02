@@ -2,7 +2,7 @@
 
 <div id="footer"><!-- Footer  Start -->
             
-<div class="bg">&copy; <?PHP echo date('Y') .' '. get_bloginfo('name'); ?>. Design by wpStoreCart <a href="http://wpstorecart.com/">WP Shopping Cart</a></div>
+<div class="bg">&copy; <?php echo date('Y') .' '. get_bloginfo('name'); ?>. Design by <a href="http://wpstorecart.com/" title="wordpress ecommerce plugin">wpStoreCart</a></div>
             
 </div><!-- Footer  End -->
 
@@ -14,6 +14,6 @@
     
 
 </div><!-- Wrapper End -->
-
+<?php wp_footer(); ?>
 </body>
 </html>

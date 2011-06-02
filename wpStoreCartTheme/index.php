@@ -1,20 +1,25 @@
 <?php 
 global $wpstorecart_is_active, $wpscThemeOptions, $wpdb;
 get_header(); // Get the header
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
-require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
-if(!isset($_SESSION)) {
-        @session_start();
+if(@isset($wpStoreCart)) {
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+    require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+    if(!isset($_SESSION)) {
+            @session_start();
+    }
 }
 ?>
 			<div id="c_left"><!-- Left Content Panel  Start -->
 
-			<?PHP if(($wpscThemeOptions['use_slider']=='Homepage Only' && is_front_page() && !isset($_GET['wpsc'])) || $wpscThemeOptions['use_slider']=='All Pages') { ?>
+			<?php if(($wpscThemeOptions['use_slider']=='Homepage Only' && is_front_page() && !isset($_GET['wpsc'])) || $wpscThemeOptions['use_slider']=='All Pages') { ?>
 				<div class="slider"><!-- Slider Start -->
                 
                 	<div id="theslider">
-						<?PHP
+						<?php
+
+                                                
+
 							$table_name = $wpdb->prefix . "wpstorecart_meta";
 							$results = $wpdb->get_results("SELECT * FROM {$table_name} WHERE `type`='wpsct_slideshow';", ARRAY_A);
 							if($results==false) {
@@ -43,10 +48,10 @@ if(!isset($_SESSION)) {
 				   /* <![CDATA[ */
          		   jQuery(document).ready(function($) {
 						$('#theslider').nivoSlider({
-							effect:'<?PHP echo $wpscThemeOptions['slider_effect']; ?>', 
+							effect:'<?php echo $wpscThemeOptions['slider_effect']; ?>', 
 							slices:15,
-							animSpeed:<?PHP echo $wpscThemeOptions['slider_effect_speed']; ?>, 
-							pauseTime:<?PHP echo $wpscThemeOptions['slider_pause_time']; ?>,
+							animSpeed:<?php echo $wpscThemeOptions['slider_effect_speed']; ?>, 
+							pauseTime:<?php echo $wpscThemeOptions['slider_pause_time']; ?>,
 							startSlide:0, 
 							directionNav:true, 
 							directionNavHide:true, 
@@ -58,42 +63,82 @@ if(!isset($_SESSION)) {
           		   </script>
                 
                 </div><!-- Slider End -->
-            <?PHP } // End is home ?>
+            <?php } // End is home ?>
 				<?php if(have_posts()) {while ( have_posts() ) : the_post() ?>
-				<?PHP if(isset($wpStoreCart)) {if($post->ID != $devOptions['mainpage'] || isset($_GET['wpsc'])) { ?>
+				<?php if(isset($wpStoreCart)) {if($post->ID != $devOptions['mainpage'] || isset($_GET['wpsc'])) { ?>
 				<div class="post-header">
-					<h1 class="post-title"><a class="post-title-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h1>
-					<?PHP if(get_post_type()=='post') { ?>Posted <time class="post-date"><?php the_time('F d, Y'); ?></time> in <?PHP the_category(','); ?> by <?PHP the_author(); ?> <?PHP edit_post_link('(Edit)'); }?>
+					<h1 class="post-title"><a class="post-title-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php if(trim(get_the_title($post->ID))!=''){the_title();} else {echo '---';} ?></a></h1>
+					<?php if(get_post_type()=='post') { ?>Posted <time class="post-date"><?php the_time('F d, Y'); ?></time> in <?php the_category(','); ?> by <?php the_author(); ?> <?php edit_post_link('(Edit)'); }?>
 				</div>
-				<div class="post-content">
-					<?PHP
+				<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+					<?php
 					global $post;
-					if($post->ID==$devOptions['checkoutpage']) {
-						global $wpscIsCheckoutPage;
-						$wpscIsCheckoutPage = true; // Setting this to true creates a div around the checkout with the CSS class of .wpsc-checkout-page-contents
-						if(!is_user_logged_in()) {
-							echo '<img src="'.get_bloginfo('template_directory').'/img/checkout_progress_1.png" class="wpsc-checkout-progress" alt="" />';
-						} else {
-							echo '<img src="'.get_bloginfo('template_directory').'/img/checkout_progress_2.png" class="wpsc-checkout-progress" alt="" />';
-						}
-					}
-					if(is_single() || is_page()) {
-						the_content(); 
-					} else {
-						the_excerpt();
-					}
+                                        if(@isset($wpStoreCart)) {
+                                            if($post->ID==$devOptions['checkoutpage']) {
+                                                    global $wpscIsCheckoutPage;
+                                                    $wpscIsCheckoutPage = true; // Setting this to true creates a div around the checkout with the CSS class of .wpsc-checkout-page-contents
+                                                    if(!is_user_logged_in()) {
+                                                            echo '<img src="'.get_bloginfo('template_directory').'/img/checkout_progress_1.png" class="wpsc-checkout-progress" alt="" />';
+                                                    } else {
+                                                            echo '<img src="'.get_bloginfo('template_directory').'/img/checkout_progress_2.png" class="wpsc-checkout-progress" alt="" />';
+                                                    }
+                                            }
+                                        }
+                                        if(is_single() || is_page()) {
+                                                the_content();
+                                                wp_link_pages();
+                                                echo '<p>'; the_tags(); echo '</p>';
+
+                                        } else {
+                                                the_excerpt();
+                                        }
 					?>
 				</div>
-				<?PHP if(is_single()) { ?>
+				<?php if(is_single() || is_page()) { ?>
 						<div class="comments-template">
 
 						<?php comments_template(); ?>
 
 						</div>
-				<?PHP } ?>
+				<?php } ?>
 
 
-				<?PHP } }
+				<?php } } else {
+                                    // this is for displaying the pages when wpStoreCart plugin is not activated or installed
+                                    ?>
+                                        <div class="post-header">
+                                                <h1 class="post-title"><a class="post-title-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php if(trim(get_the_title($post->ID))!=''){the_title();} else {echo '---';} ?></a></h1>
+                                                <?php if(get_post_type()=='post') { ?>Posted <time class="post-date"><?php the_time('F d, Y'); ?></time> in <?php the_category(','); ?> by <?php the_author(); ?> <?php edit_post_link('(Edit)'); }?>
+                                        </div>
+                                        <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+                                                <?php
+                                                global $post;
+
+                                                if(is_single() || is_page()) {
+                                                        the_content();
+                                                        wp_link_pages();
+                                                        echo '<p>'; the_tags(); echo '</p>';
+
+                                                } else {
+                                                        the_excerpt();
+                                                }
+                                                ?>
+                                        </div>
+                                        <?php if(is_single() || is_page()) { ?>
+                                                        <div class="comments-template">
+
+                                                        <?php comments_template(); ?>
+
+                                                        </div>
+                                        <?php } ?>
+                                    <?php 
+                                } // done with the non-wpStoreCart version
+
+
+
+
+
+
 				if(isset($wpStoreCart)) {
 					if(is_page($devOptions['mainpage']) && !isset($_GET['wpsc'])) {
 						global $wpdb, $cart, $wpsc, $wpscThemeOptions;
@@ -275,7 +320,17 @@ if(!isset($_SESSION)) {
 						echo '</div>';
 					} 
 				}
-			endwhile;} ?>				                
+
+
+
+
+			endwhile;}
+
+                        echo '<div class="alignleft previouslink">';previous_posts_link(); echo '</div><div class="alignright nextlink">';next_posts_link();echo '</div>';
+
+                        ?>
+
+
 
             </div><!-- Left Content Panel  End -->
 <?php 

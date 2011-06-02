@@ -1,11 +1,13 @@
 /*
-Theme Name: wpStoreCartTheme
-Theme URI: http://wpstorecart.com
+Theme Name: wpStoreCart Default
+Theme URI: http://wpstorecart.com/demo/
 Description: A Premium open source ecommerce theme utilizing the wpStoreCart ecommerce plugin
-Author: wpStoreCart Shopping Cart
+Author: wpStoreCart
 Author URI: http://wpstorecart.com
-Version: 1.0
-Tags: two-columns,right-sidebar,fixed-width,white,light,silver,grey,gray,theme-options,ajax,ecommerce,wpstorecart,wpsc,cart,shop,store,slideshow,premium,business,merchant
+Version: 1.1.0
+Tags: two-columns,right-sidebar,fixed-width,white,light,silver,theme-options
+License: GNU General Public License v2.0
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 @charset "utf-8";
@@ -17,13 +19,13 @@ a img {border:none;}
 ins {text-decoration:none;border:none;}
 .wrapper { margin:0 auto; width:1000px; height:auto;}
 .header { width:100%; height:70px;}
-.header h6 { color:#3d3d3d; font-size:40px; text-transform:uppercase; padding-top:17px; margin:0px;}
+.header h6 { color:#3d3d3d; font-size:40px; text-transform:uppercase; padding-top:17px; margin:0px;overflow:hidden;width:970px;max-width:970px;max-height:50px;}
 #top_panel { width:100%; height:91px; background-image:url(img/top_panel.jpg);}
 #top_panel .top{ width:100%; height:42px;}
 #top_panel .bottom{ width:100%; height:49px;}
 #nav-menu ul { list-style: none; padding: 0; margin: 0;}
 #nav-menu li { float: left;}
-#nav-menu li a { font-family:"Calibri"; font-size:13px; text-transform:uppercase; background-image:url('img/menu_bg.jpg'); height:40px; line-height:38px; float:left; width:100px; display:block; color:#303030; 
+#nav-menu li a { font-family:"Calibri"; font-size:13px; text-transform:uppercase; background-image:url('img/menu_bg.jpg'); height:40px; line-height:38px; float:left; width:100px; display:block; color:#303030; overflow:hidden;
 text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #nav-menu li a:hover {background-image:url('img/menu_bg_hover.jpg'); color:#303030;}
 #nav-menu { width:auto; padding-left:1px; padding-top:1px; float:left;}
@@ -32,18 +34,18 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #top_panel .bottom .cart a {color:#0f91ff;}
 #top_panel .bottom .login { float:right; width:514px; height:49px; font-size:10px; font-family:"Arial"; position:relative; right:7px; top:12px; z-index:1000px; padding-right:5px;}
 #top_panel .bottom .login input#loginusername, #top_panel .bottom .login input#loginpassword { width:155px; height:23px; border:0px; font-size:10px; font-family:"Arial"; color:#adadad; background-image:url(img/username_and_password_bg.jpg);text-indent:8px;}
-#content { width:1000px; background-image:url(img/wrapper_bg.jpg); margin:0 auto; overflow: auto;}
-#c_left { width:720px; float:left; clear:left; margin-left:9px; margin-top:9px; margin-right:-20px;}
+#content { width:1000px; max-width:1000px; background-image:url(img/wrapper_bg.jpg); margin:0 auto; overflow: hidden;}
+#c_left { width:709px; max-width:709px; float:left; clear:left; margin-left:9px; margin-top:9px; word-wrap: break-word;}
 #c_left .slider { width:699px; height:191px; margin-bottom:9px;}
 #theslider {    position:relative; width:699px; /* Change this to your images width */height:191px; /* Change this to your images height */ background:url(img/loading.gif) no-repeat 50% 50%;}
 #theslider img {position:absolute;top:0px;left:0px;display:none;}
 #theslider a {border:0;display:block;}
-#c_left .wpsc-products { width:168px; height:203px; background-image:url(img/product_bg.jpg); float:left; margin-right:9px; margin-bottom:9px; }
+#c_left .wpsc-products { width:168px; height:203px; background-image:url(img/product_bg.jpg); float:left; position:relative; left:-9px; margin-left:9px; margin-bottom:9px; }
 #c_left .wpsc-products .wpsc-h1 {font-family:"Calibri"; font-size:12px; color:#545454; font-weight:bold; margin:5px 4px 4px 4px; text-align:center; height:25px;}
 #c_left .wpsc-products .wpsc-h1 a:hover {color:#0f91ff;}
 #c_left .wpsc-products .wpsc-thumbnail{ height:133px;}
 #c_left .wpsc-products .buttons {height:33px;}
-#c_left .post-header, .commentsection { margin-bottom:15px; font-family:"Calibri"; font-size:80%;}
+#c_left .post-header, .commentsection { margin-bottom:15px; font-family:"Calibri"; font-size:80%;width:700px; max-width:700px;word-wrap: break-word;}
 #c_left .post-title { margin-bottom:2px; font-size:30px; font-weight:bold; letter-spacing:-1px; line-height:32px; color:#545454; font-family:"Calibri"; }
 #c_left .post-title-link, #c_left .post-title-link:visited { text-decoration:none; color:#545454; }
 #c_left .post-title-link:hover, #c_left .post-title-link:focus { text-decoration:underline; }
@@ -57,11 +59,11 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #c_left .post-content h6 { font-size:16px; font-weight:normal; }
 #c_left .post-content blockquote { padding:0 30px; font-size:14px; line-height:18px; color:#777; }
 #c_left .post-content cite { font-style:normal; font-weight:bold; }
-#c_left .post-content cite:before { content:"—"; }
+#c_left .post-content cite:before { content:"ï¿½"; }
 #c_left .post-content pre { display:block; margin-bottom:22px; padding:10px; border:1px solid #afc4d5; background-color:#ceddea; }
 #c_left .post-content q { font-style:italic; }
-#c_left .post-content q:before { content:"“"; }
-#c_left .post-content q:after { content:"”"; }
+#c_left .post-content q:before { content:"ï¿½"; }
+#c_left .post-content q:after { content:"ï¿½"; }
 #c_left .post-content ul, .post-content ol { padding:11px 0 0 22px; }
 #c_left .post-content li { padding-bottom:11px; }
 #c_left .post-content dl { padding-bottom:22px; }
@@ -73,7 +75,7 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #c_left table { width:100%; margin-bottom:22px; border-bottom:2px solid #ccc; }
 #c_left th { padding:5px; border-right:1px solid #ccc; border-bottom:1px solid #ccc; background-color:#ddd; }
 #c_left td { padding:4px 5px; border-bottom:1px solid #eee; }
-#c_right { width:275px; float:right; clear:right; margin-right:9px; margin-top:9px;}
+#c_right { width:273px; float:right; clear:right; margin-right:9px; margin-top:9px;}
 #c_right .title { width:266px; height:30px; background-image:url(img/right_panel_title_bg.jpg); color:545454; font-family:"Calibri"; font-size:16px; padding-top:12px; padding-left:9px;}
 #c_right .content { width:267px; height:auto; background-image:url(img/right_panel_content_bg.jpg); padding:4px; font-family:"Calibri"; font-size:12px;}
 #c_right .content li { list-style:none;}
@@ -98,7 +100,7 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 .wpsc-product-info {list-style:none;}
 .wpsc-product-info li {text-indent:12px;}
 .wpscerror {display:block;background-color:#ff0000;color:#000000;margin:5px 5px 5px 5px;padding:5px 5px 5px 5px;border:1px #000000 solid;}
-.tooltip-content {font-family:"Calibri"; font-size:12px;	display: none;position: absolute;padding: 10px 10px 10px 10px;border: 1px solid black;background-color: white;max-width:345px;background: #FFFFFF;z-index:999999;}	
+.tooltip-content {font-family:"Calibri"; font-size:12px;display: none;position: absolute;padding: 10px 10px 10px 10px;border: 1px solid black;background-color: white;max-width:345px;background: #FFFFFF;z-index:999999;}
 .insideimg {	max-width:200px;max-height:200px;}
 .wpsc-checkout-progress {position:relative;top:-64px;z-index:1;}
 .wpsc-checkout-page-contents {text-align:left;margin:5px 10px 35px 155px;position:relative;z-index:2;}
@@ -111,11 +113,33 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 .wpsc-pagination a:hover{background-color:#DDEEFF;}
 #c_left .post-title-link {position:relative;z-index:2;}
 #wpsc-registerform, #wpsc-loginform, #wpsc-guestcheckoutform  {text-align:left;position:relative;top:-45px;}
-#wpsc-registerform input, #wpsc-registerform select, #wpsc-loginform input, #wpsc-guestcheckoutform input {width:155px; max-width:155px; min-height:23px; height:23px; border:0px; font-size:10px; font-family:"Arial"; color:#adadad; background-image:url(img/username_and_password_bg.jpg);text-indent:8px;}
+#wpsc-registerform input, #wpsc-registerform select, #wpsc-loginform input, #wpsc-guestcheckoutform input, .comment-form-author input, .comment-form-email input, .comment-form-url input {width:155px; max-width:155px; min-height:23px; height:23px; border:0px; font-size:10px; font-family:"Arial"; color:#adadad; background-image:url(img/username_and_password_bg.jpg);text-indent:8px;}
 #wpsc-registerform select {text-indent:0px;min-height:25px; height:25px;}
 #wpsc-registerform h2 {clear:both;}
-#wpsc-registerform label, #wpsc-loginform label, #wpsc-guestcheckoutform label  {display:block;margin-bottom:10px;color:#555555;}
+#wpsc-registerform label, #wpsc-loginform label, #wpsc-guestcheckoutform label, .comment-form-author label, .comment-form-email label, .comment-form-url label  {display:block;margin-bottom:10px;color:#555555;}
+.comment-form-author label, .comment-form-email label, .comment-form-url label  {float:left;width:100px;max-width:100px;min-width:100px;}
 #wpsc-registerform label span, #wpsc-loginform label span, #wpsc-guestcheckoutform label span {display:block;float:left;padding-right:6px;width:170px;text-align:left;clear:both;margin-left:20px;}
+.comment-form-author span, .comment-form-email span, .comment-form-url span {display:none;}
 #wpsc-registerform .wpsc-register-button{background:url('img/register.jpg') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:0 0 0 272px;}
 #wpsc-loginform .wpsc-login-button{background:url('img/login.jpg') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:10px 0 0 272px;}
 #wpsc-guestcheckoutform .wpsc-checkout{background:url('img/checkout.png') no-repeat;cursor:pointer;width:81px;height:25px;max-width:81px;max-height:25px;border: none;text-indent:-9000px;font-size:1%;font-variant:small-caps;border:0px;border:none;margin:0 0 0 272px;}
+.aligncenter {display: block;margin: 0 auto;}
+.alignleft {display: block; margin: 0 auto 0 0;}
+.alignright {display: block; margin: 0 0 0 auto; }
+.previouslink a{float:left;margin:20px 0px 15px 7px;font-size:125%;font-weight:bold;text-shadow: 1px 1px 1px #666;color:#3d3d3d;}
+.nextlink a{float:right;margin:20px 7px 15px 0px;;font-size:125%;font-weight:bold;text-shadow: 1px 1px 1px #666;color:#3d3d3d;}
+.wp-caption, .bypostauthor {padding:5px 5px 5px 5px;}
+.wp-caption-text {padding:5px 5px 5px 5px;}
+.gallery-caption {padding:5px 5px 5px 5px;}
+.sticky {
+    background: white;
+    border: 1px solid #ddd;
+    border-top:none;
+    text-shadow: 1px 1px 1px #666;
+    color:#3d3d3d;
+    font-size:115%;
+    padding:5px 15px 5px 15px;
+    margin-right:10px;
+
+}
+

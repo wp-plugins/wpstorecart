@@ -1,104 +1,79 @@
-<div class="commentsection">
-<?php 
-if ('comments.php' == basename($_SERVER['SCRIPT_FILENAME'])) die ('Please do not load this page directly. Thanks!');
-if (!empty($post->post_password)) { // if there's a password
-	if ($_COOKIE['wp-postpass_' . COOKIEHASH] != $post->post_password) {  // and it doesn't match the cookie
+<?php
+/**
+ * The template for displaying Comments.
+ *
+ * The area of the page that contains both current comments
+ * and the comment form.  The actual display of comments is
+ * handled by a callback to twentyten_comment which is
+ * located in the functions.php file.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Ten
+ * @since Twenty Ten 1.0
+ */
 ?>
 
-<h2><?php _e('Password Protected'); ?></h2>
-<p><?php _e('Enter the password to view comments.'); ?></p>
-
-<?php return;
-	}
-}
-
-	
-
-$oddcomment = 'alt';
-
+			<div id="comments">
+<?php if ( post_password_required() ) : ?>
+				<p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', 'twentyten' ); ?></p>
+			</div><!-- #comments -->
+<?php
+		/* Stop the rest of comments.php from being processed,
+		 * but don't kill the script entirely -- we still have
+		 * to fully load the template.
+		 */
+		return;
+	endif;
 ?>
 
-
-
-<?php if ($comments) : ?>
-	<h3 id="comments"><?php comments_number('No Responses', 'One Response', '% Responses' );?> to &#8220;<?php the_title(); ?>&#8221;</h3>
-
-<ol class="commentlist">
-<?php foreach ($comments as $comment) : ?>
-
-	<li class="<?php echo $oddcomment; ?>" id="comment-<?php comment_ID() ?>">
-
-<div class="commentmetadata">
-<strong><?php comment_author_link() ?></strong>, <?php _e('on'); ?> <a href="#comment-<?php comment_ID() ?>" title=""><?php comment_date('F jS, Y') ?> <?php _e('at');?> <?php comment_time() ?></a> <?php _e('Said&#58;'); ?> <?php edit_comment_link('Edit Comment','',''); ?>
- 		<?php if ($comment->comment_approved == '0') : ?>
-		<em><?php _e('Your comment is awaiting moderation.'); ?></em>
- 		<?php endif; ?>
-</div>
-
-<?php comment_text() ?>
-	</li>
-
-<?php /* Changes every other comment to a different class */
-	if ('alt' == $oddcomment) $oddcomment = '';
-	else $oddcomment = 'alt';
+<?php
+	// You can start editing here -- including this comment!
 ?>
 
-<?php endforeach; ?>
-	</ol>
+<?php if ( have_comments() ) : ?>
+			<h3 id="comments-title"><?php
+			printf( _n( 'One Response to %2$s', '%1$s Responses to %2$s', get_comments_number(), 'twentyten' ),
+			number_format_i18n( get_comments_number() ), '<em>' . get_the_title() . '</em>' );
+			?></h3>
 
-<?php else : ?>
+<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
+			<div class="navigation">
+				<div class="nav-previous"><?php previous_comments_link( __( '<span class="meta-nav">&larr;</span> Older Comments', 'twentyten' ) ); ?></div>
+				<div class="nav-next"><?php next_comments_link( __( 'Newer Comments <span class="meta-nav">&rarr;</span>', 'twentyten' ) ); ?></div>
+			</div> <!-- .navigation -->
+<?php endif; // check for comment navigation ?>
 
-<?php if ('open' == $post->comment_status) : ?>
-	<!-- If comments are open, but there are no comments. -->
-	<?php else : // comments are closed ?>
+			<ol class="commentlist">
+				<?php
+					/* Loop through and list the comments. Tell wp_list_comments()
+					 * to use twentyten_comment() to format the comments.
+					 * If you want to overload this in a child theme then you can
+					 * define twentyten_comment() and that will be used instead.
+					 * See twentyten_comment() in twentyten/functions.php for more.
+					 */
+					wp_list_comments( array( 'callback' => 'twentyten_comment' ) );
+				?>
+			</ol>
 
-	
-<p class="nocomments">Comments are closed.</p>
+<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
+			<div class="navigation">
+				<div class="nav-previous"><?php previous_comments_link( __( '<span class="meta-nav">&larr;</span> Older Comments', 'twentyten' ) ); ?></div>
+				<div class="nav-next"><?php next_comments_link( __( 'Newer Comments <span class="meta-nav">&rarr;</span>', 'twentyten' ) ); ?></div>
+			</div><!-- .navigation -->
+<?php endif; // check for comment navigation ?>
 
-	<?php endif; ?>
-<?php endif; ?>
+<?php else : // or, if we don't have comments:
 
+	/* If there are no comments and comments are closed,
+	 * let's leave a little note, shall we?
+	 */
+	if ( ! comments_open() ) :
+?>
+	<p class="nocomments"><?php _e( '<!-- Comments are closed. -->', 'twentyten' ); ?></p>
+<?php endif; // end ! comments_open() ?>
 
-<?php if ('open' == $post->comment_status) : ?>
+<?php endif; // end have_comments() ?>
 
-		<h3 id="respond">Leave a Reply</h3>
+<?php comment_form(); ?>
 
-<?php if ( get_option('comment_registration') && !$user_ID ) : ?>
-<p>You must be <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?redirect_to=<?php the_permalink(); ?>">logged in</a> to post a comment.</p>
-
-<?php else : ?>
-
-<form action="<?php echo get_option('siteurl'); ?>/wp-comments-post.php" method="post" id="commentform">
-<?php if ( $user_ID ) : ?>
-
-<p>Logged in as <a href="<?php echo get_option('siteurl'); ?>/wp-admin/profile.php"><?php echo $user_identity; ?></a>. <a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="Log out of this account">Logout &raquo;</a></p>
-
-<?php else : ?>
-
-<p><input type="text" name="author" id="author" value="<?php echo $comment_author; ?>" size="40" tabindex="1" />
-<label for="author"><small>Name <?php if ($req) echo "(required)"; ?></small></label></p>
-
-<p><input type="text" name="email" id="email" value="<?php echo $comment_author_email; ?>" size="40" tabindex="2" />
-<label for="email"><small>Mail (will not be published) <?php if ($req) echo "(required)"; ?></small></label></p>
-
-<p><input type="text" name="url" id="url" value="<?php echo $comment_author_url; ?>" size="40" tabindex="3" />
-<label for="url"><small>Website</small></label></p>
-
-<?php endif; ?>
-
-<p><small><strong>XHTML:</strong> <?php _e('You can use these tags&#58;'); ?> <?php echo allowed_tags(); ?></small></p>
-
-<p><textarea name="comment" id="comment" cols="60" rows="10" tabindex="4"></textarea></p>
-
-<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
-<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
-</p>
-
-<?php do_action('comment_form', $post->ID); ?>
-
-</form>
-
-<?php endif; ?>
-
-<?php endif; ?>
-</div>
+</div><!-- #comments -->
