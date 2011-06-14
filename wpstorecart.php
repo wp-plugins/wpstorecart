@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.2
+Version: 2.3.3
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.2
+ * @version 2.3.3
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -61,8 +61,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.2';
-$wpstorecart_version_int = 203002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.3';
+$wpstorecart_version_int = 203003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -983,7 +983,13 @@ if (!class_exists("wpStoreCart")) {
                                     'wpsc_api_key' => '',
                                     'wpsc_secret_hash' => '',
                                     'showproductgallery' => 'true',
-                                    'showproductgallerywhere' => 'Directly after the Description'
+                                    'showproductgallerywhere' => 'Directly after the Description',
+                                    'displaytaxes' => 'true',
+                                    'taxes' => '',
+                                    'checkoutimages' => 'false',
+                                    'checkoutimagewidth' => '25',
+                                    'checkoutimageheight' => '25',
+                                    'checkoutlinktoproduct' => 'false'
                                     );
 
             if($this->wpStoreCartSettings!=NULL) {
@@ -1359,6 +1365,26 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['showproductgallerywhere'])) {
  					$devOptions['showproductgallerywhere'] = $wpdb->escape($_POST['showproductgallerywhere']);
 				}
+
+				if (isset($_POST['displaytaxes'])) {
+ 					$devOptions['displaytaxes'] = $wpdb->escape($_POST['displaytaxes']);
+				}
+				if (isset($_POST['taxes'])) {
+ 					$devOptions['taxes'] = $wpdb->escape($_POST['taxes']);
+				}
+				if (isset($_POST['checkoutimages'])) {
+ 					$devOptions['checkoutimages'] = $wpdb->escape($_POST['checkoutimages']);
+				}
+				if (isset($_POST['checkoutimagewidth'])) {
+ 					$devOptions['checkoutimagewidth'] = $wpdb->escape($_POST['checkoutimagewidth']);
+				}
+				if (isset($_POST['checkoutimageheight'])) {
+ 					$devOptions['checkoutimageheight'] = $wpdb->escape($_POST['checkoutimageheight']);
+				}
+				if (isset($_POST['checkoutlinktoproduct'])) {
+ 					$devOptions['checkoutlinktoproduct'] = $wpdb->escape($_POST['checkoutlinktoproduct']);
+				}
+
 				update_option($this->adminOptionsName, $devOptions);
 
                                 if (isset($_POST['required_info_key']) && isset($_POST['required_info_name']) && isset($_POST['required_info_type'])) {
@@ -1879,6 +1905,12 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>Display final total? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-700055" /><div class="tooltip-content" id="example-content-700055">Displays the total, including any calculated shipping, on the checkout page. Recommended.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, the final total will be displayed in shopping carts.</p></td>
 			<td><p><label for="displaytotal"><input type="radio" id="displaytotal_yes" name="displaytotal" value="true" '; if ($devOptions['displaytotal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displaytotal_no"><input type="radio" id="displaytotal_no" name="displaytotal" value="false" '; if ($devOptions['displaytotal'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Display product thumbnails? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-70005512" /><div class="tooltip-content" id="example-content-70005512">Next to each product, displays the products thumbnail.</div></h3></td>
+			<td class="tableDescription"><p>If set to Yes, each product will display it\'s thumbnail.</p></td>
+			<td><p><label for="checkoutimages"><input type="radio" id="checkoutimages_yes" name="checkoutimages" value="true" '; if ($devOptions['displaytotal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="checkoutimages_no"><input type="radio" id="checkoutimages_no" name="checkoutimages" value="false" '; if ($devOptions['checkoutimages'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+                        Width: <input style="width:35px;" type="text" name="checkoutimagewidth" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimagewidth']), 'wpStoreCart'); echo'" />px &nbsp; &nbsp; Height: <input style="width:35px;"  type="text" name="checkoutimageheight" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimageheight']), 'wpStoreCart'); echo'" />px
 			</td></tr>
 
 			<tr><td><h3>Enable Coupons &amp; display form? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-706055" /><div class="tooltip-content" id="example-content-706055">Enables coupons during checkout and displays the coupon input.</div></h3></td>
@@ -6039,6 +6071,15 @@ if (!class_exists("wpStoreCart")) {
 
                             $output = '';
                             switch ($display) {
+                                    case 'shareyourcart':
+                                       /**
+                                                 * ShareYourCart.com Integration begins here
+                                                 */
+                                        if($devOptions['shareyourcart_activate']=='true') {
+                                            $output .= '<iframe src="https://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php' , __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-checkout"></iframe>';
+                                        }
+                                        // ShareYourCart.com Integration ends here
+                                        break;
                                     case 'gallery': //
                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                         break;
@@ -6102,7 +6143,7 @@ if (!class_exists("wpStoreCart")) {
                                                      * ShareYourCart.com Integration begins here
                                                      */
                                             if($devOptions['shareyourcart_activate']=='true') {
-                                                $output .= '<iframe src="http://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php' , __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-checkout"></iframe>';
+                                                $output .= '<iframe src="https://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php' , __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-checkout"></iframe>';
                                             }
                                             // ShareYourCart.com Integration ends here
 
@@ -6523,7 +6564,7 @@ if (!class_exists("wpStoreCart")) {
                                                                      * ShareYourCart.com Integration begins here
                                                                      */
                                                             if($devOptions['shareyourcart_activate']=='true') {
-                                                                $output .= '<iframe src="http://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php?product='.$results[0]['primkey'], __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-product"></iframe>';
+                                                                $output .= '<iframe src="https://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php?product='.$results[0]['primkey'], __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-product"></iframe>';
                                                             }
                                                             // ShareYourCart.com Integration ends here
                                                             

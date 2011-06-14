@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.3
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.3 =
+* ShareYourCart integration now uses SSL by default
+* New ShareYourCart shortcode: [wpstorecart display="shareyourcart"]
 
 = 2.3.2 =
 * Fixed bug that caused the My Orders & Downloads link in the login widget to point to the wrong page.
