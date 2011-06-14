@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.1
+Version: 2.3.2
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,12 +29,21 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.1
+ * @version 2.3.2
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
  *
  */
+
+// Added in 2.3.2 to try and help fix session problems, but I doubt they will do much good :(
+try {
+    @ini_set('session.use_only_cookies', 1);
+    @ini_set('session.auto_start', 0);
+    @ini_set('session.use_only_cookies', 0);
+} catch (Exception $e) {
+
+}
 
 if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
     require_once(ABSPATH . 'wp-includes/pluggable.php');
@@ -52,8 +61,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.1';
-$wpstorecart_version_int = 203001; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.2';
+$wpstorecart_version_int = 203002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -272,6 +281,7 @@ if (!class_exists("wpStoreCart")) {
      * The main class of the wpStoreCart application
      *
      * @package wpstorecart
+     * @license lgpl 2.0
      *
      */
     class wpStoreCart {
@@ -787,7 +797,7 @@ if (!class_exists("wpStoreCart")) {
                                         <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> General</a></li>
                                         <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.plugins_url('/images/email.png' , __FILE__).'" /> E-Mail</a></li>';
                                         $theme_data = get_theme_data(get_stylesheet_uri());
-                                        if($theme_data['Title'] == 'wpStoreCartTheme') {
+                                        if(trim($theme_data['Title']) == 'wpStoreCart Default') {
                                             echo '<li><a href="admin.php?page=wpstorecarttheme-settings" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Theme Settings</a></li>';
                                         }
                                         echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Display</a></li>';
@@ -1012,6 +1022,29 @@ if (!class_exists("wpStoreCart")) {
 
 
                         $devOptions = $this->getAdminOptions();
+                        
+                        // Added in 2.3.2, so that if we change the mainpage, all the products will change their parent to the new mainpage as well
+                        if(isset($_POST['wpStoreCartmainpage']) &&  ($devOptions['mainpage']!=$_POST['wpStoreCartmainpage'])) {
+                            $table_name_products = $wpdb->prefix . "wpstorecart_products";
+                            $grabpostid = "SELECT `postid` FROM `{$table_name_products}` ;";
+                            $results_renames = $wpdb->get_results( $grabpostid , ARRAY_A );
+                            $sql_to_run = "UPDATE `{$wpdb->prefix}posts` SET `post_parent`='".$wpdb->escape($_POST['wpStoreCartmainpage'])."' WHERE ";
+                            if(isset($results_renames)) {
+                                $firstime = true;
+                                foreach ($results_renames as $results_rename) {
+                                    if(!$firstime) {
+                                        $sql_to_run .= "OR ";
+                                    }
+                                    $sql_to_run .= "`ID`='{$results_rename['postid']}' ";
+                                    $firstime = false;
+                                }
+                                $sql_to_run .= ';';
+                                if(!$firstime) {
+                                    $wpdb->query($sql_to_run);
+                                }
+
+                            }
+                        }
 		
 			if (isset($_POST['update_wpStoreCartSettings'])) {
 				if (isset($_POST['wpStoreCartmainpage'])) {
@@ -1363,7 +1396,7 @@ if (!class_exists("wpStoreCart")) {
                             <li><a href="#tab2" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab2\');"><img src="'.plugins_url('/images/buttons_email.jpg' , __FILE__).'" /></a></li>';
 
                         $theme_data = get_theme_data(get_stylesheet_uri());
-                        if($theme_data['Title'] == 'wpStoreCartTheme') {
+                        if(trim($theme_data['Title']) == 'wpStoreCart Default') {
                             echo '<li><a href="admin.php?page=wpstorecarttheme-settings" onclick="window.location = \'admin.php?page=wpstorecarttheme-settings\';"><img src="'.plugins_url('/images/buttons_theme.jpg' , __FILE__).'" /></a></li>';
                         }
 
@@ -1944,12 +1977,12 @@ if (!class_exists("wpStoreCart")) {
                                 Username: <input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="text" name="uspsapiname" value="'; _e(apply_filters('format_to_edit',$devOptions['uspsapiname']), 'wpStoreCart'); echo'" />
                             </td></tr>
 
-                            <tr style="display:none;"><td><h3>Enable UPS Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81235" /><div class="tooltip-content" id="example-content-81235">This allows you to ship via UPS and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
+                            <tr><td><h3>Enable UPS Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81235" /><div class="tooltip-content" id="example-content-81235">This allows you to ship via UPS and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for UPS.</p></td>
                             <td><p><label for="enableups"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_yes" name="enableups" value="true" '; if ($devOptions['enableups'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableups_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_no" name="enableups" value="false" '; if ($devOptions['enableups'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
-                            <tr style="display:none;"><td><h3>Enable FedEx Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81236" /><div class="tooltip-content" id="example-content-81236">This allows you to ship via FedEx and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
+                            <tr><td><h3>Enable FedEx Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81236" /><div class="tooltip-content" id="example-content-81236">This allows you to ship via FedEx and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
                             <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for FedEx.</p></td>
                             <td><p><label for="enablefedex"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_yes" name="enablefedex" value="true" '; if ($devOptions['enablefedex'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablefedex_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_no" name="enablefedex" value="false" '; if ($devOptions['enablefedex'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
@@ -2946,6 +2979,8 @@ if (!class_exists("wpStoreCart")) {
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
 				$isanedit = true;
 
+
+
                                 // Grabs the serial numbers
                                 $results_serial_numbers = $wpdb->get_results("SELECT `value` FROM `{$table_name_meta}` WHERE `type`='serialnumbers' AND `foreignkey`={$_GET['keytoedit']};", ARRAY_N);
                                 if($results_serial_numbers!=false ) {
@@ -3213,6 +3248,65 @@ if (!class_exists("wpStoreCart")) {
                                                 $wpStoreCartproduct_length = stripslashes($result['length']);
                                                 $wpStoreCartproduct_width = stripslashes($result['width']);
                                                 $wpStoreCartproduct_height = stripslashes($result['height']);
+
+                                                /*
+                                                $rel_post = get_post($result['postid']) ;
+                                                if(isset($rel_post->ID)) {
+                                                    if(@$_GET['recreate']=='true') {
+                                                        // Create our PAGE in draft mode in order to get the POST ID
+                                                        $my_post = array();
+                                                        $my_post['post_title'] = stripslashes($wpStoreCartproduct_name);
+                                                        $my_post['post_type'] = 'page';
+                                                        $my_post['post_content'] = '';
+                                                        $my_post['post_status'] = 'draft';
+                                                        $my_post['post_author'] = 1;
+                                                        $my_post['post_parent'] = $devOptions['mainpage'];
+
+                                                        // Insert the PAGE into the WP database
+                                                        $thePostID = wp_insert_post( $my_post );
+                                                        if($thePostID==0) {
+                                                                echo '<div class="updated"><p><strong>';
+                                                                _e("ERROR 4: wpStoreCart couldn't recreate your product page :(", "wpStoreCart");
+                                                                echo $wpdb->print_error();
+                                                                echo '</strong></p></div>';
+                                                                return false;
+                                                        } else { // Successfuly draft, let's continue
+
+                                                                $updateSQL = "
+                                                                UPDATE `{$table_name}` SET
+                                                                `postid` = '{$thePostID}'
+                                                                WHERE `primkey` ={$keytoedit} LIMIT 1 ;
+                                                                ";
+
+                                                                $results = $wpdb->query($updateSQL);
+
+                                                                if($results===false) {
+                                                                        echo '<div class="updated"><p><strong>';
+                                                                        _e("ERROR 2: There was a problem with your form!  The database query was invalid. ", "wpStoreCart");
+                                                                        echo $wpdb->print_error();
+                                                                        echo '</strong></p></div>';
+                                                                } else { // If we get this far, we are still successful
+                                                                        echo '<div class="updated"><p><strong>';
+                                                                        _e("Edit successful!  Your product details have been saved.", "wpStoreCart");
+                                                                        echo '</strong></p></div>';
+                                                                }
+
+                                                            // Now that we've inserted both the PAGE and the product, let's update and publish our post with the correct content
+                                                            $my_post = array();
+                                                            $my_post['ID'] = $thePostID;
+                                                            $my_post['post_content'] = '[wpstorecart display="product" primkey="'.$keytoedit.'"]';
+                                                            $my_post['post_status'] = 'publish';
+                                                            wp_update_post( $my_post );
+                                                        }
+                                                    } else {
+                                                        echo '<div class="updated"><p><strong>';
+                                                        echo "The product page associated with this product is missing.  To recreate the page, <a href=\"admin.php?page=wpstorecart-add-products&keytoedit=5&recreate=true\">click here</a> (make sure you save any changes you made to the product first or you will lose them!)";
+                                                        echo '</strong></p></div>';
+                                                    }
+                                                }
+                                                 * 
+                                                 */
+
 					}
 				} else {
 					echo '<div class="updated"><p><strong>';
@@ -3915,8 +4009,8 @@ if (!class_exists("wpStoreCart")) {
                             </td></tr>
                             <table class="widefat">
                             <thead><tr><th> </th><th>Image</th></tr></thead><tbody id="linksforimages"></tbody></table>
-                            <input type="text" value="0" id="numberofslideshowimages" name="numberofslideshowimages" />
-                            <input type="text" value="'.$preresults[0]['value'].'" id="wpStoreCartproduct_download_old" name="wpStoreCartproduct_download_old" />
+                            <input type="hidden" value="0" id="numberofslideshowimages" name="numberofslideshowimages" />
+                            <input type="hidden" value="'.$preresults[0]['value'].'" id="wpStoreCartproduct_download_old" name="wpStoreCartproduct_download_old" />
                             <script type="text/javascript">
                             //<![CDATA[
 
@@ -5578,6 +5672,8 @@ if (!class_exists("wpStoreCart")) {
                         $dayAgo = 29 ;
                         $currentDay = $startdate;
 
+                        $dailyAverage = $totalearned / 30;
+
 			// inlinebar
 			// 
 			$lastrecordssql = "SELECT * FROM `{$table_name_orders}` ORDER BY `date` DESC LIMIT 0, 30";
@@ -5585,8 +5681,8 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '<ul>';
                         echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart v'.$wpstorecart_version.' :</strong></span> with '.$totalrecords.' product(s).</u></li>';
-                        echo '<li><strong>Gross Revenue last 30 days: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong></li>';
-                        echo '<li><strong>All Time Gross Revenue: <span style="font-size:170%;">'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
+                        echo '<li>Last 30 days: <strong><span style="font-size:140%;">'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong> ('.$devOptions['currency_symbol'].number_format($dailyAverage).$devOptions['currency_symbol_right'].' avg per day)</li>';
+                        echo '<li>All Time: <strong><span style="font-size:140%;">'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
                         echo "<li><span style=\"float:left;padding:0 10px 0 0;border-right:1px #CCC solid;\"><strong>Completed Orders / Total:</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"http://chart.apis.google.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
 			echo "<li><span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div></li>";
         		echo '</ul>';
@@ -5666,7 +5762,6 @@ if (!class_exists("wpStoreCart")) {
                             }
 
                             if($wpsc_cart_type == 'cookie') {
-                                if(!isset($_SESSION)) { @session_start(); }
                                 if(@!is_object($cart)) {
                                     if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
                                     if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
@@ -5674,6 +5769,7 @@ if (!class_exists("wpStoreCart")) {
                                         $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
                                     }
                                 }
+                                if(!isset($_SESSION)) { @session_start(); }
                             }
                             $old_checkout = $is_checkout;
                             $is_checkout = false;
@@ -5991,7 +6087,6 @@ if (!class_exists("wpStoreCart")) {
                                             }
 
                                             if($wpsc_cart_type == 'cookie') {
-                                                if(!isset($_SESSION)) { @session_start(); }
                                                 if(@!is_object($cart)) {
                                                     if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
                                                     if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
@@ -5999,6 +6094,7 @@ if (!class_exists("wpStoreCart")) {
                                                         $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
                                                     }
                                                 }
+                                                if(!isset($_SESSION)) { @session_start(); }
                                             }
 
                                             $output .= $cart->display_cart($wpsc);
@@ -8351,7 +8447,6 @@ jQuery(document).ready(function($) {
                 }
 
                 if($wpsc_cart_type == 'cookie') {
-                    if(!isset($_SESSION)) { @session_start(); }
                     if(@!is_object($cart)) {
                         if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
                         if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
@@ -8359,6 +8454,7 @@ jQuery(document).ready(function($) {
                             $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
                         }
                     }
+                    if(!isset($_SESSION)) { @session_start(); }
                 }
                
             //echo '<!-- /**'.var_dump(unserialize(base64_decode($_COOKIE['wpsccart']))).' **/ -->';
@@ -8514,7 +8610,6 @@ if (class_exists("WP_Widget")) {
                         }
 
                         if($wpsc_cart_type == 'cookie') {
-                            if(!isset($_SESSION)) { @session_start(); }
                             if(@!is_object($cart)) {
                                 if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
                                 if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
@@ -8522,6 +8617,7 @@ if (class_exists("WP_Widget")) {
                                     $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
                                 }
                             }
+                            if(!isset($_SESSION)) { @session_start(); }
                         }
 			$output = NULL;
 
@@ -8588,10 +8684,14 @@ if (class_exists("WP_Widget")) {
 			if ( $title ) { echo $before_title . $title . $after_title; }
 
 
-                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
-                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
+                        if($devOptions['orderspage']=='') {
+                            if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=orders';
+                            } else {
+                                $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
+                            }
                         } else {
-                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=orders';
+                             $permalink = get_permalink($devOptions['orderspage']);
                         }
                         
                         if ( is_user_logged_in() ) {
@@ -8875,7 +8975,6 @@ if (isset($wpStoreCart)) {
         }
 
         if($wpsc_cart_type == 'cookie') {
-            if(!isset($_SESSION)) { @session_start(); }
             if(@!is_object($cart)) {
                 if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
                 if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
@@ -8883,6 +8982,7 @@ if (isset($wpStoreCart)) {
                     $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
                 }
             }
+            if(!isset($_SESSION)) { @session_start(); }
         }
 
         add_action('activated_plugin',array(&$wpStoreCart, 'save_error'));

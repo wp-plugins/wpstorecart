@@ -19,6 +19,17 @@ if (!function_exists('add_action'))
 }
 include_once(ABSPATH . 'wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
 
+// INITIALIZE cookie wpsc BEFORE SESSION START
+if($wpsc_cart_type == 'cookie') {
+    if(@!is_object($cart)) {
+        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
+        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
+            $cart = new wpsc();
+            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
+        }
+    }
+    if(!isset($_SESSION)) { @session_start(); }
+}
 if(!isset($_SESSION)) {
 	session_start();
 }
@@ -33,15 +44,7 @@ if(isset($wpStoreCart)) {
 if($wpsc_cart_type == 'session') {
     $cart =& $_SESSION['wpsc']; if(!is_object($cart)) $cart = new wpsc();
 }
-if($wpsc_cart_type == 'cookie') {
-    if(@!is_object($cart)) {
-        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-            $cart = new wpsc();
-            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-        }
-    }
-}
+
 
 // WHEN JAVASCRIPT IS DISABLED THE UPDATE AND EMPTY BUTTONS ARE DISPLAYED
 // RE-DISPLAY THE CART IF THE VISITOR CLICKS EITHER BUTTON

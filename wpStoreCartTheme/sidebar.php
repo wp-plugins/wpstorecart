@@ -3,6 +3,7 @@
             
             <?php if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar("Right Sidebar") ) : ?>
 
+                <?php  if(@isset($wpStoreCart)) { ?>
             	<div class="title">Shopping Cart</div>
                 <div class="content">
 			<?php
@@ -77,7 +78,23 @@
                 </div>
                 <div class="bottom_line"></div>				
 			
-			
+			<?php } else { // Default sidebar if wpStoreCart is not loaded. ?>
+                            <div class="title"><?php _e('Categories'); ?></div>
+                            <div class="content">
+                                <ul class="list-cat">
+                                    <?php wp_list_categories(); ?>
+                                </ul>
+                            </div>
+                            <div class="bottom_line"></div>
 
+                            <div class="title"><?php _e('Archives'); ?></div>
+                            <div class="content">
+                                <ul class="list-archives">
+                                    <?php wp_get_archives('type=monthly'); ?>
+                                </ul>
+                            </div>
+                            <div class="bottom_line"></div>
+                
+                        <?php } ?>
 			<?php endif; ?>           
             </div><!-- Right Content Panel  End -->

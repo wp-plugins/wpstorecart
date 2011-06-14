@@ -14,18 +14,26 @@ http://www.webforce.co.nz/cart/
 
 **********************************************************************/
 
-global $wpsc_error_reporting;
+global $wpStoreCart, $devOptions, $wpsc, $wpsc_error_reporting, $wpsc_cart_type;
+
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
 
+// Added in 2.3.2 to try and help fix session problems
+try {
+    @ini_set('session.use_only_cookies', 1);
+    @ini_set('session.auto_start', 0);
+    @ini_set('session.use_only_cookies', 0);
+} catch (Exception $e) {
 
+}
 
 if (!function_exists('add_action'))
 {
     require_once("../../../../../../wp-config.php");
 }
-global $wpStoreCart, $devOptions;
+
 
 if(isset($wpStoreCart)) {
         $devOptions = $wpStoreCart->getAdminOptions();
@@ -34,14 +42,11 @@ if(isset($wpStoreCart)) {
 }
 
 
-global $wpsc;
 // USER CONFIG
 require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
 
 // DEFAULT CONFIG VALUES
 require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
-
-
 
 
 // wpsc
@@ -53,13 +58,17 @@ class wpsc {
 	var $itemqtys = array();
 	var $itemname = array();
         var $itemshipping = array(); // Added in wpStoreCart 2.2.0
+        var $itemtax = array(); // Added in wpStoreCart 2.3.2
+        var $itemurl = array(); // Added in wpStoreCart 2.3.2
+        var $itemimg = array(); // Added in wpStoreCart 2.3.2
 
 	// CONSTRUCTOR FUNCTION
-        function __construct() {}
+        function __construct() {
+        }
 
         function __destruct() {
             global $wpsc_cart_type;
-            if($wpsc_cart_type == 'cookie') {
+            if($wpsc_cart_type=='cookie') {
                 $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
                 setcookie('wpsccart', base64_encode(serialize($this)), time()+7222, '/', $xdomain, false);
             }
@@ -67,14 +76,8 @@ class wpsc {
         
 	function cart() {}
 
-        function __sleep()
-        {
-            return array('total', 'itemcount', 'items', 'itemprices', 'itemqtys', 'itemname', 'itemshipping');
-        }
 
-        function __wakeup(){
-            $this->get_contents();
-        }
+
 	
 	// GET CART CONTENTS
 	function get_contents()
@@ -92,6 +95,9 @@ class wpsc {
                         $item['price'] = $this->itemprices[$tmp_item];
 			$item['name'] = $this->itemname[$tmp_item];
                         $item['shipping'] = $this->itemshipping[$tmp_item]; // Added in wpStoreCart 2.2.0
+                        $item['tax'] = $this->itemtax[$tmp_item]; // Added in wpStoreCart 2.3.2
+                        $item['url'] = $this->itemurl[$tmp_item]; // Added in wpStoreCart 2.3.2
+                        $item['img'] = $this->itemimg[$tmp_item]; // Added in wpStoreCart 2.3.2
                         $item['subtotal'] = $item['qty'] * $item['price'];
                         
 			$items[] = $item;
@@ -101,7 +107,7 @@ class wpsc {
 
 
 	// ADD AN ITEM
-	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0)
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='')
 		{
 		// VALIDATION
 		$valid_item_qty = $valid_item_price = false;
@@ -133,10 +139,14 @@ class wpsc {
 				$this->itemqtys[$item_id] = $item_qty;
 				$this->itemprices[$item_id] = $item_price;
 				$this->itemname[$item_id] = $item_name;
-                                $this->itemshipping[$item_id] = $item_shipping; 
+                                $this->itemshipping[$item_id] = $item_shipping;
+                                $this->itemtax[$itemid] = $item_tax;
+                                $this->itemurl[$itemid] = $item_url;
+                                $this->itemimg[$itemid] = $item_img;
 				
 				}
 			$this->_update_total();
+
 			return true;
 			}
 
@@ -354,6 +364,9 @@ class wpsc {
                     $this->itemqtys = array();
                     $this->itemname = array();
                     $this->itemshipping = array();
+                    $this->itemtax = array();
+                    $this->itemurl = array();
+                    $this->itemimg = array();
 
                     if(@isset($wpsc_cart_type)) {
                         if($wpsc_cart_type=='cookie') {
@@ -364,8 +377,7 @@ class wpsc {
 
 
 	// INTERNAL FUNCTION TO RECALCULATE TOTAL
-	function _update_total()
-		{
+	function _update_total() {
 		$this->itemcount = 0;
 		$this->total = 0;
 		if(sizeof($this->items > 0))
@@ -388,8 +400,14 @@ class wpsc {
 			}
 
 
+                global $wpsc_cart_type;
+                if($wpsc_cart_type=='cookie') {
+                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+                    setcookie('wpsccart', base64_encode(serialize($this)), time()+7222, '/', $xdomain, false);
+                }
 
-		}
+
+	}
 
 
 	// PROCESS AND DISPLAY CART
@@ -413,11 +431,14 @@ class wpsc {
 		@$item_price = $_POST[$item_price];
 		@$item_name = $_POST[$item_name];
                 @$item_shipping = $_POST[$item_shipping];
+                @$item_tax = $_POST[$item_tax];
+                @$item_url = $_POST[$item_url];
+                @$item_img = $_POST[$item_img];
 
 		// ADD AN ITEM
 		if (isset($_POST[$item_add]))
 			{
-			$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping);
+			$item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping, $item_tax, $item_url, $item_img);
 			// IF NOT TRUE THE ADD ITEM FUNCTION RETURNS THE ERROR TYPE
 			if ($item_added !== true)
 				{

@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.3
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,13 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.2 =
+* Fixed bug that caused the My Orders & Downloads link in the login widget to point to the wrong page.
+* Picture gallery debug input boxes are now hidden when editing products
+* Updated wpStoreCart Default theme to version 1.1.1 (for new installs only, for other users, please use the automatic theme upgrade!)
+* Now, when you change from one Mainpage to another, the product pages will automatically reassign the new mainpage as their parent.
+* Added some code to try and fix the SESSION issues for some wpStoreCart users
 
 = 2.3.1 =
 * Fixed an issue with the picture galleries not rendering

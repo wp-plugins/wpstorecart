@@ -6,9 +6,17 @@ if($wpsc_error_reporting==false) {
 }
 
 if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
-    @apache_setenv('no-gzip', '1');
+    try {
+        @apache_setenv('no-gzip', '1');
+    } catch (Exception $e) {
+        
+    }
 }
-@ini_set('zlib.output_compression', 'Off');
+try {
+    @ini_set('zlib.output_compression', 'Off');
+} catch (Exception $e) {
+
+}
 
 if (get_magic_quotes_gpc()) {
     $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);

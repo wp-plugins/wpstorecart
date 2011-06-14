@@ -442,7 +442,7 @@ function wpsct_settings_page() {
 	if(isset($wpStoreCart)) {
 		$devOptions = $wpStoreCart->getAdminOptions();
 	} else {
-                echo '<ul><li>This Theme requires the free and open source wpStoreCart <a href="http://wpstorecart.com" title="Wordpress eCommerce Plugin">Wordpress eCommerce Plugin</a></li></ul>';
+                echo '<br /><br /><div class="updated fade"><ul><li>This Theme requires the free and open source wpStoreCart <a href="http://wpstorecart.com" title="Wordpress eCommerce Plugin">Wordpress eCommerce Plugin</a> for full functionality.</li></ul></div>';
 	}	
 	
 
