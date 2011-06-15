@@ -82,8 +82,6 @@ class wpsc {
 	// GET CART CONTENTS
 	function get_contents()
 		{
-
-
 		$items = array();
 		foreach($this->items as $tmp_item)
 			{
@@ -140,9 +138,9 @@ class wpsc {
 				$this->itemprices[$item_id] = $item_price;
 				$this->itemname[$item_id] = $item_name;
                                 $this->itemshipping[$item_id] = $item_shipping;
-                                $this->itemtax[$itemid] = $item_tax;
-                                $this->itemurl[$itemid] = $item_url;
-                                $this->itemimg[$itemid] = $item_img;
+                                $this->itemtax[$item_id] = $item_tax;
+                                $this->itemurl[$item_id] = $item_url;
+                                $this->itemimg[$item_id] = $item_img;
 				
 				}
 			$this->_update_total();
@@ -723,7 +721,11 @@ class wpsc {
 
                                     $totalshipping = $totalshipping + ($item['shipping'] * $item['qty']); // Added in 2.2
 
-                                    $output .= "\t\t\t\t\t\t<input type='text' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />\n";
+                                    $output .= "\t\t\t\t\t\t<input type='text' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />";
+                                    if($devOptions['checkoutimages']=='true' && $is_checkout==true) {
+                                        $output .= "<img class=\"wpsc-checkout-thumbnail\" src=\"{$item['img']}\" alt=\"".htmlentities($item['name'])."\" style=\"width:{$devOptions['checkoutimagewidth']}px;max-width:{$devOptions['checkoutimagewidth']}px;height:{$devOptions['checkoutimageheight']}px;max-height:{$devOptions['checkoutimageheight']}px;\" />";
+                                    }
+                                    $output .= "\n";
 
                                     $output .= "\t\t\t\t\t\t" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' />\n";
                                     $output .= "\t\t\t\t\t\t<input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' />\n";

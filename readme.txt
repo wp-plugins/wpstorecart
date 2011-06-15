@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.3
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.4 =
+* Added the ability to display the product's thumbnails during checkout (set it up at wpStoreCart > Settings > Display > Checkout Page > Display product thumbnails? > Yes)
+* Updated wpStoreCart Default theme to version 1.1.2 (for new installs only, for other users, please use the automatic theme upgrade!)
 
 = 2.3.3 =
 * ShareYourCart integration now uses SSL by default

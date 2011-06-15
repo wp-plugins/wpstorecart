@@ -3,7 +3,7 @@ global $wpstorecart_is_active, $wpscThemeOptions, $themename, $shortname, $wpdb,
 
 $themename = "wpStoreCartTheme";
 $shortname = "wpsct";
-$version = "1.0";
+$version = "1.1.2";
 
 
 
@@ -138,16 +138,7 @@ function update_small_cart_callback() {
 }
 
 if ( ! function_exists( 'twentyten_comment' ) ) :
-/**
- * Template for comments and pingbacks.
- *
- * To override this walker in a child theme without modifying the comments template
- * simply create your own twentyten_comment(), and that function will be used instead.
- *
- * Used as a callback by wp_list_comments() for displaying the comments.
- *
- * @since Twenty Ten 1.0
- */
+
 function twentyten_comment( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
 	switch ( $comment->comment_type ) :

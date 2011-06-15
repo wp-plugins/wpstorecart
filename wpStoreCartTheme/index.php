@@ -260,6 +260,9 @@ if(@isset($wpStoreCart)) {
 															<input type="hidden" name="my-item-name" value="'.htmlentities($result['name']).'" />
 															<input type="hidden" name="my-item-price" value="'.$result['price'].'" />
 															<input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
+                                                                                                                        <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
+                                                                                                                        <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
+                                                                                                                        <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
 															<input type="hidden" name="my-item-qty" value="1" />
 															<input type="hidden" name="my-add-button" value="" />
 

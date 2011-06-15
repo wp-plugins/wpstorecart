@@ -38,6 +38,9 @@ if (isset($wpStoreCart)) {
 	$wpsc['item_qty']		= 'my-item-qty';		// ITEM QTY
 	$wpsc['item_add']		= 'my-add-button';		// ADD-TO-CART BUTTON
         $wpsc['item_shipping']          = 'my-item-shipping';           // SHIPPING
+        $wpsc['item_img']               = 'my-item-img';                // THUMBNAILS
+        $wpsc['item_url']               = 'my-item-url';                // LINK TO PRODUCT
+        $wpsc['item_tax']               = 'my-item-tax';                // TAXES
 
 	// PATH TO THE DIRECTORY CONTAINING WPSC FILES
 	$wpsc['path'] =  WP_PLUGIN_URL.'/wpstorecart/php/wpsc-1.1/wpsc/';
