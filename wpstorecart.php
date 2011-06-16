@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.4
+Version: 2.3.5
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.4
+ * @version 2.3.5
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -61,8 +61,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.4';
-$wpstorecart_version_int = 203004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.5';
+$wpstorecart_version_int = 203005; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -4737,7 +4737,7 @@ if (!class_exists("wpStoreCart")) {
 	
 		//Prints out the Categories admin page =======================================================================
         function printAdminPageCategories() {
-			global $wpdb;
+			global $wpdb, $testing_mode;
 
 			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
 				die(__('Cheatin&#8217; uh?'));
@@ -4781,7 +4781,12 @@ if (!class_exists("wpStoreCart")) {
 					$wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
 					$wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
-		
+					if(!is_numeric($wpStoreCartCategoryParent)) {
+						$wpStoreCartCategoryParent = 0;
+					}
+					if(!is_numeric($wpStoreCartCategoryPostID)) {
+						$wpStoreCartCategoryPostID = 0;
+					}			
 
 					$updateSQL = "
 					UPDATE `{$table_name}` SET 
@@ -4797,6 +4802,9 @@ if (!class_exists("wpStoreCart")) {
 					
 					if($results===false) {
 						echo '<div class="updated"><p><strong>';
+						if($testing_mode==true) {
+							echo '<pre>'.$updateSQL.'</pre>';
+						}
 						_e("ERROR 2: There was a problem with your form!  The database query was invalid. ", "wpStoreCart");
 						echo $wpdb->print_error();
 						echo '</strong></p></div>';							
@@ -4842,7 +4850,12 @@ if (!class_exists("wpStoreCart")) {
 	
 					$devOptions = $this->getAdminOptions();
 					
-
+					if(!is_numeric($wpStoreCartCategoryParent)) {
+						$wpStoreCartCategoryParent = 0;
+					}
+					if(!is_numeric($wpStoreCartCategoryPostID)) {
+						$wpStoreCartCategoryPostID = 0;
+					}					
 
 					// Now insert the category into the wpStoreCart database
 					$insert = "
@@ -4864,6 +4877,9 @@ if (!class_exists("wpStoreCart")) {
 					if($results===false) {
 						echo '<div class="updated"><p><strong>';
 						_e("ERROR 2: There was a problem with your form!  The database query was invalid. ", "wpStoreCart");
+						if($testing_mode==true) {
+							echo '<pre>'.$insert.'</pre>';
+						}						
 						echo $wpdb->print_error();
 						echo '</strong></p></div>';							
 					} else { // If we get this far, we are still successful					
