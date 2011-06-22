@@ -20,14 +20,6 @@ if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
 
-// Added in 2.3.2 to try and help fix session problems
-try {
-    @ini_set('session.use_only_cookies', 1);
-    @ini_set('session.auto_start', 0);
-    @ini_set('session.use_only_cookies', 0);
-} catch (Exception $e) {
-
-}
 
 if (!function_exists('add_action'))
 {

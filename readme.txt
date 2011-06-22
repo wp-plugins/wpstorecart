@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.3
-Stable tag: 2.3.5
+Stable tag: 2.3.6
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -71,7 +71,7 @@ Or, if you want to install manually:
 
 2. More of the "Setup Wizard", this time asking what type of stuff you sell
 
-3. Screenshot of the included deafult wpStoreCart Wordpress theme
+3. Screenshot of the included default wpStoreCart Wordpress theme
 
 4. Registration options
 
@@ -80,6 +80,11 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.6 =
+* New shortcode added: [wpstorecart displaytype="grid"] and [wpstorecart displaytype="list"]
+* Prices of products can now be displayed on the main page
+* Addressed some issues with categories rendering, including free shipping implementation
 
 = 2.3.5 =
 * Fixed issues with adding categories under IIS

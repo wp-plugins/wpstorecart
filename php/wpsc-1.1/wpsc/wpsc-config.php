@@ -2,14 +2,6 @@
 
 global $wpsc_error_reporting, $hackforsessions;
 
-// Added in 2.3.2 to try and help fix session problems
-try {
-    @ini_set('session.use_only_cookies', 1);
-    @ini_set('session.auto_start', 0);
-    @ini_set('session.use_only_cookies', 0);
-} catch (Exception $e) {
-
-}
 
 if($hackforsessions==false || !isset($hackforsessions)) {
     if($wpsc_error_reporting==false) {
