@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.1.3
-Stable tag: 2.3.6
+Stable tag: 2.3.7
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,11 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.7 =
+* Added a new role to Wordpress: wpStoreCart Manager
+* Added the ability to change the role needed to access wpStoreCart admin pages.  Check it out from the General Settings options page.
+* Exposed a pre-release version of the new wpStoreCart 3 admin design.  Check it out from the General Settings options page.
 
 = 2.3.6 =
 * New shortcode added: [wpstorecart displaytype="grid"] and [wpstorecart displaytype="list"]

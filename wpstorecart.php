@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.6
+Version: 2.3.7
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.6
+ * @version 2.3.7
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.6';
-$wpstorecart_version_int = 203006; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.7';
+$wpstorecart_version_int = 203007; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -303,9 +303,18 @@ if (!class_exists("wpStoreCart")) {
          * @global string $wpstorecart_db_version
          */
         function wpStoreCart() { //constructor
-            global $wpdb, $wpstorecart_db_version, $wpstorecart_version_int;
+            global $wpdb, $wpstorecart_db_version, $wpstorecart_version_int, $wp_roles;
 
             $devOptions = $this->getAdminOptions();
+
+            // New roles and capabilities code added in 2.3.7 (was intended for 3.0, but came a but early!)
+            add_role( 'wpstorecart_manager', 'wpStoreCart Manager', array( 'manage_wpstorecart', 'read', 'upload_files', 'publish_posts', 'edit_published_posts', 'publish_pages', 'edit_publish_pages' ) );
+            $wp_roles->add_cap( 'administrator', 'manage_wpstorecart' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'read' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'upload_files' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'publish_pages' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'publish_posts' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'manage_wpstorecart' );
 
             /**
              * ShareYourCart integration
@@ -741,17 +750,21 @@ if (!class_exists("wpStoreCart")) {
 		function spHeader() {
                         global $wpstorecart_version_int, $testing_mode;
 
+
                         $devOptions = $this->getAdminOptions();
                         $logofile = 'logo.png';
+                        $logofilelarge = 'logo_large.png';
                         if(file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
                             if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
                                 if(file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
                                     $logofile = 'logo_pro.png';
+                                    $logofilelarge = 'logo_pro_large.png';
                                 }
                             }
                         }
 
                         echo'
+                            
 			<!-- overlayed element -->
                         <div class="apple_overlay" id="overlay">
 
@@ -761,95 +774,113 @@ if (!class_exists("wpStoreCart")) {
                         </div>
                         
 			<div class="wrap">
-			<div style="padding: 20px 10px 10px 10px;">
-			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofile , __FILE__).'" alt="wpstorecart" /></a><br />';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/order_pro.png' , __FILE__).'" alt="wpstorecart" /></a>';}
-                        echo'</div>';
-                        if($logofile != 'logo_pro.png') {
-                            echo '
-			<div style="float:right;">
-				
-                                <a style="position:absolute;top:50px;margin-left:-222px;" href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/hire_us.png' , __FILE__).'" alt="wpstorecart" /></a>
-			</div>
+			<div style="padding: 0px 10px 10px 10px;">
                         ';
+
+                        if($devOptions['menu_style']=='classic' || $devOptions['menu_style']=='both') {
+                            if($logofilelarge != 'logo_pro_large.png') {
+                                echo '
+                            <div style="float:right;">
+
+                                    <a style="position:absolute;top:50px;margin-left:-222px;" href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/hire_us.png' , __FILE__).'" alt="wpstorecart" /></a>
+                            </div>
+
+                            ';
+                            }
                         }
 
+
+                        echo ' <br style="clear:both;" />';
+                        if($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both') {
+                            echo '<script type="text/javascript">
+                                jQuery("#header-logo").css("background-image", "url('.plugins_url('/images/'.$logofile , __FILE__).')");
+                                jQuery("#header-logo").css( {width : "126px", height : "31px"} );
+                                </script>
+                            ';
+
+                         }
+                        if($devOptions['menu_style']=='classic' || $devOptions['menu_style']=='both') {
+                            echo '
+			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofilelarge , __FILE__).'" alt="wpstorecart" /></a>';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/order_pro.png' , __FILE__).'" alt="wpstorecart" /></a><br style="clear:both;" />';}
+                        echo'</div>';
                         echo '
-			<br style="clear:both;" />
-			<ul id="jsddm">
-				<li class="tab" style="border-left:1px solid #999;"><a href="'.plugins_url('/php/wizard/wizard_begin.php' , __FILE__).'" rel="#overlay" style="text-decoration:none" class="spmenu"><img src="'.plugins_url('/images/controller.png' , __FILE__).'" /> &nbsp;</a>
-                                    <ul>
-                                        <li><a href="admin.php?page=wpstorecart-admin" class="spmenu">Overview</a></li>
-                                        <li><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" class="spmenu">Setup Wizard</a></li>
-                                        <li><a href="'.plugins_url('/php/wizard/wizard_setup_04.php' , __FILE__).'" rel="#overlay" class="spmenu">Payments Wizard</a></li>
-                                    </ul>
-                                </li>
-                                <li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Settings</a>
-                                    <ul>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> General</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.plugins_url('/images/email.png' , __FILE__).'" /> E-Mail</a></li>';
-                                        $theme_data = get_theme_data(get_stylesheet_uri());
-                                        if(trim($theme_data['Title']) == 'wpStoreCart Default') {
-                                            echo '<li><a href="admin.php?page=wpstorecarttheme-settings" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Theme Settings</a></li>';
-                                        }
-                                        echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Display</a></li>';
+                            <br style="clear:both;" />
+                            <ul id="jsddm">
+                                    <li class="tab" style="border-left:1px solid #999;"><a href="'.plugins_url('/php/wizard/wizard_begin.php' , __FILE__).'" rel="#overlay" style="text-decoration:none" class="spmenu"><img src="'.plugins_url('/images/controller.png' , __FILE__).'" /> &nbsp;</a>
+                                        <ul>
+                                            <li><a href="admin.php?page=wpstorecart-admin" class="spmenu">Overview</a></li>
+                                            <li><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" class="spmenu">Setup Wizard</a></li>
+                                            <li><a href="'.plugins_url('/php/wizard/wizard_setup_04.php' , __FILE__).'" rel="#overlay" class="spmenu">Payments Wizard</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-settings" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Settings</a>
+                                        <ul>
+                                            <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" class="spmenu"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> General</a></li>
+                                            <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" class="spmenu"><img src="'.plugins_url('/images/email.png' , __FILE__).'" /> E-Mail</a></li>';
+                                            $theme_data = get_theme_data(get_stylesheet_uri());
+                                            if(trim($theme_data['Title']) == 'wpStoreCart Default') {
+                                                echo '<li><a href="admin.php?page=wpstorecarttheme-settings" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Theme Settings</a></li>';
+                                            }
+                                            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" class="spmenu"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Display</a></li>';
 
-                                        if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
-                                            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" class="spmenu"><img src="'.plugins_url('/images/package_go.png' , __FILE__).'" /> Shipping</a></li>';
-                                        }
-                                        echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" class="spmenu"><img src="'.plugins_url('/images/creditcards.png' , __FILE__).'" /> Payment</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" class="spmenu"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Language</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Customers</a></li>
-                                    </ul>
-                                </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" />Products</a>
-                                    <ul>
-                                        <li><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Add Product</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.plugins_url('/images/basket_edit.png' , __FILE__).'" /> Edit Products</a></li>
-                                        ';
-                                        if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
-                                            //echo '<li><a href="admin.php?page=wpstorecart-import" class="spmenu"><img src="'.plugins_url('/images/server_go.png' , __FILE__).'" /> Import/Export</a></li>';
-                                        }
+                                            if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
+                                                echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" class="spmenu"><img src="'.plugins_url('/images/package_go.png' , __FILE__).'" /> Shipping</a></li>';
+                                            }
+                                            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" class="spmenu"><img src="'.plugins_url('/images/creditcards.png' , __FILE__).'" /> Payment</a></li>
+                                            <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" class="spmenu"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Language</a></li>
+                                            <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Customers</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" />Products</a>
+                                        <ul>
+                                            <li><a href="admin.php?page=wpstorecart-add-products" class="spmenu"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Add Product</a></li>
+                                            <li><a href="admin.php?page=wpstorecart-edit-products" class="spmenu"><img src="'.plugins_url('/images/basket_edit.png' , __FILE__).'" /> Edit Products</a></li>
+                                            ';
+                                            if($testing_mode==true || $wpstorecart_version_int >= 202000) { // Bleeding edge until 2.2, at which time this code block will automatically be enabled
+                                                //echo '<li><a href="admin.php?page=wpstorecart-import" class="spmenu"><img src="'.plugins_url('/images/server_go.png' , __FILE__).'" /> Import/Export</a></li>';
+                                            }
 
-                                    echo '
-                                    </ul>
-                                </li>
-				
-				<li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Categories</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> Orders</a>
-                                    <ul>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> All Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=completed" class="spmenu"><img src="'.plugins_url('/images/bullet_green.png' , __FILE__).'" /> Completed Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=pending" class="spmenu"><img src="'.plugins_url('/images/bullet_orange.png' , __FILE__).'" /> Pending Orders</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=refunded" class="spmenu"><img src="'.plugins_url('/images/bullet_red.png' , __FILE__).'" /> Refunded Orders</a></li>
-                                    </ul>
-                                </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Marketing</a>
-                                    <ul>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
-                                        <li class="tab"><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /> ShareYourCart&#8482;</a></li>
-                                    </ul>
-                                </li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-affiliates" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Affiliates</a></li>
-				<li class="tab"><a href="admin.php?page=wpstorecart-statistics" class="spmenu"><img src="'.plugins_url('/images/chart_bar.png' , __FILE__).'" /> Statistics</a></li>
-				<li class="tab" style="border-right:1px solid #999;"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> Help</a>
-                                    <ul>
-                                        <li><a href="http://wpstorecart.com/forum/" class="spmenu"  target="_blank">Support Forum</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/initial-settings/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Initial Settings</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/adding-editing-products/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Products</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/widgets/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Widgets</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/coupons/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/shortcodes/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Shortcodes</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/error-messages/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/cross.png' , __FILE__).'" /> Error Messages</a></li>
-                                        <li><a href="http://wpstorecart.com/documentation/styles-designs/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Styles &amp; Design</a></li>
-                                        <li><a href="http://wpstorecart.com/faq/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> FAQ</a></li>
-                                        <li><a href="http://wpstorecart.com/help-support/" class="spmenu"  target="_blank">More Help</a></li>
+                                        echo '
+                                        </ul>
+                                    </li>
 
-                                    </ul>
-                                </li>
-			</ul>
-			<br style="clear:both;" />
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-categories" class="spmenu"><img src="'.plugins_url('/images/table.png' , __FILE__).'" /> Categories</a></li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> Orders</a>
+                                        <ul>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-orders" class="spmenu"><img src="'.plugins_url('/images/cart_go.png' , __FILE__).'" /> All Orders</a></li>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=completed" class="spmenu"><img src="'.plugins_url('/images/bullet_green.png' , __FILE__).'" /> Completed Orders</a></li>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=pending" class="spmenu"><img src="'.plugins_url('/images/bullet_orange.png' , __FILE__).'" /> Pending Orders</a></li>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-orders&show=refunded" class="spmenu"><img src="'.plugins_url('/images/bullet_red.png' , __FILE__).'" /> Refunded Orders</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Marketing</a>
+                                        <ul>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-coupon" class="spmenu"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
+                                            <li class="tab"><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /> ShareYourCart&#8482;</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-affiliates" class="spmenu"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /> Affiliates</a></li>
+                                    <li class="tab"><a href="admin.php?page=wpstorecart-statistics" class="spmenu"><img src="'.plugins_url('/images/chart_bar.png' , __FILE__).'" /> Statistics</a></li>
+                                    <li class="tab" style="border-right:1px solid #999;"><a href="http://wpstorecart.com/help-support/" target="_blank" class="spmenu"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> Help</a>
+                                        <ul>
+                                            <li><a href="http://wpstorecart.com/forum/" class="spmenu"  target="_blank">Support Forum</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/initial-settings/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /> Initial Settings</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/adding-editing-products/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/basket_add.png' , __FILE__).'" /> Products</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/widgets/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Widgets</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/coupons/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /> Coupons</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/shortcodes/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/text_padding_top.png' , __FILE__).'" /> Shortcodes</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/error-messages/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/cross.png' , __FILE__).'" /> Error Messages</a></li>
+                                            <li><a href="http://wpstorecart.com/documentation/styles-designs/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/css.png' , __FILE__).'" /> Styles &amp; Design</a></li>
+                                            <li><a href="http://wpstorecart.com/faq/" class="spmenu"  target="_blank"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /> FAQ</a></li>
+                                            <li><a href="http://wpstorecart.com/help-support/" class="spmenu"  target="_blank">More Help</a></li>
 
-			';
+                                        </ul>
+                                    </li>
+                            </ul>
+                            <br style="clear:both;" />
+
+                            ';
+                        }
                     global $testing_mode;
                     if($testing_mode==true && trim($devOptions['plugin_error'])!='') {
                         echo $this->wpscError('TESTING MODE: '.$devOptions['plugin_error'],'custom');
@@ -981,7 +1012,9 @@ if (!class_exists("wpStoreCart")) {
                                     'checkoutimagewidth' => '25',
                                     'checkoutimageheight' => '25',
                                     'checkoutlinktoproduct' => 'false',
-                                    'displaypriceonview' => 'false'
+                                    'displaypriceonview' => 'false',
+                                    'menu_style' => 'classic',
+                                    'admin_capability' => 'manage_options'
                                     );
 
             if($this->wpStoreCartSettings!=NULL) {
@@ -1012,14 +1045,14 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPage() {
 			global $wpdb;
 
-                //must check that the user has the required capability
-                if (function_exists('current_user_can') && !current_user_can('manage_options'))
+                $devOptions = $this->getAdminOptions();
+                if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) 
                 {
                   wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
                 }
 
 
-                        $devOptions = $this->getAdminOptions();
+                        
                         
                         // Added in 2.3.2, so that if we change the mainpage, all the products will change their parent to the new mainpage as well
                         if(isset($_POST['wpStoreCartmainpage']) &&  ($devOptions['mainpage']!=$_POST['wpStoreCartmainpage'])) {
@@ -1379,6 +1412,36 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['displaypriceonview'])) {
  					$devOptions['displaypriceonview'] = $wpdb->escape($_POST['displaypriceonview']);
 				}
+				if (isset($_POST['menu_style'])) {
+ 					$devOptions['menu_style'] = $wpdb->escape($_POST['menu_style']);
+				}
+				if (isset($_POST['admin_capability'])) {
+                                        global $wp_roles;
+ 					$devOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
+                                        if($devOptions['admin_capability']=='administrator') {
+                                            $wp_roles->remove_cap( 'editor', 'manage_wpstorecart' );
+                                            $wp_roles->remove_cap( 'author', 'manage_wpstorecart' );
+                                            $wp_roles->remove_cap( 'contributor', 'manage_wpstorecart' );
+                                        }
+                                        if($devOptions['admin_capability']=='editor') {
+                                            $wp_roles->add_cap( 'administrator', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'editor', 'manage_wpstorecart' );
+                                            $wp_roles->remove_cap( 'author', 'manage_wpstorecart' );
+                                            $wp_roles->remove_cap( 'contributor', 'manage_wpstorecart' );
+                                        }
+                                        if($devOptions['admin_capability']=='author') {
+                                            $wp_roles->add_cap( 'administrator', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'editor', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'author', 'manage_wpstorecart' );
+                                            $wp_roles->remove_cap( 'contributor', 'manage_wpstorecart' );
+                                        }
+                                        if($devOptions['admin_capability']=='contributor') {
+                                            $wp_roles->add_cap( 'administrator', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'editor', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'author', 'manage_wpstorecart' );
+                                            $wp_roles->add_cap( 'contributor', 'manage_wpstorecart' );
+                                        }
+				}
 
 				update_option($this->adminOptionsName, $devOptions);
 
@@ -1544,9 +1607,72 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>
 
+			</table>
+			<br style="clear:both;" /><br />
+
+                        <h2>Advanced Options</h2>
+                        <table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+
 			<tr><td><h3>Google Analytics UA: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4000" /><div class="tooltip-content" id="example-content-4000">Insert your Google Analytics UA code in order to track ecommerce conversions using Google Analytics.  Leave this blank if you\'re not using Google Analytics.  Note, this does not insert tracking code anywhere except when a customer purchases something.</div></h3></td>
 			<td class="tableDescription"><p>Insert your Google Analytics UA-XXXXX-XX code here to keep track of sales using Google Analytics.  Leave blank if you don\'t use Google Analytics.</p></td>
 			<td><input type="text" name="ga_trackingnum" value="'; _e(apply_filters('format_to_edit',$devOptions['ga_trackingnum']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+
+			<tr><td><h3>Admin Access <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-69998661234" /><div class="tooltip-content" id="example-content-69998661234">This allows you to choose who has access to the wpStoreCart administration page.  Be careful, changing this can allow more people access to your store!  </div></h3></td>
+			<td class="tableDescription"><p>Minimum role required to access the wpStoreCart admin pages. </p></td>
+			<td>
+                        <select name="admin_capability">
+';
+
+                        $theOptionsAc[0] = 'administrator';$theOptionsAcName[0] = 'Administrator';
+                        $theOptionsAc[1] = 'editor';$theOptionsAcName[1] = 'Editor &amp; above';
+                        $theOptionsAc[2] = 'author';$theOptionsAcName[2] = 'Author &amp; above';
+                        $theOptionsAc[3] = 'contributor';$theOptionsAcName[3] = 'Contributor &amp; above';
+                        $fcounter=0;
+                        foreach ($theOptionsAc as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['admin_capability']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionsAcName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Admin Menu Style <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-799934534" /><div class="tooltip-content" id="example-content-799934534">Allows you to use the classic admin panel style from wpStoreCart 1.x and 2.x, the new style of wpStoreCart 3, or a mixture of both. </div></h3></td>
+			<td class="tableDescription"><p>The admin panel menu style <strong>(Requires a refresh after changing)</strong></p></td>
+			<td>
+                        <select name="menu_style">
+';
+
+                        $theOptionzar[0] = 'classic';$theOptionzarName[0] = 'Classic 2.x';
+                        $theOptionzar[1] = 'version3';$theOptionzarName[1] = 'new 3.0 (beta)';
+                        $theOptionzar[2] = 'both';$theOptionzarName[2] = 'Use both';
+                        $fcounter=0;
+                        foreach ($theOptionzar as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['menu_style']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '
+			</select>
 			</td></tr>
 
 			</table>
@@ -2547,12 +2673,12 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageShareYourCart() {
 			global $wpdb, $user_level,$wpstorecart_version_int,$testing_mode;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}
                         require_once(WP_PLUGIN_DIR.'/wpstorecart/php/shareyourcart/shareyourcart-sdk.php');
 
-			$devOptions = $this->getAdminOptions();
+			
 
                         $this->spHeader();
 
@@ -2715,11 +2841,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageImport() {
 			global $wpdb, $user_level,$wpstorecart_version_int,$testing_mode;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}
 
-			$devOptions = $this->getAdminOptions();
+			
 			$table_name = $wpdb->prefix . "wpstorecart_products";
                         $this->spHeader();
                         echo '<h2>Import/Export</h2>';
@@ -2963,11 +3089,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageAddproducts() {
 			global $wpdb, $user_level;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			$table_name = $wpdb->prefix . "wpstorecart_products";
                         $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
 
@@ -3547,6 +3673,14 @@ if (!class_exists("wpStoreCart")) {
                         //]]>
                         </script>
 
+                        ';
+
+			echo '
+			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
+                        
+                        ';
+
+                        echo '<img src="'.plugins_url('/images/addproduct.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Add &amp; Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
                         <ul class="tabs">
                             ';
                             if($isanedit==true) {
@@ -3565,19 +3699,7 @@ if (!class_exists("wpStoreCart")) {
                         echo '
                         </ul>
 
-                          ';
-
-			echo '
-			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
-                        <div id="tab1" class="tab_content">
-                        ';
-
-                        if($isanedit != true) {
-                            echo '<h2>Add';
-                        } else {
-                            echo '<h2>Edit';
-                        }
-			echo ' a Product <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
+                        <div id="tab1" class="tab_content">';
 
 			echo '<table class="widefat">
 			<thead><tr><th>Product Attribute</th><th>Value</th><th>Description</th></tr></thead><tbody>
@@ -4087,7 +4209,7 @@ if (!class_exists("wpStoreCart")) {
 			global $wpdb, $user_level;
 
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}			
 			
@@ -4222,8 +4344,8 @@ if (!class_exists("wpStoreCart")) {
 
                         //]]>
                         </script>
-
-			<h2>Edit products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>
+                        ';
+			echo '<img src="'.plugins_url('/images/edit.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
 			
 			<form method="post" name="myForm">
 			<select name="bulkactions">
@@ -4300,11 +4422,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageOrders() {
 			global $wpdb, $user_info3;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			$table_name = $wpdb->prefix . "wpstorecart_orders";
 			
 
@@ -4739,11 +4861,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageCategories() {
 			global $wpdb, $testing_mode;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			$table_name = $wpdb->prefix . "wpstorecart_categories";
 			
 
@@ -4933,11 +5055,9 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
-			if ($isanedit != true) {
-				echo '<h2>Add a Category</h2>Add a new category by <a href="admin.php?page=wpstorecart-categories">clicking here</a>.<br />';
-			} else {
-				echo '<h2>Edit a Category</h2>Add a new category by <a href="admin.php?page=wpstorecart-categories">clicking here</a>.<br />';
-			}
+
+                        echo '<img src="'.plugins_url('/images/categories.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Categories</h2><br style="clear:both;" /><a href="admin.php?page=wpstorecart-categories">Click here</a> to start creating a new category.<br />';
+
 			
 			echo '<table class="widefat">
 			<thead><tr><th> </th><th>Category <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Thumb</th><th>Description</th><th>Page</th></tr></thead><tbody>
@@ -5046,11 +5166,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageCoupons() {
 			global $wpdb;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 
                         // Allows us to turn the coupon system off or on from this page
@@ -5354,11 +5474,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageStatistics() {
 			global $wpdb, $devOptions;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			
                         $this->spHeader();
 		
@@ -5372,12 +5492,12 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageOverview() {
 			global $wpdb;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 
 
-			$devOptions = $this->getAdminOptions();
+			
 
                         if(isset($_GET['wpscaction']) && $_GET['wpscaction']=='removecurl') {
                             $devOptions['checkcurl']='false';
@@ -5438,7 +5558,7 @@ if (!class_exists("wpStoreCart")) {
 		
 			$this->spHeader();
 
-                        echo '<div>
+                        echo '<img src="'.plugins_url('/images/overview.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;MyStore</h2><div><br style="clear:both;" />
                                 <div class="postbox-container" style="min-width:322px;max-width:322px;width:322px;">
                                     <div class="postbox">
                                         <div class="handlediv" title="_">
@@ -5600,7 +5720,7 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageAffiliates() {
 			global $wpdb;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}
 
@@ -5617,11 +5737,11 @@ if (!class_exists("wpStoreCart")) {
         function printAdminPageHelp() {
 			global $wpdb;
 
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
 			}		
 		
-			$devOptions = $this->getAdminOptions();
+			
 			
 			
 
@@ -5649,11 +5769,11 @@ if (!class_exists("wpStoreCart")) {
                         /*
                          * @todo Add the ability to specify user permission levels for dashboard.  This is not a priority, but more of an after thought
                          */
-			if ( function_exists('current_user_can') && !current_user_can('manage_options') ) { // Remove the main dashboard widget from end users
+			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				exit();
 			}
                         
-			$devOptions = $this->getAdminOptions();
+			
 			
 			$table_name = $wpdb->prefix . "wpstorecart_products";
 			$table_name_orders = $wpdb->prefix . "wpstorecart_orders";
@@ -6216,6 +6336,9 @@ if (!class_exists("wpStoreCart")) {
                                             }
                                             $output .= '</div>';
                                             break;
+                                    /**
+                                            * @todo Add a shortcode to display only 1 specific category.  Do that by specifying a primkey and altering the SQL 
+                                            */
                                     case 'categories': // Categories shortcode =========================================================
                                             $output .= '<div class="wpsc-by-category">';
                                             if($devOptions['showproductthumbnail']=='true') {
@@ -8996,22 +9119,23 @@ if (!function_exists("wpStoreCartAdminPanel")) {
         if (!isset($wpStoreCart)) {
             return;
         }
+        $devOptions = $wpStoreCart->getAdminOptions();
         if (function_exists('add_menu_page')) {
-            $mainPage = add_menu_page('wpStoreCart - Open Source WP Shopping Cart &amp; eCommerce Plugin', 'wpStoreCart', 'activate_plugins', 'wpstorecart-admin', array(&$wpStoreCart, 'printAdminPageOverview'), plugins_url('/images/controller.png' , __FILE__));
-            $settingsPage = add_submenu_page('wpstorecart-admin','Settings - wpStoreCart ', 'Settings', 'activate_plugins', 'wpstorecart-settings', array(&$wpStoreCart, 'printAdminPage'));
-            $page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'activate_plugins', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
-            $editproductpage = add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'activate_plugins', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
+            $mainPage = add_menu_page('wpStoreCart - Open Source WP Shopping Cart &amp; eCommerce Plugin', 'wpStoreCart', 'manage_wpstorecart', 'wpstorecart-admin', array(&$wpStoreCart, 'printAdminPageOverview'), plugins_url('/images/controller.png' , __FILE__));
+            $settingsPage = add_submenu_page('wpstorecart-admin','Settings - wpStoreCart ', 'Settings', 'manage_wpstorecart', 'wpstorecart-settings', array(&$wpStoreCart, 'printAdminPage'));
+            $page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'manage_wpstorecart', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
+            $editproductpage = add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'manage_wpstorecart', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
 
-            $importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'activate_plugins', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
+            $importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'manage_wpstorecart', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
             add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
 
-            $categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'activate_plugins', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
-            $ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'activate_plugins', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
-            $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'activate_plugins', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
-            $page2a = add_submenu_page('wpstorecart-admin','ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'activate_plugins', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
-            $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'activate_plugins', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
-            $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'activate_plugins', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
-            add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'activate_plugins', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
+            $categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'manage_wpstorecart', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
+            $ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'manage_wpstorecart', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
+            $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'manage_wpstorecart', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
+            $page2a = add_submenu_page('wpstorecart-admin','ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
+            $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'manage_wpstorecart', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
+            $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'manage_wpstorecart', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
+            add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'manage_wpstorecart', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
             add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$ordersPage", array(&$wpStoreCart, 'my_tooltip_script') );
@@ -9022,6 +9146,242 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
             add_action("admin_print_scripts-$affiliatespage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$editproductpage", array(&$wpStoreCart, 'my_admin_scripts') );
+
+            if(is_admin() && ($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both' || $_POST['menu_style']=='version3' || $_POST['menu_style']=='both')) {
+                if(!$_POST['menu_style']=='classic') {
+                require_once(WP_PLUGIN_DIR.'/wpstorecart/php/screen-meta-links.php');
+
+                echo add_screen_meta_link(
+                        'wpsc-statistics-link',
+                        'Statistics',
+                        'admin.php?page=wpstorecart-statistics',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-affiliates-link',
+                        'Affiliates',
+                        'admin.php?page=wpstorecart-affiliates',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-marketing-link',
+                        'Marketing',
+                        'admin.php?page=wpstorecart-coupon',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-orders-link',
+                        'Orders',
+                        'admin.php?page=wpstorecart-orders',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-categories-link',
+                        'Categories',
+                        'admin.php?page=wpstorecart-categories',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-edit-product-link',
+                        'Edit Products',
+                        'admin.php?page=wpstorecart-edit-products',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-add-product-link',
+                        'Add Product',
+                        'admin.php?page=wpstorecart-add-products',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                echo add_screen_meta_link(
+                        'wpsc-settings-link',
+                        'Settings',
+                        'admin.php?page=wpstorecart-settings',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        )
+                );
+
+                $wpstorecartpro = false;
+                if(file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
+                    if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
+                            $wpstorecartpro=true;
+                        }
+                    }
+                }
+
+                if($wpstorecartpro) {
+                    $procss = 'background: #6290be;font-weight: bold;color: #FFF;text-shadow: none;';
+                } else {
+                    $procss = 'font-weight: bold;text-shadow: none;';
+                }
+
+                echo add_screen_meta_link(
+                        'wpsc-dashboard-link',
+                        'MyStore',
+                        plugins_url('/php/wizard/wizard_begin.php' , __FILE__),
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $affiliatespage,
+                                $statsPage,
+                                $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'rel' => '#overlay',
+                                'style' => $procss,
+                        )
+                );
+
+
+                if(!$wpstorecartpro) {
+                    echo add_screen_meta_link(
+                            'wpsc-upgrade-to-pro',
+                            'Upgrade to Pro',
+                            'http://wpstorecart.com/store/business-support-wpstorecart-pro/',
+                            //An array of page/screen IDs specifying where to display the link.
+                            array(
+                                    $mainPage,
+                                    $settingsPage,
+                                    $page,
+                                    $editproductpage,
+                                    $importpage,
+                                    $categoriesPage,
+                                    $page2,
+                                    $page2a,
+                                    $affiliatespage,
+                                    $statsPage,
+                                    $ordersPage,
+                            ),
+                            //Additional attributes for the link tag.
+                            array(
+                                    'target' => '_blank',
+                                    'style' => 'background: #6290be;font-weight: bold;color: #FFF;text-shadow: none;',
+                            )
+                    );
+                }
+                }
+
+            }
+
         }
     }   
 }

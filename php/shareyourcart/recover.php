@@ -12,13 +12,15 @@ if (!function_exists('add_action'))
     require_once("../../../../../wp-config.php");
 }
 
+$devOptions = $wpStoreCart->getAdminOptions();
+
 //must check that the user has the required capability
-if (function_exists('current_user_can') && !current_user_can('manage_options'))
+if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart'))
 {
   wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
 }
 
-$devOptions = $wpStoreCart->getAdminOptions();
+
 if(isset($_GET['emailaddr'])) {
     $devOptions['wpStoreCartEmail'] = $_GET['emailaddr'];
 }
