@@ -766,9 +766,9 @@ class wpsc {
                     if ($is_checkout == true && $devOptions['enablecoupons']=='true') {
 
                             if(@isset($_SESSION['validcoupon'])) {
-                                    $output .= "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"{$_SESSION['validcoupon']}\" name=\"ccoupon\" /></div>";
+                                    $output .= "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"{$_SESSION['validcoupon']}\" name=\"ccoupon\" class=\"wpsc-coupon\" /></div>";
                             } else {
-                                    $output .= "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"\" name=\"ccoupon\" /></div>";
+                                    $output .= "<div id='wpsc-footer' colspan='3'>{$text['enter_coupon']}<input type=\"text\" value=\"\" name=\"ccoupon\" class=\"wpsc-coupon\" /></div>";
                             }
                     }
 

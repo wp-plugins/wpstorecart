@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.7
+Version: 2.3.8
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.7
+ * @version 2.3.8
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.7';
-$wpstorecart_version_int = 203007; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.8';
+$wpstorecart_version_int = 203008; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1014,7 +1014,8 @@ if (!class_exists("wpStoreCart")) {
                                     'checkoutlinktoproduct' => 'false',
                                     'displaypriceonview' => 'false',
                                     'menu_style' => 'classic',
-                                    'admin_capability' => 'manage_options'
+                                    'admin_capability' => 'manage_options',
+                                    'orders_profile' => 'display'
                                     );
 
             if($this->wpStoreCartSettings!=NULL) {
@@ -1414,6 +1415,9 @@ if (!class_exists("wpStoreCart")) {
 				}
 				if (isset($_POST['menu_style'])) {
  					$devOptions['menu_style'] = $wpdb->escape($_POST['menu_style']);
+				}
+				if (isset($_POST['orders_profile'])) {
+ 					$devOptions['orders_profile'] = $wpdb->escape($_POST['orders_profile']);
 				}
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
@@ -7085,13 +7089,100 @@ if (!class_exists("wpStoreCart")) {
                                                     }
 
                                                     if ( is_user_logged_in()  ) {
-                                                        $output .= '<br />';
-                                                        $output .= 'Username: ' . $current_user->user_login . '<br />';
-                                                        $output .= 'Email: ' . $current_user->user_email . '<br />';
-                                                        $output .= 'First name: ' . $current_user->user_firstname . '<br />';
-                                                        $output .= 'Last name: ' . $current_user->user_lastname . '<br />';
-                                                        $output .= 'Display name: ' . $current_user->display_name . '<br />';
-                                                        $output .= 'User ID: ' . $current_user->ID . '<br />';
+
+                                                        if($devOptions['orders_profile']=='editable' || $devOptions['orders_profile']== 'both') {
+                                                            /* Added 2.3.8 */
+                                                            global $current_user, $wp_roles;
+                                                            get_currentuserinfo();
+
+                                                            /* Load the registration file. */
+                                                            require_once( ABSPATH . WPINC . '/registration.php' );
+                                                            $error = false;
+
+                                                            /* If profile was saved, update profile. */
+                                                            if ( 'POST' == $_SERVER['REQUEST_METHOD'] && !empty( $_POST['action'] ) && $_POST['action'] == 'update-user' ) {
+
+                                                                /* Update user password. */
+                                                                if ( !empty($_POST['pass1'] ) && !empty( $_POST['pass2'] ) ) {
+                                                                    if ( $_POST['pass1'] == $_POST['pass2'] )
+                                                                        wp_update_user( array( 'ID' => $current_user->id, 'user_pass' => esc_attr( $_POST['pass1'] ) ) );
+                                                                    else
+                                                                        $error = __('The passwords you entered do not match.  Your password was not updated.', 'profile');
+                                                                }
+
+                                                                /* Update user information. */
+                                                                if ( !empty( $_POST['url'] ) )
+                                                                    update_usermeta( $current_user->id, 'user_url', esc_url( $_POST['url'] ) );
+                                                                if ( !empty( $_POST['email'] ) )
+                                                                    update_usermeta( $current_user->id, 'user_email', esc_attr( $_POST['email'] ) );
+                                                                if ( !empty( $_POST['first-name'] ) )
+                                                                    update_usermeta( $current_user->id, 'first_name', esc_attr( $_POST['first-name'] ) );
+                                                                if ( !empty( $_POST['last-name'] ) )
+                                                                    update_usermeta($current_user->id, 'last_name', esc_attr( $_POST['last-name'] ) );
+                                                                if ( !empty( $_POST['description'] ) )
+                                                                    update_usermeta( $current_user->id, 'description', esc_attr( $_POST['description'] ) );
+
+
+                                                                if ( $error ) {
+                                                                    $output .= '<p class="error">'.$error.'</p>';
+                                                                }
+                                                            }
+                                                        }
+
+                                                        if($devOptions['orders_profile']=='display' || $devOptions['orders_profile']== 'both') {
+                                                            $output .= '<br />';
+                                                            $output .= 'Username: ' . $current_user->user_login . '<br />';
+                                                            $output .= 'Email: ' . $current_user->user_email . '<br />';
+                                                            $output .= 'First name: ' . $current_user->user_firstname . '<br />';
+                                                            $output .= 'Last name: ' . $current_user->user_lastname . '<br />';
+                                                            $output .= 'Display name: ' . $current_user->display_name . '<br />';
+                                                            $output .= 'User ID: ' . $current_user->ID . '<br />';
+                                                        }
+
+                                                        if($devOptions['orders_profile']=='editable' || $devOptions['orders_profile']== 'both') {
+                                                            $output .= '<form method="post" id="adduser" action="'. get_permalink().'">
+                                                                <table>
+                                                                <tr class="wpsc-profile-form-username">
+                                                                    <td><label for="first-name">'; $output .= translate('First Name', 'profile'); $output .= '</label></td>
+                                                                    <td><input class="text-input" name="first-name" type="text" id="first-name" value="'. get_the_author_meta( 'user_firstname', $current_user->id ).'" /></td>
+                                                                </tr><!-- .form-username -->
+                                                                <tr class="wpsc-profile-form-username">
+                                                                    <td><label for="last-name">'; $output .= translate('Last Name', 'profile'); $output .= '</label></td>
+                                                                    <td><input class="text-input" name="last-name" type="text" id="last-name" value="'. get_the_author_meta( 'user_lastname', $current_user->id ) .'" /></td>
+                                                                </tr><!-- .form-username -->
+                                                                <tr class="wpsc-profile-form-email">
+                                                                    <td><label for="email">'; $output .= translate('E-mail *', 'profile'); $output .= '</label></td>
+                                                                    <td><input class="text-input" name="email" type="text" id="email" value="'. get_the_author_meta( 'user_email', $current_user->id ).'" /></td>
+                                                                </tr><!-- .form-email -->
+                                                                <tr class="wpsc-profile-form-url">
+                                                                    <td><label for="url">'; $output .= translate('Website', 'profile'); $output .= '</label></td>
+                                                                    <td><input class="text-input" name="url" type="text" id="url" value="'. get_the_author_meta( 'user_url', $current_user->id ).'" /></td>
+                                                                </tr><!-- .form-url -->
+                                                                <tr class="wpsc-profile-form-password">
+                                                                    <td><label for="pass1">'; $output .= translate('Password *', 'profile'); $output .= ' </label></td>
+                                                                    <td><input class="text-input" name="pass1" type="password" id="pass1" /></td>
+                                                                </tr><!-- .form-password -->
+                                                                <tr class="wpsc-profile-form-password">
+                                                                    <td><label for="pass2">'; $output .= translate('Repeat Password *', 'profile'); $output .= '</label></td>
+                                                                    <td><input class="text-input" name="pass2" type="password" id="pass2" /></td>
+                                                                </tr><!-- .form-password -->
+                                                                <tr class="wpsc-profile-form-textarea">
+                                                                    <td><label for="description">'; $output .= translate('Biographical Information', 'profile') ; $output .= '</label></td>
+                                                                    <td><textarea name="description" id="description" rows="3" cols="50">'. get_the_author_meta( 'description', $current_user->id ).'</textarea></td>
+                                                                </tr><!-- .form-textarea -->
+                                                                <tr class="wpsc-profile-form-submit">
+                                                                    <td></td><td>'. $referer.'
+                                                                    <input name="updateuser" type="submit" id="updateuser" class="submit button" value="'; $output .= translate('Update', 'profile'); ; $output .= '" />
+                                                                    '; $output .= wp_nonce_field( 'update-user' );
+                                                                    $output .= '<input name="action" type="hidden" id="action" value="update-user" />
+                                                                </td></tr><!-- .form-submit -->
+                                                                </table>
+                                                            </form><!-- #adduser -->';
+                                                        }
+
+
+
+
                                                     } else {
                                                         $output .= '<br />Email: ' . $_SESSION['wpsc_email'] . '<br />';
                                                         $output .= '

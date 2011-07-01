@@ -5,11 +5,11 @@ if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
 
-if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
+/** if (substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {
     try {
         @apache_setenv('no-gzip', '1');
     } catch (Exception $e) {
-        
+
     }
 }
 try {
@@ -17,6 +17,7 @@ try {
 } catch (Exception $e) {
 
 }
+*/
 
 if (get_magic_quotes_gpc()) {
     $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
