@@ -10,7 +10,7 @@ if ( !class_exists('wsScreenMetaLinks10') ):
 
 //Load JSON functions for PHP < 5.2
 if (!class_exists('Services_JSON')){
-	require ABSPATH . WPINC . '/class-json.php';
+	//require ABSPATH . WPINC . '/class-json.php';
 }
  
 class wsScreenMetaLinks10 {
