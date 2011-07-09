@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.0
-Stable tag: 2.3.10
+Stable tag: 2.3.11
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,12 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.11 =
+* Fixed Bug report wpsc-26
+* Fixed the Wordpress admin footer on wpStoreCart pages, to make it compatible with Wordpress 3.2
+* Changed the logo size for Wordpress 3.2
+* Admin tab buttons recolored to match Wordpress 3.2
 
 = 2.3.10 =
 * Turned testing mode and error reporting off

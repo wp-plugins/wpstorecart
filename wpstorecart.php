@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.10
+Version: 2.3.11
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.10
+ * @version 2.3.11
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.10';
-$wpstorecart_version_int = 203010; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.11';
+$wpstorecart_version_int = 203011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -753,6 +753,7 @@ if (!class_exists("wpStoreCart")) {
 
                         $devOptions = $this->getAdminOptions();
                         $logofile = 'logo.png';
+                        
                         $logofilelarge = 'logo_large.png';
                         if(file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
                             if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
@@ -762,6 +763,7 @@ if (!class_exists("wpStoreCart")) {
                                 }
                             }
                         }
+                        if(get_option('db_version') >= 18226) {$logofile = 'controller.png';}
 
                         echo'
                             
@@ -773,7 +775,7 @@ if (!class_exists("wpStoreCart")) {
 
                         </div>
                         
-			<div class="wrap">
+			<!--<div class="wrap">-->
 			<div style="padding: 0px 10px 10px 10px;">
                         ';
 
@@ -791,14 +793,21 @@ if (!class_exists("wpStoreCart")) {
 
 
                         echo ' <br style="clear:both;" />';
-                        if($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both') {
+                        if(($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both') && get_option('db_version') < 18226) {
                             echo '<script type="text/javascript">
                                 jQuery("#header-logo").css("background-image", "url('.plugins_url('/images/'.$logofile , __FILE__).')");
                                 jQuery("#header-logo").css( {width : "126px", height : "31px"} );
                                 </script>
                             ';
-
                          }
+                        if(get_option('db_version') >= 18226) {
+                            echo '<script type="text/javascript">
+                                jQuery("#header-logo").css("background-image", "url('.plugins_url('/images/'.$logofile , __FILE__).')");
+                                </script>
+                            ';
+                        }
+
+
                         if($devOptions['menu_style']=='classic' || $devOptions['menu_style']=='both') {
                             echo '
 			<div style="float:left;"><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofilelarge , __FILE__).'" alt="wpstorecart" /></a>';if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) { echo '<a href="http://wpstorecart.com/store/business-support-wpstorecart-pro/" target="_blank"><img src="'.plugins_url('/images/order_pro.png' , __FILE__).'" alt="wpstorecart" /></a><br style="clear:both;" />';}
@@ -1478,7 +1487,7 @@ if (!class_exists("wpStoreCart")) {
 			$this->spHeader();
 			$this->spSettings();
 
-			echo'<div style="width:810px;max-width:810px;">
+			echo'<div>
                             <h2> </h2>
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].'">
                             <input type="hidden" name="theCurrentTab" id="theCurrentTab" value="" />
@@ -5571,12 +5580,12 @@ if (!class_exists("wpStoreCart")) {
 			$this->spHeader();
 
                         echo '<img src="'.plugins_url('/images/overview.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;MyStore</h2><div><br style="clear:both;" />
-                                <div class="postbox-container" style="min-width:322px;max-width:322px;width:322px;">
+                                <div class="postbox-container" style="width:45%;">
                                     <div class="postbox">
                                         <div class="handlediv" title="_">
                                             <br />
                                         </div>
-                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;position:relative;top:-10px;"><span style="">Overview</span></h3>
+                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;"><span style="">Overview</span></h3>
                                         <div class="inside" style="padding:0px 5px 5px 5px;">    ';
 
                                         $this->wpstorecart_main_dashboard_widget_function();
@@ -5585,12 +5594,12 @@ if (!class_exists("wpStoreCart")) {
                                     </div>
                                 </div>
 
-                                <div class="postbox-container" style="min-width:360px;max-width:360px;width:360px;">
+                                <div class="postbox-container" style="width:45%;">
                                     <div class="postbox">
                                         <div class="handlediv" title="_">
                                             <br />
                                         </div>
-                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;position:relative;top:-10px;"><span style="">News</span></h3>
+                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;"><span style="">News</span></h3>
                                         <div class="inside" style="padding:0px 5px 5px 5px;">    ';
 			include_once(ABSPATH . WPINC . '/feed.php');
                         $rss = fetch_feed('http://wpstorecart.com/category/blog/feed/');
@@ -5619,12 +5628,12 @@ if (!class_exists("wpStoreCart")) {
                                     </div>
                                 </div>
 <br style="clear:both;" />
-                                <div class="postbox-container" style="width:85%">
+                                <div class="postbox-container" style="width:95%">
                                     <div class="postbox">
                                         <div class="handlediv" title="_">
                                             <br />
                                         </div>
-                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;position:relative;top:-10px;"><span style="">Basic Stats</span></h3>
+                                        <h3 class="hndle" style="padding:5px 5px 5px 5px;"><span style="">Basic Stats</span></h3>
                                         <div class="inside" style="padding:0px 5px 5px 5px;">    
                                         <table  class="widefat" >
                                                 <caption>This Week In Sales</caption>
@@ -5676,6 +5685,7 @@ if (!class_exists("wpStoreCart")) {
                                 </div>
                              </div>
                                         ';
+
 
 		
 		}
@@ -9267,6 +9277,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-statistics\';return true;',
                         )
                 );
 
@@ -9287,6 +9301,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-affiliates\';return true;',
                         )
                 );
 
@@ -9307,6 +9325,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-coupon\';return true;',
                         )
                 );
 
@@ -9327,6 +9349,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-orders\';return true;',
                         )
                 );
 
@@ -9347,6 +9373,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-categories\';return true;',
                         )
                 );
 
@@ -9367,6 +9397,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-edit-products\';return true;',
                         )
                 );
 
@@ -9387,6 +9421,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-add-products\';return true;',
                         )
                 );
 
@@ -9407,6 +9445,10 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-settings\';return true;',
                         )
                 );
 
@@ -9447,6 +9489,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                         array(
                                 'rel' => '#overlay',
                                 'style' => $procss,
+                                'onclick' => 'return true;',
                         )
                 );
 
@@ -9474,6 +9517,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                             array(
                                     'target' => '_blank',
                                     'style' => 'background: #6290be;font-weight: bold;color: #FFF;text-shadow: none;',
+                                    'onclick' => 'location=\'http://wpstorecart.com/store/business-support-wpstorecart-pro/\';return true;',
                             )
                     );
                 }
