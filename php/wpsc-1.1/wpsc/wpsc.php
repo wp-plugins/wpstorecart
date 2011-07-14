@@ -713,7 +713,7 @@ class wpsc {
 
                                     $totalshipping = $totalshipping + ($item['shipping'] * $item['qty']); // Added in 2.2
 
-                                    $output .= "\t\t\t\t\t\t<input type='text' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />";
+                                    $output .= "\t\t\t\t\t\t<input type='text' class='wpsc-checkout-qty' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />";
                                     if($devOptions['checkoutimages']=='true' && $is_checkout==true) {
                                         $output .= "<img class=\"wpsc-checkout-thumbnail\" src=\"{$item['img']}\" alt=\"".htmlentities($item['name'])."\" style=\"width:{$devOptions['checkoutimagewidth']}px;max-width:{$devOptions['checkoutimagewidth']}px;height:{$devOptions['checkoutimageheight']}px;max-height:{$devOptions['checkoutimageheight']}px;\" />";
                                     }
@@ -924,6 +924,20 @@ class wpsc {
                                 $output .= "\t\t\t<input type='hidden' id='wpsc-checkout-page' name='wpsc_checkout_page' value='" . $protocol . $_SERVER['HTTP_HOST'] . $servrequest_uri . "' />\n";
                                 $output .= '<input type="hidden" name="paymentGateway" id="paymentGateway" value="" />';
 
+                                if($devOptions['allowqbms']=='true' && $isLoggedIn == true) {
+
+                                    $output .= '<table id="wpsc-creditcard-form">
+                                        <tr><td>'.$text['cc_name'].'</td><td><input type="text" name="cc_name_input" id="cc_name_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_number'].'</td><td><input type="text" name="cc_number_input" id="cc_number_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_cvv'].'</td><td><input type="text" name="cc_cvv_input" id="cc_cvv_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_expires'].'</td><td><input type="text" name="cc_expires_input" id="cc_expires_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_address'].'</td><td><input type="text" name="cc_address_input" id="cc_address_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_postalcode'].'</td><td><input type="text" name="cc_postalcode_input" id="cc_postalcode_input" value="" /></td></tr>
+                                        <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-qbmscheckout" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>
+                                    </table>';
+
+                                }
+
 
                                     if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
@@ -954,7 +968,8 @@ class wpsc {
                                                     $output .= '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-libertyreservecheckout" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
                                             }
                                     }
-                                
+
+                             
 
                                     if($shipping_needs_calculation==true  && $devOptions['storetype']!='Digital Goods Only') {
                                         $output .= '  <script type="text/javascript">
@@ -964,6 +979,7 @@ class wpsc {
                                                     jQuery(".wpsc-authorizenetcheckout").hide();
                                                     jQuery(".wpsc-2checkoutcheckout").hide();
                                                     jQuery(".wpsc-libertyreservecheckout").hide();
+                                                    jQuery(".wpsc-qbmscheckout").hide();
                                                 /* ]]> */
                                                 </script>
                                             ';

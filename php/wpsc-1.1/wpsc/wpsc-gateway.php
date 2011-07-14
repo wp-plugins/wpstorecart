@@ -571,6 +571,11 @@ else
                     include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
                 }
 
+                // QBMS payment
+                if($paymentGateway == 'qbms') {
+
+                }
+
                 if($paymentGateway == 'paypal') {
                     // PAYPAL COUNT STARTS AT ONE INSTEAD OF ZERO
                     // Include the paypal library

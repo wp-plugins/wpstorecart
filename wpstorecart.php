@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.11
+Version: 2.3.12
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.11
+ * @version 2.3.12
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.11';
-$wpstorecart_version_int = 203011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.12';
+$wpstorecart_version_int = 203012; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1025,7 +1025,16 @@ if (!class_exists("wpStoreCart")) {
                                     'menu_style' => 'classic',
                                     'admin_capability' => 'manage_options',
                                     'orders_profile' => 'display',
-                                    'allowqbms' => 'false'
+                                    'allowqbms' => 'false',
+                                    'qbms_ticket' => '',
+                                    'qbms_login' => '',
+                                    'qbms_testingmode' => 'false',
+                                    'cc_name' => 'Full name on card',
+                                    'cc_number' => 'Credit Card #',
+                                    'cc_expires' => 'Expires',
+                                    'cc_address' => 'Address of Credit Card',
+                                    'cc_postalcode' => 'Zipcode of Credit Card',
+                                    'cc_cvv' => 'CVV'
                                     );
 
             if($this->wpStoreCartSettings!=NULL) {
@@ -1379,6 +1388,16 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['allowqbms'])) {
  					$devOptions['allowqbms'] = $wpdb->escape($_POST['allowqbms']);
 				}
+				if (isset($_POST['qbms_ticket'])) {
+ 					$devOptions['qbms_ticket'] = $wpdb->escape($_POST['qbms_ticket']);
+				}
+				if (isset($_POST['qbms_login'])) {
+ 					$devOptions['qbms_login'] = $wpdb->escape($_POST['qbms_login']);
+				}
+				if (isset($_POST['qbms_testingmode'])) {
+ 					$devOptions['qbms_testingmode'] = $wpdb->escape($_POST['qbms_testingmode']);
+				}
+
 				if (isset($_POST['libertyreserveaccount'])) {
  					$devOptions['libertyreserveaccount'] = $wpdb->escape($_POST['libertyreserveaccount']);
 				}
@@ -1431,6 +1450,25 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['orders_profile'])) {
  					$devOptions['orders_profile'] = $wpdb->escape($_POST['orders_profile']);
 				}
+				if (isset($_POST['cc_name'])) {
+ 					$devOptions['cc_name'] = $wpdb->escape($_POST['cc_name']);
+				}
+				if (isset($_POST['cc_number'])) {
+ 					$devOptions['cc_number'] = $wpdb->escape($_POST['cc_number']);
+				}
+				if (isset($_POST['cc_expires'])) {
+ 					$devOptions['cc_expires'] = $wpdb->escape($_POST['cc_expires']);
+				}
+				if (isset($_POST['cc_address'])) {
+ 					$devOptions['cc_address'] = $wpdb->escape($_POST['cc_address']);
+				}
+				if (isset($_POST['cc_postalcode'])) {
+ 					$devOptions['cc_postalcode'] = $wpdb->escape($_POST['cc_postalcode']);
+				}
+				if (isset($_POST['cc_cvv'])) {
+ 					$devOptions['cc_cvv'] = $wpdb->escape($_POST['cc_cvv']);
+				}
+                                
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
  					$devOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
@@ -2061,6 +2099,43 @@ if (!class_exists("wpStoreCart")) {
 			</td></tr>
 
 			</table>
+			<br style="clear:both;" /><br />
+
+                        <h2>My Orders &amp; Downloads Page</h2>
+              			';
+
+			echo '<table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
+
+                        echo '
+
+			<tr><td><h3>Profile Editable? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-69998661234555" /><div class="tooltip-content" id="example-content-69998661234555">This allows you to choose who whether or not the profile is editable, static, or shows both the static information as well as an editable version.</div></h3></td>
+			<td class="tableDescription"><p>How to display profile information </p></td>
+			<td>
+                        <select name="orders_profile">
+';
+
+                        $theOptionsAcc[0] = 'editable';$theOptionsAccName[0] = 'Show editable profile';
+                        $theOptionsAcc[1] = 'display';$theOptionsAccName[1] = 'Show profile information';
+                        $theOptionsAcc[2] = 'both';$theOptionsAccName[2] = 'Show both';
+                        $fcounter=0;
+                        foreach ($theOptionsAcc as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['orders_profile']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionsAccName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+                        </table>
 
                         </div>
                         <div id="tab6" class="tab_content">
@@ -2433,6 +2508,48 @@ if (!class_exists("wpStoreCart")) {
                             <tr><td><h3>Checkout Liberty Reserve Button</h3></td>
                             <td class="tableDescription"><p>Default: <i>Checkout with Liberty Reserve</i></p></td>
                             <td><input type="text" name="checkout_libertyreserve_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_libertyreserve_button']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Full name on card</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Full name on card</i></p></td>
+                            <td><input type="text" name="cc_name" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_name']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Credit Card #</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Credit Card #</i></p></td>
+                            <td><input type="text" name="cc_number" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_number']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Expires</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Expires</i></p></td>
+                            <td><input type="text" name="cc_expires" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_expires']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Address of Credit Card</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Address of Credit Card</i></p></td>
+                            <td><input type="text" name="cc_address" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_address']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Zipcode of Credit Card</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Zipcode of Credit Card</i></p></td>
+                            <td><input type="text" name="cc_postalcode" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_postalcode']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>CVV</h3></td>
+                            <td class="tableDescription"><p>Default: <i>CVV</i></p></td>
+                            <td><input type="text" name="cc_cvv" value="'; _e(apply_filters('format_to_edit',$devOptions['cc_cvv']), 'wpStoreCart'); echo'" />
                             </td></tr>
                             ';
 
@@ -6929,7 +7046,7 @@ if (!class_exists("wpStoreCart")) {
                                                                                 <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
                                                                                 <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
                                                                                 <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
-                                                                                <input type="hidden" id="my-item-img" name="my-item-img" value="'.$results[0]['thumbnail'].'" />
+                                                                                <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
                                                                                 <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
                                                                                 <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
                                                                                 <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>

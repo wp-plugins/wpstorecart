@@ -9,6 +9,7 @@
 .wpsc-2checkoutcheckout{background:transparent url('bright/2checkoutcheckout.png') top left no-repeat;}
 .wpsc-checkmoneyordercheckout{background:transparent url('bright/checkmoneyordercheckout.png') top left no-repeat;}
 .wpsc-libertyreservecheckout{background:transparent url('bright/libertyreservecheckout.png') top left no-repeat;}
+.wpsc-qbmscheckout{background:transparent url('bright/checkout.png') top left no-repeat;}
 .wpsc-product-img {float:left;margin:10px 10px 10px 10px; border:1px solid #555;}
 .wpsc-button:hover {opacity:0.7;}
 .wpsc-hide {display:inline;}
@@ -17,4 +18,5 @@
 .wpsc-product-info {list-style:none;}
 .wpsc-product-info li {text-indent:12px;}
 .wpscerror {display:block;background-color:#ff0000;color:#000000;margin:5px 5px 5px 5px;padding:5px 5px 5px 5px;border:1px #000000 solid;}
+#cc_cvv_input {max-width:30px;width:30px;}
 /* END wpStoreCart */

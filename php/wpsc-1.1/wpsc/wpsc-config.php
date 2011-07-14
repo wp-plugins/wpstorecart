@@ -77,6 +77,15 @@ if (isset($wpStoreCart)) {
         @$wpsc['text']['checkout_2checkout_button']	= $devOptions['checkout_2checkout_button'];
         @$wpsc['text']['checkout_checkmoneyorder_button']	= $devOptions['checkout_checkmoneyorder_button'];
         @$wpsc['text']['checkout_libertyreserve_button']	= $devOptions['checkout_libertyreserve_button'];
+
+        @$wpsc['text']['cc_name']	= $devOptions['cc_name'];
+        @$wpsc['text']['cc_number']	= $devOptions['cc_number'];
+        @$wpsc['text']['cc_expires']	= $devOptions['cc_expires'];
+        @$wpsc['text']['cc_address']	= $devOptions['cc_address'];
+        @$wpsc['text']['cc_postalcode']	= $devOptions['cc_postalcode'];
+        @$wpsc['text']['cc_cvv']	= $devOptions['cc_cvv'];
+
+
 	$wpsc['text']['remove_link']				= $devOptions['remove_link'];		// remove
 	$wpsc['text']['empty_button']				= $devOptions['empty_button'];		// empty
 	$wpsc['text']['empty_message']				= $devOptions['empty_message'];		// Your cart is empty!

@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
-Tested up to: 3.2.0
-Stable tag: 2.3.11
+Tested up to: 3.2.1
+Stable tag: 2.3.12
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -80,6 +80,11 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.12 =
+* User profiles are now optionally editable from the My Orders & Downloads page. Configure this at wpStoreCart > Settings > Display > My Orders & Downloads Page > Profile Editable?
+* Fixed bug wpsc-40 : http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-40
+* Fixed the Display settings tab, as it was incorrectly labeled Products since 2.3.11
 
 = 2.3.11 =
 * Fixed Bug report wpsc-26
