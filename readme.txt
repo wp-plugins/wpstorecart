@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.3.12
+Stable tag: 2.3.13
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -12,6 +12,9 @@ The next generation of Wordpress ecommerce.  Easy to use & fully customizable, i
 
 [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") wpStoreCart is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
+
+See what people are saying:
+[youtube http://www.youtube.com/watch?v=j0qJS7zEGPM&hd=1]
 
 **Hightlighted Features:**
 
@@ -80,6 +83,9 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.13 =
+* Updated the readme.txt file
 
 = 2.3.12 =
 * User profiles are now optionally editable from the My Orders & Downloads page. Configure this at wpStoreCart > Settings > Display > My Orders & Downloads Page > Profile Editable?
