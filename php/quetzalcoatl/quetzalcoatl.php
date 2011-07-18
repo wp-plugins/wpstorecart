@@ -77,15 +77,5 @@ class quetzalcoatl {
 
 }
 
-if(!class_exists('q_ecommerce')) {
-    /**
-     * q_ecommerce class
-     *
-     * Not everyone can easily remember quetzalcoatl, so this wrapper class was created.
-     */
-    class q_ecommerce extends quetzalcoatl {
-        
-    }
-}
 
 ?>

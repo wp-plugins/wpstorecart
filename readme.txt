@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.3.13
+Stable tag: 2.3.14
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,14 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.14 =
+* Added the ability to determine the order in which the quantity, pic, name, price, & remove are displayed on the checkout page & widget wpStoreCart > Settings > Display > Checkout Page > Field Order
+* Added the ability to switch between a new table based checkout or the original DIV based checkout wpStoreCart > Settings > Display > Checkout Page > Checkout XHTML Type
+* Icky.  Used a few inline styles on the registration/checkout process.  You can turn this off from wpStoreCart > Settings > Display > Checkout Page > Disable Inline Styles? set to Yes
+* jQuery UI Theme setting in wpStoreCart > Settings > Display > has been depreciated. If you want jQuery UI styles, then use a plugin dedicated to that. jQuery UI CSS markup is still present in wpStoreCart
+* Fixed a bug which caused the product title to be displayed on the main page, even when it was set to Off
+* Added new shortcode options orderby and ordertype, see the shortcode documentation for full details
 
 = 2.3.13 =
 * Updated the readme.txt file

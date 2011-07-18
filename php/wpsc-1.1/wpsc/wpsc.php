@@ -622,6 +622,11 @@ class wpsc {
                                 }
                             }
 
+                            $disable_inline_styles = ' style="float:left;"';
+                            if($devOptions['disable_inline_styles']=='true') {
+                                $disable_inline_styles = '';
+                            }
+
                             $output .= '
                             <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">
                                 <br /><strong>'. $text['login'] .'</strong><br />
@@ -633,8 +638,8 @@ class wpsc {
                             <br />
                             <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
                                 <br /><strong>'. $text['register'] .'</strong><br />
-                                            <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                            <label><span>'. $text['password'] .'<ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
+                                            <label><span>'. $text['email'] .' <ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                            <label><span>'. $text['password'] .'<ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
 
                                             $wpStoreCart->show_custom_reg_fields();
 
@@ -680,6 +685,10 @@ class wpsc {
                                 $shipping_offered_by_flatrate = false;
                             }
 
+                            if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                $output .= '<table class="wpsc-checkout-table">';
+                            }
+
                             // DISPLAY LINE ITEMS
                             foreach($this->get_contents() as $item)
                                     {
@@ -713,14 +722,36 @@ class wpsc {
 
                                     $totalshipping = $totalshipping + ($item['shipping'] * $item['qty']); // Added in 2.2
 
-                                    $output .= "\t\t\t\t\t\t<input type='text' class='wpsc-checkout-qty' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />";
-                                    if($devOptions['checkoutimages']=='true' && $is_checkout==true) {
-                                        $output .= "<img class=\"wpsc-checkout-thumbnail\" src=\"{$item['img']}\" alt=\"".htmlentities($item['name'])."\" style=\"width:{$devOptions['checkoutimagewidth']}px;max-width:{$devOptions['checkoutimagewidth']}px;height:{$devOptions['checkoutimageheight']}px;max-height:{$devOptions['checkoutimageheight']}px;\" />";
-                                    }
-                                    $output .= "\n";
+                                    $output_qty = '';
+                                    $output_pic = '';
+                                    $output_name = '';
+                                    $output_price = '';
+                                    $output_remove = '';
 
-                                    $output .= "\t\t\t\t\t\t" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' />\n";
-                                    $output .= "\t\t\t\t\t\t<input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' />\n";
+                                    if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                        $output .= "<tr>";
+                                    }
+
+                                    // Qty
+                                    if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                        $output_qty .= "<td><input type='text' class='wpsc-checkout-qty' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' /></td>";
+                                    } else {
+                                        $output_qty .= "\t\t\t\t\t\t<input type='text' class='wpsc-checkout-qty' size='2' id='wpsc-item-id-" . $item['id'] . "' name='wpsc_item_qty[ ]' value='" . $item['qty'] . "' />";
+                                    }
+
+                                    // Img
+                                    if($devOptions['checkoutimages']=='true' && $is_checkout==true) {
+                                        if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {$output_pic .='<td>';};$output_pic .= "<img class=\"wpsc-checkout-thumbnail\" src=\"{$item['img']}\" alt=\"".htmlentities($item['name'])."\" style=\"width:{$devOptions['checkoutimagewidth']}px;max-width:{$devOptions['checkoutimagewidth']}px;height:{$devOptions['checkoutimageheight']}px;max-height:{$devOptions['checkoutimageheight']}px;\" />";if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {$output_pic .='</td>';}
+                                    }
+
+                                    // Name
+                                    if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                        $output_name .= "<td>" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' /><input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' /></td>";
+                                    } else {
+                                        $output_name .= "\n";
+                                        $output_name .= "\t\t\t\t\t\t" . $item['name'] . "<input type='hidden' name='wpsc_item_name[ ]' value='" . $item['name'] . "' />\n";
+                                        $output_name .= "\t\t\t\t\t\t<input type='hidden' name='wpsc_item_id[ ]' value='" . $item['id'] . "' />\n";
+                                    }
 
                                     if(@!isset($_SESSION)) {
                                             @session_start();
@@ -729,17 +760,55 @@ class wpsc {
                                     $finalAmount = number_format($item['subtotal'], 2);
                                     $newAmount = number_format($item['subtotal'] - $this->update_coupon($item['id']),2);
 
-
                                     if ($newAmount != $finalAmount) {
-
                                             $tempAmount = '<strike>'.number_format($item['subtotal'],2).'</strike> '. $newAmount;
                                             $finalAmount = $tempAmount;
                                     }
-                                    $output .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
-                                    $output .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
 
+                                    // Price & remove
+                                    if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                        $output_price .= "<td><span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                        $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
+                                    } else {
+
+                                        $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                        $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
+                                    }
+
+                                    if($devOptions['field_order_0']=='0') {$output.=$output_qty;}
+                                    if($devOptions['field_order_0']=='1') {$output.=$output_pic;}
+                                    if($devOptions['field_order_0']=='2') {$output.=$output_name;}
+                                    if($devOptions['field_order_0']=='3') {$output.=$output_price;}
+                                    if($devOptions['field_order_0']=='4') {$output.=$output_remove;}
+                                    if($devOptions['field_order_1']=='0') {$output.=$output_qty;}
+                                    if($devOptions['field_order_1']=='1') {$output.=$output_pic;}
+                                    if($devOptions['field_order_1']=='2') {$output.=$output_name;}
+                                    if($devOptions['field_order_1']=='3') {$output.=$output_price;}
+                                    if($devOptions['field_order_1']=='4') {$output.=$output_remove;}
+                                    if($devOptions['field_order_2']=='0') {$output.=$output_qty;}
+                                    if($devOptions['field_order_2']=='1') {$output.=$output_pic;}
+                                    if($devOptions['field_order_2']=='2') {$output.=$output_name;}
+                                    if($devOptions['field_order_2']=='3') {$output.=$output_price;}
+                                    if($devOptions['field_order_2']=='4') {$output.=$output_remove;}
+                                    if($devOptions['field_order_3']=='0') {$output.=$output_qty;}
+                                    if($devOptions['field_order_3']=='1') {$output.=$output_pic;}
+                                    if($devOptions['field_order_3']=='2') {$output.=$output_name;}
+                                    if($devOptions['field_order_3']=='3') {$output.=$output_price;}
+                                    if($devOptions['field_order_3']=='4') {$output.=$output_remove;}
+                                    if($devOptions['field_order_4']=='0') {$output.=$output_qty;}
+                                    if($devOptions['field_order_4']=='1') {$output.=$output_pic;}
+                                    if($devOptions['field_order_4']=='2') {$output.=$output_name;}
+                                    if($devOptions['field_order_4']=='3') {$output.=$output_price;}
+                                    if($devOptions['field_order_4']=='4') {$output.=$output_remove;}
+
+                                    if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                        $output .= "</tr>";
+                                    }
                                     }
                                     $cart_is_empty = false;
+                                if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
+                                    $output .= '</table>';
+                                }
                             }
 
                     // THE CART IS EMPTY

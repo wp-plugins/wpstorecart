@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.13
+Version: 2.3.14
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.13
+ * @version 2.3.14
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.13';
-$wpstorecart_version_int = 203013; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.14';
+$wpstorecart_version_int = 203014; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1034,7 +1034,14 @@ if (!class_exists("wpStoreCart")) {
                                     'cc_expires' => 'Expires',
                                     'cc_address' => 'Address of Credit Card',
                                     'cc_postalcode' => 'Zipcode of Credit Card',
-                                    'cc_cvv' => 'CVV'
+                                    'cc_cvv' => 'CVV',
+                                    'checkout_xhtml_type' => 'div',
+                                    'disable_inline_styles' => 'false',
+                                    'field_order_0' => '0',
+                                    'field_order_1' => '1',
+                                    'field_order_2' => '2',
+                                    'field_order_3' => '3',
+                                    'field_order_4' => '4'
                                     );
 
             if($this->wpStoreCartSettings!=NULL) {
@@ -1468,7 +1475,28 @@ if (!class_exists("wpStoreCart")) {
 				if (isset($_POST['cc_cvv'])) {
  					$devOptions['cc_cvv'] = $wpdb->escape($_POST['cc_cvv']);
 				}
-                                
+				if (isset($_POST['checkout_xhtml_type'])) {
+ 					$devOptions['checkout_xhtml_type'] = $wpdb->escape($_POST['checkout_xhtml_type']);
+				}
+				if (isset($_POST['disable_inline_styles'])) {
+ 					$devOptions['disable_inline_styles'] = $wpdb->escape($_POST['disable_inline_styles']);
+				}
+				if (isset($_POST['field_order_0'])) {
+ 					$devOptions['field_order_0'] = $wpdb->escape($_POST['field_order_0']);
+				}
+				if (isset($_POST['field_order_1'])) {
+ 					$devOptions['field_order_1'] = $wpdb->escape($_POST['field_order_1']);
+				}
+				if (isset($_POST['field_order_2'])) {
+ 					$devOptions['field_order_2'] = $wpdb->escape($_POST['field_order_2']);
+				}
+				if (isset($_POST['field_order_3'])) {
+ 					$devOptions['field_order_3'] = $wpdb->escape($_POST['field_order_3']);
+				}
+				if (isset($_POST['field_order_4'])) {
+ 					$devOptions['field_order_4'] = $wpdb->escape($_POST['field_order_4']);
+				}
+
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
  					$devOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
@@ -1805,42 +1833,11 @@ if (!class_exists("wpStoreCart")) {
 			<td><input type="text" name="itemsperpage" value="'; _e(apply_filters('format_to_edit',$devOptions['itemsperpage']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
-			<tr><td><h3>jQuery UI Theme <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
+			<tr style="display:none;"><td><h3>jQuery UI Theme <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
 			<td class="tableDescription"><p>jQuery UI Theme</p></td>
 			<td>
                         <select name="wpscjQueryUITheme">
-			 <option value=""></option>';
-
-                        $olddir = getcwd();
-                        $dir = WP_PLUGIN_DIR .'/wpstorecart/jqueryui/css/';
-                        chdir($dir);
-                        $dir = getcwd();
-
-                        $dh  = opendir($dir);
-                        $icounter = 0;
-                        while (false !== ($filename2 = readdir($dh))) {
-                                $files2[] = $filename2;
-                                $icounter++;
-                        }
-                        $rcounter = 0;
-
-                        while ($rcounter != $icounter) {
-                            if (filetype($dir .'/'. $files2[$rcounter])== 'dir' && $files2[$rcounter]!='.' && $files2[$rcounter]!='..') {
-				$option = '<option value="'.$files2[$rcounter].'"';
-				if($files2[$rcounter] == $devOptions['wpscjQueryUITheme']) {
-					$option .= ' selected="selected"';
-				}
-				$option .='>';
-				$option .= $files2[$rcounter];
-				$option .= '</option>';
-				echo $option;
-                            }
-                            $rcounter++;
-                        }
-
-                        chdir($olddir);
-                        $option = NULL;
-			echo '
+			 <option value="" selected="selected"></option>
 			</select>
 			</td></tr>
 
@@ -2096,6 +2093,156 @@ if (!class_exists("wpStoreCart")) {
 			<tr><td><h3>Enable Coupons &amp; display form? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-706055" /><div class="tooltip-content" id="example-content-706055">Enables coupons during checkout and displays the coupon input.</div></h3></td>
 			<td class="tableDescription"><p>Yes to enable or No to disable coupons.</p></td>
 			<td><p><label for="enablecoupons"><input type="radio" id="enablecoupons_yes" name="enablecoupons" value="true" '; if ($devOptions['enablecoupons'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablecoupons_no"><input type="radio" id="enablecoupons_no" name="enablecoupons" value="false" '; if ($devOptions['enablecoupons'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Checkout XHTML Type <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-79990000" /><div class="tooltip-content" id="example-content-79990000">From wpStoreCart 2.3.13 and below, the checkout could only be displayed using DIVs.  However, now if you want to use a TABLE instead, you can do so easily.</div></h3></td>
+			<td class="tableDescription"><p>Do you want the default DIV based markup, or a TABLE based checkout page?</p></td>
+			<td>
+                        <select name="checkout_xhtml_type">
+                        ';
+
+                        $theOptionz[0] = 'div';
+                        $theOptionz[1] = 'table';
+                        foreach ($theOptionz as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['checkout_xhtml_type']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOption;
+				$option .= '</option>';
+				echo $option;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Disable Inline Styles? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-70605655" /><div class="tooltip-content" id="example-content-70605655">Disables a few inline CSS styles, such as floating the astericks to the left of the registration fields.</div></h3></td>
+			<td class="tableDescription"><p>Yes to disable the inline CSS. Only set to Yes if you are having CSS rendering problems.</p></td>
+			<td><p><label for="disable_inline_styles"><input type="radio" id="disable_inline_styles_yes" name="disable_inline_styles" value="true" '; if ($devOptions['disable_inline_styles'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="disable_inline_styles_no"><input type="radio" id="disable_inline_styles_no" name="disable_inline_styles" value="false" '; if ($devOptions['disable_inline_styles'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			</td></tr>
+
+			<tr><td><h3>Field Order <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1170605655" /><div class="tooltip-content" id="example-content-1170605655">Determine the order in which the quantity, pic, name, price, & remove are displayed on the checkout page & widget.</div></h3></td>
+			<td class="tableDescription"><p>The order in which the quantity, pic, name, price, & remove are displayed on the checkout page & widget</p></td>
+			<td>
+                        <select name="field_order_0">
+';
+
+                        $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
+                        $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
+                        $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
+                        $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
+                        $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+                        $fcounter=0;
+                        foreach ($theOptionzarr as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['field_order_0']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarrName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '</select>
+                        <select name="field_order_1">
+';
+
+                        $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
+                        $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
+                        $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
+                        $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
+                        $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+                        $fcounter=0;
+                        foreach ($theOptionzarr as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['field_order_1']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarrName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '</select>
+                        <select name="field_order_2">
+';
+
+                        $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
+                        $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
+                        $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
+                        $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
+                        $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+                        $fcounter=0;
+                        foreach ($theOptionzarr as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['field_order_2']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarrName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '</select>
+                        <select name="field_order_3">
+';
+
+                        $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
+                        $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
+                        $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
+                        $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
+                        $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+                        $fcounter=0;
+                        foreach ($theOptionzarr as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['field_order_3']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarrName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '</select>
+                        <select name="field_order_4">
+';
+
+                        $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
+                        $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
+                        $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
+                        $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
+                        $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+                        $fcounter=0;
+                        foreach ($theOptionzarr as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['field_order_4']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOptionzarrName[$fcounter];
+				$option .= '</option>';
+				echo $option;
+                                $fcounter++;
+                        }
+
+   			echo '
+			</select>
 			</td></tr>
 
 			</table>
@@ -6315,8 +6462,22 @@ if (!class_exists("wpStoreCart")) {
                                     'usepictures' => 'false',
                                     'thecategory' => '',
                                     'displaytype' => '',
+                                    'orderby' => '',
+                                    'ordertype' => '',
                             ), $atts));
 
+                            // This allows the shortcode to override the global setting
+                            if($usetext=='false') {
+                                $devOptions['displayTitle']=='false';
+                            } else {
+                                $usetext = 'true';
+                            }
+
+                            // Formats the orderby and order type stuff
+                            if($orderby!='') {
+                                if($ordertype=='') {$ordertype = 'ASC';}
+                                $orderby = " ORDER BY `$orderby` $ordertype";
+                            }
 
                             // Adds page pagination
                             if($quantity=='unset') {
@@ -6486,7 +6647,11 @@ if (!class_exists("wpStoreCart")) {
                                                 $maxImageHeight = $devOptions['wpStoreCartheight'];
                                             }
                                             if(is_numeric($quantity) && is_numeric($thecategory)){
-                                                    $sql = "SELECT * FROM `{$table_name}` WHERE `category`={$thecategory} ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT 0, {$quantity};";
+                                                    if($orderby=='') {
+                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' LIMIT 0, {$quantity};";
+                                                    } else {
+                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' {$orderby} LIMIT 0, {$quantity};";
+                                                    }
                                                     $results = $wpdb->get_results( $sql , ARRAY_A );
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
@@ -6501,7 +6666,7 @@ if (!class_exists("wpStoreCart")) {
                                                                 if($usepictures=='true') {
                                                                         $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
-                                                                if($usetext=='true') {
+                                                                if($usetext=='true' && $devOptions['displayTitle']=='true') {
                                                                         $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
@@ -6937,22 +7102,38 @@ if (!class_exists("wpStoreCart")) {
                                             }
 
                                             if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
-                                                $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT {$startat}, {$quantity};";
+                                                if($orderby=='') {
+                                                    $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT {$startat}, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `{$table_name}` {$orderby} LIMIT {$startat}, {$quantity};";
+                                                }
                                                 $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `dateadded` DESC;");
                                             }
                                             if($devOptions['frontpageDisplays']=='List most popular products') {
-                                                $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT {$startat}, {$quantity};";
+                                                if($orderby=='') {
+                                                    $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT {$startat}, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `{$table_name}` {$orderby} LIMIT {$startat}, {$quantity};";
+                                                }
                                                  $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC;");
                                             }
                                             if($devOptions['frontpageDisplays']=='List all categories (Ascending)') {
-                                                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
+                                                if($orderby=='') {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 {$orderby} LIMIT {$startat}, {$quantity};";
+                                                }
                                                 $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC;");
                                                 $secondcss = 'wpsc-categories';
                                             } else {
                                                 $secondcss = 'wpsc-products';
                                             }
                                             if($devOptions['frontpageDisplays']=='List all categories') {
-                                                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+                                                if($orderby=='') {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 {$orderby} LIMIT {$startat}, {$quantity};";
+                                                }
                                                 $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC;");
                                                 $secondcss = 'wpsc-categories';
                                             } else {
@@ -6997,7 +7178,7 @@ if (!class_exists("wpStoreCart")) {
                                                                 if($usepictures=='true' || $result['thumbnail']!='' ) {
                                                                         $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
-                                                                if($usetext=='true') {
+                                                                if($usetext=='true' && $devOptions['displayTitle']=='true') {
                                                                         $output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
@@ -7020,7 +7201,7 @@ if (!class_exists("wpStoreCart")) {
                                                                 if($usepictures=='true') {
                                                                         $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
-                                                                if($usetext=='true') {
+                                                                if($usetext=='true' && $devOptions['displayTitle']=='true') {
                                                                         $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
