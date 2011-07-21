@@ -4,13 +4,13 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.3.14
+Stable tag: 2.3.15
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
 == Description ==
 
-[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") wpStoreCart is a free, open source, and full featured e-commerce platform built atop of Wordpress.
+[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
 
 See what people are saying:
@@ -83,6 +83,13 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.15 =
+* New wpStoreCart admin panel interface finished and made default
+* Fixed a bug with the wpStoreCart 3 beta menu system disappearing when updating any setting
+* Added more PHPDOC blocks to whip this code base into order before the big revisions really begin
+* Added /wpstorecart/php/class.shipping.php which allows UPS shipping quotes without needing to signup to their process
+* Removed the jqueryui folder from the plugin
 
 = 2.3.14 =
 * Added the ability to determine the order in which the quantity, pic, name, price, & remove are displayed on the checkout page & widget wpStoreCart > Settings > Display > Checkout Page > Field Order

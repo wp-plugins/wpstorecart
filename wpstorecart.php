@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.14
+Version: 2.3.15
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.14
+ * @version 2.3.15
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.14';
-$wpstorecart_version_int = 203014; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.15';
+$wpstorecart_version_int = 203015; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -617,7 +617,16 @@ if (!class_exists("wpStoreCart")) {
 		function  init() {
                     $this->getAdminOptions();
                 }
-		
+
+                /**
+                 *
+                 * Checks to see if a column exists in a mysql table, if not, it creates it
+                 *
+                 * @global object $wpdb
+                 * @param <type> $db
+                 * @param <type> $column
+                 * @param <type> $column_attr
+                 */
 		function add_column_if_not_exist($db, $column, $column_attr = "VARCHAR( 255 ) NULL" ){
 			global $wpdb;
 			$exists = false;
@@ -1022,7 +1031,7 @@ if (!class_exists("wpStoreCart")) {
                                     'checkoutimageheight' => '25',
                                     'checkoutlinktoproduct' => 'false',
                                     'displaypriceonview' => 'false',
-                                    'menu_style' => 'classic',
+                                    'menu_style' => 'version3',
                                     'admin_capability' => 'manage_options',
                                     'orders_profile' => 'display',
                                     'allowqbms' => 'false',
@@ -1044,8 +1053,10 @@ if (!class_exists("wpStoreCart")) {
                                     'field_order_4' => '4'
                                     );
 
+            
             if($this->wpStoreCartSettings!=NULL) {
                 $devOptions = $this->wpStoreCartSettings;
+                $devOptions['menu_style']='version3';
             } else {
                 $devOptions = get_option($this->adminOptionsName);
             }
@@ -1063,12 +1074,218 @@ if (!class_exists("wpStoreCart")) {
                     $apAdminOptions[$key] = $option;
                 }
             }
+            $apAdminOptions['menu_style']='version3'; // This hardcodes the new menu system as the default
             update_option($this->adminOptionsName, $apAdminOptions);
             
             return $apAdminOptions;
         }
+
+
+        /**
+         * wpstorecart_alert() Method
+         *
+         *
+         */
+        function wpstorecart_alert() {
+            global $wpdb;
+            echo '<div style="float:right;width:20%;max-width:20%;padding: 12px;border-left: 1px solid #e3e3e3;display:inline;">';
+            $logofile = 'logo.png';
+
+            $wpstorecartpro = false;
+            $logofilelarge = 'logo_large.png';
+            if(file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
+                if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
+                    if(file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
+                        $logofile = 'logo_pro.png';
+                        $logofilelarge = 'logo_pro_large.png';
+                        $wpstorecartpro = true;
+                    }
+                }
+            }
+            echo '<center><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofilelarge , __FILE__).'" alt="wpstorecart" /></a></center>';
+            
+            $devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                    exit();
+            }
+
+            $table_name = $wpdb->prefix . "wpstorecart_products";
+            $table_name_orders = $wpdb->prefix . "wpstorecart_orders";
+
+            $totalrecordssql = "SELECT COUNT(`primkey`) AS num FROM `{$table_name}`";
+            $totalrecordsres = $wpdb->get_results( $totalrecordssql , ARRAY_A );
+            if(isset($totalrecordsres)) {
+                    $totalrecords = $totalrecordsres[0]['num'];
+            } else {
+                    $totalrecords = 0;
+            }
+
+            $totalrecordssqlorder = "SELECT COUNT(`primkey`) AS num FROM `{$table_name_orders}`";
+            $totalrecordsresorder = $wpdb->get_results( $totalrecordssqlorder , ARRAY_A );
+            if(isset($totalrecordsresorder)) {
+                    $totalrecordsorder = $totalrecordsresorder[0]['num'];
+            } else {
+                    $totalrecordsorder = 0;
+            }
+
+            $totalrecordssqlordercompleted = "SELECT COUNT(`primkey`) AS num FROM `{$table_name_orders}` WHERE `orderstatus`='Completed';";
+            $totalrecordsresordercompleted = $wpdb->get_results( $totalrecordssqlordercompleted , ARRAY_A );
+            if(isset($totalrecordsresordercompleted)) {
+                    $totalrecordsordercompleted = $totalrecordsresordercompleted[0]['num'];
+            } else {
+                    $totalrecordsordercompleted = 0;
+            }
+
+            $permalink = get_permalink( $devOptions['mainpage'] );
+
+            $orderpercentage = @round($totalrecordsordercompleted / $totalrecordsorder * 100);
+
+            $startdate =date("Ymd", strtotime("30 days ago"));
+            $enddate = date("Ymd");
+
+            $theSQL = "SELECT SUM(`price`) AS `thetotal` FROM `{$table_name_orders}` WHERE `orderstatus`='Completed';";
+            $salesAllTime = $wpdb->get_results( $theSQL , ARRAY_A );
+            $allTimeGrossRevenue = 0;
+            foreach ($salesAllTime as $sat) {
+                $allTimeGrossRevenue = $sat['thetotal'];
+            }
+
+            $theSQL = "SELECT `date`, `price` FROM `{$table_name_orders}` WHERE `date` > {$startdate} AND `date` <= {$enddate} AND `orderstatus`='Completed' ORDER BY `date` DESC;";
+            $salesThisMonth = $wpdb->get_results( $theSQL , ARRAY_A );
+            $currentDay = $enddate;
+            $dayAgo = 0 ;
+            $highestNumber = 0;
+                                    $totalearned = 0;
+            while($currentDay != $startdate) {
+                $salesOnDay[$currentDay] = 0;
+                foreach($salesThisMonth as $currentSale) {
+                    if($currentDay == $currentSale['date']) {
+                        $salesOnDay[$currentDay] = $salesOnDay[$currentDay] + 1;
+                        $totalearned = $totalearned + $currentSale['price'];
+                    }
+                }
+                if($salesOnDay[$currentDay] > $highestNumber) {
+                    $highestNumber = $salesOnDay[$currentDay];
+                }
+                $dayAgo++;
+                $currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));
+
+            }
+            $dayAgo = 29 ;
+            $currentDay = $startdate;
+
+            $dailyAverage = $totalearned / 30;
+
+            // inlinebar
+            //
+            $lastrecordssql = "SELECT * FROM `{$table_name_orders}` ORDER BY `date` DESC LIMIT 0, 30";
+            $lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
+
+            echo '<ul>';
+            echo '<li>30 days: <strong><span>'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong> ('.$devOptions['currency_symbol'].number_format($dailyAverage).$devOptions['currency_symbol_right'].'/day)</li>';
+            echo '<li>All Time: <strong><span>'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
+            echo "<li><span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div></li>";
+            echo '</ul>';
+
+            if(!$wpstorecartpro) {
+            echo '<h3>More Ecommerce Tools</h3>';
+            echo '
+            <center>
+            <img src="'.plugins_url('/images/products/pro.png' , __FILE__).'" alt="wpstorecart" onclick="jQuery(\'#buypro\').submit();" style="cursor:pointer;"  />
+            <p style="font-size:10px">Includes 5+ payment gateways, affiliate program, stats, business support &amp; more.  Order now!</p>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
+            <table>
+            <tr><td><input type="hidden" name="on0" value="License">License</td></tr><tr><td><select name="os0">
+                    <option value="Single Domain">Single Domain $29.99</option>
+                    <option value="2 Domains">2 Domains $39.99</option>
+                    <option value="10 Domains">10 Domains $119.99</option>
+                    <option value="Unlimited Domains">Unlimited Domains $209.99</option>
+            </select> </td></tr>
+            </table>
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0"  alt="PayPal - The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
+            </center>';
+            
+            echo '
+            <h3>Support Our Development</h3>
+            If you have found this plugin useful, PayPal donations are always appreciated:<center>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+            <input type="hidden" name="cmd" value="_s-xclick">
+            <input type="hidden" name="hosted_button_id" value="9LWHPC2QC4F7Q">
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
+            </center>or Flattr us to help keep development going strong:<center>
+            <script type="text/javascript">
+            /* <![CDATA[ */
+                (function() {
+                    var s = document.createElement(\'script\'), t = document.getElementsByTagName(\'script\')[0];
+                    s.type = \'text/javascript\';
+                    s.async = true;
+                    s.src = \'http://api.flattr.com/js/0.6/load.js?mode=auto\';
+                    t.parentNode.insertBefore(s, t);
+                })();
+            /* ]]> */
+            </script>
+            <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wpstorecart.com"></a>
+            <noscript><a href="http://flattr.com/thing/348418/wpStoreCart" target="_blank">
+            <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
+            </center>
+            Or at the very least we\'d appreciate it if you give us a <a href="http://wordpress.org/extend/plugins/wpstorecart/">good rating at the plugin directory</a>, link to our site, blog, tweet, or post about wpStoreCart.
+            ';
+            }
+echo '
+<h3>Get Support</h3>
+<ul>
+<li> <img src="'.plugins_url('/images/help.png' , __FILE__).'" /> <a href="http://wpstorecart.com/documentation/" target="_blank">Documentation</a></li>
+<li> <img src="'.plugins_url('/images/table.png' , __FILE__).'" /> <a href="http://wpstorecart.com/forums/" target="_blank">Support Forums</a></li>
+<li> <img src="'.plugins_url('/images/bug.png' , __FILE__).'" /> <a href="http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/new/bugreport" target="_blank">Report a Bug</a></li>';
+if($wpstorecartpro) {
+    echo '<li> <img src="'.plugins_url('/images/email.png' , __FILE__).'" /> <a href="http://wpstorecart.com/support/contact-us/" target="_blank">Contact Us</a></li>';
+} else {
+    echo '<li> <img src="'.plugins_url('/images/money.png' , __FILE__).'" /> <a href="http://wpstorecart.com/support/contact-us/" target="_blank">Presale Question</a></li>';
+}
+echo '</ul>
+';
+            echo '<h3>wpStoreCart News</h3>';
+            include_once(ABSPATH . WPINC . '/feed.php');
+            $rss = fetch_feed('http://wpstorecart.com/category/blog/feed/');
+            if (!is_wp_error( $rss ) ) : // Checks that the object is created correctly
+                // Figure out how many total items there are, but limit it to 2.
+                $maxitems = $rss->get_item_quantity(5);
+
+                // Build an array of all the items, starting with element 0 (first element).
+                $rss_items = $rss->get_items(0, $maxitems);
+            endif;
+            echo '<ul>';
+                if ($maxitems == 0) {
+                    echo '<li>No items.</li>';
+                } else {
+                    // Loop through each feed item and display each item as a hyperlink.
+                    foreach ( $rss_items as $item ) {
+                        echo '<li><a target="_blank" href="'. $item->get_permalink() .'" title="Posted "'.$item->get_date('j F Y | g:i a').'">'.$item->get_title().'</a></li>';
+                    }
+                }
+            echo '</ul>';
+            echo '</div>';
+
+        }
+
+
 		
-		//Prints out the admin page ================================================================================
+		
+        /**
+         *
+         * Prints out the admin page
+         *
+         * @global object $wpdb
+         * @global <type> $wp_roles
+         * @global <type> $devOptions
+         * @global <type> $devOptions
+         */
         function printAdminPage() {
 			global $wpdb;
 
@@ -1551,9 +1768,11 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			$this->spHeader();
+                        
 			$this->spSettings();
+                        $this->wpstorecart_alert();
 
-			echo'<div>
+			echo'<div style="width:75%;max-width:75%;float:left;">
                             <h2> </h2>
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].'">
                             <input type="hidden" name="theCurrentTab" id="theCurrentTab" value="" />
@@ -1730,7 +1949,7 @@ if (!class_exists("wpStoreCart")) {
 			</select>
 			</td></tr>
 
-			<tr><td><h3>Admin Menu Style <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-799934534" /><div class="tooltip-content" id="example-content-799934534">Allows you to use the classic admin panel style from wpStoreCart 1.x and 2.x, the new style of wpStoreCart 3, or a mixture of both. </div></h3></td>
+			<tr style="display:none;"><td><h3>Admin Menu Style <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-799934534" /><div class="tooltip-content" id="example-content-799934534">Allows you to use the classic admin panel style from wpStoreCart 1.x and 2.x, the new style of wpStoreCart 3, or a mixture of both. </div></h3></td>
 			<td class="tableDescription"><p>The admin panel menu style <strong>(Requires a refresh after changing)</strong></p></td>
 			<td>
                         <select name="menu_style">
@@ -2966,8 +3185,9 @@ if (!class_exists("wpStoreCart")) {
 			
 
                         $this->spHeader();
+                        $this->wpstorecart_alert();
 
-                        echo '<div style="max-width:760px;width:760px;">';
+                        echo '<div style="width:75%;max-width:75%;float:left;">';
                         /**
                              * Process edits here
                              */
@@ -3133,7 +3353,9 @@ if (!class_exists("wpStoreCart")) {
 			
 			$table_name = $wpdb->prefix . "wpstorecart_products";
                         $this->spHeader();
-                        echo '<h2>Import/Export</h2>';
+                        $this->wpstorecart_alert();
+
+                        echo '<div style="width:75%;max-width:75%;float:left;"><h2>Import/Export</h2>';
                         if($testing_mode==true && $wpstorecart_version_int < 202000) {
                             echo '<div id="wpsc-warning" class="updated fade"><p><strong>This feature is intended for wpStoreCart 2.2 and above.  You can only access it right now because you are using Testing Mode.  Currently, this feature may be incomplete or non functional, and using this feature may destroy your data, your website, even your life!</strong></p></div>';
                         }
@@ -3361,7 +3583,7 @@ if (!class_exists("wpStoreCart")) {
                                 </div><br />
                                 <input type="hidden" name="isreal" value="true" />
                                 <input type="submit" value="Begin >" />
-                             </form>
+                             </form></div>
                              ';
 
         }
@@ -3909,6 +4131,8 @@ if (!class_exists("wpStoreCart")) {
 			';
 
 			$this->spHeader();
+                        $this->wpstorecart_alert();
+
 			
 			if($isanedit==true) { // An edit's REQUEST_URL will already have the key appended, while a new product won't
 				$codeForKeyToEdit = NULL;
@@ -3965,7 +4189,7 @@ if (!class_exists("wpStoreCart")) {
                         
                         ';
 
-                        echo '<img src="'.plugins_url('/images/addproduct.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Add &amp; Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
+                        echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/addproduct.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Add &amp; Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
                         <ul class="tabs">
                             ';
                             if($isanedit==true) {
@@ -4481,7 +4705,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
 			</form>
-        		 </div>';
+        		 </div></div>';
 		
 		}	
 		// END Prints out the Add products admin page =======================================================================		
@@ -4535,6 +4759,7 @@ if (!class_exists("wpStoreCart")) {
 			}
 
 			$this->spHeader();
+                        $this->wpstorecart_alert();
 
                        echo '
 
@@ -4630,7 +4855,7 @@ if (!class_exists("wpStoreCart")) {
                         //]]>
                         </script>
                         ';
-			echo '<img src="'.plugins_url('/images/edit.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
+			echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/edit.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
 			
 			<form method="post" name="myForm">
 			<select name="bulkactions">
@@ -4695,7 +4920,7 @@ if (!class_exists("wpStoreCart")) {
 			echo '
 			</tbody></table>
 			</form>
-			</div>
+			</div></div>
 			';
 		
 		}		
@@ -4901,9 +5126,10 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			$this->spHeader();
+                        $this->wpstorecart_alert();
 			
 			echo '
-			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
+			<div style="width:75%;max-width:75%;float:left;"><form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
 			if ($isanedit != true) {
 				echo '<h2>Add a Order</h2>';
@@ -5032,7 +5258,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit Order', 'wpStoreCart'); echo'" /></div>
 			</form>
-			</div>';	
+			';	
 			
 			echo '
 			<br style="clear:both;" /><br />
@@ -5131,7 +5357,7 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 			</tbody>
-			</table>
+			</table></div>
 			<br style="clear:both;" />';	
 		
 		}	
@@ -5336,9 +5562,10 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			$this->spHeader();
+                        $this->wpstorecart_alert();
 			
 			echo '
-			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
+			<div style="width:75%;max-width:75%;float:left;"><form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
 
                         echo '<img src="'.plugins_url('/images/categories.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Categories</h2><br style="clear:both;" /><a href="admin.php?page=wpstorecart-categories">Click here</a> to start creating a new category.<br />';
@@ -5388,7 +5615,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit Category', 'wpStoreCart'); echo'" /></div>
 			</form>
-			</div>';	
+			';	
 			
 			echo '
 			<br style="clear:both;" /><br />
@@ -5435,7 +5662,7 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 			</tbody>
-			</table>
+			</table></div>
 			<br style="clear:both;" />';	
 		
 		}	
@@ -5633,9 +5860,9 @@ if (!class_exists("wpStoreCart")) {
 			}
 			
 			$this->spHeader();
+                        $this->wpstorecart_alert();
 
-
-			
+			echo '<div style="width:75%;max-width:75%;float:left;">';
 			if ($isanedit != true) {
 				echo '<h2>Add a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
 			} else {
@@ -5708,7 +5935,7 @@ if (!class_exists("wpStoreCart")) {
 			<div class="submit">
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit Coupon', 'wpStoreCart'); echo'" /></div>
 			</form>
-			</div>';	
+			';	
 			
 			echo '
 			<br style="clear:both;" /><br />
@@ -5747,7 +5974,7 @@ if (!class_exists("wpStoreCart")) {
 			
 			echo '
 			</tbody>
-			</table>
+			</table></div>
 			<br style="clear:both;" />';	
 		
 		}	
@@ -6012,8 +6239,11 @@ if (!class_exists("wpStoreCart")) {
 
 
                         $this->spHeader();
-		
+                        $this->wpstorecart_alert();
+
+                        echo '<div style="width:75%;max-width:75%;float:left;">';
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/affiliates.php');
+                        echo '</div>';
 		
 		}
 		// ==========================================================================================================
@@ -6148,7 +6378,9 @@ if (!class_exists("wpStoreCart")) {
 		} 
 		
 		
-		
+		/**
+                 * wpStoreCart code that needs to be inserted into the header
+                 */
 		function  addHeaderCode() {
                         
 			//echo '<!-- wpStoreCart BEGIN -->';
@@ -6194,6 +6426,18 @@ if (!class_exists("wpStoreCart")) {
 			//echo '<!-- wpStoreCart END -->';
         }
 
+
+        /**
+         *
+         * wpStoreCart code that needs to be loaded into the footer
+         *
+         * @global <type> $is_checkout
+         * @global <type> $cart
+         * @global boolean $wpscCarthasBeenCalled
+         * @global <type> $wpsc
+         * @global <type> $wpsc_cart_type
+         * @return string
+         */
         function addFooterCode(){
                         global $is_checkout, $cart, $wpscCarthasBeenCalled, $wpsc, $wpsc_cart_type;
 
@@ -6253,8 +6497,14 @@ if (!class_exists("wpStoreCart")) {
                         return $output;
         }
 
-		
-		function  addContent($content = '') {
+
+        /**
+         *
+         * @param string $content
+         * @return string
+         * @todo examine if this does anything, and remove it if it doesn't. 
+         */
+        function  addContent($content = '') {
             $content .= "<p>wpStoreCart</p>";
             return $content;
         }
@@ -8588,6 +8838,14 @@ jQuery(document).ready(function($) {
             
         }
 
+        /**
+         *
+         * Creates
+         *
+         * @global object $wpdb
+         * @param <type> $contactmethods
+         * @return array
+         */
         function add_custom_contactmethod( $contactmethods ) {
             global $wpdb;
 
@@ -8986,6 +9244,15 @@ jQuery(document).ready(function($) {
 
         }
 
+
+        /**
+         *
+         * USPSParcelRate
+         *
+         * @param <type> $weight
+         * @param <type> $dest_zip
+         * @return array
+         */
         function USPSParcelRate($weight,$dest_zip) {
 
             $devOptions = $this->getAdminOptions();
@@ -9555,7 +9822,6 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             add_action("admin_print_scripts-$editproductpage", array(&$wpStoreCart, 'my_admin_scripts') );
 
             if(is_admin() && ($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both' || $_POST['menu_style']=='version3' || $_POST['menu_style']=='both')) {
-                if(!$_POST['menu_style']=='classic') {
                 require_once(WP_PLUGIN_DIR.'/wpstorecart/php/screen-meta-links.php');
 
                 echo add_screen_meta_link(
@@ -9819,7 +10085,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                             )
                     );
                 }
-                }
+                
 
             }
 
@@ -9830,7 +10096,55 @@ if (!function_exists("wpStoreCartAdminPanel")) {
  * ===============================================================================================================
  * END Initialize the admin panel
  */
- 
+
+function wpsc_list_activities($activities)
+{
+	// Create an array which we fill with out own activities.
+	$activities = array(
+		'wpsc-product-view' => array(
+			'name' => _('User viewed a product pages'),
+			'description' => _('Logs the product and user browser a page'),
+			'sensitive' => true,
+			'can_be_converted_to_post' => false,		// In this example, it can.
+		),
+		'wpsc-affiliate-view' => array(
+			'name' => _('User viewed the affiliate manager'),
+			'description' => _('Logs the user that viewed the affiliate manager'),
+			'sensitive' => true,
+			'can_be_converted_to_post' => false,		// In this example, it can.
+		),
+		'wpsc-orders-view' => array(
+			'name' => _('User viewed their orders page'),
+			'description' => _('Logs the user who browsed their orders page'),
+			'sensitive' => true,
+			'can_be_converted_to_post' => false,		// In this example, it can.
+		),
+		'wpsc-checkout' => array(
+			'name' => _('User began purchasing a product'),
+			'description' => _('Logs the user and details of the order'),
+			'sensitive' => true,
+			'can_be_converted_to_post' => false,		// In this example, it can.
+		),
+		'wpsc-download' => array(
+			'name' => _('User downloaded a product'),
+			'description' => _('Logs the user and details of the download'),
+			'sensitive' => true,
+			'can_be_converted_to_post' => false,		// In this example, it can.
+		),
+	);
+
+	// Insert our module name in all the array values.
+	// You can do this once, here, or several times manually in the above array.
+	// After inserting the plugin name, insert the activity into the main $activities array.
+	foreach( $activities as $index => $activity )
+	{
+		$activity['plugin'] = 'wpStoreCart';
+		$activities[ $index ] = $activity;
+	}
+
+	// Return the complete array.
+	return $activities;
+}
  
  /**
  * ===============================================================================================================
@@ -9912,7 +10226,7 @@ if (isset($wpStoreCart)) {
 
         //Filters
 	add_filter('the_posts', array(&$wpStoreCart, 'add_script_swfobject')); 
-
+        //add_filter('threewp_activity_monitor_list_activities','wpsc_list_activities'); // for ThreeWP Activity Monitor version 2
 
 }
  /**
