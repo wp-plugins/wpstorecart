@@ -26,15 +26,13 @@ if(@isset($wpStoreCart)) {
 
 <?php if ( is_singular() ) wp_enqueue_script( 'comment-reply' ); ?>
 
-<?php wp_head(); ?>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 	Cufon.replace('h6');
         <?php if (isset($wpStoreCart)) {  ?>
 	jQuery(document).ready(function($) { //
 
-		$('#smallcart').html('<img src="<?php bloginfo('template_directory'); ?>/img/loading.gif" width="80" height="12" alt="loading" />');
+		$('#smallcart').html('<img src="<?php echo get_template_directory_uri(); ?>/img/loading.gif" width="80" height="12" alt="loading" />');
 		var data = {
 			action: 'update_small_cart'
 		};
@@ -50,11 +48,7 @@ if(@isset($wpStoreCart)) {
 /* ]]> */	
 </script>
 
-
-<link rel="alternate" type="application/rss+xml" href="<?php bloginfo('rss2_url'); ?>" title="<?php printf( __( '%s latest posts', 'your-theme' ), esc_html( get_bloginfo('name'), 1 ) ); ?>" />
-<link rel="alternate" type="application/rss+xml" href="<?php bloginfo('comments_rss2_url') ?>" title="<?php printf( __( '%s latest comments', 'your-theme' ), esc_html( get_bloginfo('name'), 1 ) ); ?>" />
-<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
-
+<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
 
@@ -68,8 +62,7 @@ if(@isset($wpStoreCart)) {
         
         	<div id="nav-menu"><!-- Menu Start -->
 				<ul>
-					<?php if($wpscThemeOptions['display_home_link']=="true"){?><li><a href="<?php echo home_url(); ?>" title="Home Page">Home</a></li><?php } ?>
-					<?php wp_list_pages('title_li=&sort_column=menu_order&depth=1'); ?>
+                                    <?php wp_nav_menu( array( 'theme_location' => 'header-menu', 'depth' => '1' ) ); ?>
 				</ul>
 			</div> <!-- Menu End -->
             
@@ -81,15 +74,15 @@ if(@isset($wpStoreCart)) {
         
        	  <div class="cart"><!-- Cart Start -->
 			
-            	<img src="<?php bloginfo('template_directory'); ?>/img/cart.png" align="middle"  alt="" />
+            	<img src="<?php echo get_template_directory_uri(); ?>/img/cart.png" align="middle"  alt="" />
                 <span id="smallcart"><?php if(isset($wpStoreCart)) { $devOptions = $wpStoreCart->getAdminOptions(); echo $wpscThemeOptions['text_you_have'];?> <b><?php echo $cart->itemcount; ?></b> <?php echo $wpscThemeOptions['text_items_with_total_value_of'];?> <b><?php echo $devOptions['currency_symbol'] .number_format($cart->total, 2) .$devOptions['currency_symbol_right']; ?></b> <?php } ?></span>
-                <a style="padding-left:9px;" href="<?php if(isset($wpStoreCart)) {echo get_permalink( $devOptions['checkoutpage'] );}?>"><?php echo $wpscThemeOptions['text_view_cart'];?> <img src="<?php bloginfo('template_directory'); ?>/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a> 
-                <a style="padding-left:9px;" href="<?php if(isset($wpStoreCart)) {echo get_permalink( $devOptions['checkoutpage'] );}?>"><?php echo $wpscThemeOptions['text_check_out'];?> <img src="<?php bloginfo('template_directory'); ?>/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a>
+                <a style="padding-left:9px;" href="<?php if(isset($wpStoreCart)) {echo get_permalink( $devOptions['checkoutpage'] );}?>"><?php echo $wpscThemeOptions['text_view_cart'];?> <img src="<?php echo get_template_directory_uri(); ?>/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a>
+                <a style="padding-left:9px;" href="<?php if(isset($wpStoreCart)) {echo get_permalink( $devOptions['checkoutpage'] );}?>"><?php echo $wpscThemeOptions['text_check_out'];?> <img src="<?php echo get_template_directory_uri(); ?>/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a>
                 
           </div><!-- Cart End -->
           
           <div class="login"><!-- Login Start -->
-		  <img src="<?php bloginfo('template_directory'); ?>/img/user.png" style="float:left; padding-right:9px; padding-top:4px;" align="middle" alt="" />
+		  <img src="<?php echo get_template_directory_uri(); ?>/img/user.png" style="float:left; padding-right:9px; padding-top:4px;" align="middle" alt="" />
           <?php if ( !is_user_logged_in() ) { ?>
           		                
                	<form name="wploginform" action="<?php echo home_url(); ?>/wp-login.php" method="post" style="width:315px; float:left;">
@@ -98,8 +91,8 @@ if(@isset($wpStoreCart)) {
 					<input style="float:right;" type="text" name="log" id="loginusername" value="<?php echo $wpscThemeOptions['text_username']; ?>" onfocus="if(this.value == '<?php echo $wpscThemeOptions['text_username']; ?>') {this.value = '';}" onblur="if (this.value == '') {this.value = '<?php echo $wpscThemeOptions['text_username']; ?>';}"/>
 				</form> 
                 
-                <a href="<?php echo wp_login_url(); ?>?action=register"><img src="<?php bloginfo('template_directory'); ?>/img/register.jpg" style="float:right;"  alt="" /></a>
-                <img src="<?php bloginfo('template_directory'); ?>/img/login.jpg"  style="float:right; padding-right:3px; cursor:pointer;" onclick="document.wploginform.submit()"  alt="" />
+                <a href="<?php echo wp_login_url(); ?>?action=register"><img src="<?php echo get_template_directory_uri(); ?>/img/register.jpg" style="float:right;"  alt="" /></a>
+                <img src="<?php echo get_template_directory_uri(); ?>/img/login.jpg"  style="float:right; padding-right:3px; cursor:pointer;" onclick="document.wploginform.submit()"  alt="" />
 		  <?php } else { 
 					global $userdata, $wpStoreCart;
 					get_currentuserinfo();		  
@@ -120,7 +113,7 @@ if(@isset($wpStoreCart)) {
 					}
 					
 					
-					echo '<span style="position:relative;top:4px;">'.$wpscThemeOptions['text_welcome_back'].' '.$username; if($permalink != '#'){echo ' <a href="'. $permalink .'" style="padding-left:9px;">'.$wpscThemeOptions['text_my_orders'].' <img src="'; echo bloginfo('template_directory'); echo '/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a>';} echo ' <a href="'. wp_logout_url() .'" style="padding-left:9px;">'.$wpscThemeOptions['text_logout'].' <img src="'; echo bloginfo('template_directory'); echo '/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a></span>';
+					echo '<span style="position:relative;top:4px;">'.$wpscThemeOptions['text_welcome_back'].' '.$username; if($permalink != '#'){echo ' <a href="'. $permalink .'" style="padding-left:9px;">'.$wpscThemeOptions['text_my_orders'].' <img src="'; echo get_template_directory_uri(); echo '/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a>';} echo ' <a href="'. wp_logout_url() .'" style="padding-left:9px;">'.$wpscThemeOptions['text_logout'].' <img src="'; echo get_template_directory_uri(); echo '/img/blue_arrow.png" style="padding-bottom:1px;"  alt="" /></a></span>';
 		  ?>
 		  
 		  <?php } ?>

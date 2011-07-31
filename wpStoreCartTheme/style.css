@@ -4,7 +4,7 @@ Theme URI: http://wpstorecart.com/documentation/wpstorecart-theme/
 Description: A Premium open source ecommerce theme utilizing the wpStoreCart ecommerce plugin
 Author: wpStoreCart
 Author URI: http://wpstorecart.com
-Version: 1.1.1
+Version: 1.211
 Tags: two-columns,right-sidebar,fixed-width,white,light,silver,theme-options
 License: GNU General Public License v2.0
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 @charset "utf-8";
 
-body { margin:0px; background-color:#f4f4f4; background-image:url(img/bg.jpg); background-repeat:repeat-x; background-position:top; color:#686868;}
+body { margin:0px; background-color:#f4f4f4; background-image:url(img/bg.jpg); background-repeat:repeat-x; background-position:top; color:#686868;font-family:"Calibri";}
+p, h1, h2, h3, h4, h5, span {font-family:"Calibri";}
 a {color:#0f91ff; text-decoration:none; }
 a:hover {color:#2fB3ff; text-decoration:underline;}
 a img {border:none;}
@@ -59,11 +60,11 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #c_left .post-content h6 { font-size:16px; font-weight:normal; }
 #c_left .post-content blockquote { padding:0 30px; font-size:14px; line-height:18px; color:#777; }
 #c_left .post-content cite { font-style:normal; font-weight:bold; }
-#c_left .post-content cite:before { content:"�"; }
+#c_left .post-content cite:before { content:"?"; }
 #c_left .post-content pre { display:block; margin-bottom:22px; padding:10px; border:1px solid #afc4d5; background-color:#ceddea; }
 #c_left .post-content q { font-style:italic; }
-#c_left .post-content q:before { content:"�"; }
-#c_left .post-content q:after { content:"�"; }
+#c_left .post-content q:before { content:"?"; }
+#c_left .post-content q:after { content:"?"; }
 #c_left .post-content ul, .post-content ol { padding:11px 0 0 22px; }
 #c_left .post-content li { padding-bottom:11px; }
 #c_left .post-content dl { padding-bottom:22px; }
@@ -85,7 +86,7 @@ text-decoration:none; text-align:center; text-shadow:1px 1px #fff; }
 #footer .bg { width:982px; height:23px; font-family:"Arial"; font-size:11px; color:#848484; background-image:url(img/footer_bg.jpg); margin-left:9px; margin-right:9px; margin-bottom:5px; text-align:center; padding-top:9px;}
 #bottom { width:1000px; height:45px; margin:0 auto;}
 .wpsc-button {font-size:1%;font-variant:small-caps;cursor:pointer;background:transparent;text-indent:-9000px;border:0px;border:none;width:81px;height:25px;min-width:81px;min-height:25px;}
-.wpsc-checkout {background:transparent url('img/checkout.png') top left no-repeat;clear:both;margin-bottom:10px;}
+.wpsc-checkout, .wpsc-qbmscheckout {background:transparent url('img/checkout.png') top left no-repeat;clear:both;margin-bottom:10px;}
 .wpsc-addtocart {background:transparent url('img/addtocart.png') top left no-repeat;}
 .wpsc-empty {background:transparent url('img/empty.png') top left no-repeat;width:67px;min-width:67px;}
 .wpsc-update{background:transparent url('img/update.png') top left no-repeat;width:67px;min-width:67px;}

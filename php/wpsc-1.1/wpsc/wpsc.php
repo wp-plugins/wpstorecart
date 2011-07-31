@@ -829,7 +829,7 @@ class wpsc {
                     if ($is_checkout !== true) {
                         if ($button['checkout']) { $input_type = 'image'; $src = ' src="' . $button['checkout'] . '" alt="' . $text['checkout_button'] . '" title="" ';	}
 
-                        $output .= "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='ui-state-default ui-corner-all wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
+                        $output .= "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
                     }
 
                     if ($is_checkout == true && $devOptions['enablecoupons']=='true') {
@@ -967,12 +967,12 @@ class wpsc {
 
                     if(!$cart_is_empty) {
                         if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
-                        $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-update ' />\n";
+                        $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='wpsc-button wpsc-update ' />\n";
                     }
                     $output .= "<div class='wpsc-hide'>";
                     if ($is_checkout == false) {
                             if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
-                            $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='ui-state-default ui-corner-all wpsc-button wpsc-empty' />\n";
+                            $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='wpsc-button wpsc-empty' />\n";
                     }
 
                     $output .= "</div>";
@@ -1002,7 +1002,7 @@ class wpsc {
                                         <tr><td>'.$text['cc_expires'].'</td><td><input type="text" name="cc_expires_input" id="cc_expires_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_address'].'</td><td><input type="text" name="cc_address_input" id="cc_address_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_postalcode'].'</td><td><input type="text" name="cc_postalcode_input" id="cc_postalcode_input" value="" /></td></tr>
-                                        <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-qbmscheckout" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>
+                                        <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class="wpsc-button wpsc-qbmscheckout" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>
                                     </table>';
 
                                 }
@@ -1010,31 +1010,31 @@ class wpsc {
 
                                     if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class="wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_paypal_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowlibertyreserve']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class=" ui-state-default ui-corner-all wpsc-button wpsc-libertyreservecheckout" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class="wpsc-button wpsc-libertyreservecheckout" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
                                             }
                                     }
 

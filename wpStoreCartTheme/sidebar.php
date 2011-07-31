@@ -79,7 +79,7 @@
                 <div class="bottom_line"></div>				
 			
 			<?php } else { // Default sidebar if wpStoreCart is not loaded. ?>
-                            <div class="title"><?php _e('Categories'); ?></div>
+                            <div class="title"><?php _e('Categories', 'wpsc-default'); ?></div>
                             <div class="content">
                                 <ul class="list-cat">
                                     <?php wp_list_categories(); ?>
@@ -87,7 +87,7 @@
                             </div>
                             <div class="bottom_line"></div>
 
-                            <div class="title"><?php _e('Archives'); ?></div>
+                            <div class="title"><?php _e('Archives', 'wpsc-default'); ?></div>
                             <div class="content">
                                 <ul class="list-archives">
                                     <?php wp_get_archives('type=monthly'); ?>

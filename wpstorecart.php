@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.15
+Version: 2.3.16
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.15
+ * @version 2.3.16
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.15';
-$wpstorecart_version_int = 203015; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.16';
+$wpstorecart_version_int = 203016; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -243,8 +243,18 @@ if(!function_exists('copyr')) {
 }
 
 // Copy the theme if needed
-if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/index.php')) {
+if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php')) {
     @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
+} else {
+    require_once(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php');
+    global $wpsc_default_theme_version;
+    $wpsc_default_theme_old_version = $wpsc_default_theme_version;
+    require_once(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/version.php');
+    global $wpsc_default_theme_version;
+    $wpsc_default_theme_new_version = $wpsc_default_theme_version;
+    if($wpsc_default_theme_new_version > $wpsc_default_theme_old_version) {
+        @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
+    }
 }
 
 // Try and fix things for people who have magic quotes on
@@ -1774,7 +1784,7 @@ echo '</ul>
 
 			echo'<div style="width:75%;max-width:75%;float:left;">
                             <h2> </h2>
-			<form method="post" action="'. $_SERVER["REQUEST_URI"].'">
+			<form method="post" action="'. $_SERVER["REQUEST_URI"].'" name="wpscform" id="wpscform">
                             <input type="hidden" name="theCurrentTab" id="theCurrentTab" value="" />
                         <ul class="tabs">
                             <li><a href="#tab1" onclick="jQuery(\'#theCurrentTab:input\').val(\'#tab1\');"><img src="'.plugins_url('/images/buttons_general.jpg' , __FILE__).'" /></a></li>
@@ -1810,7 +1820,7 @@ echo '</ul>
 			<td><select name="wpStoreCartmainpage"> 
 			 <option value="">
 						';
-			  attribute_escape(__('Select page')); 
+			  esc_attr(__('Select page'));
 			  echo '</option>'; 
 			  
 			  $pages = get_pages(); 
@@ -1834,7 +1844,7 @@ echo '</ul>
 			<td><select name="checkoutpage"> 
 			 <option value="">
 						';
-			  attribute_escape(__('Select page')); 
+			  esc_attr(__('Select page'));
 			  echo '</option>'; 
 			  
 			  $pages = get_pages(); 
@@ -1859,7 +1869,7 @@ echo '</ul>
 			<td><select name="orderspage">
 			 <option value="">
 						';
-			  attribute_escape(__('Select page'));
+			  esc_attr(__('Select page'));
 			  echo '</option>';
 
 			  $pages = get_pages();
@@ -2049,7 +2059,7 @@ echo '</ul>
                         echo '
 			<tr><td><h3>Number of products/categories per page <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-444999" /><div class="tooltip-content" id="example-content-444999">The number of items and/or categories you want to be displayed per page.  Default is 10.</div></h3></td>
 			<td class="tableDescription"><p>The number of items to display on each page.</p></td>
-			<td><input type="text" name="itemsperpage" value="'; _e(apply_filters('format_to_edit',$devOptions['itemsperpage']), 'wpStoreCart'); echo'" />
+			<td><input type="text" name="itemsperpage" id="itemsperpage" class="validate[custom[positiveInt]]" value="'; _e(apply_filters('format_to_edit',$devOptions['itemsperpage']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
 			<tr style="display:none;"><td><h3>jQuery UI Theme <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43133" /><div class="tooltip-content" id="example-content-43133">You can style your shopping cart, products, and other wpStoreCart related elements here using jQuery UI.</div></h3></td>
@@ -2100,7 +2110,7 @@ echo '</ul>
 
 			<tr><td><h3>Max Thumb Width & Height</h3></td>
 			<td class="tableDescription"><p>All this value does is determine the max width and height of product images on product pages.</p></td>
-			<td>Width: <input type="text" name="wpStoreCartwidth" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartwidth']), 'wpStoreCart'); echo'" />  <br />Height: <input type="text" name="wpStoreCartheight" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartheight']), 'wpStoreCart'); echo'" />
+			<td>Width: <input type="text" class="validate[custom[positiveInt]]" name="wpStoreCartwidth" id="wpStoreCartwidth" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartwidth']), 'wpStoreCart'); echo'" />px  <br />Height: <input type="text" name="wpStoreCartheight" id="wpStoreCartheight" class="validate[custom[positiveInt]]" style="width: 58px;" value="'; _e(apply_filters('format_to_edit',$devOptions['wpStoreCartheight']), 'wpStoreCart'); echo'" />px
 			</td></tr>
 
 			</table>
@@ -2306,7 +2316,7 @@ echo '</ul>
 			<tr><td><h3>Display product thumbnails? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-70005512" /><div class="tooltip-content" id="example-content-70005512">Next to each product, displays the products thumbnail.</div></h3></td>
 			<td class="tableDescription"><p>If set to Yes, each product will display it\'s thumbnail.</p></td>
 			<td><p><label for="checkoutimages"><input type="radio" id="checkoutimages_yes" name="checkoutimages" value="true" '; if ($devOptions['displaytotal'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="checkoutimages_no"><input type="radio" id="checkoutimages_no" name="checkoutimages" value="false" '; if ($devOptions['checkoutimages'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
-                        Width: <input style="width:35px;" type="text" name="checkoutimagewidth" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimagewidth']), 'wpStoreCart'); echo'" />px &nbsp; &nbsp; Height: <input style="width:35px;"  type="text" name="checkoutimageheight" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimageheight']), 'wpStoreCart'); echo'" />px
+                        Width: <input style="width:35px;" class="validate[custom[positiveInt]]" type="text" name="checkoutimagewidth" id="checkoutimagewidth" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimagewidth']), 'wpStoreCart'); echo'" />px &nbsp; &nbsp; Height: <input style="width:35px;" class="validate[custom[positiveInt]]" type="text" name="checkoutimageheight" id="checkoutimageheight" value="'; _e(apply_filters('format_to_edit',$devOptions['checkoutimageheight']), 'wpStoreCart'); echo'" />px
 			</td></tr>
 
 			<tr><td><h3>Enable Coupons &amp; display form? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-706055" /><div class="tooltip-content" id="example-content-706055">Enables coupons during checkout and displays the coupon input.</div></h3></td>
@@ -3832,9 +3842,9 @@ echo '</ul>
                                             }
                                         }
 
-                                        $wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
-					$wpStoreCartproduct_introdescription = $wpdb->prepare($_POST['wpStoreCartproduct_introdescription']);
-					$wpStoreCartproduct_description = $wpdb->prepare($_POST['wpStoreCartproduct_description']);
+                                        $wpStoreCartproduct_name = $wpdb->escape($_POST['wpStoreCartproduct_name']);
+					$wpStoreCartproduct_introdescription = $wpdb->escape($_POST['wpStoreCartproduct_introdescription']);
+					$wpStoreCartproduct_description = $wpdb->escape($_POST['wpStoreCartproduct_description']);
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
 					$wpStoreCartproduct_price = $wpdb->escape($_POST['wpStoreCartproduct_price']);
 					$wpStoreCartproduct_shipping = $wpdb->escape($_POST['wpStoreCartproduct_shipping']);
@@ -3980,26 +3990,25 @@ echo '</ul>
 				}
 			}
 			
-			if (isset($_POST['addNewwpStoreCart_product']) && $isanedit == false) { // New Products
+			if ($isanedit == false) { // New Products
 			
-				if (isset($_POST['wpStoreCartproduct_name']) && isset($_POST['wpStoreCartproduct_introdescription']) && isset($_POST['wpStoreCartproduct_description']) && isset($_POST['wpStoreCartproduct_thumbnail']) && isset($_POST['wpStoreCartproduct_price']) && isset($_POST['wpStoreCartproduct_shipping']) && isset($_POST['wpStoreCartproduct_download']) && isset($_POST['wpStoreCartproduct_tags']) && isset($_POST['wpStoreCartproduct_category']) && isset($_POST['wpStoreCartproduct_inventory'])) {
-					$wpStoreCartproduct_name = $wpdb->prepare($_POST['wpStoreCartproduct_name']);
-					$wpStoreCartproduct_introdescription = $wpdb->prepare($_POST['wpStoreCartproduct_introdescription']);
-					$wpStoreCartproduct_description = $wpdb->prepare($_POST['wpStoreCartproduct_description']);
-					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
-					$wpStoreCartproduct_price = $wpdb->escape($_POST['wpStoreCartproduct_price']);
-					$wpStoreCartproduct_shipping = $wpdb->escape($_POST['wpStoreCartproduct_shipping']);
-					$wpStoreCartproduct_download = $wpdb->escape($_POST['wpStoreCartproduct_download']);	
+					$wpStoreCartproduct_name = 'Product name';
+					$wpStoreCartproduct_introdescription = '';
+					$wpStoreCartproduct_description = '';
+					$wpStoreCartproduct_thumbnail = '';
+					$wpStoreCartproduct_price = 0.00;
+					$wpStoreCartproduct_shipping = 0.00;
+					$wpStoreCartproduct_download = '';
 					$timestamp = date('Ymd');
-					$wpStoreCartproduct_tags = $wpdb->escape($_POST['wpStoreCartproduct_tags']);
-					$wpStoreCartproduct_category = $wpdb->escape($_POST['wpStoreCartproduct_category']);
-					$wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
-                                        $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
-                                        $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
-                                        $wpStoreCartproduct_weight = $wpdb->escape($_POST['wpStoreCartproduct_weight']);
-                                        $wpStoreCartproduct_length = $wpdb->escape($_POST['wpStoreCartproduct_length']);
-                                        $wpStoreCartproduct_width = $wpdb->escape($_POST['wpStoreCartproduct_width']);
-                                        $wpStoreCartproduct_height = $wpdb->escape($_POST['wpStoreCartproduct_height']);
+					$wpStoreCartproduct_tags = '';
+					$wpStoreCartproduct_category = 0;
+					$wpStoreCartproduct_inventory = 0;
+                                        $wpStoreCartproduct_useinventory = 0;
+                                        $wpStoreCartproduct_donation = 0;
+                                        $wpStoreCartproduct_weight = 0;
+                                        $wpStoreCartproduct_length = 0;
+                                        $wpStoreCartproduct_width = 0;
+                                        $wpStoreCartproduct_height = 0;
 	
 					$devOptions = $this->getAdminOptions();
 					
@@ -4055,41 +4064,14 @@ echo '</ul>
 					$lastID = $wpdb->insert_id;
 					$keytoedit = $lastID;
 
-                                        if(isset($_POST['enableproduct_display_add_to_cart_variations']) && $_POST['enableproduct_display_add_to_cart_variations']=='yes') {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'disableaddtocart', '{$lastID}');");
-                                        } else {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'disableaddtocart', '{$lastID}');");
-                                        }
-
-                                        // Shipping options are saved here
-                                        if(isset($_POST['wpsc_product_flatrateshipping']) && $_POST['wpsc_product_flatrateshipping']=='yes') {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_flatrateshipping', '{$lastID}');");
-                                        } else {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_flatrateshipping', '{$lastID}');");
-                                        }
-                                        if(isset($_POST['wpsc_product_usps']) && $_POST['wpsc_product_usps']=='yes') {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_usps', '{$lastID}');");
-                                        } else {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_usps', '{$lastID}');");
-                                        }
-                                        if(isset($_POST['wpsc_product_ups']) && $_POST['wpsc_product_ups']=='yes') {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_ups', '{$lastID}');");
-                                        } else {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_ups', '{$lastID}');");
-                                        }
-                                        if(isset($_POST['wpsc_product_fedex']) && $_POST['wpsc_product_fedex']=='yes') {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'yes', 'wpsc_product_fedex', '{$lastID}');");
-                                        } else {
-                                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, 'no', 'wpsc_product_fedex', '{$lastID}');");
-                                        }
-
-					// Now that we've inserted both the PAGE and the product, let's update and publish our post with the correct content
-					$my_post = array();
-					$my_post['ID'] = $thePostID;
-					$my_post['post_content'] = '[wpstorecart display="product" primkey="'.$lastID.'"]';
-					$my_post['post_status'] = 'publish';
-					wp_update_post( $my_post );
-
+                                       
+                                            // Now that we've inserted both the PAGE and the product, let's update and publish our post with the correct content
+                                            $my_post = array();
+                                            $my_post['ID'] = $thePostID;
+                                            $my_post['post_content'] = '[wpstorecart display="product" primkey="'.$lastID.'"]';
+                                            $my_post['post_status'] = 'draft';
+                                            wp_update_post( $my_post );
+                                            
 	
 
 					if($results===false) {
@@ -4098,18 +4080,16 @@ echo '</ul>
 						echo $wpdb->print_error();
 						echo '</strong></p></div>';							
 					} else { // If we get this far, we are still successful					
-						echo '<div class="updated"><p><strong>';
-						_e("Your product details have been saved.", "wpStoreCart");
-						echo '</strong></p></div>';	
+						echo '
+                                                <script type="text/javascript">
+                                                <!--
+                                                window.location = "'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=wpstorecart-add-products&keytoedit='.$keytoedit.'"
+                                                //-->
+                                                </script>
+                                                ';//
 					}  
 	
-				} else {
 				
-					echo '<div class="updated"><p><strong>';
-					_e("There was a problem with your form!  Did not save data.", "wpStoreCart");
-					echo '</strong></p></div>';				
-				
-				}
 
 
 			
@@ -4217,7 +4197,7 @@ echo '</ul>
 			echo '
 			<tr>
 			<td><h3>Product<br />Name: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">The name of the product.  We do not recommend stuffing this with keywords, unless you don\'t mind those keywords being repeated everytime the product is mentioned.  Instead, simply keep this as the actual name of the product.</div></h3></td>
-			<td><input type="text" name="wpStoreCartproduct_name" style="width: 80%;height:35px;font-size:22px;" value="'.$wpStoreCartproduct_name.'" /></td>
+			<td><input type="text" class="validate[required]" name="wpStoreCartproduct_name" id="wpStoreCartproduct_name" style="width: 80%;height:35px;font-size:22px;" value="'.$wpStoreCartproduct_name.'" /></td>
 			<td><div style="width:300px;">The title of the product.</div></td>
 			</tr>';			
 
@@ -4232,14 +4212,17 @@ echo '</ul>
 			echo '
 			<tr>
 			<td><h3>Description: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">Put your complete sales pitch here.  There are many techniques which can help make your product\'s sale page more effective.  At the very least, most sales pages include at least some of the features and benefits of the product, and include one or more calls to action.</div></h3></td>
-			<td><textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="width: 80%;">'.$wpStoreCartproduct_description.'</textarea>  </td>
-			<td><div style="width:300px;">You should be very detailed and include not only the backstory of the product, but also helpful information like instructions, controls, and objectives.</div></td>
+			<td><textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="width: 80%;">'.$wpStoreCartproduct_description.'</textarea><p align="right">
+                        <a class="button" onclick="if (!tinyMCE.get(\'wpStoreCartproduct_description\')) {tinyMCE.execCommand(\'mceAddControl\', false, \'wpStoreCartproduct_description\');};">Visual</a>
+                        <a class="button" onclick="if (tinyMCE.get(\'wpStoreCartproduct_description\')) {tinyMCE.execCommand(\'mceRemoveControl\', false, \'wpStoreCartproduct_description\');};">HTML</a></p>
+                        </td>
+			<td><div style="width:300px;">Your detailed description and sales pitch for the product.</div></td>
 			</tr>';			
 
 			echo '
 			<tr>
 			<td><h3>Price'; if($devOptions['storetype']!='Digital Goods Only') { echo '<br />& Shipping';} echo ': <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  You can also enter a flat rate shipping amount here, which will only be used if you do not offer other shipping options, such as FedEx or UPS.  If the shipping options are not here, that means the General Setting > Store Type is set to Digital Only.  Change that setting to restore the shipping options here.</div></h3></td>
-			<td><br /><div style=";display:block;float:left;">Price: '.$devOptions['currency_symbol'].'<input type="text" name="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].'  &nbsp; &nbsp; &nbsp; &nbsp; '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
+			<td><br /><div style=";display:block;float:left;">Price: '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].'  &nbsp; &nbsp; &nbsp; &nbsp; '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
 			<td><div style="width:300px;">The price and shipping cost of the product.</div></td>
 			</tr>';
 
@@ -4278,7 +4261,7 @@ echo '</ul>
 			 <option value="">
 						';
 			
-			attribute_escape(__('Select page')); 
+			esc_attr(__('Select page'));
 			echo '</option>'; 
 			
 			$table_name2 = $wpdb->prefix . "wpstorecart_categories";
@@ -4701,9 +4684,74 @@ echo '</ul>
                             //]]>
                             </script>
 
-                        </div> <br style="clear:both;" />
+                        </div> 
 			<div class="submit">
-			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit product', 'wpStoreCart'); echo'" /></div>
+                        ';
+
+                             $poststatus = NULL;
+                             if($isanedit == true) {
+                                 if (isset($_POST['wpscpoststatus'])) {
+                                    if($_POST['wpscpoststatus']=='publish') {
+                                        $my_post = array();
+                                        $my_post['ID'] = $result['postid'];
+                                        $my_post['post_title'] = stripslashes($wpStoreCartproduct_name);
+                                        $my_post['post_status'] = 'publish';
+                                        wp_update_post( $my_post );
+                                    }
+                                    if($_POST['wpscpoststatus']=='draft') {
+                                        $my_post = array();
+                                        $my_post['ID'] = $result['postid'];
+                                        $my_post['post_title'] = stripslashes($wpStoreCartproduct_name);
+                                        $my_post['post_status'] = 'draft';
+                                        wp_update_post( $my_post );
+                                    }
+                                    if($_POST['wpscpoststatus']=='orphan') {
+					// Create our PAGE in draft mode in order to get the POST ID
+					$my_post = array();
+					$my_post['post_title'] = stripslashes($wpStoreCartproduct_name);
+					$my_post['post_type'] = 'page';
+					$my_post['post_content'] = '[wpstorecart display="product" primkey="'.$_GET['keytoedit'].'"]';
+					$my_post['post_status'] = 'draft';
+					$my_post['post_author'] = 1;
+					$my_post['post_parent'] = $devOptions['mainpage'];
+
+					// Insert the PAGE into the WP database
+					$thePostID = wp_insert_post( $my_post );
+					if($thePostID==0) {
+						echo '<div class="updated"><p><strong>';
+						_e("ERROR 4: wpStoreCart didn't like your data and failed to create a page for it! Make sure you create a product with at least a title.", "wpStoreCart");
+						echo $wpdb->print_error();
+						echo '</strong></p></div>';
+						return false;
+					} else {
+                                            $update_sql = 'UPDATE `'. $wpdb->prefix . 'wpstorecart_products` SET `postid`='.$thePostID.' WHERE `primkey`='.$_GET['keytoedit'].';';
+                                            $wpdb->query($update_sql);
+                                            $result['postid'] = $thePostID;
+                                        }
+
+                                    }
+
+                                 }
+
+                                $product_post = get_post($result['postid'], ARRAY_A);
+                                $highlight_button = NULL;
+                                if($product_post['post_status']=='draft') {
+                                    echo 'Product is saved as a <em>draft</em>. <br />';
+                                    echo '<button class="button-primary" onclick="jQuery(\'#wpscpoststatus\').val(\'publish\');jQuery(\'#wpstorecartaddproductform\').submit();">Publish</button> ';
+                                    $poststatus = 'draft';
+                                } elseif($product_post['post_status']=='publish') {
+                                    $highlight_button = '-primary';
+                                    echo 'Product is <em>published</em>. <br />';
+                                    echo '<button class="button" onclick="jQuery(\'#wpscpoststatus\').val(\'draft\');jQuery(\'#wpstorecartaddproductform\').submit();">Save as draft...</button> ';
+                                    $poststatus = 'publish';
+                                } else {
+                                    echo 'Product is orphaned from it\'s page.  Click the "Create New Page" button to create a new page for your product, or you can continue to save the product orphaned. <br />';
+                                    echo '<button class="button-primary" onclick="jQuery(\'#wpscpoststatus\').val(\'orphan\');jQuery(\'#wpstorecartaddproductform\').submit();">Create New Page...</button> ';
+                                }
+
+                             }
+
+                            echo '<input type="hidden" name="wpscpoststatus" id="wpscpoststatus" value="'.$poststatus.'" /><input class="button'.$highlight_button.'" type="submit" name="addNewwpStoreCart_product" value="'; _e('Save product', 'wpStoreCart'); echo'" /></div>
 			</form>
         		 </div></div>';
 		
@@ -5175,7 +5223,7 @@ echo '</ul>
 			 <option value="">
 						';
 			
-			attribute_escape(__('Select page')); 
+			esc_attr(__('Select page'));
 			echo '</option>'; 
 			
 			$icounter = 0;
@@ -5216,7 +5264,7 @@ echo '</ul>
                              <option value="">
                                                     ';
 
-                            attribute_escape(__('Select product'));
+                            esc_attr(__('Select product'));
                             echo '</option>';
 
                             $table_name2 = $wpdb->prefix . "wpstorecart_products";
@@ -5583,7 +5631,7 @@ echo '</ul>
 			 <option value="">
 						';
 			
-			attribute_escape(__('Select page')); 
+			esc_attr(__('Select page'));
 			echo '</option>'; 
 			
 			$table_name2 = $wpdb->prefix . "wpstorecart_categories";
@@ -8049,6 +8097,11 @@ jQuery(document).ready(function($) {
                         wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
                         wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
                         wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jq-validation-engine-en', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
+                        wp_enqueue_script('jq-validation-engine', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
+
+			$APjavascriptQueue .= '<link rel="stylesheet" href="'.WP_PLUGIN_URL .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />';
+
                         $this->overlay_css();
 
 			$APjavascriptQueue .= '
@@ -8070,6 +8123,7 @@ jQuery(document).ready(function($) {
 			//<![CDATA[
 				jQuery(document).ready(function($) {
 					$(".tooltip-target").ezpz_tooltip();
+                                        $("#wpscform").validationEngine("attach");
 				});
 			//]]>
 			</script>
@@ -8168,12 +8222,16 @@ jQuery(document).ready(function($) {
 			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
                         wp_enqueue_script('jquery-ui-core',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-sortable',array('jquery'),'1.4');
+                        wp_enqueue_script('jq-validation-engine-en', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
+                        wp_enqueue_script('jq-validation-engine', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
 
 			if (session_id() == "") {@session_start();};
 			
 			$APjavascriptQueue = '';
 			
 			$APjavascriptQueue .= '
+                        <link rel="stylesheet" href="'.WP_PLUGIN_URL .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />
+
 			<style type="text/css">
 				.tooltip-content {
 					display: none;        /* required */
@@ -8211,6 +8269,7 @@ jQuery(document).ready(function($) {
 			//<![CDATA[
 			jQuery(document).ready(function($) {
 				$(".tooltip-target").ezpz_tooltip();
+                                $("#wpstorecartaddproductform").validationEngine("attach");
 			});
 			
 			

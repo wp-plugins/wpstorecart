@@ -1,10 +1,10 @@
-=== wpStoreCart ===
+=== wpStoreCart - Open Source Ecommerce for Wordpress ===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.3.15
+Stable tag: 2.3.16
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -34,7 +34,7 @@ See what people are saying:
 * Guest checkout
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
-* PayPal payments (more payment processors available)
+* PayPal payments (Authorize.NET, 2CheckOut, Liberty Reserve, Quickbooks available)
 * Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, and Safari 5
 * **and much, much MORE!**
 
@@ -83,6 +83,20 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.3.16 =
+* Added: Custom menu support to wpStoreCart Default theme
+* Added: Post thumbnail support added to wpStoreCart Default theme
+* Added: Can now toggle between HTML and Rich Editor in the products description
+* Added: Draft and Publish modes for products. When you click the Add Product menu, it now immediately creates a new draft product & page.
+* Added: Client side form validation added to the admin panel on Add/Edit products page.
+* Added: When a PayPal dispute or claim is settled, instead of marking the Order Status as Canceled_Reversal, it is now remarked Completed, and the order is made available to download again
+* Fixed: The edit product page now detects if your product page was deleted, and will optionally recreate a new one, or allow you to edit the product without a page associated with it
+* Fixed: Bug report wpsc-37 - http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-37
+* Fixed: Bug report wpsc-49 - http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-49
+* Fixed: Bug report wpsc-11 - http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-11
+* Fixed: Removed depreciated attribute_escape() function calls and replaced them with esc_attr()
+* Fixed: All wpStoreCart Default theme issues listed here: http://themes.trac.wordpress.org/ticket/4149
 
 = 2.3.15 =
 * New wpStoreCart admin panel interface finished and made default
@@ -401,5 +415,5 @@ Or, if you want to install manually:
 
 == Upgrade Notice ==
 
-= 2.0.8 =
-* wpStoreCart is an open source ecommerce solution for Wordpress.  In this patch, we fix a number of bugs.  It is highly recommended that all users upgrade immediately.
+= 2.3.16 =
+* Please backup your wpStoreCart Default theme before upgrading. This will over write the wpStoreCart Default theme, including any changes you did to the theme.  This is why you should only use CHILD THEMES when editing a theme.

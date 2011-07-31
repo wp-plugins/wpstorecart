@@ -3,7 +3,7 @@ global $wpstorecart_is_active, $wpscThemeOptions, $themename, $shortname, $wpdb,
 
 $themename = "wpStoreCartTheme";
 $shortname = "wpsct";
-$version = "1.1.2";
+$version = "1.212";
 
 
 
@@ -19,9 +19,19 @@ if(isset($wpStoreCart)) {
 
 // Theme support stuff here
 show_admin_bar(false); // This theme does not support the Wordpress 3.1 admin bar
-//add_theme_support( 'post-thumbnails' ); // wpStoreCartTheme supports post thumbnails
+add_theme_support( 'post-thumbnails' ); // wpStoreCartTheme supports post thumbnails
 add_theme_support('automatic-feed-links');
+add_editor_style('editor.css');
 $content_width = 680;
+
+/**
+ * Registers the custom menu
+ */
+function register_my_menus() {
+  register_nav_menus(
+    array('header-menu' => __( 'Header Menu' ) )
+  );
+}
 
 // Directory for the slider image uploads.
 if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
@@ -34,7 +44,7 @@ if(!is_dir(WP_CONTENT_DIR . '/uploads/wpstorecart/')) {
 // Let's make sure the meta table exists, if not, let's create it.  Needed for the slider
 $table_name = $wpdb->prefix . "wpstorecart_meta";
 if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-	require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	$sql = "
 	CREATE TABLE {$table_name} (
 	`primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -101,10 +111,10 @@ function wpsct_init() {
         if (!is_admin()) {
                     global $wpscThemeOptions, $wpStoreCart;
                     wp_enqueue_style( 'wpsctstylesheet',  get_bloginfo('stylesheet_url'));
-                    wp_enqueue_style( 'wpsctnivo',  get_bloginfo('stylesheet_directory'). '/nivo-slider.css');
-                    wp_enqueue_script('cufonyui', get_bloginfo('template_directory') . '/js/cufon-yui.js');
-                    wp_enqueue_script('thefont', get_bloginfo('template_directory') . '/js/'.$wpscThemeOptions['font']);
-                    wp_enqueue_script('jquerynivosp', get_bloginfo('template_directory') . '/js/jquery.nivo.slider.pack.js');
+                    wp_enqueue_style( 'wpsctnivo',  get_stylesheet_directory_uri(). '/nivo-slider.css');
+                    wp_enqueue_script('cufonyui', get_template_directory_uri() . '/js/cufon-yui.js');
+                    wp_enqueue_script('thefont', get_template_directory_uri() . '/js/'.$wpscThemeOptions['font']);
+                    wp_enqueue_script('jquerynivosp', get_template_directory_uri() . '/js/jquery.nivo.slider.pack.js');
                     if($wpscThemeOptions['use_product_preview']=='true' && isset($wpStoreCart)) {
                             wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
                     }
@@ -131,8 +141,6 @@ function update_small_cart_callback() {
 		exit();
 	}
 
-	$devOptions = $wpStoreCart->getAdminOptions();
-
 	echo $wpscThemeOptions['text_you_have']. ' <b>'. $cart->itemcount .'</b> '.$wpscThemeOptions['text_items_with_total_value_of'].' <b>'. $devOptions['currency_symbol'] .number_format($cart->total, 2) .$devOptions['currency_symbol_right'] .'</b>';
 	exit();
 }
@@ -148,17 +156,17 @@ function twentyten_comment( $comment, $args, $depth ) {
 		<div id="comment-<?php comment_ID(); ?>">
 		<div class="comment-author vcard">
 			<?php echo get_avatar( $comment, 40 ); ?>
-			<?php printf( __( '%s <span class="says">says:</span>', 'twentyten' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
+			<?php printf( __( '%s <span class="says">says:</span>', 'wpsc-default' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
 		</div><!-- .comment-author .vcard -->
 		<?php if ( $comment->comment_approved == '0' ) : ?>
-			<em class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'twentyten' ); ?></em>
+			<em class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'wpsc-default' ); ?></em>
 			<br />
 		<?php endif; ?>
 
 		<div class="comment-meta commentmetadata"><a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
 			<?php
 				/* translators: 1: date, 2: time */
-				printf( __( '%1$s at %2$s', 'twentyten' ), get_comment_date(),  get_comment_time() ); ?></a><?php edit_comment_link( __( '(Edit)', 'twentyten' ), ' ' );
+				printf( __( '%1$s at %2$s', 'wpsc-default' ), get_comment_date(),  get_comment_time() ); ?></a><?php edit_comment_link( __( '(Edit)', 'wpsc-default' ), ' ' );
 			?>
 		</div><!-- .comment-meta .commentmetadata -->
 
@@ -175,7 +183,7 @@ function twentyten_comment( $comment, $args, $depth ) {
 		case 'trackback' :
 	?>
 	<li class="post pingback">
-		<p><?php _e( 'Pingback:', 'twentyten' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'twentyten' ), ' ' ); ?></p>
+		<p><?php _e( 'Pingback:', 'wpsc-default' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'wpsc-default' ), ' ' ); ?></p>
 	<?php
 			break;
 	endswitch;
@@ -183,9 +191,240 @@ function twentyten_comment( $comment, $args, $depth ) {
 endif;
 
 
+function wpsct_create_slider() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . "wpstorecart_meta";
+    $results = $wpdb->get_results("SELECT * FROM {$table_name} WHERE `type`='wpsct_slideshow';", ARRAY_A);
+    if($results==false) {
+
+    } else {
+            foreach ($results as $result) {
+                    $exploded = explode('||',$result['value']);
+                    foreach ($exploded as $image) {
+                            $explodedagain = explode('<<<',$image);
+                            if(!isset($explodedagain[1])) {
+                                    $the_img_url = $image;
+                                    $the_link_url = '#';
+                            } else {
+                                    $the_img_url = $explodedagain[0];
+                                    $the_link_url = $explodedagain[1];
+                            }
+                            if($the_img_url!='') {
+                                    echo '<a href="'.$the_link_url.'"><img src="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.$the_img_url.'" alt="" /></a>';
+                            }
+                    }
+            }
+    }
+}
+
+
+function wpsct_display_frontpage() {
+    global $wpstorecart_is_active, $wpscThemeOptions, $wpdb, $wpStoreCart;
+
+    if(@isset($wpStoreCart)) {
+        require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
+        require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
+        require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
+        if(!isset($_SESSION)) {
+                @session_start();
+        }
+    }
+    if(isset($wpStoreCart)) {
+            $devOptions = $wpStoreCart->getAdminOptions();
+    } else {
+            //exit();
+    }
+
+    if(is_page($devOptions['mainpage']) && !isset($_GET['wpsc'])) {
+            global $wpdb, $cart, $wpsc, $wpscThemeOptions;
+
+            $table_name = $wpdb->prefix . "wpstorecart_products";
+
+            $quantity = $devOptions['itemsperpage'];
+
+            if( !isset( $_GET['storepage'] ) || !is_numeric($_GET['storepage'])) {
+                    $startat = 0;
+            } else {
+                    $startat = ($_GET['storepage'] - 1) * $quantity;
+            }
+
+            if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
+                    $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT {$startat}, {$quantity};";
+                    $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `dateadded` DESC;");
+            }
+            if($devOptions['frontpageDisplays']=='List most popular products') {
+                    $sql = "SELECT * FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC LIMIT {$startat}, {$quantity};";
+                     $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `timespurchased`, `timesaddedtocart`, `timesviewed` DESC;");
+            }
+            if($devOptions['frontpageDisplays']=='List all categories (Ascending)') {
+                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
+                    $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC;");
+                    $secondcss = 'wpsc-categories';
+            } else {
+                    $secondcss = 'wpsc-products';
+            }
+            if($devOptions['frontpageDisplays']=='List all categories') {
+                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+                    $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC;");
+                    $secondcss = 'wpsc-categories';
+            } else {
+                    $secondcss = 'wpsc-products';
+            }
+            $results = $wpdb->get_results( $sql , ARRAY_A );
+
+
+            $comments_per_page = $quantity;
+            $page = isset( $_GET['storepage'] ) ? abs( (int) $_GET['storepage'] ) : 1;
+
+            if($devOptions['displayThumb']=='true') {
+                    $usepictures='true';
+                    $maxImageWidth = $devOptions['wpStoreCartwidth'];
+                    $maxImageHeight = $devOptions['wpStoreCartheight'];
+            }
+            if($devOptions['displayintroDesc']=='true') {
+                    $usetext='true';
+            }
+
+            // If we're dealing with categories, we have different fields to deal with than products.
+            if($devOptions['frontpageDisplays']=='List all categories') {
+                    if(isset($results)) {
+                                    foreach ($results as $result) {
+                                                    if(trim($result['thumbnail']=='')) {
+                                                            $result['thumbnail'] = WP_PLUGIN_URL.'/wpstorecart/images/default_product_img.jpg';
+                                                    }
+                                                    if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                            if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                                    $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                                            } else {
+                                                                    $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                                            }
+                                                    } else {
+                                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                    }
+                                                    if($devOptions['displayType']=='grid'){
+                                                                    echo '<div class="wpsc-grid '.$secondcss.'">';
+                                                    }
+                                                    if($devOptions['displayType']=='list'){
+                                                                    echo '<div class="wpsc-list '.$secondcss.'">';
+                                                    }
+                                                    if($usetext=='true') {
+                                                                    echo '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
+                                                    }
+                                                    if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                                    echo '<center><a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.htmlentities($result['category']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></center>';
+                                                    }
+                                                    if($devOptions['displayintroDesc']=='true'){
+                                                                    echo '<p style="display:none;">'.$result['description'].'</p>';
+                                                    }
+                                                    echo '</div>';
+                                    }
+                                    echo '<div class="wpsc-clear"></div>';
+                    }
+            } else { // This is for products:
+                    if(isset($results)) {
+                                    foreach ($results as $result) {
+                                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                    if($devOptions['displayType']=='grid'){
+                                                                    echo '<div class="wpsc-grid wpsc-products">';
+                                                    }
+                                                    if($devOptions['displayType']=='list'){
+                                                                    echo '<div class="wpsc-list wpsc-products">';
+                                                    }
+                                                    if(@!isset($usetext)) {
+                                                       $usetext='true';
+                                                    }
+                                                    if($usetext=='true') {
+                                                                    echo '<a href="'.$permalink.'"><ins><h1 class="wpsc-h1">'.$result['name'].'</h1></ins></a>';
+                                                    }
+                                                    if($usepictures=='true') {
+                                                                    echo '<center><div style="min-width:128px;min-height:125px;width:128px;height:125px;"><a href="'.$permalink.'"><img id="example-target-'.$result['primkey'].'" class="wpsc-thumbnail tooltip-target" src="'.$result['thumbnail'].'" alt="'.htmlentities($result['name']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { echo ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} echo '/></a></div></center>';
+                                                    }
+                                                    if($devOptions['displayintroDesc']=='true'){
+                                                                    echo '<div class="tooltip-content" id="example-content-'.$result['primkey'].'"><center><img src="'.$result['thumbnail'].'" alt="'.htmlentities($result['name']).'" class="insideimg" /></center><br />'.substr($result['introdescription'], 0, 255).'...</div>';
+                                                    }
+                                                    if($devOptions['displayAddToCart']=='true'){
+                                                                                    // Flat rate shipping implmented here:
+                                                                                    if($devOptions['flatrateshipping']=='all_single') {
+                                                                                            $result['shipping'] = $devOptions['flatrateamount'];
+                                                                                    } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                                                                            $result['shipping'] = '0.00';
+                                                                                    }
+                                                                    echo '
+
+                                                                    <form method="post" action="">
+
+                                                                                    <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
+                                                                                    <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
+                                                                                    <input type="hidden" name="my-item-name" value="'.htmlentities($result['name']).'" />
+                                                                                    <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                                    <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
+                                                                                    <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
+                                                                                    <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
+                                                                                    <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
+                                                                                    <input type="hidden" name="my-item-qty" value="1" />
+                                                                                    <input type="hidden" name="my-add-button" value="" />
+
+                                                                    ';
+                                                                    echo '<div class="buttons">';
+                                                                    if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                    $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                    $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$result['primkey']};";
+
+                                    $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                    if(isset($vresults)) {
+                                        $results_disable_add_to_cart = $wpdb->get_results("SELECT `value` FROM `{$table_name30}` WHERE `type`='disableaddtocart' AND `foreignkey`={$result['primkey']};", ARRAY_N);
+                                        if($results_disable_add_to_cart==false ) {
+                                            $display_add_to_cart_at_all_times = 'no';
+                                        } else {
+                                            if($results_disable_add_to_cart[0][0]=='yes') {
+                                                $display_add_to_cart_at_all_times = 'yes';
+                                            } else {
+                                                $display_add_to_cart_at_all_times = 'no';
+                                            }
+                                        }
+                                        if($display_add_to_cart_at_all_times=='no') { // will display the Add to Cart if there are no variations or if it is set to display automatically.
+                                            echo '<input type="image" src="'.get_template_directory_uri(). '/img/AddToCart.jpg" style="margin-left:12px;width:67px;height:25px;" id="my-add-button-fake" name="my-add-button-fake" value="" />';
+                                        }
+
+                                    }
+
+                                                                    } else {
+                                                                            echo $devOptions['out_of_stock'];
+                                                                    }
+
+                                                                    echo '<a href="'.$permalink.'"><img src="'.get_template_directory_uri(). '/img/ViewInfo.jpg" style="margin-left:10px;" /></a></div>';
+
+
+
+                                                                    echo '
+                                                                    </form>
+                                                                    ';
+                                                    }
+
+                                                    echo  '</div>';
+                                    }
+                                    echo '<div class="wpsc-clear"></div>';
+                    }
+            }
+            echo '<div class="wpsc-pagination">';
+            echo paginate_links( array(
+                    'base' => add_query_arg( 'storepage', '%#%' ),
+                    'format' => '',
+                    'type' => 'list',
+                    'end_size' => 15,
+                    'prev_text' => __('&laquo;'),
+                    'next_text' => __('&raquo;'),
+                    'total' => ceil($total / $comments_per_page),
+                    'current' => $page
+            ));
+            echo '</div>';
+    }
+}
+
 function wpsct_create_menu() {
-        $wpsctadminpage2 = add_theme_page('Theme Settings - wpStoreCart ', 'Theme Settings', 'activate_plugins', 'wpstorecarttheme-settings', 'wpsct_settings_page');
-	//$wpsctadminpage2 = add_submenu_page('themes.php','Theme Settings - wpStoreCart ', 'Theme Settings', 'activate_plugins', 'wpstorecarttheme-settings', 'wpsct_settings_page');
+        $wpsctadminpage2 = add_theme_page('Theme Settings - wpStoreCart ', 'Theme Settings', 'edit_theme_options', 'wpstorecarttheme-settings', 'wpsct_settings_page');
+	//$wpsctadminpage2 = add_submenu_page('themes.php','Theme Settings - wpStoreCart ', 'Theme Settings', 'edit_theme_options', 'wpstorecarttheme-settings', 'wpsct_settings_page');
 	add_action("admin_print_scripts-$wpsctadminpage2", 'wpsct_admin_scripts');
 	add_action( 'admin_init', 'wpscThemeAdminOptions' );
 }
@@ -195,7 +434,7 @@ function wpsct_admin_scripts() {
 
 	wp_enqueue_script( 'jquery' );
 	wp_enqueue_script('swfupload');
-	wp_enqueue_script('jquerydd', get_bloginfo('template_directory') . '/js/jquery.dd.js');	
+	wp_enqueue_script('jquerydd', get_template_directory_uri() . '/js/jquery.dd.js');
 	echo '
 	<style type="text/css">
 		#upload-progressbar-container {
@@ -235,7 +474,7 @@ function wpsct_admin_scripts() {
 	width:135px;
 }
 .dd .ddTitle span.arrow {
-	background:url("'.get_bloginfo('template_directory') . '/img/dd_arrow.gif") no-repeat 0 0; float:right; display:inline-block;width:16px; height:16px; cursor:pointer; 
+	background:url("'.get_template_directory_uri() . '/img/dd_arrow.gif") no-repeat 0 0; float:right; display:inline-block;width:16px; height:16px; cursor:pointer;
 }
 
 .dd .ddTitle span.ddTitleText {text-indent:1px; overflow:hidden; line-height:16px;}
@@ -540,12 +779,12 @@ function wpsct_settings_page() {
 	</td></tr>'; 
 	
 	echo '<tr><td>Logo Font (h6): </td><td><select name="font" id="font" style="width:135px;">
-		<option style="width:135px;" value="Raleway_250.font.js"';selected($wpscThemeOptions['font'],'Raleway_250.font.js') ;echo ' title="'.get_bloginfo('template_directory').'/img/fonts/raleway.png"> Raleway</option>
-		<option style="width:135px;" value="ChunkFive_400.font.js"';selected($wpscThemeOptions['font'],'ChunkFive_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/chunkfive.png"> ChunkFive</option>
-		<option style="width:135px;" value="Fanwood_400.font.js"';selected($wpscThemeOptions['font'],'Fanwood_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/fanwood.png"> Fanwood</option>
-		<option style="width:135px;" value="Goudy_Bookletter_1911_400.font.js"';selected($wpscThemeOptions['font'],'Goudy_Bookletter_1911_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/goudy.png"> Goudy</option>
-		<option style="width:135px;" value="Junction_400.font.js"';selected($wpscThemeOptions['font'],'Junction_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/junction.png"> Junction</option>
-		<option style="width:135px;" value="League_Gothic_400.font.js"';selected($wpscThemeOptions['font'],'League_Gothic_400.font.js');echo ' title="'.get_bloginfo('template_directory').'/img/fonts/leaguegothic.png"> League Gothic</option>
+		<option style="width:135px;" value="Raleway_250.font.js"';selected($wpscThemeOptions['font'],'Raleway_250.font.js') ;echo ' title="'.get_template_directory_uri().'/img/fonts/raleway.png"> Raleway</option>
+		<option style="width:135px;" value="ChunkFive_400.font.js"';selected($wpscThemeOptions['font'],'ChunkFive_400.font.js');echo ' title="'.get_template_directory_uri().'/img/fonts/chunkfive.png"> ChunkFive</option>
+		<option style="width:135px;" value="Fanwood_400.font.js"';selected($wpscThemeOptions['font'],'Fanwood_400.font.js');echo ' title="'.get_template_directory_uri().'/img/fonts/fanwood.png"> Fanwood</option>
+		<option style="width:135px;" value="Goudy_Bookletter_1911_400.font.js"';selected($wpscThemeOptions['font'],'Goudy_Bookletter_1911_400.font.js');echo ' title="'.get_template_directory_uri().'/img/fonts/goudy.png"> Goudy</option>
+		<option style="width:135px;" value="Junction_400.font.js"';selected($wpscThemeOptions['font'],'Junction_400.font.js');echo ' title="'.get_template_directory_uri().'/img/fonts/junction.png"> Junction</option>
+		<option style="width:135px;" value="League_Gothic_400.font.js"';selected($wpscThemeOptions['font'],'League_Gothic_400.font.js');echo ' title="'.get_template_directory_uri().'/img/fonts/leaguegothic.png"> League Gothic</option>
 	</select>
 	<script type="text/javascript">
 	//<![CDATA[
@@ -602,7 +841,12 @@ function wpsct_settings_page() {
 	</td></tr>
 		';	
 	echo '</tbody></table>';
-	echo '<h2>Links for slideshow images</h2>';	
+	echo '<h2>Links for slideshow images</h2>';
+
+        if(@!isset($results[0])) {
+            $results[0]['value'] = NULL;
+        }
+
 	echo '<table class="widefat">
 	<thead><tr><th>Link URL</th><th>Image</th></tr></thead><tbody id="linksforimages">
 		  </tbody></table>
@@ -661,7 +905,8 @@ function wpsct_settings_page() {
 
 add_action('wp_ajax_update_small_cart', 'update_small_cart_callback');
 add_action('wp_ajax_nopriv_update_small_cart', 'update_small_cart_callback');
-add_action('init', 'wpsct_init'); 
+add_action('init', 'wpsct_init');
+add_action('init', 'register_my_menus' );
 add_action('admin_menu', 'wpsct_create_menu');
 
 ?>

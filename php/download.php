@@ -97,12 +97,12 @@ if ( 0 == $current_user->ID ) {
                                                 // Multi part file download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
                                                 $file_real = $secretPath.$multidownloads[$_GET['part']];
-                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$_GET['part'].'_'. substr($multidownloads[$_GET['part']], -12);
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$_GET['part'].'_'. stripslashes(substr($multidownloads[$_GET['part']], -12));
                                             } else {
                                                 // Single files to download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
                                                 $file_real = $secretPath.$result2['download'];
-                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$xpart.'_'. substr($result2['download'], -12);
+                                                $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$xpart.'_'. stripslashes(substr($result2['download']), -12);
                                             }
                                         }
                                     }

@@ -35,9 +35,15 @@ if ($myPaypal->validateIpn())
      if(is_numeric($keyToLookup)) {
             $table_name = $wpdb->prefix . "wpstorecart_orders";
             $table_name2 = $wpdb->prefix . "wpstorecart_products";
-            $insert = "
-            UPDATE `{$table_name}` SET `orderstatus` = '{$myPaypal->ipnData['payment_status']}' WHERE `primkey` ={$keyToLookup};
-            ";
+            if($myPaypal->ipnData['payment_status']=='Canceled_Reversal' || $myPaypal->ipnData['payment_status']=='Completed') {
+                 $insert = "
+                UPDATE `{$table_name}` SET `orderstatus` = 'Completed' WHERE `primkey` ={$keyToLookup};
+                ";
+            } else {
+                $insert = "
+                UPDATE `{$table_name}` SET `orderstatus` = '{$myPaypal->ipnData['payment_status']}' WHERE `primkey` ={$keyToLookup};
+                ";
+            }
 
             $results = $wpdb->query( $insert );
 
