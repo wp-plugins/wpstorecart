@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.3.16
+Version: 2.3.17
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.3.16
+ * @version 2.3.17
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.3.16';
-$wpstorecart_version_int = 203016; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.3.17';
+$wpstorecart_version_int = 203017; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -427,6 +427,7 @@ if (!class_exists("wpStoreCart")) {
             $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "length", "INT( 7 ) NOT NULL DEFAULT  '0'" );
             $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "width", "INT( 7 ) NOT NULL DEFAULT  '0'" );
             $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "height", "INT( 7 ) NOT NULL DEFAULT  '0'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "discountprice", "DECIMAL(9,2) NOT NULL" );
 
             // Upgrade the database schema if they're running 2.0.2 or below:
             if($devOptions['database_version']==NULL) { // 2.0.2 - Database schema update for version 2.0.1 and below
@@ -473,11 +474,6 @@ if (!class_exists("wpStoreCart")) {
                 $results = $wpdb->query( $sql );
             }
 
-            if($devOptions['database_version']==NULL || $devOptions['database_version']=='2.0.2' || $devOptions['database_version']=='2.0.11') { // 2.1.0 - Database schema update for 2.0.13 and below
-                        $table_name = $wpdb->prefix . "wpstorecart_products";
-                        $sql = "ALTER TABLE `{$table_name}` ADD `donation` BOOLEAN NOT NULL DEFAULT '0';";
-                        $results = $wpdb->query( $sql );
-            }
 
             // This little block of code insures that we don't run this update routine again until the next time wpStoreCart is updated.
             $devOptions['database_version'] = $wpstorecart_version_int;
@@ -3646,6 +3642,7 @@ echo '</ul>
                                 $wpStoreCartproduct_donation = 'false';
                                 $wpStoreCartproduct_serial_numbers = '';
                                 $wpStoreCartproduct_serial_numbers_used = '';
+                                $wpStoreCartproduct_discountprice = '0.00';
 			} 
 			
 			
@@ -3859,6 +3856,7 @@ echo '</ul>
                                         $wpStoreCartproduct_length = $wpdb->escape($_POST['wpStoreCartproduct_length']);
                                         $wpStoreCartproduct_width = $wpdb->escape($_POST['wpStoreCartproduct_width']);
                                         $wpStoreCartproduct_height = $wpdb->escape($_POST['wpStoreCartproduct_height']);
+                                        $wpStoreCartproduct_discountprice = $wpdb->escape($_POST['wpStoreCartproduct_discountprice']);
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
 		
 
@@ -3879,7 +3877,8 @@ echo '</ul>
                                         `weight` = '{$wpStoreCartproduct_weight}',
                                         `length` = '{$wpStoreCartproduct_length}',
                                         `width` = '{$wpStoreCartproduct_width}',
-                                        `height` = '{$wpStoreCartproduct_height}'
+                                        `height` = '{$wpStoreCartproduct_height}',
+                                        `discountprice` = '{$wpStoreCartproduct_discountprice}'
 					WHERE `primkey` ={$cleanKey} LIMIT 1 ;				
 					";
 
@@ -3923,6 +3922,7 @@ echo '</ul>
                                                 $wpStoreCartproduct_length = stripslashes($result['length']);
                                                 $wpStoreCartproduct_width = stripslashes($result['width']);
                                                 $wpStoreCartproduct_height = stripslashes($result['height']);
+                                                $wpStoreCartproduct_discountprice = stripslashes($result['discountprice']);
 
                                                 /*
                                                 $rel_post = get_post($result['postid']) ;
@@ -4009,6 +4009,7 @@ echo '</ul>
                                         $wpStoreCartproduct_length = 0;
                                         $wpStoreCartproduct_width = 0;
                                         $wpStoreCartproduct_height = 0;
+                                        $wpStoreCartproduct_discountprice = 0;
 	
 					$devOptions = $this->getAdminOptions();
 					
@@ -4034,7 +4035,7 @@ echo '</ul>
 
 					// Now insert the product into the wpStoreCart database
 					$insert = "
-					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`, `weight`, `length`, `width`, `height`) VALUES
+					INSERT INTO {$table_name} (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`, `weight`, `length`, `width`, `height`, `discountprice`) VALUES
 					(NULL, 
 					'{$wpStoreCartproduct_name}', 
 					'{$wpStoreCartproduct_introdescription}', 
@@ -4056,7 +4057,8 @@ echo '</ul>
                                         {$wpStoreCartproduct_weight},
                                         {$wpStoreCartproduct_length},
                                         {$wpStoreCartproduct_width},
-                                        {$wpStoreCartproduct_height}
+                                        {$wpStoreCartproduct_height},
+                                        '{$wpStoreCartproduct_discountprice}'
                                         );
 					";					
 					
@@ -4222,8 +4224,8 @@ echo '</ul>
 			echo '
 			<tr>
 			<td><h3>Price'; if($devOptions['storetype']!='Digital Goods Only') { echo '<br />& Shipping';} echo ': <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  You can also enter a flat rate shipping amount here, which will only be used if you do not offer other shipping options, such as FedEx or UPS.  If the shipping options are not here, that means the General Setting > Store Type is set to Digital Only.  Change that setting to restore the shipping options here.</div></h3></td>
-			<td><br /><div style=";display:block;float:left;">Price: '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].'  &nbsp; &nbsp; &nbsp; &nbsp; '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
-			<td><div style="width:300px;">The price and shipping cost of the product.</div></td>
+			<td><br /><div style=";display:block;float:left;"><b>Full Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].' <br /><b>Sale Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_discountprice" id="wpStoreCartproduct_discountprice" style="width: 58px;" value="'.$wpStoreCartproduct_discountprice.'" />'.$devOptions['currency_symbol_right'].' </div><div style=";display:block;float:left;margin-left:15px;position:relative;top-25px;"> '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div></td>
+			<td><div style="width:300px;"><br /><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></div></td>
 			</tr>';
 
                         echo '
@@ -4248,7 +4250,7 @@ echo '</ul>
 			echo '
 			<tr';if($devOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'>
 			<td><h3>Weight &<br />Dimensions: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2995" /><div class="tooltip-content" id="example-content-2995">If this is a physical product, enter in the products width, length, height, and weight.  If it is a digital product, keep these values at 0.</div></h3></td>
-			<td><div id="wpscdimensions"><br />Weight: <input type="text" name="wpStoreCartproduct_weight" style="width: 58px;" value="'.$wpStoreCartproduct_weight.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Length: <input type="text" name="wpStoreCartproduct_length" style="width: 58px;" value="'.$wpStoreCartproduct_length.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Width: <input type="text" name="wpStoreCartproduct_width" style="width: 58px;" value="'.$wpStoreCartproduct_width.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Height: <input type="text" name="wpStoreCartproduct_height" style="width: 58px;" value="'.$wpStoreCartproduct_height.'" /></div></td>
+			<td><div id="wpscdimensions"><br />Weight: <input type="text" name="wpStoreCartproduct_weight" style="width: 58px;" value="'.$wpStoreCartproduct_weight.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Height: <input type="text" name="wpStoreCartproduct_height" style="width: 58px;" value="'.$wpStoreCartproduct_height.'" /><br />Length: <input type="text" name="wpStoreCartproduct_length" style="width: 58px;" value="'.$wpStoreCartproduct_length.'" />  &nbsp; &nbsp; &nbsp; &nbsp; Width: <input type="text" name="wpStoreCartproduct_width" style="width: 58px;" value="'.$wpStoreCartproduct_width.'" />  &nbsp; &nbsp; &nbsp; &nbsp;</div></td>
 			<td><div style="width:300px;">The physical details of the product.</div></td>
 			</tr>';
 
@@ -6588,7 +6590,8 @@ echo '</ul>
                                 `weight` int(7) NOT NULL DEFAULT '0',
                                 `length` int(7) NOT NULL DEFAULT '0',
                                 `width` int(7) NOT NULL DEFAULT '0',
-                                `height` int(7) NOT NULL DEFAULT '0'
+                                `height` int(7) NOT NULL DEFAULT '0',
+                                `discountprice` DECIMAL(9,2) NOT NULL
 				);			
 				";
 			  
@@ -6901,10 +6904,10 @@ echo '</ul>
                                                             foreach ($results as $result) {
                                                                     $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                                     if($usepictures=='true') {
-                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'" /></a>';
+                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
                                                                     }
                                                                     if($usetext=='true') {
-                                                                            $output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
+                                                                            $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
                                                                     }
                                                             }
                                                     }
@@ -6922,10 +6925,10 @@ echo '</ul>
                                                             foreach ($results as $result) {
                                                                     $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                                     if($usepictures=='true') {
-                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'" /></a>';
+                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
                                                                     }
                                                                     if($usetext=='true') {
-                                                                            $output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
+                                                                            $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
                                                                     }
                                                             }
                                                     }
@@ -6962,16 +6965,20 @@ echo '</ul>
                                                                         $output .= '<div class="wpsc-list wpsc-categories">';
                                                                 }
                                                                 if($usepictures=='true') {
-                                                                        $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                        $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
                                                                 if($usetext=='true' && $devOptions['displayTitle']=='true') {
-                                                                        $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
+                                                                        $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.stripslashes($result['name']).'</h1></a>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
-                                                                        $output .= '<p>'.$result['introdescription'].'</p>';
+                                                                        $output .= '<p>'.stripslashes($result['introdescription']).'</p>';
                                                                 }
                                                                 if($devOptions['displaypriceonview']=='true'){
-                                                                    $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    if($result['discountprice']>0) {
+                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    } else {
+                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
 
@@ -6981,14 +6988,19 @@ echo '</ul>
                                                                         } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
                                                                             $result['shipping'] = '0.00';
                                                                         }
-                                                                        
+
+                                                                        if($result['discountprice'] > 0) {
+                                                                            $theActualPrice = $result['discountprice'];
+                                                                        } else {
+                                                                            $theActualPrice = $result['price'];
+                                                                        }
                                                                         $output .= '
                                                                         <form method="post" action="">
 
                                                                                 <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
                                                                                 <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
-                                                                                <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
-                                                                                <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                                <input type="hidden" name="my-item-name" value="'.stripslashes($result['name']).'" />
+                                                                                <input type="hidden" name="my-item-price" value="'.$theActualPrice .'" />
                                                                                 <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                                 <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
                                                                                 <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
@@ -7119,12 +7131,20 @@ echo '</ul>
                                                                                         thekey = price[2];
                                                                                         alteredPrice['.$variationCounter.'] = theprice;
                                                                                         alteredName['.$variationCounter.'] = thename;
-                                                                                        oldAmount = parseFloat('.$results[0]['price'].');
+                                                                                            ';
+
+                                                                                if($results[0]['discountprice'] > 0) {
+                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
+                                                                                } else {
+                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
+                                                                                }
+
+                                                                                $output .= '
                                                                                         newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
                                                                                         newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
                                                                                         jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
                                                                                         jQuery("#my-item-price").val(newAmount.toFixed(2));
-                                                                                        jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
+                                                                                        jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
                                                                                         jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
                                                                                         jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
 
@@ -7209,11 +7229,17 @@ echo '</ul>
                                                                                             }
                                                                                             jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
                                                                                                 advancedVariationPrice = parseFloat(txt);
-                                                                                                oldAmount = parseFloat('.$results[0]['price'].');
+                                                                                                ';
+                                                                                            if($results[0]['discountprice'] > 0) {
+                                                                                                $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
+                                                                                            } else {
+                                                                                                $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
+                                                                                            }
+                                                                                            $output .= '
                                                                                                 newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
                                                                                                 advancedVariationName = var_string;
                                                                                                 newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
-                                                                                                jQuery("#my-item-name").val("'.$results[0]['name'].' - " + newName);
+                                                                                                jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
                                                                                                 jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
                                                                                                 jQuery("#my-item-price").val(newAmount.toFixed(2));
                                                                                             }});
@@ -7298,13 +7324,20 @@ echo '</ul>
                                                                 $result['shipping'] = '0.00';
                                                             }
 
+                                                            // Discount prices
+                                                            if($results[0]['discountprice'] > 0) {
+                                                                $theActualPrice = $results[0]['discountprice'];
+                                                            } else {
+                                                                $theActualPrice = $results[0]['price'];
+                                                            }
+
                                                             $output .= '
                                                             <form method="post" action="">
 
                                                                     <input type="hidden" id="my-item-id" name="my-item-id" value="'.$results[0]['primkey'].'" />
                                                                     <input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
-                                                                    <input type="hidden" id="my-item-name" name="my-item-name" value="'.$results[0]['name'].'" />
-                                                                    <input type="hidden" id="my-item-price" name="my-item-price" value="'.$results[0]['price'].'" />
+                                                                    <input type="hidden" id="my-item-name" name="my-item-name" value="'.stripslashes($results[0]['name']).'" />
+                                                                    <input type="hidden" id="my-item-price" name="my-item-price" value="'.$theActualPrice.'" />
                                                                     <input type="hidden" id="my-item-shipping" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                     <input type="hidden" id="my-item-img" name="my-item-img" value="'.$results[0]['thumbnail'].'" />
                                                                     <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
@@ -7312,9 +7345,13 @@ echo '</ul>
                                                                     <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
 
                                                                     <ul class="wpsc-product-info">
-                                                                      <li id="list-item-name"><strong>'.$results[0]['name'].'</strong></li>
-                                                                      <li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>
-                                                                      <li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
+                                                                      <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>';
+                                                                      if($results[0]['discountprice']>0) {
+                                                                        $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$results[0]['discountprice'].$devOptions['currency_symbol_right'].'</li>';
+                                                                      } else {
+                                                                        $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                      }
+                                                                      $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
 
                                                                     if($goutput!=NULL) {
                                                                         $output .= $goutput;
@@ -7352,11 +7389,11 @@ echo '</ul>
                                                             }
 
                                                             if($devOptions['showproductdescription']=='true') {
-                                                                    $output .= $results[0]['introdescription'] . '&nbsp; &nbsp;';
+                                                                    $output .= stripslashes($results[0]['introdescription']) . '&nbsp; &nbsp;';
                                                                     if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Intro Description') {
                                                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                                                     }
-                                                                    $output .= $results[0]['description'];
+                                                                    $output .= stripslashes($results[0]['description']);
                                                                     if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Description') {
                                                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                                                     }
@@ -7477,10 +7514,10 @@ echo '</ul>
                                                                         $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
                                                                 if($usetext=='true' && $devOptions['displayTitle']=='true') {
-                                                                        $output .= '<p><a href="'.$permalink.'">'.$result['category'].'</a></p>';
+                                                                        $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['category']).'</a></p>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
-                                                                        $output .= '<p>'.$result['description'].'</p>';
+                                                                        $output .= '<p>'.stripslashes($result['description']).'</p>';
                                                                 }
                                                                 $output .= '</div>';
                                                         }
@@ -7497,16 +7534,20 @@ echo '</ul>
                                                                         $output .= '<div class="wpsc-list wpsc-products">';
                                                                 }
                                                                 if($usepictures=='true') {
-                                                                        $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['name'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                        $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
                                                                 }
                                                                 if($usetext=='true' && $devOptions['displayTitle']=='true') {
-                                                                        $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.$result['name'].'</h1></a>';
+                                                                        $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.stripslashes($result['name']).'</h1></a>';
                                                                 }
                                                                 if($devOptions['displayintroDesc']=='true'){
-                                                                        $output .= '<p>'.$result['introdescription'].'</p>';
+                                                                        $output .= '<p>'.stripslashes($result['introdescription']).'</p>';
                                                                 }
                                                                 if($devOptions['displaypriceonview']=='true'){
-                                                                    $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    if($result['discountprice']>0) {
+                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    } else {
+                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
 
@@ -7516,17 +7557,22 @@ echo '</ul>
                                                                         } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
                                                                             $result['shipping'] = '0.00';
                                                                         }
-
+                                                                        // Discount prices
+                                                                        if($result['discountprice'] > 0) {
+                                                                            $theActualPrice = $result['discountprice'];
+                                                                        } else {
+                                                                            $theActualPrice = $result['price'];
+                                                                        }
                                                                         $output .= '
                                                                         <form method="post" action="">
 
                                                                                 <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
                                                                                 <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
-                                                                                <input type="hidden" name="my-item-name" value="'.$result['name'].'" />
-                                                                                <input type="hidden" name="my-item-price" value="'.$result['price'].'" />
+                                                                                <input type="hidden" name="my-item-name" value="'.stripslashes($result['name']).'" />
+                                                                                <input type="hidden" name="my-item-price" value="'.$theActualPrice.'" />
                                                                                 <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
                                                                                 <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
-                                                                                <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
+                                                                                <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
                                                                                 <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
                                                                                 <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
@@ -9721,7 +9767,7 @@ if (class_exists("WP_Widget")) {
 						if($widgetShowproductImages=='true') {
 							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
 						}
-						$output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
+						$output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
 					}
 				}
 			} else {
@@ -9791,7 +9837,7 @@ if (class_exists("WP_Widget")) {
 						if($widgetShowproductImages=='true') {
 							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
 						}
-						$output .= '<p><a href="'.$permalink.'">'.$result['name'].'</a></p>';
+						$output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
 					}
 				}
 			} else {
