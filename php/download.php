@@ -76,15 +76,6 @@ if ( 0 == $current_user->ID ) {
                                 $xpart = 1;
                                 foreach ($results2 as $result2) {
                                     if($result2['download']!='') {
-                                        if(class_exists('ThreeWP_Activity_Monitor')) {
-                                            do_action('threewp_activity_monitor_new_activity', array(
-                                                'activity_type' => 'wpsc-download',
-                                                'tr_class' => '',
-                                                'activity' => array(
-                                                    "" => "%user_display_name_with_link% has downloaded {$result2['download']}",
-                                                ),
-                                            ));
-                                        }
                                         $multidownloads = explode('||', $result2['download']);
                                         if(@isset($_GET['isvariation']) && @isset($_GET['variationdl']) && @$_GET['isvariation']=="true") {
                                             // Variation download
@@ -96,12 +87,12 @@ if ( 0 == $current_user->ID ) {
                                             if(@isset($_GET['part']) && @isset($multidownloads[$_GET['part']])) {
                                                 // Multi part file download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
-                                                $file_real = $secretPath.$multidownloads[$_GET['part']];
+                                                $file_real = $secretPath.stripslashes($multidownloads[$_GET['part']]);
                                                 $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$_GET['part'].'_'. stripslashes(substr($multidownloads[$_GET['part']], -12));
                                             } else {
                                                 // Single files to download
                                                 $secretPath = WP_CONTENT_DIR . '/uploads/wpstorecart/';
-                                                $file_real = $secretPath.$result2['download'];
+                                                $file_real = $secretPath.stripslashes($result2['download']);
                                                 $productDownloadName =  $result2['name']. '_' .$current_user->user_login.'_part'.$xpart.'_'. stripslashes(substr($result2['download']), -12);
                                             }
                                         }

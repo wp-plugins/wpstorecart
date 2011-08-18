@@ -9,7 +9,7 @@
 
 // INCLUDE wpsc BEFORE SESSION START
 
-global $wpsc_error_reporting, $wpsc_cart_type, $cart;
+global $wpsc_error_reporting, $wpsc_cart_type, $cart, $devOptions, $wpdb;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
@@ -181,18 +181,101 @@ else
                         $purchasing_display_name = '%user_display_name_with_link%';
                 }
 
+                /**
+                 *
+                 * Calculate taxes
+                 *
+                 * @global <type> $wpdb
+                 * @global <type> $devOptions
+                 */
+                function calculateTaxes($theTotal) {
+                    global $wpdb, $devOptions, $wpStoreCart;
 
-                if(class_exists('ThreeWP_Activity_Monitor')) {
-                    do_action('threewp_activity_monitor_new_activity', array(
-                        'activity_type' => 'wpsc-checkout',
-                        'tr_class' => '',
-                        'activity' => array(
-                            "" => "{$purchasing_display_name} has finished checkout and has been sent to pay for their shopping cart.",
-                            "Email" => $purchaser_email,
-                            "Payment Gateway: " => "{$wpdb->escape($_POST['paymentGateway'])}",
-                            "Cart price: " => $cart->itemcount. ' item costing '.$devOptions['currency_symbol'] .number_format($cart->total, 2) .$devOptions['currency_symbol_right'],
-                        ),
-                    ));
+                    $fields = $wpStoreCart->grab_custom_reg_fields();
+                    $taxstates = false;
+                    $taxcountries = false;
+                    foreach ($fields as $field) {
+                        $specific_items = explode("||", $field['value']);
+                            if($specific_items[2]=='taxstates') {
+                                $taxstates = true;
+                            }
+                            if($specific_items[2]=='taxcountries') {
+                                $taxcountries = true;
+                            }
+                    }
+
+                    if($taxstates || $taxcountries) {
+
+                        // Tax is calculated
+                        $mastertax = 0.0;
+                        $taxamount = 0;
+
+                        if($taxstates || $taxcountries) {
+                            $table_name33 = $wpdb->prefix . "wpstorecart_meta";
+                            $grabrecord = "SELECT * FROM `{$table_name33}` WHERE `type`='tax' ORDER BY `primkey` ASC;";
+
+                            $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                            if(isset($results)) {
+                                    foreach ($results as $result) {
+                                        $calculateTaxes = false;
+                                        $exploder = explode('||', $result['value']);
+                                        foreach ($exploder as $exploded) {
+                                            $exploderInd = explode(',', $exploder[2]);
+                                            foreach ($exploderInd as $exploderEnd) {
+                                                if(trim($exploderEnd)==trim(get_the_author_meta("taxstate", wp_get_current_user()->ID))) {
+                                                    $calculateTaxes = true;
+                                                } else {
+                                                    if (isset($_COOKIE["taxstate"])) {
+                                                        if($exploderEnd==trim($_COOKIE["taxstate"])) {
+                                                            $calculateTaxes = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                        if($calculateTaxes){
+                                            $mastertax = $mastertax + $exploder[3];
+                                        }
+                                        $calculateTaxes = false;
+
+
+                                        foreach ($exploder as $exploded) {
+                                            $exploderInd = explode(',', $exploder[1]);
+                                            foreach ($exploderInd as $exploderEnd) {
+                                                if(trim($exploderEnd)==trim(get_the_author_meta("taxcountries", wp_get_current_user()->ID))) {
+                                                    $calculateTaxes = true;
+                                                } else {
+                                                    if (isset($_COOKIE["taxcountries"])) {
+                                                        if($exploderEnd==trim($_COOKIE["taxcountries"])) {
+                                                            $calculateTaxes = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if($calculateTaxes){
+                                            $mastertax = $mastertax + $exploder[3];
+                                        }
+                                        $calculateTaxes = false;
+
+                                    }
+                            }
+
+                        }
+                        
+
+                        if($mastertax > 0) {
+                            $taxamount = $theTotal * ($mastertax /100);
+                        }
+                        return number_format($taxamount,2);
+
+                    } else {
+                        // Taxes aren't enabled or are incorrectly configured
+                        return 0;
+                    }
                 }
 
 
@@ -272,7 +355,15 @@ else
                     }
                     $keytoedit = $lastID;
 
-                    $totalPrice = $totalPrice  + $totalShipping; // Apply the coupon plus shipping
+                    // Tax
+                    $theTaxAmount = calculateTaxes($totalPrice + $totalShipping);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
+                    $totalPrice = number_format($totalPrice  + $totalShipping + $theTaxAmount, 2) ; // Apply the coupon plus shipping
 
                     $cart->empty_cart();
                     
@@ -377,9 +468,17 @@ else
                     }
                     $keytoedit = $lastID;
 
+                    // Tax
+                    $theTaxAmount = calculateTaxes($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping']);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
 
                     //
                     $cart->empty_cart();
@@ -465,7 +564,16 @@ else
                         $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
                     }
                     $keytoedit = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+
+                    // Tax
+                    $theTaxAmount = calculateTaxes($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping']);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
@@ -481,7 +589,12 @@ else
                     @include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/libertyreserve/lb.php');
                     $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbi.php';
                     $paymentGatewayOptions['success'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbs.php';
-                    $paymentGatewayOptions['failure'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbf.php';
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        $failedpermalink = get_permalink($devOptions['mainpage']) .'?wpsc=failed';
+                    } else {
+                        $failedpermalink = get_permalink($devOptions['mainpage']) .'&wpsc=failed';
+                    }
+                    $paymentGatewayOptions['failure'] = $failedpermalink;
                     $paymentGatewayOptions['libertyreserveaccount'] = $devOptions['libertyreserveaccount'];
                     $paymentGatewayOptions['libertyreservestore'] = $devOptions['libertyreservestore'];
                     $paymentGatewayOptions['authorizenetsecretkey'] = $devOptions['authorizenetsecretkey'];
@@ -560,9 +673,17 @@ else
                     }
                     $keytoedit = $lastID;
 
+                    // Tax
+                    $theTaxAmount = calculateTaxes($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping']);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'];
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
 
                     //
                     $cart->empty_cart();
@@ -573,7 +694,162 @@ else
 
                 // QBMS payment
                 if($paymentGateway == 'qbms') {
+                    error_reporting(0);
+                    $paymentGatewayOptions['qbms_login'] = $devOptions['qbms_login'];
+                    $paymentGatewayOptions['qbms_ticket'] = $devOptions['qbms_ticket'];
+                    $paymentGatewayOptions['qbms_testingmode'] = $devOptions['qbms_testingmode'];
+                    $paymentGatewayOptions['theCartNames'] = '';
+                    $paymentGatewayOptions['theCartPrice'] = 0.00;
+                    $cartContents = '';
+                    $paymentGatewayOptions['totalPrice'] = 0;
+                    $paymentGatewayOptions['totalShipping'] = 0;
+                    $totalPrice = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + ($item['price'] * $item['qty']);
 
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
+                                }
+                            } else {
+                                $paymentGatewayOptions['totalShipping'] = 0;
+                            }
+
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $paymentGatewayOptions['totalShipping'] = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] - $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
+
+                    }
+
+                    $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
+
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $paymentGatewayOptions['userid'] = $purchaser_user_id;
+
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Quickbooks, Intuit', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    if(@isset($_COOKIE['wpscPROaff']) || @is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
+                    $keytoedit = $lastID;
+
+                    // Tax
+                    $theTaxAmount = calculateTaxes($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping']);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
+                    // Specify any custom value, here we send the primkey of the order record
+                    $paymentGatewayOptions['invoice'] = $lastID;
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount, 2);
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/quickbooks-php-devkit/';
+
+                    global $QBMSTransaction, $QBMSErrorMessage, $QBMSStatus;
+                    include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/qb_start.php');
+                    if($QBMSStatus == 'failedauthorize' || $QBMSStatus == 'failedcapture') {
+                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=failed&wpscerror='.urlencode($QBMSErrorMessage);
+                        } else {
+                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=failed&wpscerror='.urlencode($QBMSErrorMessage);
+                        }
+                        wp_safe_redirect($permalink);
+                        exit();
+
+                    }
+                    if($QBMSStatus == 'capture') {
+                        $cart->empty_cart();
+                        // ALL COOL, mark the order paid
+                        $sql = "UPDATE `{$table_name}` SET `orderstatus` = 'Completed' WHERE `primkey` = {$keytoedit}";
+                        $wpdb->query ($sql);
+                        $sql = "SELECT `cartcontents`, `email` FROM `{$table_name}` WHERE `primkey`={$keytoedit};";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        if(isset($results)) {
+                                $specific_items = explode(",", $results[0]['cartcontents']);
+                                foreach($specific_items as $specific_item) {
+                                        if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
+                                                $current_item = explode('*', $specific_item);
+                                                if(isset($current_item[0]) && isset($current_item[1])) {
+                                                        $sql2 = "SELECT `primkey`, `inventory`, `useinventory` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
+                                                        $wpStoreCart->assignSerialNumber($current_item[0], $keyToLookup);
+                                                        $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
+                                                        if(isset($moreresults) && $moreresults[0]['useinventory']==1) {
+                                                                        $newInventory = $moreresults[0]['inventory'] - $current_item[1];
+                                                                        $wpdb->query("UPDATE `{$table_name2}` SET `inventory` = '{$newInventory}' WHERE `primkey` = {$moreresults[0]['primkey']} LIMIT 1 ;");
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                        if($devOptions['pcicompliant']=='true') {
+                            $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                            $results = $wpdb->query("INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".$QBMSTransData."', 'qbms_transaction_record', '{$keytoedit}');");
+                        }
+
+                         // Let's send them an email telling them their purchase was successful
+                         // In case any of our lines are larger than 70 characters, we should use wordwrap()
+                        $message = wordwrap($wpStoreCart->makeEmailTxt($devOptions['emailonapproval']) . $wpStoreCart->makeEmailTxt($devOptions['emailsig']), 70);
+
+                        $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                                'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                                'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                        // Send an email when purchase is submitted
+                        if(isset($results)) {
+                                mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                        }
+
+                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=success';
+                        } else {
+                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=success';
+                        }
+                        wp_safe_redirect($permalink);
+                        exit();
+
+                    }
                 }
 
                 if($paymentGateway == 'paypal') {
@@ -598,7 +874,14 @@ else
 
                     // Specify the url where paypal will send the user on success/failure
                     $myPaypal->addField('return', WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_success.php');
-                    $myPaypal->addField('cancel_return', WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_failure.php');
+
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        $failedpermalink = get_permalink($devOptions['mainpage']) .'?wpsc=failed';
+                    } else {
+                        $failedpermalink = get_permalink($devOptions['mainpage']) .'&wpsc=failed';
+                    }
+
+                    $myPaypal->addField('cancel_return', $failedpermalink);
 
                     // Specify the url where paypal will send the IPN
                     $myPaypal->addField('notify_url', WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_ipn.php');
@@ -685,7 +968,6 @@ else
                     } else {
                         $myPaypal->addField('cmd', '_cart');
                     }
-                    
 
                     if(@isset($_SESSION['validcouponamount']) && $couponset==false) {
                         if(isset($_SESSION['validcouponamount'])) {
@@ -724,6 +1006,16 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $myPaypal->addField('custom', $lastID);
+
+                    // Tax
+                    $theTaxAmount = calculateTaxes($totalPrice + $totalShipping);
+                    if($theTaxAmount > 0) {
+                        $myPaypal->addField('tax_cart', $theTaxAmount);
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
 
                     //
 

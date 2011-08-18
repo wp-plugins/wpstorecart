@@ -56,6 +56,7 @@ if (isset($wpStoreCart)) {
 	$wpsc['text']['subtotal']					= $devOptions['subtotal'];		// Subtotal
         $wpsc['text']['total']					= $devOptions['total'];		//Total
         $wpsc['text']['shipping']					= $devOptions['shipping'];		// Shipping
+        $wpsc['text']['tax']					= $devOptions['tax'];
         $wpsc['text']['login']					= $devOptions['login'];
         $wpsc['text']['logout']					= $devOptions['logout'];
         $wpsc['text']['register']					= $devOptions['register'];
@@ -81,6 +82,8 @@ if (isset($wpStoreCart)) {
         @$wpsc['text']['cc_name']	= $devOptions['cc_name'];
         @$wpsc['text']['cc_number']	= $devOptions['cc_number'];
         @$wpsc['text']['cc_expires']	= $devOptions['cc_expires'];
+        @$wpsc['text']['cc_expires_month']	= $devOptions['cc_expires_month'];
+        @$wpsc['text']['cc_expires_year']	= $devOptions['cc_expires_year'];
         @$wpsc['text']['cc_address']	= $devOptions['cc_address'];
         @$wpsc['text']['cc_postalcode']	= $devOptions['cc_postalcode'];
         @$wpsc['text']['cc_cvv']	= $devOptions['cc_cvv'];

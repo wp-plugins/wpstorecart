@@ -42,17 +42,22 @@ if ( 0 == $current_user->ID ) {
 	  `timespurchased` int(11) NOT NULL,
 	  `useinventory` tinyint(1) NOT NULL DEFAULT '1',
 	  `donation` tinyint(1) NOT NULL DEFAULT '0',
+        `weight` int(7) NOT NULL DEFAULT '0',
+        `length` int(7) NOT NULL DEFAULT '0',
+        `width` int(7) NOT NULL DEFAULT '0',
+        `height` int(7) NOT NULL DEFAULT '0',
+        `discountprice` DECIMAL(9,2) NOT NULL
 	  PRIMARY KEY (`primkey`)
 	);	
 	
-	INSERT INTO `{$table_name}` (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`) VALUES
+	INSERT INTO `{$table_name}` (`primkey`, `name`, `introdescription`, `description`, `thumbnail`, `price`, `shipping`, `download`, `tags`, `category`, `inventory`, `dateadded`, `postid`, `timesviewed`, `timesaddedtocart`, `timespurchased`, `useinventory`, `donation`, `weight`, `length`, `width`, `height`, `discountprice`) VALUES
 	";
 
     $updateSQL2 = "SELECT * FROM {$table_name};";
 
     $results2 = $wpdb->get_results($updateSQL2, ARRAY_A);
     foreach ($results2 as $result) {
-        $sql_output .= "(NULL, '{$result['name']}', '{$result['introdescription']}', '{$result['description']}', '{$result['thumbnail']}', '{$result['price']}', '{$result['shipping']}', '{$result['download']}', '{$result['tags']}', '{$result['category']}', '{$result['inventory']}', '{$result['dateadded']}', '{$result['postid']}', '{$result['timesviewed']}', '{$result['timesaddedtocart']}', '{$result['timespurchased']}', '{$result['useinventory']}', '{$result['donation']}'),";
+        $sql_output .= "(NULL, '{$result['name']}', '{$result['introdescription']}', '{$result['description']}', '{$result['thumbnail']}', '{$result['price']}', '{$result['shipping']}', '{$result['download']}', '{$result['tags']}', '{$result['category']}', '{$result['inventory']}', '{$result['dateadded']}', '{$result['postid']}', '{$result['timesviewed']}', '{$result['timesaddedtocart']}', '{$result['timespurchased']}', '{$result['useinventory']}', '{$result['donation']}' , '{$result['weight']}', '{$result['length']}', '{$result['width']}', '{$result['height']}', '{$result['discountprice']}'),";
     }
 
 	$sql_output = substr($sql_output, 0, -1) . ';'; //Remove the last comma and replace it with a semi-colon

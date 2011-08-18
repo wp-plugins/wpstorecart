@@ -37,7 +37,7 @@ if ( 0 == $current_user->ID ) {
     $results2 = $wpdb->get_results($updateSQL2, ARRAY_N);
     foreach ($results2 as $rowr) {
         for ($j=0;$j<$i;$j++) {
-            $csv_output .= str_replace(',', ' ', $rowr[$j]).", ";
+            $csv_output .= str_replace(',', ' ', ereg_replace("(\r\n|\n|\r)", "<br />",$rowr[$j])).", ";
         }
         $csv_output .= "\n";
     }

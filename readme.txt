@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.3.17
+Stable tag: 2.4.0
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,18 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.0 =
+* Added: Admin panel now has drop downs for all administrative menus
+* Added: Enhancement wpsc-5 - New payment failure page - http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-5
+* Fixed: wpStoreCart Default theme now displays the Home link if you set it to in the admin panel 
+* Fixed: wpStoreCart is now working on WPMS, as long as you don't try and "Network Activate"  Individual WPMS sites should have no problem using wpStoreCart individually.
+* Fixed: There was a recently discovered issue with product downloads which contained apostrophes.  This has been fixed
+* Fixed: Solved an issue with exporting via CSV with line breaks.
+* Fixed: CSV importing now works!  Yea!
+* Fixed: Updated SQL exporting to the latest database schema for the products table
+* Updated: The register/login/guest form on the checkout page is now in tables by default
+* Added: Taxes are now fully operational!!! http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/wpsc-4
 
 = 2.3.17 =
 * Added: You can now specify a regular and a discount price.  If a discount price is present, then the regular price is crossed out, replaced with the discount price.

@@ -62,6 +62,7 @@ if(@isset($wpStoreCart)) {
         
         	<div id="nav-menu"><!-- Menu Start -->
 				<ul>
+                                    <?php if($wpscThemeOptions['display_home_link']=="true"){?><li><a href="<?php echo home_url(); ?>" title="Home Page">Home</a></li><?php } ?>
                                     <?php wp_nav_menu( array( 'theme_location' => 'header-menu', 'depth' => '1' ) ); ?>
 				</ul>
 			</div> <!-- Menu End -->

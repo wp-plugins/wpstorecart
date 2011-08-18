@@ -419,7 +419,7 @@ class wpsc {
 		@$item_id = $_POST[$item_id];
 		@$item_qty = $_POST[$item_qty];
 		@$item_price = $_POST[$item_price];
-		@$item_name = $_POST[$item_name];
+		@$item_name = stripslashes($_POST[$item_name]);
                 @$item_shipping = $_POST[$item_shipping];
                 @$item_tax = $_POST[$item_tax];
                 @$item_url = $_POST[$item_url];
@@ -552,7 +552,15 @@ class wpsc {
 			$output .= "\t$error_message\n";
 		}
 
+                $disable_inline_styles = ' style="float:left;"';
+                if($devOptions['disable_inline_styles']=='true') {
+                    $disable_inline_styles = '';
+                }
+
                 $isLoggedIn = NULL;
+                $taxstates = false;
+                $taxcountries = false;
+                $alreadyDisplayedForm = false;
                 if ($is_checkout == true) {
                     if ( is_user_logged_in() ) {
                         $isLoggedIn = true;
@@ -570,8 +578,10 @@ class wpsc {
                                 $output .= '
                                     <form name="wpsc-registerform" id="wpsc-guestcheckoutform" action="#" method="post">
                                         <br /><strong>'. $text['guestcheckout'] .'</strong><br />
-                                        <label><span>'. $text['email'] .' <ins><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                        <input type="submit" value="'. $text['checkout_button'] .'" class="wpsc-button wpsc-checkout" />
+                                        <table>
+                                        <tr><td>'. $text['email'] .' <ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></td><td><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></td></tr>
+                                        <tr><td></td><td><input type="submit" value="'. $text['checkout_button'] .'" class="wpsc-button wpsc-checkout" /></td></tr>
+                                        </table>
                                     </form>
                                     <br />
                                     ';
@@ -622,38 +632,122 @@ class wpsc {
                                 }
                             }
 
-                            $disable_inline_styles = ' style="float:left;"';
-                            if($devOptions['disable_inline_styles']=='true') {
-                                $disable_inline_styles = '';
-                            }
-
                             $output .= '
                             <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">
                                 <br /><strong>'. $text['login'] .'</strong><br />
-                                        <label><span>'. $text['username'] .' </span><input type="text" value="" name="log" /></label>
-                                        <label><span>'. $text['password'] .' </span><input type="password" value="" name="pwd"  /></label>
-                                        <input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" />
-                                        <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                                        <table>
+                                        <tr><td>'. $text['username'] .'</td><td><input type="text" value="" name="log" /></td></tr>
+                                        <tr><td>'. $text['password'] .' </td><td><input type="password" value="" name="pwd"  /></td></tr>
+                                        <tr><td></td><td><input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" /><input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" /></td></tr>
+                                        </table>
                             </form>
                             <br />
                             <form name="wpsc-registerform" id="wpsc-registerform" action="'.plugins_url('/wpstorecart/php/register.php').'" method="post">
                                 <br /><strong>'. $text['register'] .'</strong><br />
-                                            <label><span>'. $text['email'] .' <ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                            <label><span>'. $text['password'] .'<ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></span><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></label>';
+                                            <table>
+                                            <tr><td>'. $text['email'] .' <ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></td><td><input type="text" name="email" value="'.$_SESSION['wpsc_email'].'" /></td></tr>
+                                            <tr><td>'. $text['password'] .'<ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></td><td><input type="password" name="user_pass" value="'.$_SESSION['wpsc_password'].'" /></td></tr>';
 
-                                            $wpStoreCart->show_custom_reg_fields();
+                                            $output .= $wpStoreCart->show_custom_reg_fields();
 
                             $output .= '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                                            <label><span class="wpsc-required-help">'.$text['required_help'].'</span><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></label>
+                                            <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></td></tr>
+                                                </table>
+                                            <br /><span class="wpsc-required-help">'.$text['required_help'].'</span>
                             </form>
                             <br />
                             ';
+                            $alreadyDisplayedForm = true;
                         }
                     }
+
+                    /**
+                     * This block detects if required tax information is missing, like state and/or country.
+                     */
+                    $fields = $wpStoreCart->grab_custom_reg_fields();
+                    $taxstates = false;
+                    $taxcountries = false;
+                    $displayCustomFields = false;
+                    $OldIsLoggedIn = $isLoggedIn;
+                    if($alreadyDisplayedForm == false) {
+                        foreach ($fields as $field) {
+                            $specific_items = explode("||", $field['value']);
+                                // $contactmethods[$this->slug($specific_item[0])] = $specific_item[0];
+                                if($specific_items[2]=='taxstates') {
+                                    $taxstates = true;
+                                }
+                                if($specific_items[2]=='taxcountries') {
+                                    $taxcountries = true;
+                                }
+                        }
+
+                        if($taxstates==true || $taxcountries==true) {
+                            if(!is_user_logged_in()) {
+                                if ($taxstates && !isset($_COOKIE["taxstate"])) {
+                                    $displayCustomFields = true;
+                                    $isLoggedIn = false;
+                                    if(@isset($_POST['taxstate'])) {
+                                        setcookie("taxstate", $_POST['taxstates'], time() + 43200);
+                                        if (isset($_COOKIE["taxstate"])) {
+                                            $isLoggedIn = $OldIsLoggedIn;
+                                            $displayCustomFields = false;
+                                        }
+                                    }
+                                }
+                                if ($taxcountries && !isset($_COOKIE["taxcountries"])) {
+                                    $displayCustomFields = true;
+                                    $isLoggedIn = false;
+                                    if(@isset($_POST['taxcountries'])) {
+                                        setcookie("taxcountries", $_POST['taxcountries'], time() + 43200);
+                                        if (isset($_COOKIE["taxcountries"])) {
+                                            $isLoggedIn = $OldIsLoggedIn;
+                                            $displayCustomFields = false;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if ($taxstates && trim(get_the_author_meta("taxstate", wp_get_current_user()->ID))=='') {
+                                    $displayCustomFields = true;
+                                    $isLoggedIn = false;
+                                    if(@isset($_POST['taxstate'])) {
+                                        update_usermeta( wp_get_current_user()->ID, "taxstate", $_POST['taxstate'] );
+                                        $isLoggedIn = $OldIsLoggedIn;
+                                        $displayCustomFields = false;
+                                    }
+                                }
+                                if ($taxcountries && trim(get_the_author_meta("taxcountries", wp_get_current_user()->ID))=='') {
+                                    $displayCustomFields = true;
+                                    $isLoggedIn = false;
+                                    if(@isset($_POST['taxcountries'])) {
+                                        update_usermeta( wp_get_current_user()->ID, "taxcountries", $_POST['taxcountries'] );
+                                        $isLoggedIn = $OldIsLoggedIn;
+                                        $displayCustomFields = false;
+                                    }
+                                }
+                            }
+
+                            // Redisplay the custom fields if a user or guest doesn't have the required fields filled out
+                            if($displayCustomFields) {
+                                $output .= '
+                                <br />
+                                <form name="wpsc-registerform" id="wpsc-registerform" action="'.$servrequest_uri.'" method="post">
+                                    <br /><strong>'. $text['tax'] .'</strong><br />
+                                                <table>';
+
+                                    $output .= $wpStoreCart->show_custom_reg_fields();
+
+                                    $output .= '<input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
+                                                <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['update_button'] .'" class="wpsc-button wpsc-register-button" /></td></tr>
+                                                    </table>
+                                                <br /><span class="wpsc-required-help">'.$text['required_help'].'</span>
+                                </form>';
+                            }
+                        }
+                    }
+
                 }
 
                 if( $isLoggedIn == true || $is_checkout==false) {
-
 
                     $output .= "\t<form method='post' action='$form_action'>\n";
 
@@ -961,8 +1055,76 @@ class wpsc {
                         $output .= "\t\t\t\t\t\t<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
                     }
 
+                    // Tax is calculated and displayed here
+                    $mastertax = 0.0;
+                    $taxamount = 0;
+                    if(($devOptions['displaytaxes']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowTax']=='true' ) {
+                        if($taxstates || $taxcountries) {
+                            $table_name33 = $wpdb->prefix . "wpstorecart_meta";
+                            $grabrecord = "SELECT * FROM `{$table_name33}` WHERE `type`='tax' ORDER BY `primkey` ASC;";
+
+                            $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                            if(isset($results)) {
+                                    foreach ($results as $result) {
+                                        $calculateTaxes = false;
+                                        $exploder = explode('||', $result['value']);
+                                        foreach ($exploder as $exploded) {
+                                            $exploderInd = explode(',', $exploder[2]);
+                                            foreach ($exploderInd as $exploderEnd) {
+                                                if(trim($exploderEnd)==trim(get_the_author_meta("taxstate", wp_get_current_user()->ID))) {
+                                                    $calculateTaxes = true;
+                                                } else {
+                                                    if (isset($_COOKIE["taxstate"])) {
+                                                        if($exploderEnd==trim($_COOKIE["taxstate"])) {
+                                                            $calculateTaxes = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                        if($calculateTaxes){
+                                            $mastertax = $mastertax + $exploder[3];
+                                        }
+                                        $calculateTaxes = false;
+
+
+                                        foreach ($exploder as $exploded) {
+                                            $exploderInd = explode(',', $exploder[1]);
+                                            foreach ($exploderInd as $exploderEnd) {
+                                                if(trim($exploderEnd)==trim(get_the_author_meta("taxcountries", wp_get_current_user()->ID))) {
+                                                    $calculateTaxes = true;
+                                                } else {
+                                                    if (isset($_COOKIE["taxcountries"])) {
+                                                        if($exploderEnd==trim($_COOKIE["taxcountries"])) {
+                                                            $calculateTaxes = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if($calculateTaxes){
+                                            $mastertax = $mastertax + $exploder[3];
+                                        }
+                                        $calculateTaxes = false;
+
+                                    }
+                            }
+                            if($mastertax > 0) {
+                                $taxamount = ($this->total + $totalshipping) * ($mastertax /100);
+                            }
+                            $output .= "\t\t\t\t\t\t<span id='wpsc-tax"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['tax'] . ": <strong>" . $text['currency_symbol'] . number_format($taxamount,2) . $text['currency_symbol_right'] ."</strong> (".$mastertax."%)</span><br />\n";
+                        }
+                    }
+
+                    if($mastertax > 0) {
+                        $taxamount = ($this->total + $totalshipping) * ($mastertax /100);
+                    }
+
                     if(($devOptions['displaytotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowTotal']=='true' ) {
-                        $output .= "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        $output .= "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping + $taxamount,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
                     }
 
                     if(!$cart_is_empty) {
@@ -995,11 +1157,21 @@ class wpsc {
 
                                 if($devOptions['allowqbms']=='true' && $isLoggedIn == true) {
 
-                                    $output .= '<table id="wpsc-creditcard-form">
+                                    $year1 = date('Y') + 1;
+                                    $year2 = date('Y') + 2;
+                                    $year3 = date('Y') + 3;
+                                    $year4 = date('Y') + 4;
+                                    $year5 = date('Y') + 5;
+                                    $year6 = date('Y') + 6;
+                                    $year7 = date('Y') + 7;
+                                    $year8 = date('Y') + 8;
+                                    $year9 = date('Y') + 9;
+
+                                    $output .= '<br /><table id="wpsc-creditcard-form">
                                         <tr><td>'.$text['cc_name'].'</td><td><input type="text" name="cc_name_input" id="cc_name_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_number'].'</td><td><input type="text" name="cc_number_input" id="cc_number_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_cvv'].'</td><td><input type="text" name="cc_cvv_input" id="cc_cvv_input" value="" /></td></tr>
-                                        <tr><td>'.$text['cc_expires'].'</td><td><input type="text" name="cc_expires_input" id="cc_expires_input" value="" /></td></tr>
+                                        <tr><td>'.$text['cc_expires'].'</td><td><table><tr><td>'.$text['cc_expires_month'].' <select name="cc_expires_month_input" id="cc_expires_month_input"><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td><td> '.$text['cc_expires_year'].'</td><td><select name="cc_expires_year_input" id="cc_expires_year_input"><option value="'.date('Y').'">'.date('Y').'</option><option value="'.$year1.'">'.$year1.'</option><option value="'.$year2.'">'.$year2.'</option><option value="'.$year3.'">'.$year3.'</option><option value="'.$year4.'">'.$year4.'</option><option value="'.$year5.'">'.$year5.'</option><option value="'.$year6.'">'.$year6.'</option><option value="'.$year7.'">'.$year7.'</option><option value="'.$year8.'">'.$year8.'</option><option value="'.$year9.'">'.$year9.'</option></select></td></tr></table></td></tr>
                                         <tr><td>'.$text['cc_address'].'</td><td><input type="text" name="cc_address_input" id="cc_address_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_postalcode'].'</td><td><input type="text" name="cc_postalcode_input" id="cc_postalcode_input" value="" /></td></tr>
                                         <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class="wpsc-button wpsc-qbmscheckout" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>

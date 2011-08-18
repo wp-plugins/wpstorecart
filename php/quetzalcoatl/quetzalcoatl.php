@@ -75,6 +75,13 @@ class quetzalcoatl {
      */
     var $itemcategory = array();
 
+    /**
+     * The constructor
+     */
+    public function  __construct() {
+        
+    }
+
 }
 
 

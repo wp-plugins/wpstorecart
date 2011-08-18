@@ -735,26 +735,6 @@ function wpsct_settings_page() {
 	if(isset($wpStoreCart)) {
             $wpStoreCart->spHeader();
             $wpStoreCart->spSettings();
-
-            echo'
-            <h2> </h2>
-            <ul class="tabs">
-                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab1" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab1\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_general.jpg" /></a></li>
-                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab2" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab2\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_email.jpg" /></a></li>';
-
-            echo '<li><a href="admin.php?page=wpstorecarttheme-settings" onclick="window.location = \'admin.php?page=wpstorecarttheme-settings\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_theme.jpg" /></a></li>';
-
-
-            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab3" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab3\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_product.jpg" /></a></li>';
-
-            if($devOptions['storetype']!='Digital Goods Only') { // Hide shipping if digital only store
-                    echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab6" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab6\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_shipping.jpg" /></a></li>';
-            }
-            echo '<li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab4" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab4\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_payment.jpg" /></a></li>
-                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab5" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab5\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_text.jpg" /></a></li>
-                    <li><a href="admin.php?page=wpstorecart-settings&theCurrentTab=tab7" onclick="window.location = \'admin.php?page=wpstorecart-settings&theCurrentTab=tab7\';"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/buttons_customers.jpg" /></a></li>
-            </ul>
-            <div style="clear:both;"></div>';
             echo '<h2>wpStoreCart Theme Options <a href="http://wpstorecart.com/documentation/settings/theme-settings/" target="_blank"><img src="'.plugins_url('/wpstorecart/images/bighelp.png').'" alt="" /></a></h2>';
         } else {
             echo '<h2>wpStoreCart Theme Options</h2>';
