@@ -1,0 +1,9 @@
+p, h1, h2, h3, h4, h5, span {font-family:"Calibri";color:#545454;}
+a {color:#0f91ff; text-decoration:none; }
+a:hover {color:#2fB3ff; text-decoration:underline;}
+a img {border:none;}
+h1, h2 { font-size:18px; letter-spacing:1px; text-transform:uppercase; }
+h3 { font-size:18px; }
+h4 { font-size:16px; }
+h5 { font-size:16px; font-style:italic; font-weight:normal; }
+h6 { font-size:16px; font-weight:normal; }
