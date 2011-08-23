@@ -872,8 +872,14 @@ else
                     
                     $myPaypal->addField('upload', '1');
 
+
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        $successpermalink = get_permalink($devOptions['mainpage']) .'?wpsc=success';
+                    } else {
+                        $successpermalink = get_permalink($devOptions['mainpage']) .'&wpsc=success';
+                    }
                     // Specify the url where paypal will send the user on success/failure
-                    $myPaypal->addField('return', WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_success.php');
+                    $myPaypal->addField('return', $successpermalink);
 
                     if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
                         $failedpermalink = get_permalink($devOptions['mainpage']) .'?wpsc=failed';
@@ -884,7 +890,7 @@ else
                     $myPaypal->addField('cancel_return', $failedpermalink);
 
                     // Specify the url where paypal will send the IPN
-                    $myPaypal->addField('notify_url', WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_ipn.php');
+                    $myPaypal->addField('notify_url', $devOptions['paypalipnurl']);
 
                     // Enable test mode if needed
                     if($devOptions['paypaltestmode']=='true') {

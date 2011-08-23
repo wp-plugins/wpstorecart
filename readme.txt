@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,12 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.1 =
+* Added: You can easily add CSS classes to any Add to Cart, Checkout, or other wpStoreCart produced button from Settings > Display >
+* Fixed: PayPal success page now specifies the correct page
+* Added: Ability to manually specify the PayPal IPN URL (advanced users only)
+* Added: New Diagnostic page added, to help users help the admin solve bugs
 
 = 2.4.0 =
 * Added: Admin panel now has drop downs for all administrative menus

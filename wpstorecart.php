@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.0
+Version: 2.4.1
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.0
+ * @version 2.4.1
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.0';
-$wpstorecart_version_int = 204000; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.1';
+$wpstorecart_version_int = 204001; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -837,6 +837,7 @@ if (!class_exists("wpStoreCart")) {
                             <li><a href="admin.php?page=wpstorecart-admin" class="spmenu">Overview</a></li>
                             <li><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" class="spmenu">Setup Wizard</a></li>
                             <li><a href="'.plugins_url('/php/wizard/wizard_setup_04.php' , __FILE__).'" rel="#overlay" class="spmenu">Payments Wizard</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-diagnostics" class="spmenu">Diagnostics</a></li>
                         </ul>
                         
                         <script type="text/javascript">
@@ -1081,7 +1082,11 @@ if (!class_exists("wpStoreCart")) {
                                     'field_order_2' => '2',
                                     'field_order_3' => '3',
                                     'field_order_4' => '4',
-                                    'pcicompliant' => 'false'
+                                    'pcicompliant' => 'false',
+                                    'paypalipnurl' => WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_ipn.php',
+                                    'button_classes_addtocart' => '',
+                                    'button_classes_checkout' => '',
+                                    'button_classes_meta' => ''
                                     );
 
             
@@ -1305,7 +1310,69 @@ echo '</ul>
 
         }
 
+        function printAdminPageDiagnostics() {
+            $devOptions = $this->getAdminOptions();
+            if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart'))
+            {
+              wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
+            }
 
+            $this->spHeader();
+            $this->wpstorecart_alert();
+
+            
+
+            echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/development.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;Diagnostics <a href="http://wpstorecart.com/documentation/diagnostics/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+
+            echo 'WARNING: Do not post this code in a public place.  The code below contains sensitive information about your site.  Only share this information with parties you trust, such as wpStoreCart staff, your web developers, etc.  The information here may be useful for technicians to diagnose what may be causing an issue that you have.  To view this data, run it through the base64_decode() PHP function.
+                <br /><br /><a href="" onclick="jQuery(\'#wpsc-diag\').select();return false;">Select All...</a><br />';
+
+            echo '<textarea readonly="readonly" id="wpsc-diag" onclick="jQuery(\'#wpsc-diag\').select();return false;" onfocus="jQuery(\'#wpsc-diag\').select();return false;" style="border:1px solid #666;width:850px;max-width:850px;height:250px;overflow:scroll;">';
+            $arr = get_defined_vars();
+
+            $output = '<pre>';
+            $output .= "===== wpStoreCart settings =====
+";
+            foreach ($arr as $key=>$value){
+                $output .= $key ." => ". $value ."
+";
+                if(is_array($value)) {
+                    $output .= print_r($value, true);
+                }
+            }
+
+            $output .= "===== php.ini settings =====
+";
+            $output .= print_r(ini_get_all(), true);
+            $output .= "===== your local settings =====
+";
+            $output .= "Your OS: ".php_uname()."
+";
+            $output .= "===== apache modules =====
+";
+            $output .= print_r(apache_get_modules(), true);
+            $output .= "===== php version=====
+";
+            $output .= "PHP version: ".phpversion(). "
+                ";
+            $output .= "===== stream wrappers =====
+";
+            $output .= print_r(stream_get_wrappers(), true);
+            $output .= "===== stream transports =====
+";
+            $output .= print_r(stream_get_transports(), true);
+            $output .= "===== stream filters =====
+";
+            $output .= print_r(stream_get_filters(), true);
+            $output .= "===== Wordpress and Global settings =====
+";
+            $output .= print_r($GLOBALS, true).'</pre>';
+
+            echo base64_encode($output);
+            echo '  </textarea>';
+            echo '</div>';
+
+        }
 		
 		
         /**
@@ -1752,6 +1819,19 @@ echo '</ul>
 				}
 				if (isset($_POST['pcicompliant'])) {
  					$devOptions['pcicompliant'] = $wpdb->escape($_POST['pcicompliant']);
+				}
+                                if (isset($_POST['paypalipnurl'])) {
+ 					$devOptions['paypalipnurl'] = $wpdb->escape($_POST['paypalipnurl']);
+				}
+
+                                if (isset($_POST['button_classes_addtocart'])) {
+ 					$devOptions['button_classes_addtocart'] = $wpdb->escape($_POST['button_classes_addtocart']);
+				}
+                                if (isset($_POST['button_classes_checkout'])) {
+ 					$devOptions['button_classes_checkout'] = $wpdb->escape($_POST['button_classes_checkout']);
+				}
+                                if (isset($_POST['button_classes_meta'])) {
+ 					$devOptions['button_classes_meta'] = $wpdb->escape($_POST['button_classes_meta']);
 				}
 
 				if (isset($_POST['admin_capability'])) {
@@ -2543,6 +2623,28 @@ echo '</ul>
 			</select>
 			</td></tr>
                         </table>
+			<br style="clear:both;" /><br />
+
+                        <h2>Buttons</h2>
+
+                        <table class="widefat">
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+			<tr><td><h3>Add to Cart button classes</h3></td>
+			<td class="tableDescription"><p>Additional Classes for Add to Cart buttons.  Enter classes without periods, space separated. </p></td>
+			<td><input type="text" name="button_classes_addtocart" value="'; _e(apply_filters('format_to_edit',$devOptions['button_classes_addtocart']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Checkout button classes</h3></td>
+			<td class="tableDescription"><p>Additional Classes for Checkout buttons.  Enter classes without periods, space separated. </p></td>
+			<td><input type="text" name="button_classes_checkout" value="'; _e(apply_filters('format_to_edit',$devOptions['button_classes_checkout']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
+			<tr><td><h3>Other button classes</h3></td>
+			<td class="tableDescription"><p>Additional Classes for update, clear, & other buttons.  Enter classes without periods, space separated. </p></td>
+			<td><input type="text" name="button_classes_meta" value="'; _e(apply_filters('format_to_edit',$devOptions['button_classes_meta']), 'wpStoreCart'); echo'" />
+			</td></tr>
+                        
+                        </table>
 
                         </div>
                         <div id="tab6" class="tab_content">
@@ -2660,6 +2762,17 @@ echo '</ul>
                         }
 
                         echo '
+
+                        <table class="widefat">
+			<tr><td><h3>Currency Symbol</h3></td>
+			<td class="tableDescription"><p>Left Symbol Default: <i>$</i></p><p>Right Symbol Default: </p></td>
+			<td>Left symbol: <input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
+                        <br />Right symbol: <input type="text" name="currency_symbol_right" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol_right']), 'wpStoreCart'); echo'" />
+			</td></tr>
+                        </table>
+
+                        <br style="clear:both;" /><br />
+
                         <h3>PayPal Payment Gateway</h3>
                         <table class="widefat">
                                                 <thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
@@ -2725,10 +2838,9 @@ echo '</ul>
 			</select>
 			</td></tr>
 
-			<tr><td><h3>Currency Symbol</h3></td>
-			<td class="tableDescription"><p>Left Symbol Default: <i>$</i></p><p>Right Symbol Default: </p></td>
-			<td>Left symbol: <input type="text" name="currency_symbol" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol']), 'wpStoreCart'); echo'" />
-                        <br />Right symbol: <input type="text" name="currency_symbol_right" value="'; _e(apply_filters('format_to_edit',$devOptions['currency_symbol_right']), 'wpStoreCart'); echo'" />
+			<tr><td><h3>Advanced Settings <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8222222222222222" /><div class="tooltip-content" id="example-content-8222222222222222">For advanced users only, here are a few settings most users shouldn\'t touch, even if you\'re experiencing issues.</div></h3></td>
+			<td class="tableDescription"><p>Advanced settings.  Do not edit or use unless you know exactly what you\'re doing!</p></td>
+			<td>IPN URL: <input type="text" name="paypalipnurl" value="'; _e(apply_filters('format_to_edit',$devOptions['paypalipnurl']), 'wpStoreCart'); echo'" style="width:200px;" />
 			</td></tr>
 
                         </table>
@@ -3953,9 +4065,7 @@ echo '</ul>
                         $this->wpstorecart_alert();
 
                         echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/refresh.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Import/Export <a href="http://wpstorecart.com/documentation/adding-editing-products/import-export/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
-                        if($testing_mode==true && $wpstorecart_version_int < 202000) {
-                            echo '<div id="wpsc-warning" class="updated fade"><p><strong>This feature is intended for wpStoreCart 2.2 and above.  You can only access it right now because you are using Testing Mode.  Currently, this feature may be incomplete or non functional, and using this feature may destroy your data, your website, even your life!</strong></p></div>';
-                        }
+
 
 			
 
@@ -7627,7 +7737,7 @@ echo '</ul>
                                                                         ';
 
                                                                         if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
-                                                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
                                                                         } else {
                                                                             $output .= $devOptions['out_of_stock'];
                                                                         }
@@ -7991,7 +8101,7 @@ echo '</ul>
                                                             
 
                                                             if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
-                                                                $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
                                                             } else {
                                                                 $output .= $devOptions['out_of_stock'];
                                                             }
@@ -8214,7 +8324,7 @@ echo '</ul>
                                                                                     }
                                                                                 }
                                                                                 if($display_add_to_cart_at_all_times=='no') { // will display the Add to Cart if there are no variations or if it is set to display automatically.
-                                                                                    $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart" />';
+                                                                                    $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
                                                                                 }
                                                                             }
                                                                         } else {
@@ -8479,7 +8589,7 @@ echo '</ul>
                                                 } else {
                                                     $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=manualresponse&order='.$_GET['order'];
                                                 }
-                                                $output .= '<form action="'.$permalink.'" method="post"><textarea class="wpsc-textarea" name="manualresponsetext"></textarea><input type="submit" class="wpsc-button" value="Submit" /> </form>';
+                                                $output .= '<form action="'.$permalink.'" method="post"><textarea class="wpsc-textarea" name="manualresponsetext"></textarea><input type="submit" class="wpsc-button '.$devOptions['button_classes_meta'].'" value="Submit" /> </form>';
                                             }
                                             if($_GET['wpsc']=='manualresponse') {
                                                 global $wpstorecart_version;
@@ -10559,6 +10669,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             $page2a = add_submenu_page('wpstorecart-admin','ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
             $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'manage_wpstorecart', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
             $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'manage_wpstorecart', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
+            $diagnosticsPage = add_submenu_page(NULL,'Diagnostics - wpStoreCart', 'Diagnostics', 'manage_wpstorecart', 'wpstorecart-diagnostics', array(&$wpStoreCart, 'printAdminPageDiagnostics'));
             add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'manage_wpstorecart', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
             add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_tooltip_script') );
@@ -10570,6 +10681,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
             add_action("admin_print_scripts-$affiliatespage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$editproductpage", array(&$wpStoreCart, 'my_admin_scripts') );
+            add_action("admin_print_scripts-$diagnosticsPage", array(&$wpStoreCart, 'my_tooltip_script') );
 
             if(is_admin() && ($devOptions['menu_style']=='version3' || $devOptions['menu_style']=='both' || $_POST['menu_style']=='version3' || $_POST['menu_style']=='both')) {
                 require_once(WP_PLUGIN_DIR.'/wpstorecart/php/screen-meta-links.php');
@@ -10591,6 +10703,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10615,6 +10728,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10639,6 +10753,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10663,6 +10778,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10689,6 +10805,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10713,6 +10830,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10752,6 +10870,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $affiliatespage,
                                 $statsPage,
                                 $ordersPage,
+                                $diagnosticsPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
@@ -10780,6 +10899,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                     $affiliatespage,
                                     $statsPage,
                                     $ordersPage,
+                                    $diagnosticsPage,
                             ),
                             //Additional attributes for the link tag.
                             array(

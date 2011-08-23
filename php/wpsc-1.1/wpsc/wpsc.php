@@ -580,7 +580,7 @@ class wpsc {
                                         <br /><strong>'. $text['guestcheckout'] .'</strong><br />
                                         <table>
                                         <tr><td>'. $text['email'] .' <ins'.$disable_inline_styles.'><div class="wpsc-required-symbol">'.$text['required_symbol'].'</div></ins></td><td><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></td></tr>
-                                        <tr><td></td><td><input type="submit" value="'. $text['checkout_button'] .'" class="wpsc-button wpsc-checkout" /></td></tr>
+                                        <tr><td></td><td><input type="submit" value="'. $text['checkout_button'] .'" class="wpsc-button wpsc-checkout '.$devOptions['button_classes_checkout'].'" /></td></tr>
                                         </table>
                                     </form>
                                     <br />
@@ -638,7 +638,7 @@ class wpsc {
                                         <table>
                                         <tr><td>'. $text['username'] .'</td><td><input type="text" value="" name="log" /></td></tr>
                                         <tr><td>'. $text['password'] .' </td><td><input type="password" value="" name="pwd"  /></td></tr>
-                                        <tr><td></td><td><input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" /><input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button" /></td></tr>
+                                        <tr><td></td><td><input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" /><input type="submit" value="'. $text['login'] .'" class="wpsc-button wpsc-login-button '.$devOptions['button_classes_meta'].'" /></td></tr>
                                         </table>
                             </form>
                             <br />
@@ -651,7 +651,7 @@ class wpsc {
                                             $output .= $wpStoreCart->show_custom_reg_fields();
 
                             $output .= '          <input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                                            <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button" /></td></tr>
+                                            <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['register'] .'" class="wpsc-button wpsc-register-button  '.$devOptions['button_classes_meta'].'" /></td></tr>
                                                 </table>
                                             <br /><span class="wpsc-required-help">'.$text['required_help'].'</span>
                             </form>
@@ -737,7 +737,7 @@ class wpsc {
                                     $output .= $wpStoreCart->show_custom_reg_fields();
 
                                     $output .= '<input type="hidden" name="redirect_to" value="'.$servrequest_uri.'" />
-                                                <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['update_button'] .'" class="wpsc-button wpsc-register-button" /></td></tr>
+                                                <tr><td></td><td><input type="submit" name="wp-submit" value="'. $text['update_button'] .'" class="wpsc-button wpsc-register-button  '.$devOptions['button_classes_meta'].'" /></td></tr>
                                                     </table>
                                                 <br /><span class="wpsc-required-help">'.$text['required_help'].'</span>
                                 </form>';
@@ -923,7 +923,7 @@ class wpsc {
                     if ($is_checkout !== true) {
                         if ($button['checkout']) { $input_type = 'image'; $src = ' src="' . $button['checkout'] . '" alt="' . $text['checkout_button'] . '" title="" ';	}
 
-                        $output .= "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='wpsc-button wpsc-checkout' value='" . $text['checkout_button'] . "' /><br />\n";
+                        $output .= "\t\t\t\t\t\t<input type='" . $input_type . "' " . $src . "id='wpsc-checkout' name='wpsc_checkout' class='wpsc-button wpsc-checkout ".$devOptions['button_classes_checkout']."' value='" . $text['checkout_button'] . "' /><br />\n";
                     }
 
                     if ($is_checkout == true && $devOptions['enablecoupons']=='true') {
@@ -1129,12 +1129,12 @@ class wpsc {
 
                     if(!$cart_is_empty) {
                         if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}
-                        $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='wpsc-button wpsc-update ' />\n";
+                        $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_update_cart' value='" . $text['update_button'] . "' class='wpsc-button wpsc-update  ".$devOptions['button_classes_meta']."' />\n";
                     }
                     $output .= "<div class='wpsc-hide'>";
                     if ($is_checkout == false) {
                             if ($button['empty']) { $input_type = 'image'; $src = ' src="' . $button['empty'] . '" alt="' . $text['empty_button'] . '" title="" ';	}
-                            $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='wpsc-button wpsc-empty' />\n";
+                            $output .= "\t\t\t\t<input type='" . $input_type . "' " . $src ."name='wpsc_empty' value='" . $text['empty_button'] . "' class='wpsc-button wpsc-empty ".$devOptions['button_classes_meta']."' />\n";
                     }
 
                     $output .= "</div>";
@@ -1174,7 +1174,7 @@ class wpsc {
                                         <tr><td>'.$text['cc_expires'].'</td><td><table><tr><td>'.$text['cc_expires_month'].' <select name="cc_expires_month_input" id="cc_expires_month_input"><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></td><td> '.$text['cc_expires_year'].'</td><td><select name="cc_expires_year_input" id="cc_expires_year_input"><option value="'.date('Y').'">'.date('Y').'</option><option value="'.$year1.'">'.$year1.'</option><option value="'.$year2.'">'.$year2.'</option><option value="'.$year3.'">'.$year3.'</option><option value="'.$year4.'">'.$year4.'</option><option value="'.$year5.'">'.$year5.'</option><option value="'.$year6.'">'.$year6.'</option><option value="'.$year7.'">'.$year7.'</option><option value="'.$year8.'">'.$year8.'</option><option value="'.$year9.'">'.$year9.'</option></select></td></tr></table></td></tr>
                                         <tr><td>'.$text['cc_address'].'</td><td><input type="text" name="cc_address_input" id="cc_address_input" value="" /></td></tr>
                                         <tr><td>'.$text['cc_postalcode'].'</td><td><input type="text" name="cc_postalcode_input" id="cc_postalcode_input" value="" /></td></tr>
-                                        <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class="wpsc-button wpsc-qbmscheckout" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>
+                                        <tr><td></td><td><input type="submit" value="'.$text['checkout_button'].'" class="wpsc-button wpsc-qbmscheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'qbms\');" onsubmit="jQuery(\'#paymentGateway\').val(\'qbms\');"></input></td></tr>
                                     </table>';
 
                                 }
@@ -1182,31 +1182,31 @@ class wpsc {
 
                                     if($devOptions['allowcheckmoneyorder']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class="wpsc-button wpsc-checkmoneyordercheckout" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_checkmoneyorder_button'].'" class="wpsc-button wpsc-checkmoneyordercheckout  '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');" onsubmit="jQuery(\'#paymentGateway\').val(\'checkmoneyorder\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowpaypal']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_paypal_button'].'" class="wpsc-button wpsc-paypalcheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'paypal\');" onsubmit="jQuery(\'#paymentGateway\').val(\'paypal\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowauthorizenet']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_authorizenet_button'].'" class="wpsc-button wpsc-authorizenetcheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'authorize.net\');" onsubmit=" jQuery(\'#paymentGateway\').val(\'authorize.net\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allow2checkout']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_2checkout_button'].'" class="wpsc-button wpsc-2checkoutcheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'2checkout\');" onsubmit="jQuery(\'#paymentGateway\').val(\'2checkout\');"></input>';
                                             }
                                     }
 
                                     if($devOptions['allowlibertyreserve']=='true' && $isLoggedIn == true) {
                                             if(!isset($_POST['ispaypal'])) {
-                                                    $output .= '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class="wpsc-button wpsc-libertyreservecheckout" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
+                                                    $output .= '<input type="submit" value="'.$text['checkout_libertyreserve_button'].'" class="wpsc-button wpsc-libertyreservecheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'libertyreserve\');" onsubmit="jQuery(\'#paymentGateway\').val(\'libertyreserve\');"></input>';
                                             }
                                     }
 
