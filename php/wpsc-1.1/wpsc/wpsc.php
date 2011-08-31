@@ -97,7 +97,7 @@ class wpsc {
 
 
 	// ADD AN ITEM
-	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='')
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00')
 		{
 		// VALIDATION
 		$valid_item_qty = $valid_item_price = false;
@@ -861,12 +861,21 @@ class wpsc {
 
                                     // Price & remove
                                     if($devOptions['checkout_xhtml_type']=='table' && $is_checkout==true) {
-                                        $output_price .= "<td><span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
-                                        $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
+                                        if($item['price']==0) {
+                                            $output_price .= "<td><span> </span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                            $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
+                                        } else {
+                                            $output_price .= "<td><span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                            $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
+                                        }
                                     } else {
-
-                                        $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
-                                        $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
+                                        if($item['price']==0) {
+                                            $output_price .= "\t\t\t\t\t\t<span> </span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                            $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
+                                        } else {
+                                            $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                            $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
+                                        }
                                     }
 
                                     if($devOptions['field_order_0']=='0') {$output.=$output_qty;}

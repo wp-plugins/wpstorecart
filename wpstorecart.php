@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.1
+Version: 2.4.2
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.1
+ * @version 2.4.2
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.1';
-$wpstorecart_version_int = 204001; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.2';
+$wpstorecart_version_int = 204002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -252,6 +252,7 @@ if(!function_exists('copyr')) {
 }
 
 // Copy the theme if needed
+/**
 if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php')) {
     @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
 } else {
@@ -265,6 +266,7 @@ if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php')) {
         @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
     }
 }
+*/
 
 // Try and fix things for people who have magic quotes on
 if (@get_magic_quotes_gpc()) {
@@ -1086,7 +1088,19 @@ if (!class_exists("wpStoreCart")) {
                                     'paypalipnurl' => WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_ipn.php',
                                     'button_classes_addtocart' => '',
                                     'button_classes_checkout' => '',
-                                    'button_classes_meta' => ''
+                                    'button_classes_meta' => '',
+                                    'trial_period_1' => 'Trial Period:',
+                                    'trial_period_2' => '2nd Trial Period:',
+                                    'subscription_price' => 'Subscription Price:',
+                                    'for' => 'for',
+                                    'afterwards' => 'afterwards',
+                                    'every' => 'every',
+                                    'free' => 'FREE',
+                                    'day' => 'day(s)',
+                                    'week' => 'week(s)',
+                                    'month' => 'month(s)',
+                                    'year' => 'year(s)',
+                                    'buy_now' => 'Buy Now'
                                     );
 
             
@@ -1832,6 +1846,44 @@ echo '</ul>
 				}
                                 if (isset($_POST['button_classes_meta'])) {
  					$devOptions['button_classes_meta'] = $wpdb->escape($_POST['button_classes_meta']);
+				}
+
+                                if (isset($_POST['trial_period_1'])) {
+ 					$devOptions['trial_period_1'] = $wpdb->escape($_POST['trial_period_1']);
+				}
+                                if (isset($_POST['trial_period_2'])) {
+ 					$devOptions['trial_period_2'] = $wpdb->escape($_POST['trial_period_2']);
+				}
+                                if (isset($_POST['subscription_price'])) {
+ 					$devOptions['subscription_price'] = $wpdb->escape($_POST['subscription_price']);
+				}
+                                if (isset($_POST['for'])) {
+ 					$devOptions['for'] = $wpdb->escape($_POST['for']);
+				}
+                                if (isset($_POST['afterwards'])) {
+ 					$devOptions['afterwards'] = $wpdb->escape($_POST['afterwards']);
+				}
+                                if (isset($_POST['every'])) {
+ 					$devOptions['every'] = $wpdb->escape($_POST['every']);
+				}
+                                if (isset($_POST['free'])) {
+ 					$devOptions['free'] = $wpdb->escape($_POST['free']);
+				}
+
+                                if (isset($_POST['day'])) {
+ 					$devOptions['day'] = $wpdb->escape($_POST['day']);
+				}
+                                if (isset($_POST['week'])) {
+ 					$devOptions['week'] = $wpdb->escape($_POST['week']);
+				}
+                                if (isset($_POST['month'])) {
+ 					$devOptions['month'] = $wpdb->escape($_POST['month']);
+				}
+                                if (isset($_POST['year'])) {
+ 					$devOptions['year'] = $wpdb->escape($_POST['year']);
+				}
+                                if (isset($_POST['buy_now'])) {
+ 					$devOptions['buy_now'] = $wpdb->escape($_POST['buy_now']);
 				}
 
 				if (isset($_POST['admin_capability'])) {
@@ -4627,63 +4679,7 @@ echo '</ul>
                                                 $wpStoreCartproduct_height = stripslashes($result['height']);
                                                 $wpStoreCartproduct_discountprice = stripslashes($result['discountprice']);
 
-                                                /*
-                                                $rel_post = get_post($result['postid']) ;
-                                                if(isset($rel_post->ID)) {
-                                                    if(@$_GET['recreate']=='true') {
-                                                        // Create our PAGE in draft mode in order to get the POST ID
-                                                        $my_post = array();
-                                                        $my_post['post_title'] = stripslashes($wpStoreCartproduct_name);
-                                                        $my_post['post_type'] = 'page';
-                                                        $my_post['post_content'] = '';
-                                                        $my_post['post_status'] = 'draft';
-                                                        $my_post['post_author'] = 1;
-                                                        $my_post['post_parent'] = $devOptions['mainpage'];
-
-                                                        // Insert the PAGE into the WP database
-                                                        $thePostID = wp_insert_post( $my_post );
-                                                        if($thePostID==0) {
-                                                                echo '<div class="updated"><p><strong>';
-                                                                _e("ERROR 4: wpStoreCart couldn't recreate your product page :(", "wpStoreCart");
-                                                                echo $wpdb->print_error();
-                                                                echo '</strong></p></div>';
-                                                                return false;
-                                                        } else { // Successfuly draft, let's continue
-
-                                                                $updateSQL = "
-                                                                UPDATE `{$table_name}` SET
-                                                                `postid` = '{$thePostID}'
-                                                                WHERE `primkey` ={$keytoedit} LIMIT 1 ;
-                                                                ";
-
-                                                                $results = $wpdb->query($updateSQL);
-
-                                                                if($results===false) {
-                                                                        echo '<div class="updated"><p><strong>';
-                                                                        _e("ERROR 2: There was a problem with your form!  The database query was invalid. ", "wpStoreCart");
-                                                                        echo $wpdb->print_error();
-                                                                        echo '</strong></p></div>';
-                                                                } else { // If we get this far, we are still successful
-                                                                        echo '<div class="updated"><p><strong>';
-                                                                        _e("Edit successful!  Your product details have been saved.", "wpStoreCart");
-                                                                        echo '</strong></p></div>';
-                                                                }
-
-                                                            // Now that we've inserted both the PAGE and the product, let's update and publish our post with the correct content
-                                                            $my_post = array();
-                                                            $my_post['ID'] = $thePostID;
-                                                            $my_post['post_content'] = '[wpstorecart display="product" primkey="'.$keytoedit.'"]';
-                                                            $my_post['post_status'] = 'publish';
-                                                            wp_update_post( $my_post );
-                                                        }
-                                                    } else {
-                                                        echo '<div class="updated"><p><strong>';
-                                                        echo "The product page associated with this product is missing.  To recreate the page, <a href=\"admin.php?page=wpstorecart-add-products&keytoedit=5&recreate=true\">click here</a> (make sure you save any changes you made to the product first or you will lose them!)";
-                                                        echo '</strong></p></div>';
-                                                    }
-                                                }
-                                                 * 
-                                                 */
+  
 
 					}
 				} else {
@@ -4881,7 +4877,7 @@ echo '</ul>
                                 echo '
                                     <li style="display:inline;"><a href="#tab1"><img src="'.plugins_url('/images/buttons_product_info.jpg' , __FILE__).'" /></a></li>
                                     <li style="display:inline;"><a href="#tab4"><img src="'.plugins_url('/images/buttons_pictures.jpg' , __FILE__).'" /></a></li>
-                                    <li style="display:inline;"><a href="#tab2"><img src="'.plugins_url('/images/buttons_variation.jpg' , __FILE__).'" /></a></li>
+                                    <li style="display:inline;" id="wpsc-variations-li"><a href="#tab2"><img src="'.plugins_url('/images/buttons_variation.jpg' , __FILE__).'" /></a></li>
                                     ';
                             }
                             if($devOptions['storetype']!='Physical Goods Only' && $isanedit==true){
@@ -4924,12 +4920,209 @@ echo '</ul>
 			<td><div style="width:300px;">Your detailed description and sales pitch for the product.</div></td>
 			</tr>';			
 
+                        $wpsc_price_type = 'charge';
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                            $membership_primkey = NULL;
+                            $membership_value = NULL;
+                            $wpsc_membership_trial1_allow = 'no';
+                            $wpsc_membership_trial2_allow = 'no';
+                            $wpsc_membership_trial1_amount = '0.00';
+                            $wpsc_membership_trial2_amount = '0.00';
+                            $wpsc_membership_regular_amount = '0.00';
+                            $wpsc_membership_trial1_numberof = '1';
+                            $wpsc_membership_trial2_numberof = '1';
+                            $wpsc_membership_regular_numberof = '1';
+                            $wpsc_membership_trial1_increment = 'D';
+                            $wpsc_membership_trial2_increment = 'D';
+                            $wpsc_membership_regular_increment = 'D';
+                            $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                            if(isset($_GET['keytoedit']) && is_numeric($_GET['keytoedit'])) {
+                                
+                                $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$_GET['keytoedit']};";
+                                $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                if(isset($resultsMembership)) {
+                                    foreach ($resultsMembership as $pagg) {
+                                        $membership_primkey = $pagg['primkey'];
+                                        $membership_value = $pagg['value'];
+                                    }
+                                    if($membership_value!='') {
+                                        $theExploded = explode('||', $membership_value);
+                                        // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                        $wpsc_price_type = $theExploded[0];
+                                        $wpsc_membership_trial1_allow = $theExploded[1];
+                                        $wpsc_membership_trial2_allow = $theExploded[2];
+                                        $wpsc_membership_trial1_amount = $theExploded[3];
+                                        $wpsc_membership_trial2_amount = $theExploded[4];
+                                        $wpsc_membership_regular_amount = $theExploded[5];
+                                        $wpsc_membership_trial1_numberof = $theExploded[6];
+                                        $wpsc_membership_trial2_numberof = $theExploded[7];
+                                        $wpsc_membership_regular_numberof = $theExploded[8];
+                                        $wpsc_membership_trial1_increment = $theExploded[9];
+                                        $wpsc_membership_trial2_increment = $theExploded[10];
+                                        $wpsc_membership_regular_increment = $theExploded[11];
+                                    }
+                                }
+
+                                // Here's code to add or update the membership status
+                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                                    if($_POST['wpsc-price-type']=='membership' || $_POST['wpsc-price-type']=='charge') {
+
+                                        $wpsc_membership_trial1_allow = 'no';
+                                        $wpsc_membership_trial2_allow = 'no';
+                                        if($_POST['wpsc_membership_trial1_allow']=='yes') {
+                                            $wpsc_membership_trial1_allow = 'yes';
+                                        }
+                                        if($_POST['wpsc_membership_trial2_allow']=='yes') {
+                                            $wpsc_membership_trial2_allow = 'yes';
+                                        }
+                                        $membership_value = $_POST['wpsc-price-type'] . '||' . $wpsc_membership_trial1_allow . '||' . $wpsc_membership_trial2_allow .'||'. $_POST['wpsc_membership_trial1_amount'] .'||'. $_POST['wpsc_membership_trial2_amount'] . '||' . $_POST['wpsc_membership_regular_amount'] . '||' . $_POST['wpsc_membership_trial1_numberof']. '||' . $_POST['wpsc_membership_trial2_numberof']. '||' . $_POST['wpsc_membership_regular_numberof']. '||' . $_POST['wpsc_membership_trial1_increment']. '||' . $_POST['wpsc_membership_trial2_increment']. '||' . $_POST['wpsc_membership_regular_increment'];
+                                        $wpsc_price_type = $_POST['wpsc-price-type'];
+                                        $wpsc_membership_trial1_amount = $_POST['wpsc_membership_trial1_amount'];
+                                        $wpsc_membership_trial2_amount = $_POST['wpsc_membership_trial2_amount'];
+                                        $wpsc_membership_regular_amount = $_POST['wpsc_membership_regular_amount'];
+                                        $wpsc_membership_trial1_numberof = $_POST['wpsc_membership_trial1_numberof'];
+                                        $wpsc_membership_trial2_numberof = $_POST['wpsc_membership_trial2_numberof'];
+                                        $wpsc_membership_regular_numberof = $_POST['wpsc_membership_regular_numberof'];
+                                        $wpsc_membership_trial1_increment = $_POST['wpsc_membership_trial1_increment'];
+                                        $wpsc_membership_trial2_increment = $_POST['wpsc_membership_trial2_increment'];
+                                        $wpsc_membership_regular_increment = $_POST['wpsc_membership_regular_increment'];
+
+                                        if($membership_primkey != NULL) {
+                                            // Must update the membership
+                                            $insert = "UPDATE  `{$table_name_meta}` SET `value` = '".$membership_value."' WHERE `type`='membership' AND `foreignkey`='{$_GET['keytoedit']}';";
+                                            $memresults = $wpdb->query( $insert );
+                                        } else {
+                                            // Must insert new membership
+                                            $insert = "INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".$membership_value."', 'membership', '{$_GET['keytoedit']}');";
+                                            $memresults = $wpdb->query( $insert );
+                                        }
+
+                                    } elseif ($_POST['wpsc-price-type']=='charge') {
+                                        if($membership_primkey != NULL) {
+                                            // Must update the membership meta entry to turn it off
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
 			echo '
-			<tr>
+			<tr id="wpsc-price-tr"'; if($wpsc_price_type=='membership') {echo ' style="display:none;"';} echo'>
 			<td><h3>Price'; if($devOptions['storetype']!='Digital Goods Only') { echo '<br />& Shipping';} echo ': <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">The price you wish to charge for the product before tax and shipping charges.  You can also enter a flat rate shipping amount here, which will only be used if you do not offer other shipping options, such as FedEx or UPS.  If the shipping options are not here, that means the General Setting > Store Type is set to Digital Only.  Change that setting to restore the shipping options here.</div></h3></td>
-			<td><br /><div style=";display:block;float:left;"><b>Full Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].' <br /><b>Sale Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_discountprice" id="wpStoreCartproduct_discountprice" style="width: 58px;" value="'.$wpStoreCartproduct_discountprice.'" />'.$devOptions['currency_symbol_right'].' </div><div style=";display:block;float:left;margin-left:15px;position:relative;top-25px;"> '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div></td>
+			<td>';
+                        
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                            if($wpsc_price_type=='membership') {
+                                echo '
+                                <script type="text/javascript">
+                                    /* <![CDATA[ */
+                                        jQuery("#wpsc-variations-li").hide("slow");
+                                    /* ]]> */
+                                </script>';
+                            }
+
+                            echo '<input type="radio" name="wpsc-price-type" '; if($wpsc_price_type=='charge') {echo ' checked="checked"';} echo' value="charge" onclick="jQuery(\'#wpsc-variations-li\').show(\'slow\');" /> Regular product<br />
+                                <input type="radio" name="wpsc-price-type"  '; if($wpsc_price_type=='membership') {echo ' checked="checked"';} echo'  value="membership" onclick="jQuery(\'#wpsc-variations-li\').hide(\'slow\');jQuery(\'input:radio[name=wpsc-price-type2]\').filter(\'[value=membership]\').prop(\'checked\', true);jQuery(\'#wpsc-membership-tr\').toggle();jQuery(\'#wpsc-price-tr\').toggle();" /> Charge for this product on a reoccuring basis:<br />';
+                        }
+
+                        echo '<br /><div style="display:block;float:left;"><b>Full Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].' <br /><b>Sale Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_discountprice" id="wpStoreCartproduct_discountprice" style="width: 58px;" value="'.$wpStoreCartproduct_discountprice.'" />'.$devOptions['currency_symbol_right'].' </div><div style=";display:block;float:left;margin-left:15px;position:relative;top-25px;"> '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div></td>
 			<td><div style="width:300px;"><br /><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></div></td>
 			</tr>';
+
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                            echo '
+                            <tr id="wpsc-membership-tr"'; if($wpsc_price_type=='charge') {echo ' style="display:none;"';} echo'>
+                            <td><h3>Subscription <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-61111235" /><div class="tooltip-content" id="example-content-61111235">Allows you to sell a subscription or membership on a reoccuring basis.</div></h3>
+                            </td>
+                            <td>';
+
+                            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                                echo '<input type="radio" name="wpsc-price-type2" '; if($wpsc_price_type=='charge') {echo ' checked="checked"';} echo' value="charge" onclick="jQuery(\'#wpsc-variations-li\').show(\'slow\');jQuery(\'input:radio[name=wpsc-price-type]\').filter(\'[value=charge]\').prop(\'checked\', true);jQuery(\'#wpsc-membership-tr\').toggle();jQuery(\'#wpsc-price-tr\').toggle();"  /> Regular product<br />
+                                    <input type="radio" name="wpsc-price-type2"  '; if($wpsc_price_type=='membership') {echo ' checked="checked"';} echo'  value="membership" onclick="jQuery(\'#wpsc-variations-li\').hide(\'slow\');" checked="yes" /> Charge for this product on a reoccuring basis:<br />';
+                            }
+
+                            echo 'Allow a trial period? <input type="checkbox"'; if($wpsc_membership_trial1_allow=='yes') {echo ' checked="checked"';} echo ' id="wpsc_membership_trial1_allow" name="wpsc_membership_trial1_allow" value="yes" onclick="if(jQuery(\'#wpsc_membership_trial1_allow\').is(\':checked\')){jQuery(\'#wpsc_membership_trial1_div\').show(\'slow\');jQuery(\'#wpsc_membership_trial2_prediv\').show(\'slow\');}else{jQuery(\'#wpsc_membership_trial2_allow\').prop(\'checked\',false);jQuery(\'#wpsc_membership_trial1_div\').hide(\'slow\');jQuery(\'#wpsc_membership_trial2_prediv\').hide(\'slow\');jQuery(\'#wpsc_membership_trial2_div\').hide(\'slow\');}" /><br />
+                            <div id="wpsc_membership_trial2_prediv"'; if($wpsc_membership_trial1_allow=='no') {echo ' style="display:none;"';} echo '>Allow a 2nd trial period? <input type="checkbox" id="wpsc_membership_trial2_allow" '; if($wpsc_membership_trial2_allow=='yes') {echo ' checked="checked"';} echo ' name="wpsc_membership_trial2_allow" value="yes" onclick="if(jQuery(\'#wpsc_membership_trial2_allow\').is(\':checked\')){jQuery(\'#wpsc_membership_trial2_div\').show(\'slow\');}else{jQuery(\'#wpsc_membership_trial2_div\').hide(\'slow\');}" /><br /></div>
+                            <br />
+                            <div id="wpsc_membership_trial1_div"'; if($wpsc_membership_trial1_allow=='no') {echo ' style="display:none;"';} echo '>1st trial period, charge '.$devOptions['currency_symbol'].'<input type="text" value="'.$wpsc_membership_trial1_amount.'" name="wpsc_membership_trial1_amount" style="width:40px;" />'.$devOptions['currency_symbol_right'].' for <input type="text" value="'.$wpsc_membership_trial1_numberof.'" name="wpsc_membership_trial1_numberof" style="width:35px;" /> <select name="wpsc_membership_trial1_increment">
+
+                                                    ';
+
+                            $result2[0] = 'D';$result3[0] = 'Day(s)';
+                            $result2[1] = 'W';$result3[1] = 'Week(s)';
+                            $result2[2] = 'M';$result3[2] = 'Month(s)';
+                            $result2[3] = 'Y';$result3[3] = 'Year(s)';
+
+                            $i = 0;
+                            foreach ($result2 as $pagg) {
+                                    $option = '<option value="'.$pagg.'"';
+                                    if($wpsc_membership_trial1_increment==$pagg) {
+                                            $option .= ' selected="selected"';
+                                    }
+                                    $option .='>';
+                                    $option .= $result3[$i];
+                                    $option .= '</option>';
+                                    echo $option;
+                                    $i++;
+                            }
+                            
+
+                            echo '
+                            </select> and then:<br /></div>
+                            <div id="wpsc_membership_trial2_div"'; if($wpsc_membership_trial2_allow=='no') {echo ' style="display:none;"';} echo '>2nd trial period, charge '.$devOptions['currency_symbol'].'<input type="text" value="'.$wpsc_membership_trial2_amount.'" name="wpsc_membership_trial2_amount" style="width:40px;" />'.$devOptions['currency_symbol_right'].' for <input type="text" value="'.$wpsc_membership_trial2_numberof.'" name="wpsc_membership_trial2_numberof" style="width:35px;" /> <select name="wpsc_membership_trial2_increment">
+
+                                                    ';
+
+                            $result2[0] = 'D';$result3[0] = 'Day(s)';
+                            $result2[1] = 'W';$result3[1] = 'Week(s)';
+                            $result2[2] = 'M';$result3[2] = 'Month(s)';
+                            $result2[3] = 'Y';$result3[3] = 'Year(s)';
+
+                            $i = 0;
+                            foreach ($result2 as $pagg) {
+                                    $option = '<option value="'.$pagg.'"';
+                                    if($wpsc_membership_trial2_increment==$pagg) {
+                                            $option .= ' selected="selected"';
+                                    }
+                                    $option .='>';
+                                    $option .= $result3[$i];
+                                    $option .= '</option>';
+                                    echo $option;
+                                    $i++;
+                            }
+
+
+                            echo '
+                            </select> and then:<br /></div>
+                            Regularly charge '.$devOptions['currency_symbol'].'<input type="text" value="'.$wpsc_membership_regular_amount.'" name="wpsc_membership_regular_amount" style="width:40px;" />'.$devOptions['currency_symbol_right'].' every <input type="text" value="'.$wpsc_membership_regular_numberof.'" name="wpsc_membership_regular_numberof" style="width:35px;" /> <select name="wpsc_membership_regular_increment">
+
+                                                    ';
+
+                            $result2[0] = 'D';$result3[0] = 'Day(s)';
+                            $result2[1] = 'W';$result3[1] = 'Week(s)';
+                            $result2[2] = 'M';$result3[2] = 'Month(s)';
+                            $result2[3] = 'Y';$result3[3] = 'Year(s)';
+
+                            $i = 0;
+                            foreach ($result2 as $pagg) {
+                                    $option = '<option value="'.$pagg.'"';
+                                    if($wpsc_membership_regular_increment==$pagg) {
+                                            $option .= ' selected="selected"';
+                                    }
+                                    $option .='>';
+                                    $option .= $result3[$i];
+                                    $option .= '</option>';
+                                    echo $option;
+                                    $i++;
+                            }
+
+
+                            echo '
+                            </select> indefinitely.
+                            </td>
+                            <td><div style="width:300px;">wpsc Membership PRO addon.  Sell memberships &amp; subscriptions.</div></td>
+                            </tr>';
+                        }
 
                         echo '
 			<tr';if($devOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'><td><h3>Use<br />Inventory? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333" /><div class="tooltip-content" id="example-content-333">Does this product have a limited number available?  If so, set this to yes to use the inventory to tell customers when your product is out of stock.</div></h3></td>
@@ -6076,15 +6269,81 @@ echo '</ul>
                                             $user_info3 = get_userdata($wpStoreCartwpuser);
                                         } 
                                         $wpStoreCartdate = $result['date'];
-										
+
+
+
 					echo "
 					<tr>
 					<td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"\" /></a></td>
 					<td>{$wpStoreCartorderstatus}</td>
 					<td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
-					<td>{$wpStoreCartpaymentprocessor}</td>
-					<td><strong>{$devOptions['currency_symbol']}{$wpStoreCartprice}{$devOptions['currency_symbol_right']}</strong>"; if($wpStoreCartshipping!=0.00) {echo"<br /><i>({$devOptions['currency_symbol']}{$wpStoreCartshipping}{$devOptions['currency_symbol_right']})</i>";} echo"</td>
+					<td>{$wpStoreCartpaymentprocessor}</td>";
+                                        
+                                        if($wpStoreCartpaymentprocessor!='PayPal Subscription') {
+                                            echo "<td><strong>{$devOptions['currency_symbol']}{$wpStoreCartprice}{$devOptions['currency_symbol_right']}</strong>"; if($wpStoreCartshipping!=0.00) {echo"<br /><i>({$devOptions['currency_symbol']}{$wpStoreCartshipping}{$devOptions['currency_symbol_right']})</i>";} echo"</td>";
+                                        } else {
+                                            // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                            $wpsc_price_type = 'charge';
+                                            $membership_value = '';
+                                            $theProductToCheck = explode('*', $wpStoreCartcartcontents);
+                                            echo '<td>';
+                                            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && (isset($theProductToCheck[0]))){
+                                                $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                                $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$theProductToCheck[0]};";
+                                                $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                                if(isset($resultsMembership)) {
+                                                    foreach ($resultsMembership as $pagg) {
+                                                        $membership_primkey = $pagg['primkey'];
+                                                        $membership_value = $pagg['value'];
+                                                    }
+                                                    if($membership_value!='') {
+                                                        global $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+                                                        $theExploded = explode('||', $membership_value);
+                                                        // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                                        $wpsc_membership_product_id = $results[0]['primkey'];
+                                                        $wpsc_price_type = $theExploded[0];
+                                                        $wpsc_membership_trial1_allow = $theExploded[1];
+                                                        $wpsc_membership_trial2_allow = $theExploded[2];
+                                                        $wpsc_membership_trial1_amount = $theExploded[3];
+                                                        $wpsc_membership_trial2_amount = $theExploded[4];
+                                                        $wpsc_membership_regular_amount = $theExploded[5];
+                                                        $wpsc_membership_trial1_numberof = $theExploded[6];
+                                                        $wpsc_membership_trial2_numberof = $theExploded[7];
+                                                        $wpsc_membership_regular_numberof = $theExploded[8];
+                                                        $wpsc_membership_trial1_increment = $theExploded[9];
+                                                        $wpsc_membership_trial2_increment = $theExploded[10];
+                                                        $wpsc_membership_regular_increment = $theExploded[11];
+                                                        if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                                        if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                                        if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                                        if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                                        if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                                        if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                                        if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                                        if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                                        if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                                        if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                                        if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                                        if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                                    }
+                                                }
+                                                echo '<ul class="wpsc-product-info">';
+                                                if($wpsc_membership_trial1_allow=='yes') {
+                                                    echo"<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                                                }
+                                                if($wpsc_membership_trial1_allow=='yes') {
+                                                    echo "<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                                                }
+                                                echo "<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                                                echo '</ul>';
+                                            }
+
+                                            echo "</td>";
+                                        }
+
+                                        echo"
 					<td>";
+
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
                                             echo "<a href=\"user-edit.php?user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
                                         } else {
@@ -7182,6 +7441,165 @@ echo '</ul>
 
         /**
          *
+         * Displays a Buy Now button for a subscription payment
+         *
+         * @global  $wpsc_buy_now
+         * @global object $wpdb
+         * @global <type> $wpsc_membership_product_id
+         * @global <type> $purchaser_user_id
+         * @global <type> $purchaser_email
+         * @global <type> $membershipOptions
+         * @global string $wpsc_table_name
+         * @global string $wpsc_self_path
+         * @global  $wpsc_paypal_testmode
+         * @global  $wpsc_paypal_ipn
+         * @global <type> $wpsc_membership_product_name
+         * @global <type> $wpsc_membership_product_number
+         * @global  $wpsc_button_classes
+         * @global  $wpsc_paypal_currency_code
+         * @global  $wpsc_paypal_email
+         * @global <type> $wpsc_price_type
+         * @global <type> $wpsc_membership_trial1_allow
+         * @global <type> $wpsc_membership_trial2_allow
+         * @global <type> $wpsc_membership_trial1_amount
+         * @global <type> $wpsc_membership_trial2_amount
+         * @global <type> $wpsc_membership_regular_amount
+         * @global <type> $wpsc_membership_trial1_numberof
+         * @global <type> $wpsc_membership_trial2_numberof
+         * @global <type> $wpsc_membership_regular_numberof
+         * @global <type> $wpsc_membership_trial1_increment
+         * @global <type> $wpsc_membership_trial2_increment
+         * @global <type> $wpsc_membership_regular_increment
+         * @param <type> $itemPrimkey
+         * @param <type> $listDetails
+         * @return string
+         */
+        function displaySubscriptionBuyNow($itemPrimkey, $listDetails = false) {
+            global $wpsc_buy_now, $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+            if(isset($itemPrimkey) && is_numeric($itemPrimkey)) {
+                $sql = "SELECT * FROM `{$table_name}` WHERE `primkey`={$itemPrimkey};";
+                $results = $wpdb->get_results( $sql , ARRAY_A );
+                if(isset($results)) {
+                    // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                    $devOptions = $this->getAdminOptions();
+                    $wpsc_price_type = 'charge';
+                    $membership_value = '';
+                    if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') ){
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$itemPrimkey};";
+                        $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                        if(isset($resultsMembership)) {
+                            foreach ($resultsMembership as $pagg) {
+                                $membership_primkey = $pagg['primkey'];
+                                $membership_value = $pagg['value'];
+                            }
+                            if($membership_value!='') {
+                                $theExploded = explode('||', $membership_value);
+                                // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                $wpsc_membership_product_id = $itemPrimkey;
+                                $wpsc_price_type = $theExploded[0];
+                                $wpsc_membership_trial1_allow = $theExploded[1];
+                                $wpsc_membership_trial2_allow = $theExploded[2];
+                                $wpsc_membership_trial1_amount = $theExploded[3];
+                                $wpsc_membership_trial2_amount = $theExploded[4];
+                                $wpsc_membership_regular_amount = $theExploded[5];
+                                $wpsc_membership_trial1_numberof = $theExploded[6];
+                                $wpsc_membership_trial2_numberof = $theExploded[7];
+                                $wpsc_membership_regular_numberof = $theExploded[8];
+                                $wpsc_membership_trial1_increment = $theExploded[9];
+                                $wpsc_membership_trial2_increment = $theExploded[10];
+                                $wpsc_membership_regular_increment = $theExploded[11];
+                                if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                $membershipOptions['databasename'] = DB_NAME;
+                                $membershipOptions['databaseuser'] = DB_USER;
+                                $membershipOptions['databasepass'] = DB_PASSWORD;
+                                $membershipOptions['databasehost'] =DB_HOST;
+                                $membershipOptions['databaseprefix'] = $wpdb->prefix;
+                                $membershipOptions['databasetable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_log';
+                                $membershipOptions['databaseproductstable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_products';
+                            }
+                        }
+                    }
+
+                    if ($wpsc_price_type == 'membership' ) {
+
+                    if($listDetails) {
+                        $output .= '
+                        <ul class="wpsc-product-info">
+                        <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>
+                        ';
+                        if($wpsc_membership_trial1_allow=='yes') {
+                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                        }
+                        if($wpsc_membership_trial1_allow=='yes') {
+                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                        }
+                        $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                        $output .= '</ul>';
+                    }
+                    if($resultsMembership[0]['useinventory']==0 || ($resultsMembership[0]['useinventory']==1 && $resultsMembership[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                            // Allows us to bypass registration and have guest only checkout
+                            if($devOptions['requireregistration']=='false') {
+                                if(@isset($_SESSION['wpsc_email'])) {
+                                    $purchaser_user_id = 0;
+                                    $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
+                                    $purchasing_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
+                                } else {
+                                    $purchaser_user_id = $current_user->ID;
+                                    $purchaser_email = $current_user->user_email;
+                                    $purchasing_display_name = '%user_display_name_with_link%';
+                                }
+                            } else {
+                                    $purchaser_user_id = $current_user->ID;
+                                    $purchaser_email = $current_user->user_email;
+                                    $purchasing_display_name = '%user_display_name_with_link%';
+                            }
+                            $wpsc_membership_product_name = $resultsMembership[0]['name'];
+                            $wpsc_membership_product_number = $resultsMembership[0]['primkey'];
+                            $wpsc_paypal_currency_code = $devOptions['currency_code'];
+                            $wpsc_paypal_email = $devOptions['paypalemail'];
+                            $wpsc_button_classes = $devOptions['button_classes_addtocart'];
+                            $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
+                            $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
+                            $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                            $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
+                            $wpsc_buy_now = $devOptions['buy_now'];
+                            require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
+                            $output .= wpscMembershipButton();
+
+                      } else {
+                            $output .= '<form>
+                            <input type="hidden" name="placeholder" />
+                            ';
+                            $output .= $devOptions['out_of_stock'];
+                            $output .= '</form>';
+                    }
+                    }
+
+                    return $output;
+                } else {
+                    return NULL;
+                }
+
+            }
+        }
+
+
+
+
+        /**
+         *
          * wpStoreCart code that needs to be loaded into the footer
          *
          * @global <type> $is_checkout
@@ -7683,6 +8101,26 @@ echo '</ul>
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
 
+                                                                // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                                                $wpsc_price_type = 'charge';
+                                                                $membership_value = '';
+                                                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($devOptions['displaypriceonview']=='true' || $devOptions['displayAddToCart']=='true')){
+                                                                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                                                    $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$result['primkey']};";
+                                                                    $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                                                    if(isset($resultsMembership)) {
+                                                                        foreach ($resultsMembership as $pagg) {
+                                                                            $membership_primkey = $pagg['primkey'];
+                                                                            $membership_value = $pagg['value'];
+                                                                        }
+                                                                        if($membership_value!='') {
+                                                                            $theExploded = explode('||', $membership_value);
+                                                                            // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                                                            $wpsc_price_type = $theExploded[0];
+                                                                        }
+                                                                    }
+                                                                }
+
                                                                 $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                                 if($devOptions['displayType']=='grid'){
                                                                         $output .= '<div class="wpsc-grid wpsc-categories">';
@@ -7700,52 +8138,69 @@ echo '</ul>
                                                                         $output .= '<p>'.stripslashes($result['introdescription']).'</p>';
                                                                 }
                                                                 if($devOptions['displaypriceonview']=='true'){
-                                                                    if($result['discountprice']>0) {
-                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    if($wpsc_price_type == 'membership') {
+                                                                        $output .= '<ul class="wpsc-product-info">';
+                                                                        if($wpsc_membership_trial1_allow=='yes') {
+                                                                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                                                                        }
+                                                                        if($wpsc_membership_trial2_allow=='yes') {
+                                                                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                                                                        }
+                                                                        $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                                                                        $output .= '</ul>';
                                                                     } else {
-                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        if($result['discountprice']>0) {
+                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        } else {
+                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        }
                                                                     }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
 
-                                                                        // Flat rate shipping implmented here:
-                                                                        if($devOptions['flatrateshipping']=='all_single') {
-                                                                            $result['shipping'] = $devOptions['flatrateamount'];
-                                                                        } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
-                                                                            $result['shipping'] = '0.00';
+                                                                        if($wpsc_price_type == 'charge') {
+                                                                            // Flat rate shipping implmented here:
+                                                                            if($devOptions['flatrateshipping']=='all_single') {
+                                                                                $result['shipping'] = $devOptions['flatrateamount'];
+                                                                            } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                                                                $result['shipping'] = '0.00';
+                                                                            }
+
+                                                                            if($result['discountprice'] > 0) {
+                                                                                $theActualPrice = $result['discountprice'];
+                                                                            } else {
+                                                                                $theActualPrice = $result['price'];
+                                                                            }
+                                                                            $output .= '
+                                                                            <form method="post" action="">
+
+                                                                                    <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
+                                                                                    <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
+                                                                                    <input type="hidden" name="my-item-name" value="'.stripslashes($result['name']).'" />
+                                                                                    <input type="hidden" id="my-item-price" name="my-item-price" value="'.$theActualPrice.'" />
+                                                                                    <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
+                                                                                    <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
+                                                                                    <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
+                                                                                    <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
+                                                                                    <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
+                                                                                    <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
+
+                                                                            ';
+
+                                                                            if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                                                                $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
+                                                                            } else {
+                                                                                $output .= $devOptions['out_of_stock'];
+                                                                            }
+
+
+                                                                            $output .= '
+                                                                            </form>
+                                                                            ';
+                                                                        } elseif ($wpsc_price_type == 'membership' ) {
+                                                                             $output.=$this->displaySubscriptionBuyNow($result['primkey'], false);
+
                                                                         }
-
-                                                                        if($result['discountprice'] > 0) {
-                                                                            $theActualPrice = $result['discountprice'];
-                                                                        } else {
-                                                                            $theActualPrice = $result['price'];
-                                                                        }
-                                                                        $output .= '
-                                                                        <form method="post" action="">
-
-                                                                                <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
-                                                                                <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
-                                                                                <input type="hidden" name="my-item-name" value="'.stripslashes($result['name']).'" />
-                                                                                <input type="hidden" name="my-item-price" value="'.$theActualPrice .'" />
-                                                                                <input type="hidden" name="my-item-shipping" value="'.$result['shipping'].'" />
-                                                                                <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
-                                                                                <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
-                                                                                <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
-                                                                                <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
-                                                                                <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
-
-                                                                        ';
-
-                                                                        if($result['useinventory']==0 || ($result['useinventory']==1 && $result['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
-                                                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
-                                                                        } else {
-                                                                            $output .= $devOptions['out_of_stock'];
-                                                                        }
-
-
-                                                                        $output .= '
-                                                                        </form>
-                                                                        ';
                                                                 }
 
                                                                 $output .= '</div>';
@@ -7777,6 +8232,59 @@ echo '</ul>
                                                                 $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log` (`primkey` ,`action` ,`data` ,`foreignkey` ,`date` ,`userid`) VALUES (NULL, 'productview', '{$_SERVER['REMOTE_ADDR']}', '{$primkey}', '".date('Ymd')."', '{$theuser}');");
                                                                 $statset = true;
                                                             }
+
+                                                            // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                                            $wpsc_price_type = 'charge';
+                                                            $membership_value = '';
+                                                            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($devOptions['displaypriceonview']=='true' || $devOptions['displayAddToCart']=='true')){
+                                                                $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                                                $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$results[0]['primkey']};";
+                                                                $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                                                if(isset($resultsMembership)) {
+                                                                    foreach ($resultsMembership as $pagg) {
+                                                                        $membership_primkey = $pagg['primkey'];
+                                                                        $membership_value = $pagg['value'];
+                                                                    }
+                                                                    if($membership_value!='') {
+                                                                        global $wpsc_buy_now, $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+                                                                        $theExploded = explode('||', $membership_value);
+                                                                        // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                                                        $wpsc_membership_product_id = $results[0]['primkey'];
+                                                                        $wpsc_price_type = $theExploded[0];
+                                                                        $wpsc_membership_trial1_allow = $theExploded[1];
+                                                                        $wpsc_membership_trial2_allow = $theExploded[2];
+                                                                        $wpsc_membership_trial1_amount = $theExploded[3];
+                                                                        $wpsc_membership_trial2_amount = $theExploded[4];
+                                                                        $wpsc_membership_regular_amount = $theExploded[5];
+                                                                        $wpsc_membership_trial1_numberof = $theExploded[6];
+                                                                        $wpsc_membership_trial2_numberof = $theExploded[7];
+                                                                        $wpsc_membership_regular_numberof = $theExploded[8];
+                                                                        $wpsc_membership_trial1_increment = $theExploded[9];
+                                                                        $wpsc_membership_trial2_increment = $theExploded[10];
+                                                                        $wpsc_membership_regular_increment = $theExploded[11];
+                                                                        if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                                                        if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                                                        if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                                                        if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                                                        if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                                                        if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                                                        if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                                                        if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                                                        if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                                                        if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                                                        if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                                                        if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                                                        $membershipOptions['databasename'] = DB_NAME;
+                                                                        $membershipOptions['databaseuser'] = DB_USER;
+                                                                        $membershipOptions['databasepass'] = DB_PASSWORD;
+                                                                        $membershipOptions['databasehost'] =DB_HOST;
+                                                                        $membershipOptions['databaseprefix'] = $wpdb->prefix;
+                                                                        $membershipOptions['databasetable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_log';
+                                                                        $membershipOptions['databaseproductstable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_products';
+                                                                    }
+                                                                }
+                                                            }
+
                                                             if($devOptions['showproductthumbnail']=='true') {
                                                                     if($devOptions['wpStoreCartwidth']!=0 && $devOptions['wpStoreCartheight']!= 0) {
                                                                         if($devOptions['useimagebox']=='thickbox'){$output .='<a href="'.$results[0]['thumbnail'].'" class="thickbox" title="'. htmlentities($results[0]['name']. ' - ' . $results[0]['introdescription']).'">';} $output .= '<img class="wpsc-product-img" src="'.$results[0]['thumbnail'].'" alt="'.$results[0]['name'].'" style="max-width:'.$devOptions['wpStoreCartwidth'].'px;max-height:'.$devOptions['wpStoreCartheight'].'px;" />';if($devOptions['useimagebox']=='thickbox'){$output .='</a>';}$output .= '<br />';
@@ -7788,327 +8296,387 @@ echo '</ul>
                                                                 $output.= $this->wpstorecart_picture_gallery($primkey);
                                                             }
 
-                                                            // Product variations
-                                                            $table_name30 = $wpdb->prefix . "wpstorecart_meta";
-                                                            $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
+                                                            if($wpsc_price_type == 'charge') {
+                                                                // Product variations
+                                                                $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                                $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
 
-                                                            $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+                                                                $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
 
-                                                            if(isset($vresults)) {
-                                                                $voutput = NULL;
-                                                                $variationStorage = array();
-                                                                $varStorageCounter = 0;
-                                                                foreach ($vresults as $vresult) {
-                                                                    $theKey = $vresult['primkey'];
-                                                                    $exploder = explode('||', $vresult['value']);
-                                                                    $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
-                                                                    $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
-                                                                    $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
-                                                                    $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
-                                                                    $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
-                                                                    $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
-                                                                    //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
-                                                                    $varStorageCounter++;
+                                                                if(isset($vresults)) {
+                                                                    $voutput = NULL;
+                                                                    $variationStorage = array();
+                                                                    $varStorageCounter = 0;
+                                                                    foreach ($vresults as $vresult) {
+                                                                        $theKey = $vresult['primkey'];
+                                                                        $exploder = explode('||', $vresult['value']);
+                                                                        $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
+                                                                        $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
+                                                                        $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
+                                                                        $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
+                                                                        $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                                                        $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
+                                                                        //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
+                                                                        $varStorageCounter++;
+                                                                    }
                                                                 }
-                                                            }
 
 
 
-                                                            $output .= '
-                                                            <script type="text/javascript">
-                                                            /* <![CDATA[ */
-                                                                var advancedVariationPrice = 0;
-                                                                var advancedVariationName = "";
-                                                                var alteredPrice = [];var alteredName = [];
-                                                                alteredPrice[0] = 0;alteredName[0]="";
-                                                                alteredPrice[1] = 0;alteredName[1]="";
-                                                                alteredPrice[2] = 0;alteredName[2]="";
-                                                                alteredPrice[3] = 0;alteredName[3]="";
-                                                                alteredPrice[4] = 0;alteredName[4]="";
-                                                                alteredPrice[5] = 0;alteredName[5]="";
-                                                                alteredPrice[6] = 0;alteredName[6]="";
-                                                                alteredPrice[7] = 0;alteredName[7]="";
-                                                                alteredPrice[8] = 0;alteredName[8]="";
-                                                                alteredPrice[9] = 0;alteredName[9]="";
-                                                                alteredPrice[10] = 0;alteredName[10]="";
-                                                                alteredPrice[11] = 0;alteredName[11]="";
-                                                                alteredPrice[12] = 0;alteredName[12]="";
-                                                                alteredPrice[13] = 0;alteredName[13]="";
-                                                            /* ]]> */
-                                                            </script>
-                                                            ';
-                                                            $variationTest = array();
-                                                            $variationCounter = 0;
-                                                            if(@is_array($variationStorage) && @isset($variationStorage[0])) {
-                                                                if(isset($variationStorage)) {
-                                                                        foreach ($variationStorage as $variationStorageCycle) {
-                                                                            if($variationStorageCycle['variationtype']!='advanced') {
-                                                                                if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
-                                                                                $output .= '
-                                                                                <script type="text/javascript">
-                                                                                    /* <![CDATA[ */
-                                                                                    alteredPrice['.$variationCounter.'] = 0;
-                                                                                    alteredName['.$variationCounter.'] = "";
+                                                                $output .= '
+                                                                <script type="text/javascript">
+                                                                /* <![CDATA[ */
+                                                                    var advancedVariationPrice = 0;
+                                                                    var advancedVariationName = "";
+                                                                    var alteredPrice = [];var alteredName = [];
+                                                                    alteredPrice[0] = 0;alteredName[0]="";
+                                                                    alteredPrice[1] = 0;alteredName[1]="";
+                                                                    alteredPrice[2] = 0;alteredName[2]="";
+                                                                    alteredPrice[3] = 0;alteredName[3]="";
+                                                                    alteredPrice[4] = 0;alteredName[4]="";
+                                                                    alteredPrice[5] = 0;alteredName[5]="";
+                                                                    alteredPrice[6] = 0;alteredName[6]="";
+                                                                    alteredPrice[7] = 0;alteredName[7]="";
+                                                                    alteredPrice[8] = 0;alteredName[8]="";
+                                                                    alteredPrice[9] = 0;alteredName[9]="";
+                                                                    alteredPrice[10] = 0;alteredName[10]="";
+                                                                    alteredPrice[11] = 0;alteredName[11]="";
+                                                                    alteredPrice[12] = 0;alteredName[12]="";
+                                                                    alteredPrice[13] = 0;alteredName[13]="";
+                                                                /* ]]> */
+                                                                </script>
+                                                                ';
+                                                                $variationTest = array();
+                                                                $variationCounter = 0;
+                                                                if(@is_array($variationStorage) && @isset($variationStorage[0])) {
+                                                                    if(isset($variationStorage)) {
+                                                                            foreach ($variationStorage as $variationStorageCycle) {
+                                                                                if($variationStorageCycle['variationtype']!='advanced') {
+                                                                                    if(@!isset($variationTest[$variationStorageCycle['variationname']])) {
+                                                                                    $output .= '
+                                                                                    <script type="text/javascript">
+                                                                                        /* <![CDATA[ */
+                                                                                        alteredPrice['.$variationCounter.'] = 0;
+                                                                                        alteredName['.$variationCounter.'] = "";
 
-                                                                                    function changePrice'.$variationCounter.'(amount) {
-                                                                                        price = amount.split("||");
-                                                                                        theprice = parseFloat(price[0]);
-                                                                                        thename = price[1];
-                                                                                        thekey = price[2];
-                                                                                        alteredPrice['.$variationCounter.'] = theprice;
-                                                                                        alteredName['.$variationCounter.'] = thename;
-                                                                                            ';
-
-                                                                                if($results[0]['discountprice'] > 0) {
-                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
-                                                                                } else {
-                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
-                                                                                }
-
-                                                                                $output .= '
-                                                                                        newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
-                                                                                        newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
-                                                                                        jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
-                                                                                        jQuery("#my-item-price").val(newAmount.toFixed(2));
-                                                                                        jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
-                                                                                        jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
-                                                                                        jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
-
-                                                                                    }
-                                                                                    /* ]]> */
-                                                                                </script>
-                                                                                ';
-                                                                                 $voutput .= '
-                                                                                    <li>'.$variationStorageCycle['variationname'].' - '.$variationStorageCycle['variationdesc'].'  <select name="variation_'.$variationStorageCycle['variationname'].'" onclick="changePrice'.$variationCounter.'(this.value);" onchange="changePrice'.$variationCounter.'(this.value);">';
-
-                                                                                }
-                                                                            }
-                                                                            if(isset($variationStorage)) {
-                                                                                    foreach ($variationStorage as $currentVariation) {
-                                                                                            if (($currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$variationStorageCycle['variationname']]!=true && $currentVariation['variationtype']!='advanced') {
-                                                                                                $option = '<option value="'.$currentVariation['variationprice'].'||'.$currentVariation['variationvalue'].'||'.$currentVariation['variationkey'].'"';
-                                                                                                $option .='>';
-                                                                                                $option .= $currentVariation['variationvalue'] .' ('. $currentVariation['variationprice'].')';
-                                                                                                $option .= '</option>';
-                                                                                                $voutput .=  $option;
-                                                                                            }
-                                                                                    }
-                                                                            }
-                                                                            $voutput .=  '
-                                                                            </select>   </li>';
-                                                                            $variationCounter++;
-                                                                            $variationTest[$variationStorageCycle['variationname']] = true;
-
-
-                                                                            /**
-                                                                                         * Advanced Variations
-                                                                                         */
-
-
-                                                                            // Product variations
-                                                                            $table_name30 = $wpdb->prefix . "wpstorecart_meta";
-                                                                            $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey} ORDER BY `value` ASC;";
-
-                                                                            $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
-
-                                                                            $atLeastOneAdv = false;
-
-                                                                            if(isset($vresults)) {
-
-                                                                                $variationStorage = array();
-                                                                                $varStorageCounter = 0;
-                                                                                foreach ($vresults as $vresult) {
-                                                                                    $theKey = $vresult['primkey'];
-                                                                                    $exploder = explode('||', $vresult['value']);
-                                                                                    if($exploder[5]=='advanced') {
-                                                                                        $atLeastOneAdv = true;
-                                                                                        $voutput = NULL;
-                                                                                        $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
-                                                                                        $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
-                                                                                        $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
-                                                                                        $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
-                                                                                        $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
-                                                                                        $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
-                                                                                        //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
-                                                                                        $varStorageCounter++;
-                                                                                    }
-                                                                                }
-
-                                                                            }
-
-                                                                            if($atLeastOneAdv) {
-
-                                                                             $output .= '
-                                                                                <script type="text/javascript">
-                                                                                    //<![CDATA[
-
-                                                                                        var registerAdvVarName = new Array();
-
-
-                                                                                        function loadAdvVarPrice() {
-                                                                                            var query_string = "advvarkey='.$primkey.'";
-                                                                                            var var_string = "";
-                                                                                            for(var i in registerAdvVarName)
-                                                                                            {
-                                                                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
-                                                                                                var_string += " " + jQuery("#variation_"+registerAdvVarName[i]).val();
-                                                                                            }
-                                                                                            jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
-                                                                                                advancedVariationPrice = parseFloat(txt);
+                                                                                        function changePrice'.$variationCounter.'(amount) {
+                                                                                            price = amount.split("||");
+                                                                                            theprice = parseFloat(price[0]);
+                                                                                            thename = price[1];
+                                                                                            thekey = price[2];
+                                                                                            alteredPrice['.$variationCounter.'] = theprice;
+                                                                                            alteredName['.$variationCounter.'] = thename;
                                                                                                 ';
-                                                                                            if($results[0]['discountprice'] > 0) {
-                                                                                                $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
-                                                                                            } else {
-                                                                                                $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
-                                                                                            }
-                                                                                            $output .= '
-                                                                                                newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
-                                                                                                advancedVariationName = var_string;
-                                                                                                newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
-                                                                                                jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
-                                                                                                jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
-                                                                                                jQuery("#my-item-price").val(newAmount.toFixed(2));
-                                                                                            }});
+
+                                                                                    if($results[0]['discountprice'] > 0) {
+                                                                                        $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
+                                                                                    } else {
+                                                                                        $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
+                                                                                    }
+
+                                                                                    $output .= '
+                                                                                            newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
+                                                                                            newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
+                                                                                            jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
+                                                                                            jQuery("#my-item-price").val(newAmount.toFixed(2));
+                                                                                            jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
+                                                                                            jQuery("#my-item-id").val("'.$results[0]['primkey'].'-" + thekey);
+                                                                                            jQuery("#my-item-primkey").val("'.$results[0]['primkey'].'-" + thekey);
+
                                                                                         }
-
-                                                                                    //]]>
-                                                                                </script>
-                                                                             ';
-                                                                            $variationTest = array();
-                                                                            $variationCounter = 0;
-                                                                            if(@is_array($variationStorage) && @isset($variationStorage[0])) {
-                                                                                if(isset($variationStorage)) {
-
-                                                                                        foreach ($variationStorage as $variationStorageCycle) {
-                                                                                            if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
-
-                                                                                             $output .= '
-                                                                                                <script type="text/javascript">
-                                                                                                    //<![CDATA[
-                                                                                                        registerAdvVarName['.$variationCounter.'] = "'.$this->slug($variationStorageCycle['variationname']).'";
-                                                                                                    //]]>
-                                                                                                </script>
-                                                                                             ';
-                                                                                             $voutput .= '
-                                                                                                <li>'.$variationStorageCycle['variationname'].' - <select name="variation_'.$this->slug($variationStorageCycle['variationname']).'" id="variation_'.$this->slug($variationStorageCycle['variationname']).'" onchange="loadAdvVarPrice();">';
-
-                                                                                            }
-                                                                                            if(isset($variationStorage)) {
-                                                                                                    foreach ($variationStorage as $currentVariation) {
-                                                                                                            if (($currentVariation['variationtype']=='advanced' && $currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$this->slug($variationStorageCycle['variationname'])]!=true) {
-                                                                                                                $option = '<option value="'.$this->slug($currentVariation['variationvalue']).'"';
-                                                                                                                $option .='>';
-                                                                                                                $option .= $currentVariation['variationvalue'];
-                                                                                                                $option .= '</option>';
-                                                                                                                $voutput .=  $option;
-                                                                                                            }
-                                                                                                    }
-                                                                                            }
-
-                                                                                            if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
-                                                                                                $voutput .=  '
-                                                                                                </select>   </li>';
-                                                                                                $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
-                                                                                            }
-                                                                                            $variationCounter++;
-                                                                                            $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
-                                                                                        }
-
+                                                                                        /* ]]> */
+                                                                                    </script>
+                                                                                    ';
+                                                                                     $voutput .= '
+                                                                                        <li>'.$variationStorageCycle['variationname'].' - '.$variationStorageCycle['variationdesc'].'  <select name="variation_'.$variationStorageCycle['variationname'].'" onclick="changePrice'.$variationCounter.'(this.value);" onchange="changePrice'.$variationCounter.'(this.value);">';
 
                                                                                     }
-                                                                            }
+                                                                                }
+                                                                                if(isset($variationStorage)) {
+                                                                                        foreach ($variationStorage as $currentVariation) {
+                                                                                                if (($currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$variationStorageCycle['variationname']]!=true && $currentVariation['variationtype']!='advanced') {
+                                                                                                    $option = '<option value="'.$currentVariation['variationprice'].'||'.$currentVariation['variationvalue'].'||'.$currentVariation['variationkey'].'"';
+                                                                                                    $option .='>';
+                                                                                                    $option .= $currentVariation['variationvalue'] .' ('. $currentVariation['variationprice'].')';
+                                                                                                    $option .= '</option>';
+                                                                                                    $voutput .=  $option;
+                                                                                                }
+                                                                                        }
+                                                                                }
+                                                                                $voutput .=  '
+                                                                                </select>   </li>';
+                                                                                $variationCounter++;
+                                                                                $variationTest[$variationStorageCycle['variationname']] = true;
 
-                                                                        // Product variations
-                                                                            if($atLeastOneAdv) {
-                                                                               $voutput .= '
+
+                                                                                /**
+                                                                                             * Advanced Variations
+                                                                                             */
+
+
+                                                                                // Product variations
+                                                                                $table_name30 = $wpdb->prefix . "wpstorecart_meta";
+                                                                                $grabrecord = "SELECT * FROM `{$table_name30}` WHERE `type`='productvariation' AND `foreignkey`={$primkey} ORDER BY `value` ASC;";
+
+                                                                                $vresults = $wpdb->get_results( $grabrecord , ARRAY_A );
+
+                                                                                $atLeastOneAdv = false;
+
+                                                                                if(isset($vresults)) {
+
+                                                                                    $variationStorage = array();
+                                                                                    $varStorageCounter = 0;
+                                                                                    foreach ($vresults as $vresult) {
+                                                                                        $theKey = $vresult['primkey'];
+                                                                                        $exploder = explode('||', $vresult['value']);
+                                                                                        if($exploder[5]=='advanced') {
+                                                                                            $atLeastOneAdv = true;
+                                                                                            $voutput = NULL;
+                                                                                            $variationStorage[$varStorageCounter]['variationkey'] = $theKey;
+                                                                                            $variationStorage[$varStorageCounter]['variationname'] = $exploder[0];
+                                                                                            $variationStorage[$varStorageCounter]['variationvalue'] = $exploder[1];
+                                                                                            $variationStorage[$varStorageCounter]['variationprice'] = $exploder[2];
+                                                                                            $variationStorage[$varStorageCounter]['variationdesc'] = $exploder[3];
+                                                                                            $variationStorage[$varStorageCounter]['variationtype'] = $exploder[5];
+                                                                                            //$voutput .= '<li>'.$exploder[0].' '.$exploder[1].' '.$exploder[2].' '.$exploder[3].'</li>';
+                                                                                            $varStorageCounter++;
+                                                                                        }
+                                                                                    }
+
+                                                                                }
+
+                                                                                if($atLeastOneAdv) {
+
+                                                                                 $output .= '
                                                                                     <script type="text/javascript">
                                                                                         //<![CDATA[
 
-                                                                                            loadAdvVarPrice();
+                                                                                            var registerAdvVarName = new Array();
+
+
+                                                                                            function loadAdvVarPrice() {
+                                                                                                var query_string = "advvarkey='.$primkey.'";
+                                                                                                var var_string = "";
+                                                                                                for(var i in registerAdvVarName)
+                                                                                                {
+                                                                                                    query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                                                                    var_string += " " + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                                                                }
+                                                                                                jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
+                                                                                                    advancedVariationPrice = parseFloat(txt);
+                                                                                                    ';
+                                                                                                if($results[0]['discountprice'] > 0) {
+                                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['discountprice'].');';
+                                                                                                } else {
+                                                                                                    $output .= 'oldAmount = parseFloat('.$results[0]['price'].');';
+                                                                                                }
+                                                                                                $output .= '
+                                                                                                    newAmount = Math.round((oldAmount + alteredPrice[0] + alteredPrice[1] + alteredPrice[2] + alteredPrice[3] + alteredPrice[4] + alteredPrice[5] + alteredPrice[6] + alteredPrice[7] + alteredPrice[8] + alteredPrice[9] + alteredPrice[10] + alteredPrice[11] + alteredPrice[12] + alteredPrice[13] + advancedVariationPrice) *100)/100;
+                                                                                                    advancedVariationName = var_string;
+                                                                                                    newName = alteredName[0] + " " + alteredName[1] + " " + alteredName[2] + " " + alteredName[3] + " " + alteredName[4] + " " + alteredName[5] + " " + alteredName[6] + " " + alteredName[7] + " " + alteredName[8] + " " + alteredName[9] + " " + alteredName[10] + " " + alteredName[11] + " " + alteredName[12] + " " + alteredName[13] + advancedVariationName;
+                                                                                                    jQuery("#my-item-name").val("'.stripslashes($results[0]['name']).' - " + newName);
+                                                                                                    jQuery("#list-item-price").replaceWith("<li id=\'list-item-price\'>Price: '.$devOptions['currency_symbol'].'"+ newAmount.toFixed(2) + "'.$devOptions['currency_symbol_right'].'</li>");
+                                                                                                    jQuery("#my-item-price").val(newAmount.toFixed(2));
+                                                                                                }});
+                                                                                            }
 
                                                                                         //]]>
                                                                                     </script>
                                                                                  ';
-                                                                            }
-                                                                            // Product variations
+                                                                                $variationTest = array();
+                                                                                $variationCounter = 0;
+                                                                                if(@is_array($variationStorage) && @isset($variationStorage[0])) {
+                                                                                    if(isset($variationStorage)) {
 
+                                                                                            foreach ($variationStorage as $variationStorageCycle) {
+                                                                                                if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+
+                                                                                                 $output .= '
+                                                                                                    <script type="text/javascript">
+                                                                                                        //<![CDATA[
+                                                                                                            registerAdvVarName['.$variationCounter.'] = "'.$this->slug($variationStorageCycle['variationname']).'";
+                                                                                                        //]]>
+                                                                                                    </script>
+                                                                                                 ';
+                                                                                                 $voutput .= '
+                                                                                                    <li>'.$variationStorageCycle['variationname'].' - <select name="variation_'.$this->slug($variationStorageCycle['variationname']).'" id="variation_'.$this->slug($variationStorageCycle['variationname']).'" onchange="loadAdvVarPrice();">';
+
+                                                                                                }
+                                                                                                if(isset($variationStorage)) {
+                                                                                                        foreach ($variationStorage as $currentVariation) {
+                                                                                                                if (($currentVariation['variationtype']=='advanced' && $currentVariation['variationname']==$variationStorageCycle['variationname']) && $variationTest[$this->slug($variationStorageCycle['variationname'])]!=true) {
+                                                                                                                    $option = '<option value="'.$this->slug($currentVariation['variationvalue']).'"';
+                                                                                                                    $option .='>';
+                                                                                                                    $option .= $currentVariation['variationvalue'];
+                                                                                                                    $option .= '</option>';
+                                                                                                                    $voutput .=  $option;
+                                                                                                                }
+                                                                                                        }
+                                                                                                }
+
+                                                                                                if(@!isset($variationTest[$this->slug($variationStorageCycle['variationname'])])) {
+                                                                                                    $voutput .=  '
+                                                                                                    </select>   </li>';
+                                                                                                    $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                                                                                }
+                                                                                                $variationCounter++;
+                                                                                                $variationTest[$this->slug($variationStorageCycle['variationname'])] = true;
+                                                                                            }
+
+
+                                                                                        }
+                                                                                }
+
+                                                                            // Product variations
+                                                                                if($atLeastOneAdv) {
+                                                                                   $voutput .= '
+                                                                                        <script type="text/javascript">
+                                                                                            //<![CDATA[
+
+                                                                                                loadAdvVarPrice();
+
+                                                                                            //]]>
+                                                                                        </script>
+                                                                                     ';
+                                                                                }
+                                                                                // Product variations
+
+
+                                                                            }
+                                                                        } // This is the end of $atLeastOneAdv is true, meaning that we're using advanced variations instead of simple
 
                                                                         }
-                                                                    } // This is the end of $atLeastOneAdv is true, meaning that we're using advanced variations instead of simple
-
-                                                                    }
 
 
-                                                            }
-
-
-
-                                                            // Flat rate shipping implmented here:
-                                                            if($devOptions['flatrateshipping']=='all_single') {
-                                                                $result['shipping'] = $devOptions['flatrateamount'];
-                                                            } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
-                                                                $result['shipping'] = '0.00';
-                                                            }
-
-                                                            // Discount prices
-                                                            if($results[0]['discountprice'] > 0) {
-                                                                $theActualPrice = $results[0]['discountprice'];
-                                                            } else {
-                                                                $theActualPrice = $results[0]['price'];
-                                                            }
-
-                                                            $output .= '
-                                                            <form method="post" action="">
-
-                                                                    <input type="hidden" id="my-item-id" name="my-item-id" value="'.$results[0]['primkey'].'" />
-                                                                    <input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
-                                                                    <input type="hidden" id="my-item-name" name="my-item-name" value="'.stripslashes($results[0]['name']).'" />
-                                                                    <input type="hidden" id="my-item-price" name="my-item-price" value="'.$theActualPrice.'" />
-                                                                    <input type="hidden" id="my-item-shipping" name="my-item-shipping" value="'.$result['shipping'].'" />
-                                                                    <input type="hidden" id="my-item-img" name="my-item-img" value="'.$results[0]['thumbnail'].'" />
-                                                                    <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
-                                                                    <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
-                                                                    <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
-
-                                                                    <ul class="wpsc-product-info">
-                                                                      <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>';
-                                                                      if($results[0]['discountprice']>0) {
-                                                                        $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$results[0]['discountprice'].$devOptions['currency_symbol_right'].'</li>';
-                                                                      } else {
-                                                                        $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
-                                                                      }
-                                                                      $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
-
-                                                                    if($goutput!=NULL) {
-                                                                        $output .= $goutput;
-                                                                    }
-                                                                    if($voutput!=NULL) {
-                                                                        $output .= $voutput;
-                                                                    }
-
-
-                                                            $output .= '
-                                                                     </ul>
-                                                            ';
-
-                                                           /**
-                                                                     * ShareYourCart.com Integration begins here
-                                                                     */
-                                                            if($devOptions['shareyourcart_activate']=='true') {
-                                                                $output .= '<iframe src="https://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php?product='.$results[0]['primkey'], __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-product"></iframe>';
-                                                            }
-                                                            // ShareYourCart.com Integration ends here
+                                                                }
                                                             
 
-                                                            if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
-                                                                $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
-                                                            } else {
-                                                                $output .= $devOptions['out_of_stock'];
-                                                            }
 
-                                                            $output .= '
-                                                            </form>
-                                                            ';
+
+                                                                // Flat rate shipping implmented here:
+                                                                if($devOptions['flatrateshipping']=='all_single') {
+                                                                    $result['shipping'] = $devOptions['flatrateamount'];
+                                                                } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                                                    $result['shipping'] = '0.00';
+                                                                }
+
+                                                                // Discount prices
+                                                                if($results[0]['discountprice'] > 0) {
+                                                                    $theActualPrice = $results[0]['discountprice'];
+                                                                } else {
+                                                                    $theActualPrice = $results[0]['price'];
+                                                                }
+
+                                                                $output .= '
+                                                                <form method="post" action="">
+
+                                                                        <input type="hidden" id="my-item-id" name="my-item-id" value="'.$results[0]['primkey'].'" />
+                                                                        <input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
+                                                                        <input type="hidden" id="my-item-name" name="my-item-name" value="'.stripslashes($results[0]['name']).'" />
+                                                                        <input type="hidden" id="my-item-price" name="my-item-price" value="'.$theActualPrice.'" />
+                                                                        <input type="hidden" id="my-item-shipping" name="my-item-shipping" value="'.$result['shipping'].'" />
+                                                                        <input type="hidden" id="my-item-img" name="my-item-img" value="'.$results[0]['thumbnail'].'" />
+                                                                        <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
+                                                                        <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
+                                                                        <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
+
+                                                                        <ul class="wpsc-product-info">
+                                                                          <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>';
+
+                                                                    
+
+                                                                          if($results[0]['discountprice']>0) {
+                                                                            $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$results[0]['discountprice'].$devOptions['currency_symbol_right'].'</li>';
+                                                                          } else {
+                                                                            $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                          }
+                                                                          $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
+
+
+                                                                        if($goutput!=NULL) {
+                                                                            $output .= $goutput;
+                                                                        }
+                                                                        if($voutput!=NULL) {
+                                                                            $output .= $voutput;
+                                                                        }
+
+
+                                                                $output .= '
+                                                                         </ul>
+                                                                ';
+
+                                                               /**
+                                                                         * ShareYourCart.com Integration begins here
+                                                                         */
+                                                                if($devOptions['shareyourcart_activate']=='true') {
+                                                                    $output .= '<iframe src="https://www.shareyourcart.com/button?client_id='.$devOptions['shareyourcart_clientid'].'&skin='.$devOptions['shareyourcart_skin'].'&callback_url='. urlencode(plugins_url('/php/shareyourcart/sendcart.php?product='.$results[0]['primkey'], __FILE__))  . '" frameborder="0" border="0" style="border:none;" class="wpsc-shareyourcart-product"></iframe>';
+                                                                }
+                                                                // ShareYourCart.com Integration ends here
+
+
+                                                                if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                                                    $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
+                                                                } else {
+                                                                    $output .= $devOptions['out_of_stock'];
+                                                                }
+
+                                                                $output .= '
+                                                                </form>
+                                                                ';
+                                                            
+                                                            } elseif ($wpsc_price_type == 'membership' ) {
+                                                                
+                                                                $output .= '
+                                                                <ul class="wpsc-product-info">
+                                                                <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>
+                                                                
+                                                                ';
+                                                                if($wpsc_membership_trial1_allow=='yes') {
+                                                                    $output.="<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                                                                }
+                                                                if($wpsc_membership_trial2_allow=='yes') {
+                                                                    $output.="<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                                                                }
+                                                                $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                                                                $output .= '</ul>';
+                                                                if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                                                        // Allows us to bypass registration and have guest only checkout
+                                                                        if($devOptions['requireregistration']=='false') {
+                                                                            if(@isset($_SESSION['wpsc_email'])) {
+                                                                                $purchaser_user_id = 0;
+                                                                                $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
+                                                                                $purchasing_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
+                                                                            } else {
+                                                                                $purchaser_user_id = $current_user->ID;
+                                                                                $purchaser_email = $current_user->user_email;
+                                                                                $purchasing_display_name = '%user_display_name_with_link%';
+                                                                            }
+                                                                        } else {
+                                                                                $purchaser_user_id = $current_user->ID;
+                                                                                $purchaser_email = $current_user->user_email;
+                                                                                $purchasing_display_name = '%user_display_name_with_link%';
+                                                                        }
+                                                                        $wpsc_membership_product_name = $results[0]['name'];
+                                                                        $wpsc_membership_product_number = $results[0]['primkey'];
+                                                                        $wpsc_paypal_currency_code = $devOptions['currency_code'];
+                                                                        $wpsc_paypal_email = $devOptions['paypalemail'];
+                                                                        $wpsc_button_classes = $devOptions['button_classes_addtocart'];
+                                                                        $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
+                                                                        $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
+                                                                        $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                                                                        $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
+                                                                        $wpsc_buy_now = $devOptions['buy_now'];
+                                                                        require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
+                                                                        $output .= wpscMembershipButton();
+
+                                                                  } else {
+                                                                        $output .= '<form>
+                                                                        <input type="hidden" name="placeholder" />
+                                                                        ';
+                                                                        $output .= $devOptions['out_of_stock'];
+                                                                        $output .= '</form>';
+                                                                }
+                                                            }
 
                                                             if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Add to Cart') {
                                                                 $output.= $this->wpstorecart_picture_gallery($primkey);
@@ -8252,6 +8820,51 @@ echo '</ul>
                                             } else { // This is for products:
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
+
+                                                                // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                                                $wpsc_price_type = 'charge';
+                                                                $membership_value = '';
+                                                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($devOptions['displaypriceonview']=='true' || $devOptions['displayAddToCart']=='true')){
+                                                                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                                                    $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$result['primkey']};";
+                                                                    $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                                                    if(isset($resultsMembership)) {
+                                                                        foreach ($resultsMembership as $pagg) {
+                                                                            $membership_primkey = $pagg['primkey'];
+                                                                            $membership_value = $pagg['value'];
+                                                                        }
+                                                                        if($membership_value!='') {
+                                                                            $theExploded = explode('||', $membership_value);
+                                                                            // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                                                            $wpsc_membership_product_id = $resultsMembership[0]['primkey'];
+                                                                            $wpsc_price_type = $theExploded[0];
+                                                                            $wpsc_membership_trial1_allow = $theExploded[1];
+                                                                            $wpsc_membership_trial2_allow = $theExploded[2];
+                                                                            $wpsc_membership_trial1_amount = $theExploded[3];
+                                                                            $wpsc_membership_trial2_amount = $theExploded[4];
+                                                                            $wpsc_membership_regular_amount = $theExploded[5];
+                                                                            $wpsc_membership_trial1_numberof = $theExploded[6];
+                                                                            $wpsc_membership_trial2_numberof = $theExploded[7];
+                                                                            $wpsc_membership_regular_numberof = $theExploded[8];
+                                                                            $wpsc_membership_trial1_increment = $theExploded[9];
+                                                                            $wpsc_membership_trial2_increment = $theExploded[10];
+                                                                            $wpsc_membership_regular_increment = $theExploded[11];
+                                                                            if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                                                            if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                                                            if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                                                            if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                                                            if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                                                            if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                                                            if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                                                            if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                                                            if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                                                            if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                                                            if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                                                            if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                                                        }
+                                                                    }
+                                                                }
+
                                                                 $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
                                                                 if($devOptions['displayType']=='grid'){
                                                                         $output .= '<div class="wpsc-grid wpsc-products">';
@@ -8269,14 +8882,26 @@ echo '</ul>
                                                                         $output .= '<p>'.stripslashes($result['introdescription']).'</p>';
                                                                 }
                                                                 if($devOptions['displaypriceonview']=='true'){
-                                                                    if($result['discountprice']>0) {
-                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                    if($wpsc_price_type == 'membership') {
+                                                                        $output .= '<ul class="wpsc-product-info">';
+                                                                        if($wpsc_membership_trial1_allow=='yes') {
+                                                                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                                                                        }
+                                                                        if($wpsc_membership_trial2_allow=='yes') {
+                                                                            $output.="<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                                                                        }
+                                                                        $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                                                                        $output .= '</ul>';
                                                                     } else {
-                                                                        $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        if($result['discountprice']>0) {
+                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        } else {
+                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        }
                                                                     }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
-
+                                                                    if($wpsc_price_type == 'charge') {
                                                                         // Flat rate shipping implmented here:
                                                                         if($devOptions['flatrateshipping']=='all_single') {
                                                                             $result['shipping'] = $devOptions['flatrateamount'];
@@ -8335,6 +8960,10 @@ echo '</ul>
                                                                         $output .= '
                                                                         </form>
                                                                         ';
+                                                                    } elseif ($wpsc_price_type == 'membership' ) {
+                                                                            $output .= $this->displaySubscriptionBuyNow($result['primkey'], false);
+
+                                                                    }
                                                                 }
 
 

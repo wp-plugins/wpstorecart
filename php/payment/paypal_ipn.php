@@ -45,10 +45,44 @@ if ($myPaypal->validateIpn())
                 ";
             }
 
-            $results = $wpdb->query( $insert );
+            $stop = false;
+            if($myPaypal->ipnData['txn_type']=='subscr_signup') { // This will count against inventory, count as a new sale, and count towards affiliates
+                $insert = "UPDATE `{$table_name}` SET `orderstatus` = 'Completed' WHERE `primkey` ={$keyToLookup};";
+            }
+            if($myPaypal->ipnData['txn_type']=='subscr_cancel') {
+                $insert = '';
+                $stop = true; // Don't recount this as a new sale, don't decrease inventory, don't credit affiliate
+                exit();
+            }
+            if($myPaypal->ipnData['txn_type']=='subscr_modify') {
+                $insert = '';
+                $stop = true; // Don't recount this as a new sale, don't decrease inventory, don't credit affiliate
+                exit();
+            }
+            if($myPaypal->ipnData['txn_type']=='subscr_payment') {
+                $insert = "UPDATE `{$table_name}` SET `orderstatus` = 'Completed' WHERE `primkey` ={$keyToLookup};";
+                $stop = true; // Don't recount this as a new sale, don't decrease inventory, don't credit affiliate
+                $results = $wpdb->query( $insert );
+                exit();
+            }
+            if($myPaypal->ipnData['txn_type']=='subscr_failed') {
+                $insert = '';
+                $stop = true; // Don't recount this as a new sale, don't decrease inventory, don't credit affiliate
+                $results = $wpdb->query( $insert );
+                exit();
+            }
+            if($myPaypal->ipnData['txn_type']=='subscr_eot') {
+                $insert = "UPDATE `{$table_name}` SET `orderstatus` = 'Expired' WHERE `primkey` ={$keyToLookup};";
+                $stop = true; // Don't recount this as a new sale, don't decrease inventory, don't credit affiliate
+                $results = $wpdb->query( $insert );
+                exit();
+            }
 
+            if($insert != '') {
+                $results = $wpdb->query( $insert );
+            }
             // If we've got a successful payment and we are using the inventory:
-            if($myPaypal->ipnData['payment_status']=='Completed') {
+            if($myPaypal->ipnData['payment_status']=='Completed' && $stop == false) {
                 $sql = "SELECT `cartcontents`, `email` FROM `{$table_name}` WHERE `primkey`={$keyToLookup};";
 		$results = $wpdb->get_results( $sql , ARRAY_A );
                 if(isset($results)) {

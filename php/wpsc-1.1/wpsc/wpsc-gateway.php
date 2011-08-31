@@ -905,60 +905,63 @@ else
                     $couponset = false;
                     $donation = false;
                     foreach ($cart->get_contents() as $item) {
-                            // BUILD THE QUERY STRING
-                            // Specify the product information
-                            // Put the coupon coding here too
-                            $myPaypal->addField('item_name_' . $paypal_count, $item['name']);
-                            $myPaypal->addField('amount_' . $paypal_count, $item['price']);
-                            $myPaypal->addField('item_number_' . $paypal_count, $paypal_count);
-                            $myPaypal->addField('quantity_' . $paypal_count, $item['qty']);
+                                // BUILD THE QUERY STRING
+                                // Specify the product information
+                                // Put the coupon coding here too
+                                $myPaypal->addField('item_name_' . $paypal_count, $item['name']);
+                                $myPaypal->addField('amount_' . $paypal_count, $item['price']);
+                                $myPaypal->addField('item_number_' . $paypal_count, $paypal_count);
+                                $myPaypal->addField('quantity_' . $paypal_count, $item['qty']);
 
 
-                            // Implement shipping here if needed
-                            $table_name = $wpdb->prefix . "wpstorecart_products";
-                            $results = $wpdb->get_results( "SELECT `shipping`, `donation` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
-                            if(isset($results)) {
-                                if($results[0]['donation']=='1') {
-                                    $donation = true;
-                                }
-                                if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
-                                    if($results[0]['shipping']!='0.00') {
-                                        $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
-                                        $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+
+
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping`, `donation` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['donation']=='1') {
+                                        $donation = true;
                                     }
-                                } else {
-                                    $totalShipping = 0;
+                                    if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                        if($results[0]['shipping']!='0.00') {
+                                            $myPaypal->addField('shipping_' . $paypal_count, round($results[0]['shipping'] * $item['qty'],2));
+                                            $totalShipping = $totalShipping + round($results[0]['shipping'] * $item['qty'], 2);
+                                        }
+                                    } else {
+                                        $totalShipping = 0;
+                                    }
                                 }
-                            }
-                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
-                                $totalShipping = $devOptions['flatrateamount'];
-                                $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
-                            }
-                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
-                                $totalShipping = round($devOptions['flatrateamount'] * $item['qty'], 2);
-                                $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
-                            }
-
-
-                            // Check for a coupon
-                            if(@!isset($_SESSION)) {
-                                    @session_start();
-                            }
-                            //echo 'SES: '.$_SESSION['validcouponid'] .'<br />';echo 'ID: '.$item['id'];exit();
-                            if($couponset==false && (@$_SESSION['validcouponid']==$item['id'])) {
-                                if(isset($_SESSION['validcouponamount'])) {
-                                    @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                                if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                    $totalShipping = $devOptions['flatrateamount'];
+                                    $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
                                 }
-                                if(isset($_SESSION['validcouponpercent'])) { //
-                                    $discount_priceper = round(($item['qty'] * $item['price']) * ($_SESSION['validcouponpercent'] / 100), 2);
-                                    @$myPaypal->addField('discount_amount_cart', $discount_priceper);
+                                if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                    $totalShipping = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                                    $myPaypal->addField('shipping_' . $paypal_count, round($totalShipping, 2));
                                 }
-                                $couponset = true;
-                            }
 
 
-                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
-                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
+                                // Check for a coupon
+                                if(@!isset($_SESSION)) {
+                                        @session_start();
+                                }
+                                //echo 'SES: '.$_SESSION['validcouponid'] .'<br />';echo 'ID: '.$item['id'];exit();
+                                if($couponset==false && (@$_SESSION['validcouponid']==$item['id'])) {
+                                    if(isset($_SESSION['validcouponamount'])) {
+                                        @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
+                                    }
+                                    if(isset($_SESSION['validcouponpercent'])) { //
+                                        $discount_priceper = round(($item['qty'] * $item['price']) * ($_SESSION['validcouponpercent'] / 100), 2);
+                                        @$myPaypal->addField('discount_amount_cart', $discount_priceper);
+                                    }
+                                    $couponset = true;
+                                }
+
+
+                                $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                                $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
+                            
 
                             // INCREMENT THE COUNTER
                             ++$paypal_count;
