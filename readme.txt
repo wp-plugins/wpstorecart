@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -24,10 +24,10 @@ See what people are saying:
 * Product properties such as weight & dimensions
 * Fully configurable product & category display
 * Search products using default Wordpress search
-* USPS shipping integration
+* USPS & UPS shipping integration
 * Multi-language & currency support
 * Works with any theme
-* Includes dedicated high end, Premium Wordpress theme for free
+* Dedicated high end, Premium Wordpress theme for free (separate download)
 * Optional coupon and discount system
 * Includes several widgets
 * Customizable registration process
@@ -74,7 +74,7 @@ Or, if you want to install manually:
 
 2. More of the "Setup Wizard", this time asking what type of stuff you sell
 
-3. Screenshot of the included default wpStoreCart Wordpress theme
+3. Screenshot of the default wpStoreCart Wordpress theme, which can be downloaded for free from our website
 
 4. Registration options
 
@@ -83,6 +83,9 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.3 =
+* Added: You can now delete individual product downloads from the Downloads tab in Edit/Add Product admin panel.  This will also attempt to remove them from the file system
 
 = 2.4.2 =
 * Added: Support for wpsc Membership PRO added

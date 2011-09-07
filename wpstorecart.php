@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.2
+Version: 2.4.3
 Author: wpStoreCart.com
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.2
+ * @version 2.4.3
  * @author wpStoreCart.com <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.2';
-$wpstorecart_version_int = 204002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.3';
+$wpstorecart_version_int = 204003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1248,9 +1248,9 @@ if (!class_exists("wpStoreCart")) {
             <table>
             <tr><td><input type="hidden" name="on0" value="License">License</td></tr><tr><td><select name="os0">
                     <option value="Single Domain">Single Domain $29.99</option>
-                    <option value="2 Domains">2 Domains $39.99</option>
-                    <option value="10 Domains">10 Domains $119.99</option>
-                    <option value="Unlimited Domains">Unlimited Domains $209.99</option>
+                    <option value="2 Domains">2 Domains $49.99</option>
+                    <option value="10 Domains">10 Domains $209.99</option>
+                    <option value="Unlimited Domains">Unlimited Domains $389.99</option>
             </select> </td></tr>
             </table>
             <input type="hidden" name="currency_code" value="USD">
@@ -5499,7 +5499,7 @@ echo '</ul>
                             <h3>Downloads</h3>
                             ';
 
-                            echo $this->listProductDownloads($_GET['keytoedit']);
+                            echo $this->listProductDownloads($_GET['keytoedit'], 'edit');
 
                             echo '<br style="clear:both;" />
                             <h3>Serial Numbers</h3>
@@ -10243,7 +10243,39 @@ echo '</ul>
             $table_name3 = $wpdb->prefix . "wpstorecart_meta";
             $thevariationdetail[0] = NULL;
             $thevariationdetail[1] = NULL;
-            $output = NULL;
+            $moutput = "
+                        <script type=\"text/javascript\">
+                            /* <![CDATA[ */
+                            function str_replace(search, replace, subject, count) {
+                                // Replaces all occurrences of search in haystack with replace
+                                // MIT License
+
+                                    temp = '',
+                                    repl = '',
+                                    sl = 0,        fl = 0,
+                                    f = [].concat(search),
+                                    r = [].concat(replace),
+                                    s = subject,
+                                    ra = Object.prototype.toString.call(r) === '[object Array]',        sa = Object.prototype.toString.call(s) === '[object Array]';
+                                s = [].concat(s);
+                                if (count) {
+                                    this.window[count] = 0;
+                                }
+                                for (i = 0, sl = s.length; i < sl; i++) {
+                                    if (s[i] === '') {
+                                        continue;
+                                    }        for (j = 0, fl = f.length; j < fl; j++) {
+                                        temp = s[i] + '';
+                                        repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
+                                        s[i] = (temp).split(f[j]).join(repl);
+                                        if (count && s[i] !== temp) {                this.window[count] += (temp.length - s[i].length) / f[j].length;
+                                        }
+                                    }
+                                }
+                                return sa ? s : s[0];}
+                            /* ]]> */
+                        </script>
+";
             $sql3 = "SELECT * FROM `{$table_name3}` WHERE `type`='productvariation' AND `foreignkey`={$primkey};";
             $moreresults3 = $wpdb->get_results( $sql3 , ARRAY_A );
             if(@isset($moreresults3[0])) {
@@ -10286,7 +10318,38 @@ echo '</ul>
 
             }
 
-            return $output;
+            // EDITING DOWNLOADS
+            if($type=="edit" && isset($moreresults[0])) {
+                    $output .= ', <br />';
+                    if($output==', <br />') {$output = '';}
+                    if($moreresults[0]['download']=='') { // Non-downloads products below:
+                            $output .= '';
+                    } else { // Download products below:
+                            if(@isset($variationdownloads)) { // If we've got variations that have downloads
+                                    foreach ($variationdownloads as $variationdownload) {
+                                            if($variationdownload!='') {
+                                                $output .= '<div id="'.md5($variationdownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($variationdownload).'"> '.$variationdownload.'</a> (Variation Download)</div><br />';
+                                            }
+                                    }
+                            }
+
+                            $multidownloads = explode('||', $moreresults[0]['download']);
+                            if(@isset($multidownloads[0]) && @isset($multidownloads[1])) {
+                                    $downloadcount = 0;
+                                    foreach($multidownloads as $multidownload) {
+                                            if($multidownload!='') {
+                                                    $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.WP_PLUGIN_URL.'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png"></a></div><br />';
+                                            }
+                                                    $downloadcount++;
+                                    }
+                            } else {
+                                    $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.WP_PLUGIN_URL.'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png"></a></div>';
+                            }
+                    }
+
+            }
+
+            return $moutput . $output;
 
         }
 
