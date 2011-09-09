@@ -8,8 +8,9 @@
  *
  * @license LGPL
  * @author Jeff Quindlen
- * @version 0.0.1
+ * @version 0.0.2
  */
+
 
 /**
  * quetzalcoatl class
@@ -77,10 +78,20 @@ class quetzalcoatl {
 
     /**
      * The constructor
+     *
+     * Checks to see if the quetzalcoatl cookie is set for your cart, and if not, it creates it.
      */
     public function  __construct() {
-        
+        if (!isset($_COOKIE['quetzalcoatl']) && empty($_COOKIE['quetzalcoatl'])) {
+            $state_save = json_encode($this);
+            // Do a write to the database here, and then put the primkey returned from the database into the cookie
+            setcookie("quetzalcoatl", 0, time()+60*60*24*14, "/");
+        } else {
+
+        }
     }
+
+
 
 }
 

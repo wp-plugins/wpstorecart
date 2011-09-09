@@ -1,10 +1,10 @@
 === wpStoreCart - Ecommerce Plugin for Wordpress ===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
-Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve
+Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,11 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.4 =
+* Fixed: Updated the text on the Products page to no longer reference the ability to specify URLs for thumbnails.
+* Added: New shortcode.  Display an Add to Cart button for any product, using [wpstorecart display="addtocart" primkey="3"] etc.
+* Added: Started adding the first of many Wordpress actions and filters.  By version 3.0, we intend for wpStoreCart to have almost everything available via an action or filter, for full modification
 
 = 2.4.3 =
 * Added: You can now delete individual product downloads from the Downloads tab in Edit/Add Product admin panel.  This will also attempt to remove them from the file system

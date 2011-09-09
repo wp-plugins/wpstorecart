@@ -3,14 +3,14 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.3
-Author: wpStoreCart.com
+Version: 2.4.4
+Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
 */
 
 /*  
-Copyright 2010, 2011 wpStoreCart.com  (email : admin@wpstorecart.com)
+Copyright 2010, 2011 wpStoreCart, LLC  (email : admin@wpstorecart.com)
 
 This library is free software; you can redistribute it and/or modify it under the terms 
 of the GNU Lesser General Public License as published by the Free Software Foundation; 
@@ -29,9 +29,9 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.3
- * @author wpStoreCart.com <admin@wpstorecart.com>
- * @copyright Copyright &copy; 2010, 2011 wpStoreCart.com.  All rights reserved.
+ * @version 2.4.4
+ * @author wpStoreCart, LLC <admin@wpstorecart.com>
+ * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
  *
  */
@@ -52,14 +52,17 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.3';
-$wpstorecart_version_int = 204003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.4';
+$wpstorecart_version_int = 204004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
 $APjavascriptQueue = NULL;
 $wpsc_cart_type = 'session';
+
+// Let's pull in all our actions.  Added in 2.4.4
+require_once(WP_PLUGIN_DIR.'/wpstorecart/php/actions.php');
 
 /**
  * Let's make sure the manage_wpstorecart role is added to the administrator.
@@ -184,15 +187,6 @@ if($wpsc_error_reporting==true) {
 }
 
 
-// Pre-2.6 compatibility, which is actually frivilous since we use the 2.8+ widget technique
-if ( ! defined( 'WP_CONTENT_URL' ) )
-	define( 'WP_CONTENT_URL', get_option( 'siteurl' ) . '/wp-content' );
-if ( ! defined( 'WP_CONTENT_DIR' ) )
-	define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
-if ( ! defined( 'WP_PLUGIN_URL' ) )
-	define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
-if ( ! defined( 'WP_PLUGIN_DIR' ) )
-	define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
 
 // Create the proper directory structure if it is not already created
 if(!is_dir(WP_CONTENT_DIR . '/uploads/')) {
@@ -565,7 +559,6 @@ if (!class_exists("wpStoreCart")) {
                 update_option($this->adminOptionsName, $devOptions);
             }
         }
-
 
         function register_custom_init() {
             global $testing_mode;
@@ -1131,6 +1124,169 @@ if (!class_exists("wpStoreCart")) {
         }
 
 
+        function wpstorecart_addtocart($primkey) {
+            global $wpdb;
+            $output = '';
+            $devOptions = $this->getAdminOptions();
+            if(isset($primkey) && is_numeric($primkey)) {
+                    $table_name = $wpdb->prefix . "wpstorecart_products";
+                    $sql = "SELECT * FROM `{$table_name}` WHERE `primkey`={$primkey};";
+                    $results = $wpdb->get_results( $sql , ARRAY_A );
+                        if(isset($results)) {
+
+                                // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                $wpsc_price_type = 'charge';
+                                $membership_value = '';
+                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($devOptions['displaypriceonview']=='true' || $devOptions['displayAddToCart']=='true')){
+                                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                    $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$results[0]['primkey']};";
+                                    $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                    if(isset($resultsMembership)) {
+                                        foreach ($resultsMembership as $pagg) {
+                                            $membership_primkey = $pagg['primkey'];
+                                            $membership_value = $pagg['value'];
+                                        }
+                                        if($membership_value!='') {
+                                            global $wpsc_buy_now, $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+                                            $theExploded = explode('||', $membership_value);
+                                            // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                            $wpsc_membership_product_id = $results[0]['primkey'];
+                                            $wpsc_price_type = $theExploded[0];
+                                            $wpsc_membership_trial1_allow = $theExploded[1];
+                                            $wpsc_membership_trial2_allow = $theExploded[2];
+                                            $wpsc_membership_trial1_amount = $theExploded[3];
+                                            $wpsc_membership_trial2_amount = $theExploded[4];
+                                            $wpsc_membership_regular_amount = $theExploded[5];
+                                            $wpsc_membership_trial1_numberof = $theExploded[6];
+                                            $wpsc_membership_trial2_numberof = $theExploded[7];
+                                            $wpsc_membership_regular_numberof = $theExploded[8];
+                                            $wpsc_membership_trial1_increment = $theExploded[9];
+                                            $wpsc_membership_trial2_increment = $theExploded[10];
+                                            $wpsc_membership_regular_increment = $theExploded[11];
+                                            if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                            if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                            if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                            if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                            if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                            if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                            if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                            if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                            if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                            if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                            if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                            if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                            $membershipOptions['databasename'] = DB_NAME;
+                                            $membershipOptions['databaseuser'] = DB_USER;
+                                            $membershipOptions['databasepass'] = DB_PASSWORD;
+                                            $membershipOptions['databasehost'] =DB_HOST;
+                                            $membershipOptions['databaseprefix'] = $wpdb->prefix;
+                                            $membershipOptions['databasetable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_log';
+                                            $membershipOptions['databaseproductstable'] = $membershipOptions['databaseprefix'] . 'wpstorecart_products';
+                                        }
+                                    }
+                                }
+
+                                if($wpsc_price_type == 'charge') {
+                                    $disableresults = $wpdb->get_results("SELECT `value` FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='disableaddtocart' AND `foreignkey`='{$primkey}';", ARRAY_A);
+                                    if($disableresults[0]['value']!='yes'){
+                                        // Flat rate shipping implmented here:
+                                        if($devOptions['flatrateshipping']=='all_single') {
+                                            $result['shipping'] = $devOptions['flatrateamount'];
+                                        } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
+                                            $result['shipping'] = '0.00';
+                                        }
+
+                                        // Discount prices
+                                        if($results[0]['discountprice'] > 0) {
+                                            $theActualPrice = $results[0]['discountprice'];
+                                        } else {
+                                            $theActualPrice = $results[0]['price'];
+                                        }
+
+                                        $output .= '
+                                        <form method="post" action="">
+
+                                                <input type="hidden" id="my-item-id" name="my-item-id" value="'.$results[0]['primkey'].'" />
+                                                <input type="hidden" id="my-item-primkey" name="my-item-primkey" value="'.$results[0]['primkey'].'" />
+                                                <input type="hidden" id="my-item-name" name="my-item-name" value="'.stripslashes($results[0]['name']).'" />
+                                                <input type="hidden" id="my-item-price" name="my-item-price" value="'.$theActualPrice.'" />
+                                                <input type="hidden" id="my-item-shipping" name="my-item-shipping" value="'.$result['shipping'].'" />
+                                                <input type="hidden" id="my-item-img" name="my-item-img" value="'.$results[0]['thumbnail'].'" />
+                                                <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($results[0]['postid']).'" />
+                                                <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
+                                                <input type="hidden" id="my-item-qty" name="my-item-qty" value="1" />
+                                                <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
+                                                ';
+
+
+                                                if($goutput!=NULL) {
+                                                    $output .= $goutput;
+                                                }
+                                                if($voutput!=NULL) {
+                                                    $output .= $voutput;
+                                                }
+
+
+                                        if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                            $output .= '<input type="submit" name="my-add-button" value="'.$devOptions['add_to_cart'].'" class="wpsc-button wpsc-addtocart '.$devOptions['button_classes_addtocart'].'" />';
+                                        } else {
+                                            $output .= $devOptions['out_of_stock'];
+                                        }
+
+                                        $output .= '
+                                        </form>
+                                        ';
+                                    }
+                                } elseif ($wpsc_price_type == 'membership' ) {
+
+                                    if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $devOptions['storetype']=='Digital Goods Only' ) {
+                                            // Allows us to bypass registration and have guest only checkout
+                                            if($devOptions['requireregistration']=='false') {
+                                                if(@isset($_SESSION['wpsc_email'])) {
+                                                    $purchaser_user_id = 0;
+                                                    $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
+                                                    $purchasing_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
+                                                } else {
+                                                    $purchaser_user_id = $current_user->ID;
+                                                    $purchaser_email = $current_user->user_email;
+                                                    $purchasing_display_name = '%user_display_name_with_link%';
+                                                }
+                                            } else {
+                                                    $purchaser_user_id = $current_user->ID;
+                                                    $purchaser_email = $current_user->user_email;
+                                                    $purchasing_display_name = '%user_display_name_with_link%';
+                                            }
+                                            $wpsc_membership_product_name = $results[0]['name'];
+                                            $wpsc_membership_product_number = $results[0]['primkey'];
+                                            $wpsc_paypal_currency_code = $devOptions['currency_code'];
+                                            $wpsc_paypal_email = $devOptions['paypalemail'];
+                                            $wpsc_button_classes = $devOptions['button_classes_addtocart'];
+                                            $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
+                                            $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
+                                            $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                                            $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
+                                            $wpsc_buy_now = $devOptions['buy_now'];
+                                            require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
+                                            $output .= wpscMembershipButton();
+
+                                      } else {
+                                            $output .= '<form>
+                                            <input type="hidden" name="placeholder" />
+                                            ';
+                                            $output .= $devOptions['out_of_stock'];
+                                            $output .= '</form>';
+                                    }
+                                }
+
+
+
+                } 
+            }
+
+            return $output;
+        }
+
+
         /**
          * wpstorecart_alert() Method
          *
@@ -1154,7 +1310,8 @@ if (!class_exists("wpStoreCart")) {
             }
             echo '<center><a href="http://wpstorecart.com" target="_blank"><img src="'.plugins_url('/images/'.$logofilelarge , __FILE__).'" alt="wpstorecart" /></a></center>';
             
-            $devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+            $devOptions = $this->getAdminOptions();
+            if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
                     exit();
             }
 
@@ -5194,7 +5351,7 @@ echo '</ul>
                             </div>
                         </div>
 			</td>
-			<td><div style="width:300px;">The filename of a downloadable product.  Leave this blank for physical products.  Max filesize is either: <strong>'.ini_get('post_max_size').' or '.ini_get('upload_max_filesize').'</strong>, whichever is lower. Do not put URLs or full paths here, only use the upload box.</div></td>
+			<td><div style="width:300px;">The filename of a downloadable product.  Leave this blank for physical products.  Max filesize is either: <strong>'.ini_get('post_max_size').' or '.ini_get('upload_max_filesize').'</strong>, whichever is lower. You can delete files you uploaded from the Downloads tab, but you\'ll need to save first before they will appear in the tab.</div></td>
 			</tr>';			
 			
                         if($wpStoreCartproduct_thumbnail==''||!isset($wpStoreCartproduct_thumbnail)) {
@@ -5202,7 +5359,7 @@ echo '</ul>
                         }
 			echo '
 			<tr>
-			<td><h3>Product<br />Thumbnail: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.</div></h3></td>
+			<td><h3>Product<br />Thumbnail: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.  You can add an unlimited amount of additional pictures by clicking on the Pictures tab.</div></h3></td>
 			<td><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /><br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
                         <div id="upload-progressbar-container2">
@@ -5210,7 +5367,7 @@ echo '</ul>
                             </div>
                         </div>
 			</td>
-			<td><div style="width:300px;">Either a full URL to an image file, or use the upload form to select an image file from your computer.</div></td>
+			<td><div style="width:300px;">Use the upload form to select an image file from your computer which will serve as the product\'s main image.</div></td>
 			</tr>';			
 			
 			if ($_GET['keytoedit']!=0 && is_numeric($_GET['keytoedit'])) {
@@ -7970,6 +8127,9 @@ echo '</ul>
                                         }
                                         // ShareYourCart.com Integration ends here
                                         break;
+                                    case 'addtocart':
+                                        $output .= $this->wpstorecart_addtocart($primkey);
+                                        break;
                                     case 'gallery': //
                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                         break;
@@ -8173,7 +8333,6 @@ echo '</ul>
                                                                             }
                                                                             $output .= '
                                                                             <form method="post" action="">
-
                                                                                     <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
                                                                                     <input type="hidden" name="my-item-primkey" value="'.$result['primkey'].'" />
                                                                                     <input type="hidden" name="my-item-name" value="'.stripslashes($result['name']).'" />
@@ -8701,16 +8860,6 @@ echo '</ul>
                                                                 $activity_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
                                                             } else {
                                                                 $activity_display_name = '%user_display_name_with_link%';
-                                                            }
-
-                                                            if(class_exists('ThreeWP_Activity_Monitor')) {
-                                                                do_action('threewp_activity_monitor_new_activity', array(
-                                                                    'activity_type' => 'wpsc-product-view',
-                                                                    'tr_class' => '',
-                                                                    'activity' => array(
-                                                                        "" => "{$activity_display_name} has viewed the product {$results[0]['name']}",
-                                                                    ),
-                                                                ));
                                                             }
 
                                                     } else {
@@ -11322,8 +11471,118 @@ if (class_exists("WP_Widget")) {
 		}
 
 	} 	
-	
-	
+
+
+	// wpStoreCartPaymentsWidget ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+
+	class wpStoreCartPaymentsWidget extends WP_Widget {
+		/** constructor */
+		function wpStoreCartPaymentsWidget() {
+			parent::WP_Widget(false, $name = 'wpStoreCart Payments Accepted');
+		}
+
+		/** @see WP_Widget::widget */
+		function widget($args, $instance) {
+			global $wpdb, $wpStoreCart;
+			$output = NULL;
+
+                        $devOptions = $wpStoreCart->getAdminOptions();
+
+			extract( $args );
+			$title = apply_filters('widget_title', $instance['title']);
+                        $widgetShowAmericanExpress = empty($instance['widgetShowAmericanExpress']) ? 'false' : $instance['widgetShowAmericanExpress'];
+                        $widgetShowVisa = empty($instance['widgetShowVisa']) ? 'false' : $instance['widgetShowVisa'];
+                        $widgetShowDiscover = empty($instance['widgetShowDiscover']) ? 'false' : $instance['widgetShowDiscover'];
+                        $widgetShowMasterCard = empty($instance['widgetShowMasterCard']) ? 'false' : $instance['widgetShowMasterCard'];
+                        $widgetShowDinersClub = empty($instance['widgetShowDinersClub']) ? 'false' : $instance['widgetShowDinersClub'];
+                        $widgetShowJCB = empty($instance['widgetShowJCB']) ? 'false' : $instance['widgetShowJCB'];
+                        $widgetShowPayPal = empty($instance['widgetShowPayPal']) ? 'false' : $instance['widgetShowPayPal'];
+                        $widgetShowAuthorizeNet = empty($instance['widgetShowAuthorizeNet']) ? 'false' : $instance['widgetShowAuthorizeNet'];
+                        $widgetShow2Checkout = empty($instance['widgetShow2Checkout']) ? 'false' : $instance['widgetShow2Checkout'];
+                        $widgetStyle = apply_filters('widgetStyle', $instance['widgetStyle']);
+                        $maxImageWidth = empty($instance['maxImageWidth']) ? 'false' : $instance['maxImageWidth'];
+                        $maxImageHeight = empty($instance['maxImageHeight']) ? 'false' : $instance['maxImageHeight'];
+                        if(trim($widgetStyle!='')) {
+                            $widgetStyle = ' style="'.$widgetStyle.'"';
+                        } else {
+                            $widgetStyle = '';
+                        }
+
+			echo $before_widget;
+			if ( $title ) { echo $before_title . $title . $after_title; }
+                        if($widgetShowVisa=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-visa.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowMasterCard=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-mastercard.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowAmericanExpress=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-american_express.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowDiscover=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-discover.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowDinersClub=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-dinersclub.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowJCB=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-jcb.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowPayPal=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-paypal.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShowAuthorizeNet=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-authorize.net.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        if($widgetShow2Checkout=='true') {$output .= '<img '.$widgetStyle.' src="'.plugins_url('/images/payment/payment_types-2co.png' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        //if($devOptions['allowlibertyreserve']=='true') {$output .= '<img src="'.plugins_url('/images/payment/' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        //if($devOptions['allowcheckmoneyorder']=='true') {$output .= '<img src="'.plugins_url('/images/payment/' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+                        //if($devOptions['allowqbms']=='true') {$output .= '<img src="'.plugins_url('/images/payment/' , __FILE__).'" alt=""'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/>';}
+			echo $output;
+			echo $after_widget;
+		}
+
+		/** @see WP_Widget::update */
+		function update($new_instance, $old_instance) {
+			$instance['title']= strip_tags(stripslashes($new_instance['title']));
+                        $instance['widgetShowAmericanExpress'] = strip_tags(stripslashes($new_instance['widgetShowAmericanExpress']));
+                        $instance['widgetShowVisa'] = strip_tags(stripslashes($new_instance['widgetShowVisa']));
+                        $instance['widgetShowDiscover'] = strip_tags(stripslashes($new_instance['widgetShowDiscover']));
+                        $instance['widgetShowMasterCard'] = strip_tags(stripslashes($new_instance['widgetShowMasterCard']));
+                        $instance['widgetShowDinersClub'] = strip_tags(stripslashes($new_instance['widgetShowDinersClub']));
+                        $instance['widgetShowJCB'] = strip_tags(stripslashes($new_instance['widgetShowJCB']));
+                        $instance['widgetShowPayPal'] = strip_tags(stripslashes($new_instance['widgetShowPayPal']));
+                        $instance['widgetShowAuthorizeNet'] = strip_tags(stripslashes($new_instance['widgetShowAuthorizeNet']));
+                        $instance['widgetShow2Checkout'] = strip_tags(stripslashes($new_instance['widgetShow2Checkout']));
+                        $instance['widgetStyle'] = strip_tags(stripslashes($new_instance['widgetStyle']));
+                        $instance['maxImageWidth'] = strip_tags(stripslashes($new_instance['maxImageWidth']));
+                        $instance['maxImageHeight'] = strip_tags(stripslashes($new_instance['maxImageHeight']));
+			return $instance;
+		}
+
+		/** @see WP_Widget::form */
+		function form($instance) {
+			@$title = esc_attr($instance['title']);
+                        @$widgetShowAmericanExpress = htmlspecialchars($instance['widgetShowAmericanExpress']);
+                        @$widgetShowVisa = htmlspecialchars($instance['widgetShowVisa']);
+                        @$widgetShowDiscover = htmlspecialchars($instance['widgetShowDiscover']);
+                        @$widgetShowMasterCard = htmlspecialchars($instance['widgetShowMasterCard']);
+                        @$widgetShowDinersClub = htmlspecialchars($instance['widgetShowDinersClub']);
+                        @$widgetShowJCB = htmlspecialchars($instance['widgetShowJCB']);
+                        @$widgetShowPayPal = htmlspecialchars($instance['widgetShowPayPal']);
+                        @$widgetShowAuthorizeNet = htmlspecialchars($instance['widgetShowAuthorizeNet']);
+                        @$widgetShow2Checkout = htmlspecialchars($instance['widgetShow2Checkout']);
+                        @$widgetStyle = htmlspecialchars($instance['widgetStyle']);
+                        @$maxImageWidth = htmlspecialchars($instance['maxImageWidth']);
+                        @$maxImageHeight = htmlspecialchars($instance['maxImageHeight']);
+                        if(!is_numeric($maxImageWidth) || $maxImageWidth=='') {$maxImageWidth = '50';}
+                        if(!is_numeric($maxImageHeight) || $maxImageHeight=='') {$maxImageHeight = '30';}
+
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowVisa') . '">' . __('VISA:') . '<label for="' . $this->get_field_name('widgetShowVisa') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_yes" name="' . $this->get_field_name('widgetShowVisa') . '" value="true" '; if ($widgetShowVisa == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowVisa') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_no" name="' . $this->get_field_name('widgetShowVisa') . '" value="false" '; if ($widgetShowVisa == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowMasterCard') . '">' . __('MasterCard:') . '<label for="' . $this->get_field_name('widgetShowMasterCard') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_yes" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="true" '; if ($widgetShowMasterCard == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowMasterCard') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_no" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="false" '; if ($widgetShowMasterCard == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowAmericanExpress') . '">' . __('American Express:') . '<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_yes" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="true" '; if ($widgetShowAmericanExpress == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_no" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="false" '; if ($widgetShowAmericanExpress == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowDiscover') . '">' . __('Discover:') . '<label for="' . $this->get_field_name('widgetShowDiscover') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_yes" name="' . $this->get_field_name('widgetShowDiscover') . '" value="true" '; if ($widgetShowDiscover == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDiscover') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_no" name="' . $this->get_field_name('widgetShowDiscover') . '" value="false" '; if ($widgetShowDiscover == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowDinersClub') . '">' . __('Diners Club:') . '<label for="' . $this->get_field_name('widgetShowDinersClub') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_yes" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="true" '; if ($widgetShowDinersClub == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDinersClub') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_no" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="false" '; if ($widgetShowDinersClub == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowJCB') . '">' . __('JCB:') . '<label for="' . $this->get_field_name('widgetShowJCB') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_yes" name="' . $this->get_field_name('widgetShowJCB') . '" value="true" '; if ($widgetShowJCB == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowJCB') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_no" name="' . $this->get_field_name('widgetShowJCB') . '" value="false" '; if ($widgetShowJCB == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowPayPal') . '">' . __('PayPal:') . '<label for="' . $this->get_field_name('widgetShowPayPal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_yes" name="' . $this->get_field_name('widgetShowPayPal') . '" value="true" '; if ($widgetShowPayPal == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowPayPal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_no" name="' . $this->get_field_name('widgetShowPayPal') . '" value="false" '; if ($widgetShowPayPal == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '">' . __('Authorize.Net:') . '<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_yes" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="true" '; if ($widgetShowAuthorizeNet == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_no" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="false" '; if ($widgetShowAuthorizeNet == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShow2Checkout') . '">' . __('2Checkout:') . '<label for="' . $this->get_field_name('widgetShow2Checkout') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_yes" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="true" '; if ($widgetShow2Checkout == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShow2Checkout') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_no" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="false" '; if ($widgetShow2Checkout == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="'. $this->get_field_id('widgetStyle') .'">'; _e('Inline CSS:'); echo ' <input class="widefat" id="'. $this->get_field_id('widgetStyle') .'" name="'. $this->get_field_name('widgetStyle') .'" type="text" value="'. $widgetStyle .'" /></label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+		}
+
+	}
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+
+
 }
 /**
  * ===============================================================================================================
@@ -11720,6 +11979,7 @@ if (isset($wpStoreCart)) {
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartTopproductsWidget");')); // Register the widget: wpStoreCartTopproductsWidget
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartRecentproductsWidget");')); // Register the widget: wpStoreCartRecentproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
+        add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
 
 	add_shortcode('wpstorecart', array(&$wpStoreCart, 'wpstorecart_mainshortcode'));
         add_action('wp_print_scripts', array(&$wpStoreCart, 'enqueue_my_scripts'));

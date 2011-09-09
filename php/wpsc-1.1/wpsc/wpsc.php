@@ -56,13 +56,26 @@ class wpsc {
 
 	// CONSTRUCTOR FUNCTION
         function __construct() {
+            global $wpsc_cart_type;
+            if($wpsc_cart_type=='new') {
+                if (!isset($_COOKIE['wpsccart'])) {
+                    // Do a write to the database here, and then put the primkey returned from the database into the cookie
+                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+                    setcookie('wpsccart', base64_encode(json_encode($this)), time()+7222, '/', $xdomain, false);
+                } else {
+                    $mapper = json_decode(base64_decode($_COOKIE['wpsccart']));
+
+                }
+
+            }
+
         }
 
         function __destruct() {
             global $wpsc_cart_type;
-            if($wpsc_cart_type=='cookie') {
+            if($wpsc_cart_type=='new') {
                 $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-                setcookie('wpsccart', base64_encode(serialize($this)), time()+7222, '/', $xdomain, false);
+                setcookie('wpsccart', base64_encode(json_encode($this)), time()+7222, '/', $xdomain, false);
             }
         }
         
