@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.4.4
+Stable tag: 2.4.5
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,12 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.5 =
+* Fixed: Select/Unselect All in Edit Product admin page now works correctly
+* Added: In the Edit Product admin page, drag and drop the order you wish products to appear on the front end.
+* Added: In wp-admin > wpStoreCart > Settings > Display > Main Page > Content of the Main Page > added a new option: List all products in custom order
+* Fixed: Removed excess information from the Edit Products admin page
 
 = 2.4.4 =
 * Fixed: Updated the text on the Products page to no longer reference the ability to specify URLs for thumbnails.

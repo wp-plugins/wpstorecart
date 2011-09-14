@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.4
+Version: 2.4.5
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.4
+ * @version 2.4.5
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.4';
-$wpstorecart_version_int = 204004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.5';
+$wpstorecart_version_int = 204005; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -426,6 +426,25 @@ if (!class_exists("wpStoreCart")) {
             global $wpdb, $wpstorecart_db_version, $wpstorecart_version_int;
 
             $devOptions = $this->getAdminOptions();
+
+            $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='custom_product_order';";
+            $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+            if(!isset($results[0]['primkey'])) {
+                $product_order = '';
+                $grabrecord = "SELECT `primkey` FROM `{$wpdb->prefix}wpstorecart_products`;";
+
+                $num = 0;
+                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                if(isset($results)) {
+                        foreach ($results as $result) {
+                            $product_order = $product_order . $result['primkey'] .',';
+                        }
+                        if($product_order!='') { // This removes the final comma
+                            $product_order = substr($product_order,0,-1);
+                        }
+                }
+                $results = $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '{$product_order}', 'custom_product_order', '0');");
+            }
 
             $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );
             $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_products", "weight", "INT( 7 ) NOT NULL DEFAULT  '0'" );
@@ -1093,7 +1112,8 @@ if (!class_exists("wpStoreCart")) {
                                     'week' => 'week(s)',
                                     'month' => 'month(s)',
                                     'year' => 'year(s)',
-                                    'buy_now' => 'Buy Now'
+                                    'buy_now' => 'Buy Now',
+                                    'page_mode' => 'sort'
                                     );
 
             
@@ -2539,10 +2559,11 @@ echo '</ul>
 ';
 
                         $theOptions[0] = 'List all products';
-                        $theOptions[1] = 'List all categories';
-                        $theOptions[2] = 'List all categories (Ascending)';
-                        $theOptions[3] = 'List newest products';
-                        $theOptions[4] = 'List most popular products';
+                        $theOptions[1] = 'List all products in custom order';
+                        $theOptions[2] = 'List all categories';
+                        $theOptions[3] = 'List all categories (Ascending)';
+                        $theOptions[4] = 'List newest products';
+                        $theOptions[5] = 'List most popular products';
                         foreach ($theOptions as $theOption) {
 
 				$option = '<option value="'.$theOption.'"';
@@ -5937,22 +5958,32 @@ echo '</ul>
 		
 			<script type="text/javascript">
                             /* <![CDATA[ */
-			
+
+                            jQuery(document).ready(function(){
+
+                                    jQuery(function() {
+
+                                            jQuery("#requiredsort tbody").sortable({ opacity: 0.6, cursor: \'move\', handle : \'.handle\',  update: function() {
+                                                    var order = jQuery("#requiredsort tbody").sortable("serialize") + \'&action=updateRecordsListings\';
+                                                    //alert(jQuery("#requiredsort tbody").sortable("serialize"));
+                                                    jQuery.post("'.plugins_url('/php/sortproducts.php' , __FILE__).'", order, function(theResponse){
+                                                            jQuery("#requiredsort tbody").sortable(\'refresh\');
+                                                    });
+                                            }
+                                            });
+
+                                    });
+
+
+                            });
+
                             var ischecked = false;
 
-                            function SetAllCheckBoxes(FormName, FieldName, CheckValue) {
-					if(!document.forms[FormName])
-						return;
-					var objCheckBoxes = document.forms[FormName].elements[FieldName];
-					if(!objCheckBoxes)
-						return;
-					var countCheckBoxes = objCheckBoxes.length;
-					if(!countCheckBoxes)
-						objCheckBoxes.checked = CheckValue;
-					else
-						// set the check value for all check boxes
-						for(var i = 0; i < countCheckBoxes; i++)
-							objCheckBoxes[i].checked = CheckValue;
+                            function SetAllCheckBoxes(FormName, FieldName, status) {
+                                jQuery(".checkbox").each( function() {
+                                    jQuery(this).attr("checked",status);
+                                })
+                           }
 
 
                         //]]>
@@ -5969,8 +6000,8 @@ echo '</ul>
 				<option value="changeshipping">Change Shipping</option>-->
 			</select>
 			<input type="submit" name="submitter" class="button-secondary action" value="Apply" onclick="if (! confirm(\'Are you sure you want to do this permanent bulk action?\')) { return false;}" />
-			<table class="widefat">
-			<thead><tr><th><input type="checkbox" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'myCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'myCheckbox\', false);ischecked=false;}" /> Action</th><th>Name</th><th>Intro Description</th><th>Description</th><th>Thumbnail</th><th>Price</th><th>Shipping</th><th>Downloads</th><th>Tags</th><th>Category</th><th>Inventory</th></tr></thead><tbody>
+			<table class="widefat" id="requiredsort">
+			<thead><tr><th><input type="checkbox" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'myCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'myCheckbox\', false);ischecked=false;}" /> Primkey/Action</th><th>Name</th><th>Intro Description</th><th>Description</th><th>Thumbnail</th><th>Price</th><th>Category</th><th>Inventory</th></tr></thead><tbody>
 			';
 			
 		
@@ -5984,21 +6015,52 @@ echo '</ul>
 			$totalrecordsres = $wpdb->get_results( $totalrecordssql , ARRAY_A );
 			$totalrecords = $totalrecordsres[0]['num'];
 			$numberofpages = ceil($totalrecords / $numberofrecords);
-			
-								
 
-			echo '<div> Pages: ';
-			$icounter = 0;
-			while ($icounter < $numberofpages) {
-				$pagenum = $icounter + 1;
-				$offeset = $icounter * $numberofrecords;
-				echo '<a href="admin.php?page=wpstorecart-edit-products&startrecord='.$offeset.'">'.$pagenum.'</a> ';
-				$icounter++;
-			}
-			echo '</div><br />';
-			
-			$grabrecord = "SELECT * FROM `{$table_name}` LIMIT {$startrecord}, {$numberofrecords};";
-			
+                        if($devOptions['page_mode'] == 'page') {
+                            $pages_on = true;
+                        } else {
+                            $pages_on = false;
+                        }
+                        if(@isset($_GET['page_mode']) && $_GET['page_mode']=='sort') {
+                            $pages_on = false;
+                        }
+                        if(@isset($_GET['page_mode']) && $_GET['page_mode']=='page') {
+                            $pages_on = true;
+                        }
+                        if($pages_on == true) {
+                            $value_to_echo = '<div class="updated" style="margin-top:17px;padding:12px 12px 12px 12px;font-size:11px;border-color:#DDD;background-color:#EFEFEF;"><img src="'.plugins_url('/images/info.png' , __FILE__).'" alt="info" style="float:left;" /> You are in Page Mode, which displays 10 products per page. In Page Mode, you cannot reorder products for custom product sorting.  You can toggle between Sorting Mode &amp; Paged Mode by <a href="admin.php?page=wpstorecart-edit-products&page_mode=sort">clicking here.</a></div>';
+                            $display_none='display:none;';
+                            $devOptions['page_mode'] = 'page';
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+
+                            echo '<br /><br /><div> Pages: ';
+                            $icounter = 0;
+                            while ($icounter < $numberofpages) {
+                                    $pagenum = $icounter + 1;
+                                    $offeset = $icounter * $numberofrecords;
+                                    echo '<a href="admin.php?page=wpstorecart-edit-products&startrecord='.$offeset.'">'.$pagenum.'</a> ';
+                                    $icounter++;
+                            }
+                            echo '</div><br />';
+                            $grabrecord = "SELECT * FROM `{$table_name}` LIMIT {$startrecord}, {$numberofrecords};";
+			} else {
+                            $value_to_echo ='<div class="updated" style="margin-top:17px;padding:12px 12px 12px 12px;font-size:11px;border-color:#DDD;background-color:#EFEFEF;"><img src="'.plugins_url('/images/info.png' , __FILE__).'" alt="info" style="float:left;" /> You are in Sorting Mode, which displays all products so you can sort them into your own custom order. If you have a lot of products, this can really slow down this screen.  You can toggle between Sorting Mode &amp; Paged Mode by <a href="admin.php?page=wpstorecart-edit-products&page_mode=page">clicking here.</a>.</div>';
+                            $display_none='';
+                            $devOptions['page_mode'] = 'sort';
+                            update_option('wpStoreCartAdminOptions', $devOptions);
+
+                            $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='custom_product_order';";
+                            $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                            if(isset($results[0]['primkey'])) {
+                                $grabrecord = "SELECT * FROM `{$table_name}` ORDER BY field(primkey, {$results[0]['value']}) asc;";
+                            } else {
+                                $grabrecord = "SELECT * FROM `{$table_name}`;";
+                            }
+                            echo '<br /><br />';
+                        }
+                        
+
+                        $num = 0;
 			$results = $wpdb->get_results( $grabrecord , ARRAY_A );		
 			if(isset($results)) {
 				foreach ($results as $result) {
@@ -6014,15 +6076,18 @@ echo '</ul>
 						}
 					}
 		
-					echo "<tr><td><input type=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /> [ <a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\">Edit</a> | <a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\">Delete</a> ]</td><td>".stripslashes($result['name'])."</td><td>".stripslashes(substr($result['introdescription'],0,128))."</td><td>".stripslashes(substr($result['description'],0,128))."</td><td><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td>{$result['price']}</td><td>{$result['shipping']}</td><td>".str_replace('||',', ',stripslashes($result['download']))."</td><td>".stripslashes($result['tags'])."</td><td>".stripslashes($currentCat)."</td><td>".stripslashes($result['inventory'])."</td></tr>";
+					echo "<tr id=\"sort_{$result['primkey']}\" style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><td style=\"vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img class=\"handle\" src=\"".plugins_url('/images/TransferDocument.png' , __FILE__)."\" alt=\"\" style=\"float:left;cursor:move;{$display_none}\" /><input type=\"checkbox\" class=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /><br />&nbsp;{$result['primkey']}&nbsp;<a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"Edit\" /></a>&nbsp;<a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"Delete\" /></a>&nbsp;<input type=\"hidden\" name=\"required_info_key[]\" id=\"requiredinfo_{$num}\" value=\"{$result['primkey']}\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['name'])."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr($result['introdescription'],0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr($result['description'],0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">{$result['price']}</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($currentCat)."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['inventory'])."</td></tr>";
 				
-
+                                        $num++;
 				}
 			}			
 			
 			echo '
 			</tbody></table>
 			</form>
+
+                        '.$value_to_echo.'
+
 			</div></div>
 			';
 		
@@ -8879,13 +8944,24 @@ echo '</ul>
                                                 $startat = ($_GET['cpage'] - 1) * $quantity;
                                             }
 
+                                            if($devOptions['frontpageDisplays']=='List all products in custom order') {
+                                                $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='custom_product_order';";
+                                                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                                                if(isset($results[0]['primkey'])) {
+                                                    $sql = "SELECT * FROM `{$table_name}` ORDER BY field(primkey, {$results[0]['value']}) ASC LIMIT {$startat}, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `{$table_name}` LIMIT {$startat}, {$quantity};";
+                                                }
+                                                $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}`;");
+                                            }
+
                                             if($devOptions['frontpageDisplays']=='List all products' || $devOptions['frontpageDisplays']=='List newest products') {
                                                 if($orderby=='') {
                                                     $sql = "SELECT * FROM `{$table_name}` ORDER BY `dateadded` DESC LIMIT {$startat}, {$quantity};";
                                                 } else {
                                                     $sql = "SELECT * FROM `{$table_name}` {$orderby} LIMIT {$startat}, {$quantity};";
                                                 }
-                                                $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}` ORDER BY `dateadded` DESC;");
+                                                $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `{$table_name}`;");
                                             }
                                             if($devOptions['frontpageDisplays']=='List most popular products') {
                                                 if($orderby=='') {
