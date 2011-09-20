@@ -14,7 +14,7 @@ http://www.webforce.co.nz/cart/
 
 **********************************************************************/
 
-global $wpStoreCart, $devOptions, $wpsc, $wpsc_error_reporting, $wpsc_cart_type;
+global $wpStoreCart, $devOptions, $wpsc, $wpsc_error_reporting, $wpsc_cart_type, $wpsc_cart_sub_type, $wpdb;
 
 if($wpsc_error_reporting==false) {
     error_reporting(0);
@@ -40,7 +40,6 @@ require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-c
 // DEFAULT CONFIG VALUES
 require_once(ABSPATH . '/wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-defaults.php');
 
-
 // wpsc
 class wpsc {
 	var $total = 0;
@@ -56,37 +55,63 @@ class wpsc {
 
 	// CONSTRUCTOR FUNCTION
         function __construct() {
-            global $wpsc_cart_type;
-            if($wpsc_cart_type=='new') {
-                if (!isset($_COOKIE['wpsccart'])) {
-                    // Do a write to the database here, and then put the primkey returned from the database into the cookie
-                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-                    setcookie('wpsccart', base64_encode(json_encode($this)), time()+7222, '/', $xdomain, false);
-                } else {
-                    $mapper = json_decode(base64_decode($_COOKIE['wpsccart']));
+            $this->restore_cart();
+        }
 
+     
+	function cart() {;}
+
+        function restore_cart() {
+            global $wpsc_cart_sub_type, $wpdb;
+
+            if($wpsc_cart_sub_type=='dragon') {
+                global $current_user;
+                wp_get_current_user();
+                if ( 0 == $current_user->ID ) {
+                    // Not logged in.
+                    $theuser = 0;
+                } else {
+                    $theuser = $current_user->ID;
                 }
 
-            }
 
+                $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `user_id`='.$theuser.' AND `ipaddress`=\''.$this->get_ip_address().'\';';
+                $results = $wpdb->get_results( $sql , ARRAY_A );
+
+                if(isset($results[0]['primkey'])) {
+                    $this->total = $results[0]['total'];
+                    $this->itemcount = $results[0]['itemcount'];
+                    $this->items = unserialize(base64_decode($results[0]['items']));
+                    $this->itemprices = unserialize(base64_decode($results[0]['itemprices']));
+                    $this->itemqtys = unserialize(base64_decode($results[0]['itemqtys']));
+                    $this->itemname = unserialize(base64_decode($results[0]['itemname']));
+                    $this->itemshipping = unserialize(base64_decode($results[0]['itemshipping']));
+                    $this->itemtax = unserialize(base64_decode($results[0]['itemtax']));
+                    $this->itemurl = unserialize(base64_decode($results[0]['itemurl']));
+                    $this->itemimg = unserialize(base64_decode($results[0]['itemimg']));
+                }
+
+
+
+            }
         }
 
-        function __destruct() {
-            global $wpsc_cart_type;
-            if($wpsc_cart_type=='new') {
-                $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-                setcookie('wpsccart', base64_encode(json_encode($this)), time()+7222, '/', $xdomain, false);
+        function get_ip_address() {
+            global $wpdb;
+            if ( isset($_SERVER["REMOTE_ADDR"]) )    {
+                return $wpdb->escape($_SERVER["REMOTE_ADDR"]);
+            } else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) )    {
+                return $wpdb->escape($_SERVER["HTTP_X_FORWARDED_FOR"]);
+            } else if ( isset($_SERVER["HTTP_CLIENT_IP"]) )    {
+                return $wpdb->escape($_SERVER["HTTP_CLIENT_IP"]);
             }
+            return 0;
         }
-        
-	function cart() {}
-
 
 
 	
 	// GET CART CONTENTS
-	function get_contents()
-		{
+	function get_contents() {
 		$items = array();
 		foreach($this->items as $tmp_item)
 			{
@@ -106,12 +131,11 @@ class wpsc {
 			$items[] = $item;
 			}
 		return $items;
-		}
+	}
 
 
 	// ADD AN ITEM
-	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00')
-		{
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00') {
 		// VALIDATION
 		$valid_item_qty = $valid_item_price = false;
 
@@ -370,12 +394,8 @@ class wpsc {
                     $this->itemtax = array();
                     $this->itemurl = array();
                     $this->itemimg = array();
+                    $this->_update_total();
 
-                    if(@isset($wpsc_cart_type)) {
-                        if($wpsc_cart_type=='cookie') {
-                            setcookie('wpsccart', '', time()-7222);
-                        }
-                    }
                 }
 
 
@@ -402,12 +422,60 @@ class wpsc {
 				}
 			}
 
+                global $wpsc_cart_sub_type, $wpdb;
+                if($wpsc_cart_sub_type=='dragon') {
+                    global $current_user;
+                    wp_get_current_user();
+                    if ( 0 == $current_user->ID ) {
+                        // Not logged in.
+                        $theuser = 0;
+                    } else {
+                        $theuser = $current_user->ID;
+                    }
+                    $returnedId = 0;
+                        $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `user_id`='.$theuser.' AND `ipaddress`=\''.$this->get_ip_address().'\';';
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
 
-                global $wpsc_cart_type;
-                if($wpsc_cart_type=='cookie') {
-                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-                    setcookie('wpsccart', base64_encode(serialize($this)), time()+7222, '/', $xdomain, false);
+                        if(isset($results[0]['primkey'])) {
+                            $sql = 'UPDATE `'.$wpdb->prefix.'wpstorecart_cart` SET
+                            `total` = "'.$this->total.'",
+                            `itemcount` = "'.$this->itemcount.'",
+                            `items` = "'.base64_encode(serialize($this->items)).'",
+                            `itemprices` = "'.base64_encode(serialize($this->itemprices)).'",
+                            `itemqtys` = "'.base64_encode(serialize($this->itemqtys)).'",
+                            `itemname` = "'.base64_encode(serialize($this->itemname)).'",
+                            `itemshipping` = "'.base64_encode(serialize($this->itemshipping)).'",
+                            `itemtax` = "'.base64_encode(serialize($this->itemtax)).'",
+                            `itemurl` = "'.base64_encode(serialize($this->itemurl)).'",
+                            `itemimg` = "'.base64_encode(serialize($this->itemimg)).'"
+                            WHERE `user_id`='.$theuser.' AND `ipaddress`="'.$this->get_ip_address().'";';
+                            $results = $wpdb->query( $sql );
+                        
+                     } else {
+
+                        $sql = 'INSERT INTO `wordpress`.`wp_wpstorecart_cart`
+                            (`primkey`, `total`, `itemcount`, `items`, `itemprices`, `itemqtys`, `itemname`, `itemshipping`, `itemtax`, `itemurl`, `itemimg`, `user_id`, `options`, `ipaddress`)
+                            VALUES (
+                            NULL,
+                            \''.$this->total.'\',
+                            \''.$this->itemcount.'\',
+                            \''.base64_encode(serialize($this->items)).'\',
+                            \''.base64_encode(serialize($this->itemprices)).'\',
+                            \''.base64_encode(serialize($this->itemqtys)).'\',
+                            \''.base64_encode(serialize($this->itemname)).'\',
+                            \''.base64_encode(serialize($this->itemshipping)).'\',
+                            \''.base64_encode(serialize($this->itemtax)).'\',
+                            \''.base64_encode(serialize($this->itemurl)).'\',
+                            \''.base64_encode(serialize($this->itemimg)).'\',
+                            \''.$theuser.'\',
+                            \'\',
+                            \''.$this->get_ip_address().'\');';
+                            $results = $wpdb->query( $sql );
+
+                    }
+
                 }
+
 
 
 	}

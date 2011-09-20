@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.5
+Version: 2.4.6
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.5
+ * @version 2.4.6
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -49,17 +49,18 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
  * @global boolean $wpsc_error_reporting - Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
  * @global string $wpstorecart_db_version - Enables or disable testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
  */
-global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type;
+global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.5';
-$wpstorecart_version_int = 204005; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.6';
+$wpstorecart_version_int = 204006; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
 $APjavascriptQueue = NULL;
 $wpsc_cart_type = 'session';
+$wpsc_cart_sub_type = 'dragon';
 
 // Let's pull in all our actions.  Added in 2.4.4
 require_once(WP_PLUGIN_DIR.'/wpstorecart/php/actions.php');
@@ -323,12 +324,14 @@ if (!class_exists("wpStoreCart")) {
             $devOptions = $this->getAdminOptions();
 
             // New roles and capabilities code added in 2.3.7 (was intended for 3.0, but came a but early!)
-            add_role( 'wpstorecart_manager', 'wpStoreCart Manager', array( 'manage_wpstorecart', 'read', 'upload_files', 'publish_posts', 'edit_published_posts', 'publish_pages', 'edit_publish_pages' ) );
+            add_role( 'wpstorecart_manager', 'wpStoreCart Manager', array( 'manage_wpstorecart', 'read', 'upload_files', 'publish_posts', 'edit_published_posts', 'publish_pages', 'edit_published_pages' ) );
             $wp_roles->add_cap( 'administrator', 'manage_wpstorecart' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'read' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'upload_files' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'publish_pages' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'publish_posts' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'edit_published_posts' );
+            $wp_roles->add_cap( 'wpstorecart_manager', 'edit_published_pages' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'manage_wpstorecart' );
 
             /**
@@ -497,6 +500,35 @@ if (!class_exists("wpStoreCart")) {
 
                 $results = $wpdb->query( $sql );
             }
+
+          /**
+             * Let's make sure the the cart table exists for those who are upgrading from a previous version
+             */
+           $table_name = $wpdb->prefix . "wpstorecart_cart";
+           if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                $sql = "
+                        CREATE TABLE IF NOT EXISTS `{$table_name}` (
+                        `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        `total` DECIMAL( 11, 2 ) NOT NULL,
+                        `itemcount` INT NOT NULL,
+                        `items` TEXT NOT NULL,
+                        `itemprices` TEXT NOT NULL,
+                        `itemqtys` TEXT NOT NULL,
+                        `itemname` TEXT NOT NULL,
+                        `itemshipping` TEXT NOT NULL,
+                        `itemtax` TEXT NOT NULL,
+                        `itemurl` TEXT NOT NULL,
+                        `itemimg` TEXT NOT NULL,
+                        `user_id` INT NOT NULL,
+                        `options` TEXT NOT NULL,
+                        `ipaddress` VARCHAR( 39 ) NOT NULL
+                        );
+                        ";
+
+
+                  dbDelta($sql);
+           }
 
 
             // This little block of code insures that we don't run this update routine again until the next time wpStoreCart is updated.
@@ -7852,16 +7884,6 @@ echo '</ul>
                                 }
                             }
 
-                            if($wpsc_cart_type == 'cookie') {
-                                if(@!is_object($cart)) {
-                                    if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-                                    if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-                                        $cart = new wpsc();
-                                        $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-                                    }
-                                }
-                                if(!isset($_SESSION)) { @session_start(); }
-                            }
                             $old_checkout = $is_checkout;
                             $is_checkout = false;
                             $output= $cart->display_cart($wpsc, true);
@@ -7962,6 +7984,38 @@ echo '</ul>
 
                           dbDelta($sql);
                    }
+
+
+
+                   $table_name = $wpdb->prefix . "wpstorecart_cart";
+                   if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
+
+                        $sql = "
+                                CREATE TABLE `{$table_name}` (
+                                `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                `total` DECIMAL( 11, 2 ) NOT NULL,
+                                `itemcount` INT NOT NULL,
+                                `items` TEXT NOT NULL,
+                                `itemprices` TEXT NOT NULL,
+                                `itemqtys` TEXT NOT NULL,
+                                `itemname` TEXT NOT NULL,
+                                `itemshipping` TEXT NOT NULL,
+                                `itemtax` TEXT NOT NULL,
+                                `itemurl` TEXT NOT NULL,
+                                `itemimg` TEXT NOT NULL,
+                                `user_id` INT NOT NULL,
+                                `options` TEXT NOT NULL,
+                                `ipaddress` VARCHAR( 39 ) NOT NULL
+                                );
+                                ";
+
+
+                          dbDelta($sql);
+                   }
+
+
+
+
 
                    $table_name = $wpdb->prefix . "wpstorecart_orders";
                    if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
@@ -8242,16 +8296,7 @@ echo '</ul>
                                                 }
                                             }
 
-                                            if($wpsc_cart_type == 'cookie') {
-                                                if(@!is_object($cart)) {
-                                                    if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-                                                    if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-                                                        $cart = new wpsc();
-                                                        $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-                                                    }
-                                                }
-                                                if(!isset($_SESSION)) { @session_start(); }
-                                            }
+
 
                                             $output .= $cart->display_cart($wpsc);
                                            /**
@@ -11104,18 +11149,7 @@ echo '</ul>
                     }
                 }
 
-                if($wpsc_cart_type == 'cookie') {
-                    if(@!is_object($cart)) {
-                        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-                        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-                            $cart = new wpsc();
-                            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-                        }
-                    }
-                    if(!isset($_SESSION)) { @session_start(); }
-                }
-               
-            //echo '<!-- /**'.var_dump(unserialize(base64_decode($_COOKIE['wpsccart']))).' **/ -->';
+
 
         }
 
@@ -11269,16 +11303,7 @@ if (class_exists("WP_Widget")) {
                             }
                         }
 
-                        if($wpsc_cart_type == 'cookie') {
-                            if(@!is_object($cart)) {
-                                if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-                                if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-                                    $cart = new wpsc();
-                                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-                                }
-                            }
-                            if(!isset($_SESSION)) { @session_start(); }
-                        }
+
 			$output = NULL;
 
 			echo $before_widget;
@@ -12028,17 +12053,6 @@ if (isset($wpStoreCart)) {
                     $cart = new wpsc();
                 }
             }
-        }
-
-        if($wpsc_cart_type == 'cookie') {
-            if(@!is_object($cart)) {
-                if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-                if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-                    $cart = new wpsc();
-                    $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-                }
-            }
-            if(!isset($_SESSION)) { @session_start(); }
         }
 
         add_action('activated_plugin',array(&$wpStoreCart, 'save_error'));
