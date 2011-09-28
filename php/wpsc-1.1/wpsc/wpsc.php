@@ -64,7 +64,7 @@ class wpsc {
         function restore_cart() {
             global $wpsc_cart_sub_type, $wpdb;
 
-            if($wpsc_cart_sub_type=='dragon') {
+
                 global $current_user;
                 wp_get_current_user();
                 if ( 0 == $current_user->ID ) {
@@ -93,7 +93,7 @@ class wpsc {
 
 
 
-            }
+            
         }
 
         function get_ip_address() {
@@ -423,7 +423,7 @@ class wpsc {
 			}
 
                 global $wpsc_cart_sub_type, $wpdb;
-                if($wpsc_cart_sub_type=='dragon') {
+
                     global $current_user;
                     wp_get_current_user();
                     if ( 0 == $current_user->ID ) {
@@ -453,7 +453,7 @@ class wpsc {
                         
                      } else {
 
-                        $sql = 'INSERT INTO `wordpress`.`wp_wpstorecart_cart`
+                        $sql = 'INSERT INTO `'.$wpdb->prefix.'wpstorecart_cart`
                             (`primkey`, `total`, `itemcount`, `items`, `itemprices`, `itemqtys`, `itemname`, `itemshipping`, `itemtax`, `itemurl`, `itemimg`, `user_id`, `options`, `ipaddress`)
                             VALUES (
                             NULL,
@@ -474,7 +474,7 @@ class wpsc {
 
                     }
 
-                }
+                
 
 
 

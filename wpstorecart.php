@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.8
+Version: 2.4.9
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.8
+ * @version 2.4.9
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.8';
-$wpstorecart_version_int = 204008; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.9';
+$wpstorecart_version_int = 204009; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1547,52 +1547,132 @@ echo '</ul>
 
             echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/development.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;Diagnostics <a href="http://wpstorecart.com/documentation/diagnostics/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
 
-            echo 'WARNING: Do not post this code in a public place.  The code below contains sensitive information about your site.  Only share this information with parties you trust, such as wpStoreCart staff, your web developers, etc.  The information here may be useful for technicians to diagnose what may be causing an issue that you have.  To view this data, run it through the base64_decode() PHP function.
+            echo 'WARNING: Do not post this code in a public place.  The code below contains sensitive information about your site.  Only share this information with parties you trust, such as wpStoreCart staff, your web developers, etc.  The information here may be useful for technicians to diagnose what may be causing an issue that you have.  To view this data, run it through the base64_decode() PHP function';if(function_exists('gzcompress')) {echo ' followed by the gzuncompress() PHP function';}echo'.
                 <br /><br /><a href="" onclick="jQuery(\'#wpsc-diag\').select();return false;">Select All...</a><br />';
 
             echo '<textarea readonly="readonly" id="wpsc-diag" onclick="jQuery(\'#wpsc-diag\').select();return false;" onfocus="jQuery(\'#wpsc-diag\').select();return false;" style="border:1px solid #666;width:850px;max-width:850px;height:250px;overflow:scroll;">';
-            $arr = get_defined_vars();
+
 
             $output = '<pre>';
             $output .= "===== wpStoreCart settings =====
-";
-            foreach ($arr as $key=>$value){
-                $output .= $key ." => ". $value ."
-";
-                if(is_array($value)) {
-                    $output .= print_r($value, true);
+            ";
+            if (function_exists('get_defined_vars')) {
+                $arr = @get_defined_vars();
+                foreach ($arr as $key=>$value){
+                    $output .= $key ." => ". $value ."
+    ";
+                    if(is_array($value)) {
+                        $output .= print_r($value, true);
+                    }
                 }
+            } else {
+                $output .= 'get_defined_vars() PHP function disabled, cannot determine values
+';
             }
 
             $output .= "===== php.ini settings =====
 ";
-            $output .= print_r(ini_get_all(), true);
+            if (function_exists('ini_get_all')) {
+                $output .= @print_r(ini_get_all(), true);
+            } else {
+                $output .= 'ini_get_all() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== your local settings =====
 ";
-            $output .= "Your OS: ".php_uname()."
+            if (function_exists('php_uname')) {
+                $output .= "Your OS: ".php_uname()."
+
 ";
+            } else {
+                $output .= 'php_uname() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== apache modules =====
 ";
-            $output .= print_r(apache_get_modules(), true);
+            if (function_exists('apache_get_modules')) {
+                $output .= @print_r(apache_get_modules(), true);
+            } else {
+                $output .= 'apache_get_modules() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== php version=====
 ";
-            $output .= "PHP version: ".phpversion(). "
-                ";
+            if (function_exists('phpversion')) {
+                $output .= "PHP version: ".phpversion(). "
+";
+            } else {
+                $output .= 'phpversion() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== stream wrappers =====
 ";
-            $output .= print_r(stream_get_wrappers(), true);
+            if (function_exists('stream_get_wrappers')) {
+                $output .= @print_r(stream_get_wrappers(), true);
+            } else {
+                $output .= 'stream_get_wrappers() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== stream transports =====
 ";
-            $output .= print_r(stream_get_transports(), true);
+            if (function_exists('stream_get_transports')) {
+                $output .= @print_r(stream_get_transports(), true);
+            } else {
+                $output .= 'stream_get_transports() PHP function disabled, cannot determine values
+';
+            }
+
             $output .= "===== stream filters =====
 ";
-            $output .= print_r(stream_get_filters(), true);
-            $output .= "===== Wordpress and Global settings =====
-";
-            $output .= print_r($GLOBALS, true).'</pre>';
+            if (function_exists('stream_get_filters')) {
+                $output .= @print_r(stream_get_filters(), true);
+            } else {
+                $output .= 'stream_get_filters() PHP function disabled, cannot determine values
+';
+            }
 
-            echo base64_encode($output);
-            echo '  </textarea>';
+            $output .= '===== Wordpress and Global settings =====
+---- $_SERVER =';
+            $output .= @print_r($_SERVER, true).'
+
+---- $_GET =
+';
+            $output .= @print_r($_GET, true).'
+
+---- $_POST =
+';
+            $output .= @print_r($_POST, true).'
+
+---- $_SESSION =
+';
+            $output .= @print_r($_SESSION, true).'
+
+---- $_ENV =
+';
+            $output .= @print_r($_ENV, true).'
+
+---- $_COOKIE =
+';
+            $output .= @print_r($_COOKIE, true).'
+';
+            $output .='</pre>';
+            if (function_exists('base64_encode')) {
+                if(function_exists('gzcompress')) {
+                    echo @base64_encode(gzcompress($output,9));
+                } else {
+                    echo @base64_encode($output);
+                }
+            } else {
+                echo $output.'
+
+                base64_encode() PHP function disabled, could not use base64_encode on data';
+            }
+            echo '</textarea>';
             echo '</div>';
 
         }
@@ -9636,7 +9716,7 @@ echo '</ul>
 
 
 
-			return $output;
+			return do_shortcode($output);
 		}
 		// END SHORTCODE ================================================
 
