@@ -6,8 +6,24 @@ $allowedToAccess = true;
 
 if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
 
-    echo '<iframe src="http://wpstorecart.com/store/wpscaffiliate-pro/" frameborder="0" border="0" cellspacing="0" style="border:0px;width:1000px;height:2500px;min-width:1000px;min-height:2500px;"></iframe>';
-
+    echo '
+    <center><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;cursor:pointer;" onclick="jQuery(\'#buypro\').submit();" /></center>
+    <center><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/affiliates.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
+    <input type="hidden" name="cmd" value="_s-xclick">
+    <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
+    <input type="hidden" name="on0" value="License">
+    <select name="os0" style="display:none;">
+        <option value="Single Domain" selected="selected">Single Domain $29.99</option>
+        <option value="2 Domains">2 Domains $49.99</option>
+        <option value="10 Domains">10 Domains $209.99</option>
+        <option value="Unlimited Domains">Unlimited Domains $389.99</option>
+    </select>
+    <input type="hidden" name="currency_code" value="USD">
+    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+    </form>
+    ';
+    
 } else {
 
 

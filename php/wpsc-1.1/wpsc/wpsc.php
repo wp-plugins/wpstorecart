@@ -75,7 +75,7 @@ class wpsc {
                 }
 
 
-                $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `user_id`='.$theuser.' AND `ipaddress`=\''.$this->get_ip_address().'\';';
+                $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `ipaddress`=\''.$this->get_ip_address().'\';';
                 $results = $wpdb->get_results( $sql , ARRAY_A );
 
                 if(isset($results[0]['primkey'])) {
@@ -433,7 +433,7 @@ class wpsc {
                         $theuser = $current_user->ID;
                     }
                     $returnedId = 0;
-                        $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `user_id`='.$theuser.' AND `ipaddress`=\''.$this->get_ip_address().'\';';
+                        $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `ipaddress`=\''.$this->get_ip_address().'\';';
                         $results = $wpdb->get_results( $sql , ARRAY_A );
 
                         if(isset($results[0]['primkey'])) {
@@ -448,7 +448,7 @@ class wpsc {
                             `itemtax` = "'.base64_encode(serialize($this->itemtax)).'",
                             `itemurl` = "'.base64_encode(serialize($this->itemurl)).'",
                             `itemimg` = "'.base64_encode(serialize($this->itemimg)).'"
-                            WHERE `user_id`='.$theuser.' AND `ipaddress`="'.$this->get_ip_address().'";';
+                            WHERE `ipaddress`="'.$this->get_ip_address().'";';
                             $results = $wpdb->query( $sql );
                         
                      } else {
