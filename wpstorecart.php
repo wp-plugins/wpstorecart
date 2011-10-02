@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.10
+Version: 2.4.11
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.10
+ * @version 2.4.11
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.10';
-$wpstorecart_version_int = 204010; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.11';
+$wpstorecart_version_int = 204011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -8338,7 +8338,7 @@ echo '</ul>
                                     case 'gallery': //
                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                         break;
-                                    case 'haspurchased': // Categories shortcode =========================================================
+                                    case 'haspurchased': // If a person has purchased shortcode =========================================================
                                             if ( 0 == $current_user->ID ) {
                                                 // Not logged in.
                                             } else {
@@ -8448,6 +8448,52 @@ echo '</ul>
                                                 $maxImageHeight = $devOptions['wpStoreCartheight'];
                                             }
                                             if(is_numeric($quantity) && is_numeric($thecategory)){
+                                                
+                                                if($orderby=='') {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} ORDER BY `primkey` ASC LIMIT 0, {$quantity};";
+                                                } else {
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} {$orderby} LIMIT 0, {$quantity};";
+                                                }
+
+                                                $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} ORDER BY `primkey` ASC;");
+                                                $secondcss = 'wpsc-categories';
+                                                $results = $wpdb->get_results( $sql , ARRAY_A );
+                                                    if(isset($results[0])) {
+
+                                                            foreach ($results as $result) {
+                                                                    if(trim($result['thumbnail']=='')) {
+                                                                        $result['thumbnail'] = plugins_url('/images/default_product_img.jpg' , __FILE__);
+                                                                    }
+                                                                    if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                                                        } else {
+                                                                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                                                        }
+                                                                    } else {
+                                                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                    }
+                                                                    if($devOptions['displayType']=='grid'){
+                                                                            $output .= '<div class="wpsc-grid wpsc-categories">';
+                                                                    }
+                                                                    if($devOptions['displayType']=='list'){
+                                                                            $output .= '<div class="wpsc-list wpsc-categories">';
+                                                                    }
+                                                                    if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                                            $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                    }
+                                                                    if($usetext=='true' && $devOptions['displayTitle']=='true') {
+                                                                            $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.stripslashes($result['category']).'</h1></a>';
+                                                                    }
+                                                                    if($devOptions['displayintroDesc']=='true'){
+                                                                            $output .= '<p>'.stripslashes($result['description']).'</p>';
+                                                                    }
+                                                                    $output .= '</div>';
+                                                            }
+                                                            $output .= '<div class="wpsc-clear"></div>';
+                                                    }
+                                                    $results = NULL;
+
                                                     if($orderby=='') {
                                                         $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' LIMIT 0, {$quantity};";
                                                     } else {
