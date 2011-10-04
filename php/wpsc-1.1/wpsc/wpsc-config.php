@@ -78,6 +78,7 @@ if (isset($wpStoreCart)) {
         @$wpsc['text']['checkout_2checkout_button']	= $devOptions['checkout_2checkout_button'];
         @$wpsc['text']['checkout_checkmoneyorder_button']	= $devOptions['checkout_checkmoneyorder_button'];
         @$wpsc['text']['checkout_libertyreserve_button']	= $devOptions['checkout_libertyreserve_button'];
+        @$wpsc['text']['checkout_moneybookers_button']	= $devOptions['checkout_moneybookers_button'];
 
         @$wpsc['text']['cc_name']	= $devOptions['cc_name'];
         @$wpsc['text']['cc_number']	= $devOptions['cc_number'];

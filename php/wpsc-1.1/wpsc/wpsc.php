@@ -1300,7 +1300,11 @@ class wpsc {
                                             }
                                     }
 
-                             
+                                    if($devOptions['allowmb']=='true' && $isLoggedIn == true) {
+                                            if(!isset($_POST['ispaypal'])) {
+                                                    $output .= '<input type="submit" value="'.$text['checkout_moneybookers_button'].'" class="wpsc-button wpsc-moneybookerscheckout '.$devOptions['button_classes_checkout'].'" onclick=" jQuery(\'#paymentGateway\').val(\'moneybookers\');" onsubmit="jQuery(\'#paymentGateway\').val(\'moneybookers\');"></input>';
+                                            }
+                                    }
 
                                     if($shipping_needs_calculation==true  && $devOptions['storetype']!='Digital Goods Only') {
                                         $output .= '  <script type="text/javascript">
@@ -1311,6 +1315,7 @@ class wpsc {
                                                     jQuery(".wpsc-2checkoutcheckout").hide();
                                                     jQuery(".wpsc-libertyreservecheckout").hide();
                                                     jQuery(".wpsc-qbmscheckout").hide();
+                                                    jQuery(".wpsc-moneybookerscheckout").hide();
                                                 /* ]]> */
                                                 </script>
                                             ';

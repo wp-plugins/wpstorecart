@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.11
+Version: 2.4.12
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.11
+ * @version 2.4.12
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.11';
-$wpstorecart_version_int = 204011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.12';
+$wpstorecart_version_int = 204012; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1038,6 +1038,7 @@ if (!class_exists("wpStoreCart")) {
                                     'checkout_authorizenet_button' => 'Checkout with Authorize.NET',
                                     'checkout_2checkout_button' => 'Checkout with 2CheckOut',
                                     'checkout_libertyreserve_button' => 'Checkout with Liberty Reserve',
+                                    'checkout_moneybookers_button' => 'Checkout with Moneybookers',
                                     'remove_link' => 'remove',
                                     'empty_button' => 'empty',
                                     'empty_message' => 'Your cart is empty!',
@@ -1145,7 +1146,12 @@ if (!class_exists("wpStoreCart")) {
                                     'month' => 'month(s)',
                                     'year' => 'year(s)',
                                     'buy_now' => 'Buy Now',
-                                    'page_mode' => 'sort'
+                                    'page_mode' => 'sort',
+                                    'allowmb' => 'false',
+                                    'mb_login' => get_bloginfo('admin_email'),
+                                    'mb_secretword' => '',
+                                    'mb_logo' => 'https://',
+                                    'mb_currency' => 'USD'
                                     );
 
             
@@ -2173,6 +2179,26 @@ echo '</ul>
 				}
                                 if (isset($_POST['buy_now'])) {
  					$devOptions['buy_now'] = $wpdb->escape($_POST['buy_now']);
+				}
+
+                                if (isset($_POST['allowmb'])) {
+ 					$devOptions['allowmb'] = $wpdb->escape($_POST['allowmb']);
+				}
+                                if (isset($_POST['mb_login'])) {
+ 					$devOptions['mb_login'] = $wpdb->escape($_POST['mb_login']);
+				}
+                                if (isset($_POST['mb_secretword'])) {
+ 					$devOptions['mb_secretword'] = $wpdb->escape($_POST['mb_secretword']);
+				}
+                                if (isset($_POST['mb_logo'])) {
+ 					$devOptions['mb_logo'] = $wpdb->escape($_POST['mb_logo']);
+				}
+                                if (isset($_POST['mb_currency'])) {
+ 					$devOptions['mb_currency'] = $wpdb->escape($_POST['mb_currency']);
+				}
+
+                                if (isset($_POST['checkout_moneybookers_button'])) {
+ 					$devOptions['checkout_moneybookers_button'] = $wpdb->escape($_POST['checkout_moneybookers_button']);
 				}
 
 				if (isset($_POST['admin_capability'])) {
@@ -3272,6 +3298,11 @@ echo '</ul>
                             include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/qb_form.php');
                         }
 
+                        if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/moneybookers/mb_form.php')) {
+                            global $devOptions;
+                            include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/moneybookers/mb_form.php');
+                        }
+
                         echo '
         		
 			
@@ -3374,6 +3405,13 @@ echo '</ul>
                             <tr><td><h3>Checkout Liberty Reserve Button</h3></td>
                             <td class="tableDescription"><p>Default: <i>Checkout with Liberty Reserve</i></p></td>
                             <td><input type="text" name="checkout_libertyreserve_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_libertyreserve_button']), 'wpStoreCart'); echo'" />
+                            </td></tr>
+                            ';
+
+                            echo '
+                            <tr><td><h3>Checkout Skrill/Moneybookers Button</h3></td>
+                            <td class="tableDescription"><p>Default: <i>Checkout with Moneybookers</i></p></td>
+                            <td><input type="text" name="checkout_moneybookers_button" value="'; _e(apply_filters('format_to_edit',$devOptions['checkout_moneybookers_button']), 'wpStoreCart'); echo'" />
                             </td></tr>
                             ';
 

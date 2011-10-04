@@ -19,17 +19,6 @@ if (!function_exists('add_action'))
 }
 include_once(ABSPATH . 'wp-content/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc.php');
 
-// INITIALIZE cookie wpsc BEFORE SESSION START
-if($wpsc_cart_type == 'cookie') {
-    if(@!is_object($cart)) {
-        if(isset($_COOKIE['wpsccart'])) { @$cart =& unserialize(base64_decode($_COOKIE['wpsccart'])); }
-        if(@!is_object($cart) && !isset($_COOKIE['wpsccart'])) {
-            $cart = new wpsc();
-            $xdomain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;setcookie('wpsccart', base64_encode(serialize($cart)), time()+7222, '/', $xdomain, false);
-        }
-    }
-    if(!isset($_SESSION)) { @session_start(); }
-}
 if(!isset($_SESSION)) {
 	session_start();
 }
@@ -584,6 +573,120 @@ else
                     $paymentGatewayOptions['shortpath']=WP_PLUGIN_DIR.'/wpsc-payments-pro/';
                     include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php');
                 }
+
+
+
+
+
+                if($paymentGateway == 'moneybookers') {
+                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpsc-payments-pro/moneybookers/mb_ipn.php';
+                    $paymentGatewayOptions['mb_login'] = $devOptions['mb_login'];
+                    $paymentGatewayOptions['mb_secretword'] = $devOptions['mb_secretword'];
+                    $paymentGatewayOptions['mb_logo'] = $devOptions['mb_logo'];
+                    $paymentGatewayOptions['mb_currency'] = $devOptions['mb_currency'];
+                    $paymentGatewayOptions['theCartNames'] = '';
+                    $paymentGatewayOptions['theCartPrice'] = 0.00;
+                    $cartContents = '';
+                    $paymentGatewayOptions['totalPrice'] = 0;
+                    $paymentGatewayOptions['totalShipping'] = 0;
+                    foreach ($cart->get_contents() as $item) {
+                            $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . $item['name'] .' x'.$item['qty'].', ';
+                            $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] + ($item['price'] * $item['qty']);
+
+                            if(($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                // Implement shipping here if needed
+                                $table_name = $wpdb->prefix . "wpstorecart_products";
+                                $results = $wpdb->get_results( "SELECT `shipping` FROM {$table_name} WHERE `primkey`={$item['id']} LIMIT 0, 1;", ARRAY_A );
+                                if(isset($results)) {
+                                    if($results[0]['shipping']!='0.00') {
+                                        $paymentGatewayOptions['totalShipping'] = $paymentGatewayOptions['totalShipping'] + round($results[0]['shipping'] * $item['qty'], 2);
+                                    }
+                                }
+                            } else {
+                                $paymentGatewayOptions['totalShipping'] = 0;
+                            }
+
+                            if($devOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = $devOptions['flatrateamount'];
+                            }
+                            if($devOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
+                                $paymentGatewayOptions['totalShipping'] = round($devOptions['flatrateamount'] * $item['qty'], 2);
+                            }
+                            if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
+                                    $paymentGatewayOptions['totalShipping'] = $usps_shipping_total; // We use the calculated USPS shipping total if applicable
+                            }
+
+                            // Check for a coupon
+                            if(@!isset($_SESSION)) {
+                                    @session_start();
+                            }
+                            if(@$_SESSION['validcouponid']==$item['id']) {
+                                $paymentGatewayOptions['theCartPrice'] = $paymentGatewayOptions['theCartPrice'] - $_SESSION['validcouponamount'];
+                            }
+
+
+                            $cartContents = $cartContents . $item['id'] .'*'.$item['qty'].',';
+                            $totalPrice = $totalPrice + ($item['price'] * $item['qty']);
+
+                    }
+
+                    $paymentGatewayOptions['theCartNames'] = $paymentGatewayOptions['theCartNames'] . 'shipping: '.$paymentGatewayOptions['totalShipping'];
+
+                    $cartContents = $cartContents . '0*0';
+
+                    // Insert the order into the database
+                    $table_name = $wpdb->prefix . "wpstorecart_orders";
+                    $timestamp = date('Ymd');
+                    if(!isset($_COOKIE['wpscPROaff']) || !is_numeric($_COOKIE['wpscPROaff'])) {
+                        $affiliateid = 0;
+                    } else {
+                        $affiliateid = $_COOKIE['wpscPROaff'];
+                        //setcookie ("wpscPROaff", "", time() - 3600); // Remove the affiliate ID
+                    }
+                    $paymentGatewayOptions['userid'] = $purchaser_user_id;
+
+                    $insert = "
+                    INSERT INTO `{$table_name}`
+                    (`primkey`, `orderstatus`, `cartcontents`, `paymentprocessor`, `price`, `shipping`,
+                    `wpuser`, `email`, `affiliate`, `date`) VALUES
+                    (NULL, 'Pending', '{$cartContents}', 'Skrill/Moneybookers', '{$paymentGatewayOptions['theCartPrice']}', '{$paymentGatewayOptions['totalShipping']}', '{$purchaser_user_id}', '{$purchaser_email}', '{$affiliateid}', '{$timestamp}');
+                    ";
+
+                    $results = $wpdb->query( $insert );
+                    $lastID = $wpdb->insert_id;
+                    if(isset($_COOKIE['wpscPROaff']) || is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
+                        $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$lastID}');");
+                    }
+                    $keytoedit = $lastID;
+
+                    // Tax
+                    $theTaxAmount = calculateTaxes($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping']);
+                    if($theTaxAmount > 0) {
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "INSERT INTO `{$table_name_meta}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$theTaxAmount}', 'ordertax', '{$lastID}');";
+                        $wpdb->query( $sql );
+                    }
+
+                    // Specify any custom value, here we send the primkey of the order record
+                    $paymentGatewayOptions['invoice'] = $lastID;
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
+
+                    //
+                    $cart->empty_cart();
+                    $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/';
+                    $paymentGatewayOptions['shortpath']=WP_PLUGIN_DIR.'/wpsc-payments-pro/';
+                    echo '<center><img src="../../../images/redirect.gif" alt="redirecting" />';
+                    @include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/moneybookers/mb_start.php');
+                }
+
+
+
+
+
+
+
+
+
 
                 if($paymentGateway == 'libertyreserve') {
                     @include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/libertyreserve/lb.php');
