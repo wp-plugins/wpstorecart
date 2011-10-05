@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 2.8.0
 Tested up to: 3.2.1
-Stable tag: 2.4.13
+Stable tag: 2.4.14
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -83,6 +83,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.4.14 =
+* Fixed: Page pagination now displays correctly on ALL category pages.
+* Updated: Stream lined the main wpStoreCart menu in the Wordpress admin panel
 
 = 2.4.13 =
 * Fixed: Page pagination now displays correctly on category pages.

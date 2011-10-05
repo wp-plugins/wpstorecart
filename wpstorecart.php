@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.13
+Version: 2.4.14
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.13
+ * @version 2.4.14
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.13';
-$wpstorecart_version_int = 204013; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.4.14';
+$wpstorecart_version_int = 204014; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -8495,9 +8495,9 @@ echo '</ul>
                                             if(is_numeric($quantity) && is_numeric($thecategory)){
                                                 
                                                 if($orderby=='') {
-                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} ORDER BY `primkey` ASC LIMIT 0, {$quantity};";
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
                                                 } else {
-                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} {$orderby} LIMIT 0, {$quantity};";
+                                                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} {$orderby} LIMIT {$startat}, {$quantity};";
                                                 }
 
                                                 $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`={$thecategory} ORDER BY `primkey` ASC;");
@@ -8540,11 +8540,12 @@ echo '</ul>
                                                     $results = NULL;
 
                                                     if($orderby=='') {
-                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' LIMIT 0, {$quantity};";
+                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' LIMIT {$startat}, {$quantity};";
                                                     } else {
-                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' {$orderby} LIMIT 0, {$quantity};";
+                                                        $sql = "SELECT * FROM `{$table_name}` WHERE `category`='{$thecategory}' {$orderby} LIMIT {$startat}, {$quantity};";
                                                     }
                                                     $results = $wpdb->get_results( $sql , ARRAY_A );
+                                                    $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_products` WHERE `category`={$thecategory} ORDER BY `primkey` ASC;");
 
                                                 if(isset($results[0])) {
                                                         foreach ($results as $result) {
@@ -12091,13 +12092,13 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             $page = add_submenu_page('wpstorecart-admin','Add product - wpStoreCart ', 'Add product', 'manage_wpstorecart', 'wpstorecart-add-products', array(&$wpStoreCart, 'printAdminPageAddproducts'));
             $editproductpage = add_submenu_page('wpstorecart-admin','Edit products - wpStoreCart ', 'Edit products', 'manage_wpstorecart', 'wpstorecart-edit-products', array(&$wpStoreCart, 'printAdminPageEditproducts'));
 
-            $importpage = add_submenu_page('wpstorecart-admin','Import and Export - wpStoreCart ', 'Import/Export', 'manage_wpstorecart', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
+            $importpage = add_submenu_page(NULL,'Import and Export - wpStoreCart ', 'Import/Export', 'manage_wpstorecart', 'wpstorecart-import', array(&$wpStoreCart, 'printAdminPageImport'));
             add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
 
             $categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'manage_wpstorecart', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
             $ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'manage_wpstorecart', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
             $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'manage_wpstorecart', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
-            $page2a = add_submenu_page('wpstorecart-admin','ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
+            $page2a = add_submenu_page(NULL,'ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
             $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'manage_wpstorecart', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
             $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'manage_wpstorecart', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
             $diagnosticsPage = add_submenu_page(NULL,'Diagnostics - wpStoreCart', 'Diagnostics', 'manage_wpstorecart', 'wpstorecart-diagnostics', array(&$wpStoreCart, 'printAdminPageDiagnostics'));
