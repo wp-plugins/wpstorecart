@@ -35,6 +35,7 @@ if($devOptions['authorizenettestmode']=='true') {
 if ($myAuthorize->validateIpn())
 {
     file_put_contents('authorize.txt', 'SUCCESS');
+    echo 'Success!';
      $keyToLookup = $myAuthorize->ipnData['x_invoice_num'];
      if(is_numeric($keyToLookup)) {
             $table_name = $wpdb->prefix . "wpstorecart_orders";

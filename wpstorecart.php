@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.4.14
+Version: 2.5.0
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.4.14
+ * @version 2.5.0
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,8 +52,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.4.14';
-$wpstorecart_version_int = 204014; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.0';
+$wpstorecart_version_int = 205000; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -296,7 +296,7 @@ if (!class_exists("wpStoreCart")) {
          * 
          * @var string $adminOptionsName Just the name of the wpStoreCart options in the Wordpress database
          */
-	var $adminOptionsName = "wpStoreCartAdminOptions";
+	var $adminOptionsName = "wpStoreCartAdminOptionswpStoreCartAdminOptions";
 
         /**
          *
@@ -417,6 +417,37 @@ if (!class_exists("wpStoreCart")) {
 		restore_error_handler(); // Restore error handler
        }
 
+       /**
+        *
+        * Uninstalls and deactivates wpStoreCart
+        *
+        * @global object $wpdb
+        */
+       function uninstall() {
+           global $wpdb;
+           delete_option($this->adminOptionsName);
+           $wpdb->query("DELETE FROM `{$wpdb->prefix}options` WHERE `option_name` = '{$this->adminOptionsName}';");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_products`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_meta`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_categories`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_orders`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_av`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_cart`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_coupons`;");
+           $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_log`;");
+
+       }
+
+       /**
+        * This is called on deactivation.  If the user has it set to uninstall on deactivation, then all products, settings, categories, coupons, orders, etc, will be deleted.
+        */
+       function deactivate() {
+           $devOptions = $this->getAdminOptions();
+           if($devOptions['uninstall']=='true') {
+                $this->uninstall();
+           }
+       }
+
         /**
          * wpscUpdate() Method
          *
@@ -462,6 +493,12 @@ if (!class_exists("wpStoreCart")) {
                 $sql = "ALTER TABLE `{$table_name}` ADD `thumbnail` VARCHAR( 512 ) NOT NULL, ADD `description` TEXT NOT NULL, ADD `postid` INT NOT NULL ";
                 $results = $wpdb->query( $sql );
             }
+
+            // Added in 2.5.0 for extended group discounts coding
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_categories", "showtoall", "BOOLEAN NOT NULL DEFAULT '1'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_categories", "showtowhichgroups", "TEXT NOT NULL" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_categories", "discountstoall", "BOOLEAN NOT NULL DEFAULT '1'" );
+            $this->add_column_if_not_exist($wpdb->prefix . "wpstorecart_categories", "discountstowhichgroups", "TEXT NOT NULL" );
 
           /**
              * Let's make sure the the meta table exists for those who are upgrading from a previous version
@@ -818,7 +855,7 @@ if (!class_exists("wpStoreCart")) {
                 }
 
 		function spHeader() {
-                        global $wpstorecart_version_int, $testing_mode;
+                        global $wpstorecart_version_int, $testing_mode, $wp_db_version;
 
 
                         $devOptions = $this->getAdminOptions();
@@ -888,7 +925,7 @@ if (!class_exists("wpStoreCart")) {
                         
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#wpsc-dashboard-link").jeegoocontext("wpsc-dashboard-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#wpsc-dashboard-link").jeegoocontext("wpsc-dashboard-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
 
@@ -908,7 +945,7 @@ if (!class_exists("wpStoreCart")) {
 
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#wpsc-settings-link").jeegoocontext("wpsc-settings-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#wpsc-settings-link").jeegoocontext("wpsc-settings-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
 
@@ -921,7 +958,18 @@ if (!class_exists("wpStoreCart")) {
 
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#wpsc-add-product-link").jeegoocontext("wpsc-add-product-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#wpsc-add-product-link").jeegoocontext("wpsc-add-product-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
+                            //]]>
+                        </script>
+
+                        <ul id="wpsc-customers-drop-down" style="display:none;" class="jeegoocontext cm_default">
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-customers" class="spmenu">Search Customers</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/group.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-addtogroup" class="spmenu">Add/Remove from Group</a></li>
+                        </ul>
+
+                        <script type="text/javascript">
+                            //<![CDATA[
+                                jQuery("#wpsc-customers-link").jeegoocontext("wpsc-customers-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
 
@@ -934,18 +982,19 @@ if (!class_exists("wpStoreCart")) {
 
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#wpsc-orders-link").jeegoocontext("wpsc-orders-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#wpsc-orders-link").jeegoocontext("wpsc-orders-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
 
                         <ul id="wpsc-marketing-drop-down" style="display:none;" class="jeegoocontext cm_default">
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-coupon" class="spmenu">Coupons</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/group.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-groupdiscounts" class="spmenu">Group Discounts</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu">ShareYourCart&#8482;</a></li>
                         </ul>
 
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#wpsc-marketing-link").jeegoocontext("wpsc-marketing-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#wpsc-marketing-link").jeegoocontext("wpsc-marketing-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
 
@@ -961,16 +1010,14 @@ if (!class_exists("wpStoreCart")) {
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/help.png' , __FILE__).'" /></span><a href="http://wpstorecart.com/faq/"   target="_blank">FAQ</a></li>
                             <li><a href="http://wpstorecart.com/help-support/"  target="_blank">More Help</a></li>
 
-                        </ul>
+                        </ul>';
 
+                        echo '
                         <script type="text/javascript">
                             //<![CDATA[
-                                jQuery("#contextual-help-link").jeegoocontext("contextual-help-link-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, startTopOffset: -1, fadeIn: 0, autoHide: true});
+                                jQuery("#contextual-help-link").jeegoocontext("contextual-help-link-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
-
-
-
 ';
 
                     global $testing_mode;
@@ -982,7 +1029,7 @@ if (!class_exists("wpStoreCart")) {
 		
 		
 		//Returns an array of admin options
-        function getAdminOptions() {
+        function getAdminOptions($action=NULL) {
 		
             $apAdminOptions = array('mainpage' => '',
                                     'checkoutpage' => '',
@@ -1151,13 +1198,24 @@ if (!class_exists("wpStoreCart")) {
                                     'mb_login' => get_bloginfo('admin_email'),
                                     'mb_secretword' => '',
                                     'mb_logo' => 'https://',
-                                    'mb_currency' => 'USD'
+                                    'mb_currency' => 'USD',
+                                    'gd_enable' => 'false',
+                                    'gd_display' => 'false',
+                                    'gd_saleprice' => 'true',
+                                    'show_price_to_guests' => 'true',
+                                    'logged_out_price' => '?.??',
+                                    'uninstall' => 'false'
                                     );
 
-            
+
             if($this->wpStoreCartSettings!=NULL) {
-                $devOptions = $this->wpStoreCartSettings;
-                $devOptions['menu_style']='version3';
+                if($action!='flush') {
+                    $devOptions = $this->wpStoreCartSettings;
+                    $devOptions['menu_style']='version3';
+                } else {
+                    $this->wpStoreCartSettings = NULL;
+                    $devOptions = get_option($this->adminOptionsName);
+                }
             } else {
                 $devOptions = get_option($this->adminOptionsName);
             }
@@ -1696,14 +1754,13 @@ echo '</ul>
         function printAdminPage() {
 			global $wpdb;
 
-                $devOptions = $this->getAdminOptions();
-                if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) 
-                {
-                  wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
-                }
+                        $this->wpStoreCartSettings = NULL;
+                        $devOptions = $this->getAdminOptions('flush');
+                        if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart'))
+                        {
+                          wp_die( __('wpStoreCart: You do not have sufficient permissions to access this page.') );
+                        }
 
-
-                        
                         
                         // Added in 2.3.2, so that if we change the mainpage, all the products will change their parent to the new mainpage as well
                         if(isset($_POST['wpStoreCartmainpage']) &&  ($devOptions['mainpage']!=$_POST['wpStoreCartmainpage'])) {
@@ -2201,6 +2258,16 @@ echo '</ul>
  					$devOptions['checkout_moneybookers_button'] = $wpdb->escape($_POST['checkout_moneybookers_button']);
 				}
 
+                                if (isset($_POST['show_price_to_guests'])) {
+ 					$devOptions['show_price_to_guests'] = $wpdb->escape($_POST['show_price_to_guests']);
+				}
+                                if (isset($_POST['logged_out_price'])) {
+ 					$devOptions['logged_out_price'] = $wpdb->escape($_POST['logged_out_price']);
+				}
+                                if (isset($_POST['uninstall'])) {
+ 					$devOptions['uninstall'] = $wpdb->escape($_POST['uninstall']);
+				}
+
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
  					$devOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
@@ -2259,6 +2326,9 @@ echo '</ul>
 			$this->spSettings();
                         $this->wpstorecart_alert();
 
+                        $this->wpStoreCartSettings = NULL;
+                        $devOptions = $this->getAdminOptions('flush');
+
 			echo'<div style="width:75%;max-width:75%;float:left;">
                             <h2> </h2>
 			<form method="post" action="'. $_SERVER["REQUEST_URI"].'" name="wpscform" id="wpscform">
@@ -2286,6 +2356,8 @@ echo '</ul>
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 			';			
+
+
 
 			echo '
 			<tr><td><h3>wpStoreCart Main Page: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">wpStoreCart uses pages, and needs a single pre-existing page to act as the main page from which most other wpStoreCart pages descend from.  For example, all product pages will be subpages of this page.</div></h3></td>
@@ -2430,6 +2502,11 @@ echo '</ul>
 
    			echo '
 			</select>
+			</td></tr>
+
+			<tr><td><h3>Uninstall wpStoreCart? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-33463467347" /><div class="tooltip-content" id="example-content-33463467347">If you set this to Yes, and then deactivate wpStoreCart anytime afterwords, it will DELETE all products, orders, coupons, categories, and all other wpStoreCart data.</div></h3></td>
+			<td class="tableDescription"><p>Selecting "No" will retain all data, even if wpStoreCart is deleted or deactivated.  Better safe than sorry, leave this on No!</p></td>
+			<td><p><label for="uninstall_yes"><input type="radio" id="uninstall_yes" name="uninstall" value="true" '; if ($devOptions['uninstall'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="uninstall_no"><input type="radio" id="uninstall_no" name="uninstall" value="false" '; if ($devOptions['uninstall'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
 			</td></tr>
 
 			<tr style="display:none;"><td><h3>Admin Menu Style <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-799934534" /><div class="tooltip-content" id="example-content-799934534">Allows you to use the classic admin panel style from wpStoreCart 1.x and 2.x, the new style of wpStoreCart 3, or a mixture of both. </div></h3></td>
@@ -3583,12 +3660,20 @@ echo '</ul>
 			echo '<table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
 
-			<tr><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.</div></h3></td>
+			<tr><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.  There are 2 "No" options, the first one leaves registration optional, the 2nd "No" removes the ability to register altogether.</div></h3></td>
 			<td class="tableDescription"><p>Controls whether or not your site requires registration before checkout completes.</p></td>
-			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
+			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes, only registered users can buy</label><br /><label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, but make it optional to register</label><br /><label for="requireregistration_disable"><input type="radio" id="requireregistration_disable" name="requireregistration" value="disable" '; if ($devOptions['requireregistration'] == "disable") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, disable registeration. Guest checkout only.</label></p>
+			</td></tr>
+			<tr><td><h3>Show Prices To Guests? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9984745996" /><div class="tooltip-content" id="example-content-9984745996">Set to "Yes" if you want to show guests (non-logged in users) the full price of products.  Set to "No" if you want to hide prices from guests.</div></h3></td>
+			<td class="tableDescription"><p>Display prices to guests.  Turn off to hide the prices from non-logged in users.</p></td>
+			<td><p><label for="show_price_to_guests"><input type="radio" id="show_price_to_guests_yes" name="show_price_to_guests" value="true" '; if ($devOptions['show_price_to_guests'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes, display prices to everyone</label><br /><label for="show_price_to_guests_no"><input type="radio" id="show_price_to_guests_no" name="show_price_to_guests" value="false" '; if ($devOptions['show_price_to_guests'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, only reveal prices to logged in users.</label></p>
+			</td></tr>
+			<tr><td><h3>Replacement Text for Hidden Prices? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9984745997" /><div class="tooltip-content" id="example-content-9984745997">If you hide prices from guests, then this is what they\'ll see in place of the price.</div></h3></td>
+			<td class="tableDescription"><p>When prices are hidden from non-logged in users, this is what\'s displayed in their place.</p></td>
+			<td><p><label for="logged_out_price"><input type="text" id="logged_out_price" name="logged_out_price" value="'.$devOptions['logged_out_price'].'" /> </label></p>
 			</td></tr>
                         </table>
-
+                        <br />
                         <h2>Required Information At Checkout:</h2>
 
                          <script type="text/javascript">
@@ -3654,7 +3739,8 @@ echo '</ul>
                         //$theOptionszz[12] = 'checkbox';$theOptionszzName[12] = 'Input Checkbox';
 
                         echo'
-                        Add new field: <strong>Name: </strong><input type="text" name="createnewfieldname" id="createnewfieldname" value="" /> <strong>Type: </strong><select name="createnewfieldtype" id="createnewfieldtype"><br />';
+                        <table class="widefat">
+                        <thead><tr><th>Add new field: <strong>Name: </strong><input type="text" name="createnewfieldname" id="createnewfieldname" value="" /> <strong>Type: </strong><select name="createnewfieldtype" id="createnewfieldtype">';
 
                         $icounter = 0;
                         foreach ($theOptionszz as $theOption) {
@@ -3667,9 +3753,10 @@ echo '</ul>
                                 $icounter++;
                         }
 
-                        echo '</select><label for="createnewfieldrequired_yes"><input type="radio" id="createnewfieldrequired_yes" name="createnewfieldrequired" value="required" checked="checked" /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="createnewfieldrequired_no"><input type="radio" id="createnewfieldrequired_no" name="createnewfieldrequired" value="optional" /> Optional</label> <img style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" onclick="addwpscfield();" /><br /><br />
-                        <div id="requiredsort" >
-                            <ul id="requiredul">
+                        echo '</select><label for="createnewfieldrequired_yes"><input type="radio" id="createnewfieldrequired_yes" name="createnewfieldrequired" value="required" checked="checked" /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="createnewfieldrequired_no"><input type="radio" id="createnewfieldrequired_no" name="createnewfieldrequired" value="optional" /> Optional</label> <img style="cursor:pointer;" src="'.plugins_url('/images/add.png' , __FILE__).'" onclick="addwpscfield();" /></th></tr></thead>
+                        <tbody><tr><td>
+                        <div id="requiredsort" style="margin:0 auto 0 auto;">
+                            <ul id="requiredul" style="margin:0 auto 0 auto;width:523px;">
                             ';
 
                             $table_name33 = $wpdb->prefix . "wpstorecart_meta";
@@ -3702,8 +3789,9 @@ echo '</ul>
                             }
 
                             echo '
-                            </ul>
+                            </ul><br />
                         </div>
+                        </td></tr></tbody></table>
                         <br style="clear:both;" /><br />';
 
                         echo '
@@ -5976,10 +6064,699 @@ echo '</ul>
 		
 		}	
 		// END Prints out the Add products admin page =======================================================================		
-		
-		
-		
-		
+
+        function printAdminPageProfile() {
+            global $wpdb, $user_level;
+                if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                        die(__('Cheatin&#8217; uh?'));
+                }
+                $devOptions = $this->getAdminOptions();
+                $table_name = $wpdb->prefix . "wpstorecart_orders";
+
+                $this->spHeader();
+                $this->wpstorecart_alert();
+
+                
+                $sort= "user_registered";
+
+                //the default avatar to display in case gravatar is not available for a user
+                $default = plugins_url('/images/person.png' , __FILE__);
+
+                $size = 64;
+
+                $i_users_id = intval($_GET['i_user_id']);
+
+                // get user info by calling get_userdata() on each id
+                $user = get_userdata( $i_users_id );
+
+                //GETTING INFO FROM EACH USERS
+                //get the user’s email ID
+                $email = $user->user_email;
+
+                //build the gravatar URL
+                $grav_url = "http://www.gravatar.com/avatar.php?
+                gravatar_id=".md5( strtolower($email) ).
+                "&default=".urlencode($default).
+                "&size=".$size;
+
+                //get the user’s full name
+                $user_fullname=$user->first_name . ' ' . $user->last_name;
+
+                //get the user’s URI
+                $user_url=$user->user_url;
+
+                //get the user’s nickname
+                $user_nickname=$user->nickname;
+
+                //get the user’s description ( the biographical info field, )
+                $user_profile=$user->description;
+
+                echo '<div style="width:75%;max-width:75%;float:left;"><img style="float:left;" src="'.$grav_url.'" alt="" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;'.$user->display_name.'</h2><br style="clear:both;" />';
+                echo '<table class="widefat"><thead><tr><th><a href="user-edit.php?user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url('/images/user_suit.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Edit</button></a>  <a href="admin.php?page=wpstorecart-email&email_address='.$user->user_email.'"><button class="button-secondary"><img src="'.plugins_url('/images/email.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Email</button></a>  <a href="admin.php?page=wpstorecart-orders&user_id='.$user->ID.'&show=all"><button class="button-secondary"><img src="'.plugins_url('/images/basket_edit.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" />View All Orders</button></a></th></tr></thead></table><br />';
+                echo '<h3>Completed Orders</h3>';
+                echo '<table class="widefat">
+                <thead><tr><th></th><th>Date<br />Order #</th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
+                ';
+
+
+                if(@!isset($_POST['orderby'])) {
+                    $orderby = '`date`';
+                } else {
+                    $orderby = $wpdb->prepare($_POST['orderby']);
+                }
+                if(@!isset($_POST['ordersort'])) {
+                    $ordersort = 'DESC';
+                } else {
+                    $ordersort = $wpdb->prepare($_POST['ordersort']);
+                }
+
+
+
+                $whereclause = 'WHERE `wpuser`="'.intval($i_users_id).'" AND `orderstatus`="Completed" ';
+
+                $grabrecord = "SELECT * FROM `{$table_name}` {$whereclause} ORDER BY {$orderby} {$ordersort};";
+
+                $results = NULL;
+                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                if(isset($results)) {
+                        foreach ($results as $result) {
+                                $wpStoreCartorderstatus = $result['orderstatus'];
+                                $wpStoreCartcartcontents = $result['cartcontents'];
+                                $wpStoreCartpaymentprocessor = $result['paymentprocessor'];
+                                $wpStoreCartprice = $result['price'];
+                                $wpStoreCartshipping = $result['shipping'];
+                                $wpStoreCartwpuser = $result['wpuser'];
+                                $wpStoreCartemail = $result['email'];
+                                $wpStoreCartaffiliate = $result['affiliate'];
+                                if(isset($wpStoreCartaffiliate) && $wpStoreCartaffiliate!=0) {
+                                    global $user_info4;
+                                    $user_info4 = get_userdata($wpStoreCartaffiliate);
+                                }
+                                if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
+                                    $user_info3 = get_userdata($wpStoreCartwpuser);
+                                }
+                                $wpStoreCartdate = $result['date'];
+
+
+
+                                echo "
+                                <tr>
+                                <td style=\"width:85px;min-width:85px;max-width:85px;\"><a href=\"admin.php?page=wpstorecart-invoice&orderNumber={$result['primkey']}\"><button class=\"button-secondary\"><img src=\"".plugins_url('/images/Invoice.png' , __FILE__)."\" alt=\"\" style=\"float:left;margin-right:5px;\" /> Details</button></a></td>
+                                <td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"\" /></a></td>
+                                <td>{$wpStoreCartorderstatus}</td>
+                                <td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
+                                <td>{$wpStoreCartpaymentprocessor}</td>";
+
+                                if($wpStoreCartpaymentprocessor!='PayPal Subscription') {
+                                    echo "<td><strong>{$devOptions['currency_symbol']}{$wpStoreCartprice}{$devOptions['currency_symbol_right']}</strong>"; if($wpStoreCartshipping!=0.00) {echo"<br /><i>({$devOptions['currency_symbol']}{$wpStoreCartshipping}{$devOptions['currency_symbol_right']})</i>";} echo"</td>";
+                                } else {
+                                    // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                    $wpsc_price_type = 'charge';
+                                    $membership_value = '';
+                                    $theProductToCheck = explode('*', $wpStoreCartcartcontents);
+                                    echo '<td>';
+                                    if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && (isset($theProductToCheck[0]))){
+                                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                        $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$theProductToCheck[0]};";
+                                        $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                        if(isset($resultsMembership)) {
+                                            foreach ($resultsMembership as $pagg) {
+                                                $membership_primkey = $pagg['primkey'];
+                                                $membership_value = $pagg['value'];
+                                            }
+                                            if($membership_value!='') {
+                                                global $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+                                                $theExploded = explode('||', $membership_value);
+                                                // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                                $wpsc_membership_product_id = $results[0]['primkey'];
+                                                $wpsc_price_type = $theExploded[0];
+                                                $wpsc_membership_trial1_allow = $theExploded[1];
+                                                $wpsc_membership_trial2_allow = $theExploded[2];
+                                                $wpsc_membership_trial1_amount = $theExploded[3];
+                                                $wpsc_membership_trial2_amount = $theExploded[4];
+                                                $wpsc_membership_regular_amount = $theExploded[5];
+                                                $wpsc_membership_trial1_numberof = $theExploded[6];
+                                                $wpsc_membership_trial2_numberof = $theExploded[7];
+                                                $wpsc_membership_regular_numberof = $theExploded[8];
+                                                $wpsc_membership_trial1_increment = $theExploded[9];
+                                                $wpsc_membership_trial2_increment = $theExploded[10];
+                                                $wpsc_membership_regular_increment = $theExploded[11];
+                                                if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$devOptions['day'];}
+                                                if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$devOptions['day'];}
+                                                if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$devOptions['day'];}
+                                                if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$devOptions['week'];}
+                                                if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$devOptions['week'];}
+                                                if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$devOptions['week'];}
+                                                if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$devOptions['month'];}
+                                                if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$devOptions['month'];}
+                                                if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$devOptions['month'];}
+                                                if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$devOptions['year'];}
+                                                if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$devOptions['year'];}
+                                                if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$devOptions['year'];}
+                                            }
+                                        }
+                                        echo '<ul class="wpsc-product-info">';
+                                        if($wpsc_membership_trial1_allow=='yes') {
+                                            echo"<li class=\"list-item-price\">{$devOptions['trial_period_1']} {$devOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</li>";
+                                        }
+                                        if($wpsc_membership_trial1_allow=='yes') {
+                                            echo "<li class=\"list-item-price\">{$devOptions['trial_period_2']} {$devOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$devOptions['currency_symbol_right']} {$devOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</li>";
+                                        }
+                                        echo "<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
+                                        echo '</ul>';
+                                    }
+
+                                    echo "</td>";
+                                }
+
+                                echo"
+                                <td>";
+
+                                if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
+                                    echo "<a href=\"admin.php?page=wpstorecart-profile&i_user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
+                                } else {
+                                    echo '<strong>Guest</strong><br />'.$wpStoreCartemail.'</td>';
+                                }
+                                echo "
+                                <td>";
+                                if(isset($wpStoreCartaffiliate) && $wpStoreCartaffiliate!=0) {
+                                    echo "<a href=\"user-edit.php?user_id={$wpStoreCartaffiliate}\">{$user_info4->user_login}</a></td>";
+                                } else {
+                                    echo '</td>';
+                                }
+                                echo "</td>
+                                </tr>";
+
+
+                        }
+                }
+
+
+
+
+
+                echo '
+                </tbody>
+                </table>
+                <br />';
+
+
+                $results = NULL;
+                $sql = 'SELECT * FROM `'.$wpdb->prefix.'wpstorecart_cart` WHERE `user_id`=\''.$i_users_id.'\';';
+                $results = $wpdb->get_results( $sql , ARRAY_A );
+
+                if(isset($results[0]['primkey'])) {
+                    echo '<h3>Users Current Cart</h3>';
+                    echo '<table class="widefat"><thead><tr><th>Total</th><th># of Items</th><th>Items</th><th>Prices</th><th>Qtys</th></tr></thead><tbody><tr>';
+                    echo '<td>'. $results[0]['total'];
+                    echo '</td><td>'. $results[0]['itemcount'];
+                    echo '</td><td>'; $the_items = unserialize(base64_decode($results[0]['items']));
+                    foreach ($the_items as $the_item) {
+                        $sql2 = "SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`=".intval($the_item).";";
+                        $moreresults2 = $wpdb->get_results( $sql2 , ARRAY_A );
+                        if(isset($moreresults2[0]['name'])) {
+                            foreach($moreresults2 as $moreresult2) {
+                                if(!is_array($moreresult2['name'])) {
+                                    echo $moreresult2['name'].'<br />';
+                                }
+                            }
+                        }
+                    }
+                    echo '</td><td>'; $the_prices = unserialize(base64_decode($results[0]['itemprices']));
+                    foreach($the_prices as $the_price) {
+                        if(!is_array($the_price) && is_string($the_price) && trim("$the_price")!='Array') {
+                            echo $the_price.'<br />';
+                        }
+                    }
+                    echo '</td><td>'; $the_qtys = unserialize(base64_decode($results[0]['itemqtys']));
+                    foreach($the_qtys as $the_qty) {
+                        if(!is_array($the_qty)) {
+                            echo $the_qty.'<br />';
+                        }
+                    }
+                    echo '</td></tr></tbody></table><br />';
+                }
+
+                echo '<h3>Full User Information</h3>';
+                echo '<table class="widefat"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+                $user = get_userdata( $i_users_id );
+                foreach($user as $key => $value) {
+                    if($key!='user_pass') {
+                        echo '<tr><td>'.$key.'</td><td>';
+                        if(is_array($value)) {
+                            echo '<pre style="width:500px;min-width:500px;max-width:500px;overflow:auto;">';
+                            print_r($value);
+                            echo '</pre>';
+                        } else {
+                            echo $value;
+                        }
+                        echo '</td></tr>';
+                    }
+                }
+                echo '</tbody></table>';
+
+
+                echo '</div>';
+        }
+
+        function printAdminPageCustomers() {
+            global $wpdb, $user_level;
+                if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                        die(__('Cheatin&#8217; uh?'));
+                }
+                $devOptions = $this->getAdminOptions();
+                $table_name = $wpdb->prefix . "wpstorecart_orders";
+
+                $this->spHeader();
+                $this->wpstorecart_alert();
+
+                echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Customers.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Customers <a href="http://wpstorecart.com/documentation/customers/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+                
+                echo '<form action="" method="post">Search by email or username: <input type="text" style="width:200px;" name="wpsc-customer-search" /> <select name="wpsc-customer-search-completed"><option value="Completed">Show results for paid customers only.</option><option value="all">Show results for all possible users.</option></select> <input type="submit" value="Search" class="button-primary" /></form><br />';
+                
+                $criteria = NULL;
+                $criteria2 = NULL;
+                if(!isset($_POST['wpsc-customer-search'])) {
+                    $criteria = " `orderstatus`='Completed' ";                    
+                } else {
+                    $theSearch = $wpdb->escape($_POST['wpsc-customer-search']);
+                    if($_POST['wpsc-customer-search-completed']=='Completed') {
+                        $criteria = " `orderstatus`='Completed' "; 
+                    } else {
+                        $user = get_userdatabylogin($theSearch);
+                        $theUserId = $user->ID; // prints the id of the user
+                        $theUserId = intval($theUserId);
+                        $criteria .= " `email` LIKE '%{$theSearch}%' OR `email`='{$theSearch}' OR  `wpuser`={$theUserId} "; 
+                        $criteria2 .= " `email` LIKE '%{$theSearch}%' "; 
+                    }
+                    
+                }
+                
+                $grabrecord = "SELECT `email`, SUM(`price`) AS `OrderTotal`, `date`, COUNT(`wpuser`) AS `NumberOfOrders`, `wpuser` FROM `{$table_name}` WHERE {$criteria} AND `wpuser`<>'0' GROUP BY `wpuser` ORDER BY `date` DESC;";
+
+                echo '<table class="widefat">
+                <thead><tr><th>Actions</th><th>Display Name</th><th># of Orders</th><th>Total Purchases</th></tr></thead>
+                <tbody>
+                ';
+                $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                if(isset($results[0])) {
+                    foreach ($results as $result) {
+                        $user = get_userdata( $result['wpuser']);
+                        if(strlen($user->display_name)>0) {
+                            echo '<tr><td><a href="admin.php?page=wpstorecart-profile&i_user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Profile</button></a> <a href="admin.php?page=wpstorecart-email&email_address='.$user->user_email.'"><button class="button-secondary"><img src="'.plugins_url('/images/email.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Email</button></a></td><td>'.$user->display_name.'</td><td><form action="admin.php?page=wpstorecart-orders" method="post"><input type="hidden" name="show" value="user" /><input type="hidden" name="user_id" value="'.$user->ID.'" /><input type="submit" value="'.$result['NumberOfOrders'].'" /></form></td><td>'.$devOptions['currency_symbol'].$result['OrderTotal'].$devOptions['currency_symbol_left'].'</td></tr>';
+                        } 
+                    }
+                }
+
+                $grabrecord2 = "SELECT `email`, `date`, SUM(`price`) AS `OrderTotal`, COUNT(`email`) AS `NumberOfOrders`, `wpuser` FROM `{$table_name}` WHERE {$criteria2} AND `wpuser`='0' GROUP BY `email` ORDER BY `date` DESC;";
+
+                $results2 = $wpdb->get_results( $grabrecord2 , ARRAY_A );
+                if(isset($results2[0])) {
+                    foreach ($results2 as $result2) {
+                        echo '<tr><td><button class="button-secondary" style="opacity:0.4;filter:alpha(opacity=40);"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Profile</button> <a href="admin.php?page=wpstorecart-email&email_address='.$result2['email'].'"><button class="button-secondary"><img src="'.plugins_url('/images/email.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Email</button></a></td><td>Guest ( '.$result2['email'].' )</td><td><form action="admin.php?page=wpstorecart-orders" method="post"><input type="hidden" name="show" value="email" /><input type="hidden" name="the_email" value="'.$result2['email'].'" /><input type="submit" value="'.$result2['NumberOfOrders'].'" /></form></td><td>'.$devOptions['currency_symbol'].$result2['OrderTotal'].$devOptions['currency_symbol_left'].'</td></tr>';
+                    }
+                }
+                echo '</tbody></table>';
+
+
+                
+                echo '</div>';
+
+        }
+
+        function printAdminPageEmail() {
+            global $wpdb;
+            if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                    die(__('Cheatin&#8217; uh?'));
+            }
+            $devOptions = $this->getAdminOptions();
+
+            $this->spHeader();
+            $this->wpstorecart_alert();
+
+            $email_address = $_GET['email_address'];
+            if(isset($_POST['email_address_to'])) {
+                $to      = $_POST['email_address_to'];
+                $subject = $_POST['email_subject'];
+                $message = wordwrap($_POST['email_message'], 70);
+                $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                    'Reply-To: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                    'X-Mailer: PHP/' . phpversion();
+
+                mail($to, $subject, $message, $headers);
+                echo '<div class="updated"><p><strong>';
+                echo "The email to {$to} was sent.";
+                echo '</strong></p></div>';
+            }
+
+            echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Mail.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Email</h2><br style="clear:both;" />';
+
+            echo '
+            <form action="" method="post">
+            <table class="widefat">
+                <thead>
+                    <tr><th></th><th></th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="width:110px;">EMail Address:</td><td> <input style="width:100%;" type="text" value="'.$email_address.'" name="email_address_to" /></td></tr>
+                    <tr><td style="width:110px;">Subject:</td><td> <input style="width:100%;"  type="text" value="RE: " name="email_subject" /></td></tr>
+                    <tr><td style="width:110px;">Message:</td><td><textarea style="width:100%;height:200px;"  name="email_message"></textarea></td></tr>
+                    <tr><td style="width:110px;"> </td><td> <a href="admin.php?page=wpstorecart-customers" class="button-secondary" style="float:right">Cancel</a> <input style="float:right" class="button-primary" type="submit" value="Send" /></td></tr>
+                </tbody>
+            </table>
+            </form>
+            ';
+
+            echo '</div>';
+
+        }
+
+        function printAdminPageGroupDiscounts() {
+            global $wpdb, $user_level;
+                if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                        die(__('Cheatin&#8217; uh?'));
+                }
+
+
+                $devOptions = $this->getAdminOptions();
+                $table_name = $wpdb->prefix . "wpstorecart_products";
+
+                $this->spHeader();
+                $this->wpstorecart_alert();
+
+                if(isset($_POST['gd_enable']) && isset($_POST['gd_display']) && isset($_POST['gd_saleprice'])){
+                    $devOptions['gd_enable'] = $wpdb->escape($_POST['gd_enable']);
+                    $devOptions['gd_display'] = $wpdb->escape($_POST['gd_display']);
+                    $devOptions['gd_saleprice'] = $wpdb->escape($_POST['gd_saleprice']);
+
+                    update_option($this->adminOptionsName, $devOptions);
+                }
+
+                if(isset($_POST['formtype']) && $_POST['formtype']=='edit') { // Edit groups here
+                    $edit_primkey = $_POST['edit_primkey'];
+                    $edit_name = $_POST['edit_name'];
+                    $edit_discount = $_POST['edit_discount'];
+                    $edit_enable = $_POST['edit_enable'];
+                    $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_meta` SET `value`='{$edit_name}||{$edit_discount}||{$edit_enable}' WHERE `primkey`='{$edit_primkey}';");
+                }
+
+                if(isset($_GET['del']) && is_numeric($_GET['del'])) { // Delete groups here
+                    $keytodel = intval($_GET['del']);
+                    $wpdb->query("DELETE FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey`='{$keytodel}';");
+                }
+
+                if(isset($_POST['formtype']) && $_POST['formtype']=='groups' && isset($_POST['groupname']) && trim($_POST['groupname'])!='') { // New Groups code here
+                    $groupname = $wpdb->escape($_POST['groupname']);
+                    $discount = intval($_POST['discount']);
+                    $enable = $wpdb->escape($_POST['enable']);
+                    $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '{$groupname}||{$discount}||{$enable}', 'groupdiscount', '0');");
+                }
+
+                echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Users_Group.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Group Discounts <a href="http://wpstorecart.com/documentation/group-discounts/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+
+                echo '<div class="updated" style="margin-top:17px;padding:12px 12px 12px 12px;font-size:11px;border-color:#DDD;background-color:#EFEFEF;"><img src="'.plugins_url('/images/info.png' , __FILE__).'" alt="info" style="float:left;top:-10px;position:relative;" /> Related Admin Pages: <a href="admin.php?page=wpstorecart-groupdiscounts">Group Discounts</a>, <a href="admin.php?page=wpstorecart-addtogroup">Users &amp; Groups</a>, <a href="admin.php?page=wpstorecart-categories">Categories</a></div><br />';
+                
+                echo '<h3>Add &amp; Edit Groups</h3>
+                    <table class="widefat">
+                        <thead><tr><th></th><th>Group Name</th><th>Discount %</th><th>Enabled?</th></tr></thead>
+                        <tbody>';
+
+                    $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                    if(isset($theResults[0])) {
+                        foreach($theResults as $theResult) {
+                            $exploder = explode('||', $theResult['value']);
+                            echo "<tr onmouseover=\"jQuery('#edit_button_{$theResult['primkey']}').css('display','inline');\" onmouseout=\"jQuery('#edit_button_{$theResult['primkey']}').css('display','none');\"><form action=\"". $_SERVER["REQUEST_URI"]."\" method=\"post\"><input type=\"hidden\" name=\"formtype\" value=\"edit\" /><input type=\"hidden\" name=\"edit_primkey\" value=\"{$theResult['primkey']}\" /><td><a href=\"". $_SERVER["REQUEST_URI"]."&del={$theResult['primkey']}\" onclick=\"if (! confirm('Are you sure you want to delete this group?')) { return false;}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"Delete\" /></a></td><td><input type=\"text\" name=\"edit_name\" value=\"{$exploder[0]}\" /></td><td><input type=\"text\" name=\"edit_discount\" value=\"{$exploder[1]}\" style=\"width:75px;\" />%</td><td><input type=\"radio\" name=\"edit_enable\" value=\"true\""; if($exploder[2]=='true') {echo' checked="true"';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="edit_enable" value="false" '; if($exploder[2]=='false') {echo' checked="true" ';} echo" /> No <input style=\"float:right;display:none;\" type=\"submit\" value=\"Submit This Edit\" id=\"edit_button_{$theResult['primkey']}\" /></td></form></tr>";
+                        }
+                    }
+
+                echo '
+                        <tr><td>New: </td><td>
+                <form action="'. $_SERVER["REQUEST_URI"].'" method="post">
+                    <input type="hidden" name="formtype" value="groups" />
+<input type="text" name="groupname" value="" /></td><td><input type="text" name="discount" value="" style="width:75px;" />%</td><td><input type="radio" name="enable" value="true" /> Yes &nbsp; &nbsp; <input type="radio" name="enable" value="false" checked="true" /> No <input type="submit" value="Add Group" style="float:right;" /></td></tr></tbody>
+                    </table>
+                </form>
+                <br />
+                <h3>Settings</h3>
+                <form action="'. $_SERVER["REQUEST_URI"].'" method="post">
+                    <input type="hidden" name="formtype" value="settings" />
+                    <table>
+                    <tr><td>Enable discounts module? </td><td><input type="radio" name="gd_enable" value="true"'; if($devOptions['gd_enable']=='true') {echo' checked="true"';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="gd_enable" value="false" '; if($devOptions['gd_enable']=='false') {echo' checked="true" ';} echo'/> No</td></tr>
+                    <tr><td>Display group name &amp; discount amount? </td><td><input type="radio" name="gd_display" value="true" '; if($devOptions['gd_display']=='true') {echo' checked="true" ';} echo'/> Yes &nbsp; &nbsp; <input type="radio" name="gd_display" value="false" '; if($devOptions['gd_display']=='false') {echo' checked="true" ';} echo' /> No</td></tr>
+                    <tr><td>Cross out original price &amp; display as a sale? </td><td><input type="radio" name="gd_saleprice" value="true" '; if($devOptions['gd_saleprice']=='true') {echo' checked="true" ';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="gd_saleprice" value="false" '; if($devOptions['gd_saleprice']=='false') {echo' checked="true" ';} echo' /> No</td></tr>
+                    </table><br />
+                    <input type="submit" value="Update Settings"  />
+                </form>
+                <br />
+                ';
+
+                echo '</div>';
+          }
+
+        function printAdminPageAddToGroup() {
+            global $wpdb, $user_level;
+                if ( function_exists('current_user_can') && !current_user_can('edit_users') ) { //
+                        die(__('You need the edit_users capability to access this admin page'));
+                }
+                $devOptions = $this->getAdminOptions();
+                $table_name = $wpdb->prefix . "wpstorecart_products";
+
+                $this->spHeader();
+                $this->wpstorecart_alert();
+
+                echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Users_Group.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Users and Groups <a href="http://wpstorecart.com/documentation/group-discounts/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+
+                echo '<div class="updated" style="margin-top:17px;padding:12px 12px 12px 12px;font-size:11px;border-color:#DDD;background-color:#EFEFEF;"><img src="'.plugins_url('/images/info.png' , __FILE__).'" alt="info" style="float:left;top:-10px;position:relative;" /> Related Admin Pages: <a href="admin.php?page=wpstorecart-groupdiscounts">Group Discounts</a>, <a href="admin.php?page=wpstorecart-addtogroup">Users &amp; Groups</a>, <a href="admin.php?page=wpstorecart-categories">Categories</a></div><br />';                
+                
+                echo '<h3>Add an Individual User by Role to a Group</h3>';
+                $this->groupManagerByUser();
+
+                echo '<br /><h3>Add All Users by a Role to a Group</h3>';
+                $this->groupManagerByRoles();
+
+                echo '<br /><h3>Delete Users from Group</h3>';
+                $this->groupManagerDeleteByUser();
+
+                echo '</div>';
+
+        }
+
+          function GroupManagerByRoles() {
+                global $wp_roles, $wpdb;
+                $theResults = NULL;
+                $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                if(isset($theResults[0])) {
+
+
+                    if(isset($_POST['groupbyroles_selected']) && isset($_POST['the_role_selected'])) { // Add capability to specific users
+                        $theResultsX = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey`=".intval($_POST['groupbyroles_selected']).";" , ARRAY_A );
+                        if(isset($theResultsX[0]['primkey'])) {
+                            $role_name = $_POST['the_role_selected'];
+                            $exploder = explode('||', $theResultsX[0]['value']);
+                            if(isset($exploder[0])) {
+                                $cap_name = $this->slug($exploder[0]);
+                                $blogusersY = get_users('blog_id=1&orderby=nicename&role='.$role_name.'');
+                                if(isset($blogusersY[0])) {
+                                    $user = NULL;
+                                    foreach ($blogusersY as $user) {
+                                        $user = new WP_User( $user->ID );
+                                        $user->add_cap( $cap_name );
+                                        $user_info = get_userdata($user->ID);
+                                        echo '<div class="updated">The '.$cap_name.' capability was added to the user: '. $user_info->display_name.'.</div>';
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    $roles = $wp_roles->get_names();
+                    echo '<table class="widefat">';
+                    foreach ($roles as $role_name=>$name) {
+
+                            $blogusersX = get_users('blog_id=1&orderby=nicename&role='.$role_name.'');
+                            if(isset($blogusersX[0])) {
+                                echo "<tr onmouseover=\"jQuery('#groupbyroles_button_{$role_name}').css('display','inline');\" onmouseout=\"jQuery('#groupbyroles_button_{$role_name}').css('display','none');\">"; echo '<form action="'. $_SERVER["REQUEST_URI"].'" method="post"><td>Add ALL '.$role_name.' users to this group: ';
+                                if(isset($theResults[0])) {
+                                    echo '<input type="hidden" name="the_role_selected" value="'.$role_name.'" /> <select style="width:140px;min-width:140px;max-width:140px;" name="groupbyroles_selected">';
+                                    foreach($theResults as $theResult) {
+                                        $exploder = explode('||', $theResult['value']);
+                                        echo "<option value=\"{$theResult['primkey']}\">{$exploder[0]}</option>";
+                                    }
+                                    echo '</select>';
+                                }
+                                echo "</td><td style=\"width:110px;\"><input style=\"float:right;display:none;\" type=\"submit\" value=\"Add ALL Users to Group\" id=\"groupbyroles_button_{$role_name}\" />";
+                                echo '</td></form></tr>';
+                            }
+                      }
+                    echo '</table>';
+                }
+
+          }
+
+            /**
+             *
+             * Check to see if a user qualifies for a group discount for the category, or if they can even see the category at all
+             *
+             * @global object $wpdb
+             * @param integer $category_id
+             * @param integer $user_id
+             * @return array
+             */
+            function groupDiscounts($category_id, $user_id) {
+                global $wpdb;
+                $devOptions = $this->getAdminOptions();
+
+                $user_id = intval($user_id);
+                $category_id = intval($category_id);
+                $return_value = array();
+                $return_value['can_see_this_category'] = true;
+                $return_value['can_have_discount'] = true;
+                $return_value['discount_amount'] = 0;
+                $return_value['gd_display'] = '';
+                $return_value['gd_saleprice'] = true;
+                if($devOptions['gd_enable']=='true') { // Are group discounts enabled?  If not, return the default values
+
+
+                    if($devOptions['gd_saleprice']=='false') {
+                        $return_value['gd_saleprice'] = false;
+                    }
+
+                    $user_check = new WP_User( $user_id );
+
+                    $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_categories` WHERE `primkey`={$category_id};";
+                    $results = $wpdb->get_results( $grabrecord , ARRAY_A );
+                    if(isset($results[0])) {
+                            $showtoall = stripslashes($results[0]['showtoall']);
+                            if($showtoall == 0) { // If this group shouldn't be shown to specific groups, right here will say it can't be shown at all.  Next we'll do a permission check to see if we can reverse that decision
+                                    $return_value['can_see_this_category'] = false;
+                                    $showtowhichgroups = unserialize(stripslashes($results[0]['showtowhichgroups']));
+                                    foreach($showtowhichgroups as $showtothisuser) {
+                                            if($user_check->has_cap( $showtothisuser )) {
+                                                    $return_value['can_see_this_category'] = true; // SUCCESS.  This user is in a group that can see this category
+                                            }
+                                    }
+                            }
+
+                            $discountstoall = stripslashes($results[0]['discountstoall']);
+                            if($discountstoall == 0) { // If this group shouldn't be given a discount to a specific group, right here will say it can't be done at all.  Next we'll do a permission check to see if we can reverse that decision
+                                    $return_value['can_have_discount'] = false;
+                                    $discountstowhichgroups = unserialize(stripslashes($results[0]['discountstowhichgroups']));
+                                    foreach($discountstowhichgroups as $discounttothisuser) {
+                                            if($user_check->has_cap( $discounttothisuser )) {
+                                                    $return_value['can_have_discount'] = true; // SUCCESS.  This user is in a group can get a discount
+                                            }
+                                    }
+                            }
+
+                    }
+
+                    if($return_value['can_have_discount'] == true) { // Here at the end, if it's detemined this user still gets a discount, let's figure out how much
+                        $theResultsZ = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                        if(isset($theResultsZ[0]['primkey'])) {
+                            foreach($theResultsZ as $theResult) {
+                                $exploder = explode('||', $theResult['value']);
+                                if($exploder[2]=='true') { // this means we're dealing with an active discount
+                                    if($exploder[1]>$return_value['discount_amount']) { // If the discount amount is greater than the previously held discount amount
+                                        $cap_name = $this->slug($exploder[0]);
+                                        if($user_check->has_cap( $cap_name )) {
+                                            $return_value['discount_amount'] = $exploder[1]; // This is our new discount percentage then
+                                            if($devOptions['gd_display']=='true') {
+                                                $return_value['gd_display'] = $exploder[0] . ' ('.$return_value['discount_amount'].'%)'; // This is what to display if the option is set to display the group name and discount percent
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                return $return_value;
+
+            }
+
+          function groupManagerByUser() {
+                global $wp_roles, $wpdb;
+                $theResults = NULL;
+                $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                if(isset($theResults[0])) {
+
+                    if(isset($_POST['user_selected']) && isset($_POST['group_selected'])) { // Add capability to specific users
+                        $theResultsZ = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey`=".intval($_POST['group_selected']).";" , ARRAY_A );
+                        if(isset($theResultsZ[0]['primkey'])) {
+                            $exploder = explode('||', $theResultsZ[0]['value']);
+                            if(isset($exploder[0])) {
+                                $user = NULL; $user_info = NULL;
+                                $cap_name = $this->slug($exploder[0]);
+                                $user = new WP_User( intval($_POST['user_selected']) );
+                                $user->add_cap( $cap_name );
+                                $user_info = get_userdata(intval($_POST['user_selected']));
+                                echo '<div class="updated">The '.$cap_name.' capability was added to the user: '.$user_info->display_name.'.</div>';
+                            }
+                        } 
+                    }
+                    
+                    $roles = $wp_roles->get_names();
+                    echo '<table class="widefat">';
+                    foreach ($roles as $role_name=>$name) {
+
+                            $blogusersZ = get_users('blog_id=1&orderby=nicename&role='.$role_name.'');
+                            if(isset($blogusersZ[0])) {
+                                echo "<tr onmouseover=\"jQuery('#group_button_{$role_name}').css('display','inline');\" onmouseout=\"jQuery('#group_button_{$role_name}').css('display','none');\">"; echo '<form action="'. $_SERVER["REQUEST_URI"].'" method="post"><td>Add this '.$role_name.' user: </td><td><select name="user_selected" style="width:140px;min-width:140px;max-width:140px;">';
+                                foreach ($blogusersZ as $user) {
+                                    echo '<option value="' . $user->ID . '">' . $user->display_name . '</option>';
+                                }
+
+                                echo '</select> to this group: ';
+                                if(isset($theResults[0])) {
+                                    echo '<select style="width:140px;min-width:140px;max-width:140px;" name="group_selected">';
+                                    foreach($theResults as $theResult) {
+                                        $exploder = explode('||', $theResult['value']);
+                                        echo "<option value=\"{$theResult['primkey']}\">{$exploder[0]}</option>";
+                                    }
+                                    echo '</select>';
+                                }
+                                echo "</td><td style=\"width:110px;\"><input style=\"float:right;display:none;\" type=\"submit\" value=\"Add User to Group\" id=\"group_button_{$role_name}\" />";
+                                echo '</td></form></tr>';
+                            }
+                      }
+                    echo '</table>';
+                }
+
+          }
+
+          function groupManagerDeleteByUser() {
+                global $wp_roles, $wpdb;
+                $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                if(isset($theResults[0])) {
+
+                    $roles = $wp_roles->get_names();
+                    echo '<table class="widefat">';
+
+                    foreach($theResults as $theResult) {
+                        $exploder = explode('||', $theResult['value']);
+                        $cap_name = $this->slug($exploder[0]);
+                        $blogusers = get_users('blog_id=1&orderby=nicename');
+                        if(isset($blogusers[0])) {
+                            foreach ($blogusers as $user) {
+                                $user_check = new WP_User( $user->ID );
+                                if($user_check->has_cap( $cap_name )) {
+                                    echo '<tr id="delete_user_'.$user->ID.$cap_name.'"><td>' . $user->display_name . '</td><td>'.$cap_name.'<img src="'.plugins_url('/images/cross.png' , __FILE__).'" alt="" style="float:right;cursor:pointer;" onclick="jQuery.ajax({ url: \''.plugins_url('/php/delgroupmembership.php' , __FILE__).'\', type:\'POST\', data:\'cap_name='.$cap_name.'&user_id='.$user->ID.'\' });jQuery(\'#delete_user_'.$user->ID.$cap_name.'\').fadeOut(\'slow\');" /></td></tr>';
+                                }
+                            }
+                        }
+                    }
+
+
+
+                            
+                      
+                    echo '</table>';
+                }
+
+          }
+
 		//Prints out the Edit products admin page =======================================================================
         function printAdminPageEditproducts() {
 			global $wpdb, $user_level;
@@ -6194,7 +6971,7 @@ echo '</ul>
 
                             $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='custom_product_order';";
                             $results = $wpdb->get_results( $grabrecord , ARRAY_A );
-                            if(isset($results[0]['primkey'])) {
+                            if(isset($results[0]['primkey']) && trim($results[0]['value'])!='') {
                                 $grabrecord = "SELECT * FROM `{$table_name}` ORDER BY field(primkey, {$results[0]['value']}) asc;";
                             } else {
                                 $grabrecord = "SELECT * FROM `{$table_name}`;";
@@ -6238,6 +7015,84 @@ echo '</ul>
 		//END Prints out the Edit products admin page =======================================================================
 		
 
+        function printAdminPageInvoice() {
+            global $wpdb;
+
+            if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                    die(__('Cheatin&#8217; uh?'));
+            }
+            $devOptions = $this->getAdminOptions();
+            $table_name = $wpdb->prefix . "wpstorecart_orders";
+
+            $this->spHeader();
+            $this->wpstorecart_alert();
+
+            echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Customers.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Detailed Order Information <a href="http://wpstorecart.com/documentation/customers/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+
+            $orderNumber = intval($_GET['orderNumber']);
+
+            $sql_main = "SELECT * FROM `{$wpdb->prefix}wpstorecart_orders` WHERE `primkey`='{$orderNumber}';";
+            $the_order = $wpdb->get_results( $sql_main , ARRAY_A );
+            if(isset($the_order[0])) {
+                if($the_order[0]['wpuser']!=0) {
+                    $user = get_userdata( $the_order[0]['wpuser'] );
+                    
+                    //the default avatar to display in case gravatar is not available for a user
+                    $default = plugins_url('/images/person.png' , __FILE__);
+
+                    $size = 64;
+
+                    $i_users_id = intval($_GET['i_user_id']);
+
+                    // get user info by calling get_userdata() on each id
+
+                    //GETTING INFO FROM EACH USERS
+                    //get the user’s email ID
+                    $email = $user->user_email;
+
+                    //build the gravatar URL
+                    $grav_url = "http://www.gravatar.com/avatar.php?
+                    gravatar_id=".md5( strtolower($email) ).
+                    "&default=".urlencode($default).
+                    "&size=".$size;
+
+                    $display_name = '<img src="'.$grav_url.'" alt="" style="float:left;" /><br />'. $user->display_name .'';
+                    $is_user = true;
+                } else {
+                    $display_name = 'Guest ('.$the_order[0]['email'].')';
+                    $is_user = false;
+                }
+
+                echo '<a href="admin.php?page=wpstorecart-orders&keytoedit='.$the_order[0]['primkey'].'"><button class="button-secondary"><img src="'.plugins_url('/images/pencil.png' , __FILE__).'" alt="" style="float:left;margin-right:5px;" />Edit Order</button></a> '; if($is_user) {echo '<a href="admin.php?page=wpstorecart-profile&i_user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url('/images/application_form_edit.png' , __FILE__).'" alt="" style="float:left;margin-right:4px;" /> Profile</button></a>';} echo' <br /><br />';
+
+
+                echo '<table class="widefat"><thead><tr><th style="width:120px;min-width:120px;max-width:120px;">Cart:</th><th></th></tr><tbody>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Order Number:</strong></td><td>'.$the_order[0]['primkey'].'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>User:</strong></td><td>'.$display_name.'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Status of the Order:</strong></td><td>'.$the_order[0]['orderstatus'].'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Cart Contents:</strong></td><td>'.$this->splitOrderIntoProduct($orderNumber).'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Price:</strong></td><td>'.$the_order[0]['price'].'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Shipping:</strong></td><td>'.$the_order[0]['shipping'].'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>EMail:</strong></td><td>'.$the_order[0]['email'].'</td></tr>';
+                echo '<tr><td style="width:120px;min-width:120px;max-width:120px;"><strong>Date:</strong></td><td>'.$the_order[0]['date'].'</td></tr>';
+                echo '</tbody></table><br />';
+            }
+
+
+            
+            $sql = "SELECT `value` FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='ordernote' AND `foreignkey`='{$orderNumber}';";
+            $ordernote = $wpdb->get_results( $sql , ARRAY_A );
+            echo '<table class="widefat"><thead><tr><th>Customer\'s Note:</th></tr><tbody>';
+            if(isset($ordernote[0]['value'])) {
+                echo '<tr><td>'.$ordernote[0]['value'].'</td></tr>';
+            } else {
+                echo '<tr><td>(<i>None</i>)</td></tr>';
+            }
+            echo '</tbody></table><br />';
+
+            echo '</div>';
+
+        }
 
 		//Prints out the Orders admin page =======================================================================
         function printAdminPageOrders() {
@@ -6438,9 +7293,10 @@ echo '</ul>
 			
 			$this->spHeader();
                         $this->wpstorecart_alert();
-			
+
+                        echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Shopping_Cart.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Orders <a href="http://wpstorecart.com/documentation/orders/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
 			echo '
-			<div style="width:75%;max-width:75%;float:left;"><form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
+			<form method="post" action="'. $_SERVER["REQUEST_URI"].$codeForKeyToEdit.'" name="wpstorecartaddproductform" id="wpstorecartaddproductform">
 			';
 			if ($isanedit != true) {
 				echo '<h2>Add a Order</h2>';
@@ -6581,7 +7437,7 @@ echo '</ul>
 
                         echo '<form action="" method="post">Show <select name="show"><option value="all">All Orders</option><option value="completed">Completed Purchases Only</option><option value="pending">Pending Orders Only</option><option value="refunded">Refunded Orders Only</option></select> Sort by <select name="orderby"><option value="`date`">date</option><option value="`wpuser`">user</option><option value="`orderstatus`">order status</option><option value="`affiliate`">affiliate</option><option value="`paymentprocessor`">processor</option><option value="`price`">price</option></select> in <select name="ordersort"><option value="DESC">descending</option><option value="ASC">ascending</option></select> order. <input type="submit" value="Submit"></input></form>';
 			echo '<table class="widefat">
-			<thead><tr><th>Date<br />Order #</th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
+			<thead><tr><th></th><th>Date<br />Order #</th><th>Order Status</th><th>Cart Contents</th><th>Processor</th><th>Price<br /><i>(Shipping)</i></th><th>User<br /><i>Email</i></th><th>Affiliate</th></tr></thead><tbody>
 			';
 
 
@@ -6612,6 +7468,18 @@ echo '</ul>
                             if ($_POST['show']=='refunded') {
                                 $whereclause = 'WHERE `orderstatus`="Refunded"';
                             }
+
+                            if(isset($_GET['user_id'])) {
+                                $whereclause = 'WHERE `wpuser`="'.intval($_GET['user_id']).'"';
+                            }
+
+                            if ($_POST['show']=='user' && is_numeric($_POST['user_id'])) {
+                                $whereclause = 'WHERE `wpuser`="'.intval($_POST['user_id']).'"';
+                            }
+
+                            if ($_POST['show']=='email' && isset($_POST['the_email'])) {
+                                $whereclause = 'WHERE `email` LIKE "%'.$wpdb->escape($_POST['the_email']).'%"';
+                            }
                         }
 			$grabrecord = "SELECT * FROM `{$table_name}` {$whereclause} ORDER BY {$orderby} {$ordersort};";
 			
@@ -6639,6 +7507,7 @@ echo '</ul>
 
 					echo "
 					<tr>
+                                        <td style=\"width:85px;min-width:85px;max-width:85px;\"><a href=\"admin.php?page=wpstorecart-invoice&orderNumber={$result['primkey']}\"><button class=\"button-secondary\"><img src=\"".plugins_url('/images/Invoice.png' , __FILE__)."\" alt=\"\" style=\"float:left;margin-right:5px;\" /> Details</button></a></td>
 					<td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"\" /></a> <a onclick=\"if (! confirm('Are you sure you want to delete this order?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"\" /></a></td>
 					<td>{$wpStoreCartorderstatus}</td>
 					<td>".$this->splitOrderIntoProduct($result['primkey'])."</td>
@@ -6710,7 +7579,7 @@ echo '</ul>
 					<td>";
 
                                         if(isset($wpStoreCartwpuser) && $wpStoreCartwpuser!=0) {
-                                            echo "<a href=\"user-edit.php?user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
+                                            echo "<a href=\"admin.php?page=wpstorecart-profile&i_user_id={$wpStoreCartwpuser}\">{$user_info3->user_login}</a><br />{$wpStoreCartemail}</td>";
                                         } else {
                                             echo '<strong>Guest</strong><br />'.$wpStoreCartemail.'</td>';
                                         }
@@ -6773,7 +7642,11 @@ echo '</ul>
 				$wpStoreCartCategoryParent = 0;
 				$wpStoreCartproduct_thumbnail = '';
 				$wpStoreCartCategoryDescription = '';
-				$wpStoreCartCategoryPostID = 0;				
+				$wpStoreCartCategoryPostID = 0;
+                                $showtoall = 1;
+                                $showtowhichgroups = '';
+                                $discountstoall = 1;
+                                $discountstowhichgroups = '';
 				$keytoedit=0;
 			} 
 			
@@ -6790,6 +7663,10 @@ echo '</ul>
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
 					$wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
 					$wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);
+                                        $showtoall = $wpdb->prepare($_POST['showtoall']);
+                                        $showtowhichgroups = $wpdb->prepare(serialize($_POST['showtowhichgroups']));
+                                        $discountstoall = $wpdb->prepare($_POST['discountstoall']);
+                                        $discountstowhichgroups = $wpdb->prepare(serialize($_POST['discountstowhichgroups']));
 					$cleanKey = $wpdb->escape($_GET['keytoedit']);
 					if(!is_numeric($wpStoreCartCategoryParent)) {
 						$wpStoreCartCategoryParent = 0;
@@ -6804,7 +7681,11 @@ echo '</ul>
 					`category` = '{$wpStoreCartCategory}',
 					`thumbnail` = '{$wpStoreCartproduct_thumbnail}',
 					`description` = '{$wpStoreCartCategoryDescription}',
-					`postid` = '{$wpStoreCartCategoryPostID}'
+					`postid` = '{$wpStoreCartCategoryPostID}',
+                                        `showtoall` = '{$showtoall}',
+                                        `showtowhichgroups` = '{$showtowhichgroups}',
+                                        `discountstoall` = '{$discountstoall}',
+                                        `discountstowhichgroups` = '{$discountstowhichgroups}'
 					WHERE `primkey` ={$cleanKey} LIMIT 1 ;				
 					";
 
@@ -6840,7 +7721,10 @@ echo '</ul>
 						$wpStoreCartproduct_thumbnail = stripslashes($result['thumbnail']);
 						$wpStoreCartCategoryDescription = stripslashes($result['description']);
 						$wpStoreCartCategoryPostID = stripslashes($result['postid']);						
-			
+                                                $showtoall = stripslashes($result['showtoall']);
+                                                $showtowhichgroups = unserialize(stripslashes($result['showtowhichgroups']));
+                                                $discountstoall = stripslashes($result['discountstoall']);
+                                                $discountstowhichgroups = unserialize(stripslashes($result['discountstowhichgroups']));
 					}
 				} else {
 					echo '<div class="updated"><p><strong>';
@@ -6857,7 +7741,11 @@ echo '</ul>
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
 					$wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
 					$wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);					
-	
+                                        $showtoall = $wpdb->prepare($_POST['showtoall']);
+                                        $showtowhichgroups = $wpdb->prepare(serialize($_POST['showtowhichgroups']));
+                                        $discountstoall = $wpdb->prepare($_POST['discountstoall']);
+                                        $discountstowhichgroups = $wpdb->prepare(serialize($_POST['discountstowhichgroups']));
+
 					$devOptions = $this->getAdminOptions();
 					
 					if(!is_numeric($wpStoreCartCategoryParent)) {
@@ -6875,10 +7763,14 @@ echo '</ul>
 					`category`,
 					`thumbnail`,
 					`description`,
-					`postid`
+					`postid`,
+                                        `showtoall`,
+                                        `showtowhichgroups`,
+                                        `discountstoall`,
+                                        `discountstowhichgroups`
 					)
 					VALUES (
-					NULL , '{$wpStoreCartCategoryParent}', '{$wpStoreCartCategory}', '{$wpStoreCartproduct_thumbnail}', '{$wpStoreCartCategoryDescription}', '{$wpStoreCartCategoryPostID}'
+					NULL , '{$wpStoreCartCategoryParent}', '{$wpStoreCartCategory}', '{$wpStoreCartproduct_thumbnail}', '{$wpStoreCartCategoryDescription}', '{$wpStoreCartCategoryPostID}', '{$showtoall}', '{$showtowhichgroups}', '{$discountstoall}', '{$discountstowhichgroups}'
 					);
 					";					
 	
@@ -6949,13 +7841,13 @@ echo '</ul>
 
 			
 			echo '<table class="widefat">
-			<thead><tr><th> </th><th>Category <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Description</th><th>Thumb</th><th></th></tr></thead><tbody>
+			<thead><tr><th> </th><th>Category &amp;<br />Description <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1"><h3>The name of the category.  Essentially, if you\'re selling a bunch of hats, make a category called hats.  It\'s that easy!</h3></div></th><th>Parent <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2"><h3>If you select a parent category, then the category you are creating is a child category.  For example, if you sold red and blue hats, you would select hats as the parent.</h3></div></th><th>Thumb</th><th>Permissions</th></tr></thead><tbody>
 			';
 			
 			echo '
 			<tr>
 			<td></td>
-			<td><br /><input type="text" name="wpStoreCartCategory" style="width: 80%;" value="'.$wpStoreCartCategory.'" /></td>
+			<td><br />Name:<br /><input type="text" name="wpStoreCartCategory" style="width: 80%;" value="'.$wpStoreCartCategory.'" /><br /><br />Description:<br /><textarea name="wpStoreCartCategoryDescription" style="width: 80%;">'.$wpStoreCartCategoryDescription.'</textarea> <br /> </td>
 			<td><br /><select name="wpStoreCartCategoryParent">
 			 <option value="">
 						';
@@ -6981,20 +7873,85 @@ echo '</ul>
 			echo '
 			</select></td>
 
-                        <td><br /><input type="text" name="wpStoreCartCategoryDescription" style="width: 80%;" value="'.$wpStoreCartCategoryDescription.'" /></td>
-
-			<td>
-
+                        <td>
                         <div style="float:left;"><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /><br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
                         <div id="upload-progressbar-container2">
                             <div id="upload-progressbar2">
                             </div>
                         </div>
+                        <div style="float:left;" id="show_thumbnail"><center>Current Thumb:</center><img id="show_thumbnail_img" src="'.$wpStoreCartproduct_thumbnail.'" alt="" style="margin:0 25px 0 25px;width:100px;max-width:100px;" /></div><input type="hidden" name="wpStoreCartCategoryPostID" style="width: 80%;" value="'.$wpStoreCartCategoryPostID.'" />
                         </div>
+                        </td>
+			<td>
+                            Visibility:<br /> <select name="showtoall" onchange="if(jQuery(this).val()==0){jQuery(\'#revealshowtowhichgroups\').fadeIn(\'slow\');}else{jQuery(\'#revealshowtowhichgroups\').hide();};">
+                                            <option value="1"';
+                                            if($showtoall==1) {
+                                                    echo ' selected="selected"';
+                                            }
+                                            echo'>Show this category to all visitors</option>
+                                            <option value="0"';
+                                            if($showtoall==0) {
+                                                    echo ' selected="selected"';
+                                            }
+                                            echo'>Hide this category except for these Groups:</option>
+                                        </select>
+                            <br />
+                            
+                            <div id="revealshowtowhichgroups" ';if($showtoall==1) {echo 'style="display:none;"';}echo'>
+                        ';
+
+                         
+
+                        $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                        if(isset($theResults[0])) {
+                            $icounter = 0;
+                            foreach($theResults as $theResult) {
+                                $exploder = explode('||', $theResult['value']);
+                                echo '<input type="checkbox" name="showtowhichgroups[]" ';
+                                if( $showtowhichgroups[$icounter] == $this->slug($exploder[0]) ){
+                                    echo ' checked="checked"';
+                                }
+                                echo ' value="'.$this->slug($exploder[0]).'" /> '.$exploder[0].'<br />';
+                                $icounter++;
+                            }
+                        }
+                        echo '
+                        </div>
+                        <br />
+                        Apply Group Discounts to:<br /> <select name="discountstoall" onchange="if(jQuery(this).val()==0){jQuery(\'#revealdiscountstowhichgroups\').fadeIn(\'slow\');}else{jQuery(\'#revealdiscountstowhichgroups\').hide();};">
+                                        <option value="1"';
+                                            if($discountstoall==1) {
+                                                    echo ' selected="selected"';
+                                            }
+                                            echo'>All groups.</option>
+                                            <option value="0"';
+                                            if($discountstoall==0) {
+                                                    echo ' selected="selected"';
+                                            }
+                                            echo'>Only these Groups:</option>
+                                    </select>
+                        <div id="revealdiscountstowhichgroups" ';if($discountstoall==1) {echo 'style="display:none;"';}echo'>
+                        ';
+
+                        $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
+                        if(isset($theResults[0])) {
+                            $icounter = 0;
+                            foreach($theResults as $theResult) {
+                                $exploder = explode('||', $theResult['value']);
+                                echo '<input type="checkbox" name="discountstowhichgroups[]" ';
+                                if( $discountstowhichgroups[$icounter] == $this->slug($exploder[0]) ){
+                                    echo ' checked="checked"';
+                                }
+                                echo ' value="'.$this->slug($exploder[0]).'" /> '.$exploder[0].'<br />';
+                                $icounter++;
+                            }
+                        }
+                        echo '
+                            </div>
 
 			
-			<td><div style="float:right;" id="show_thumbnail"><center>Current Thumb:</center><img id="show_thumbnail_img" src="'.$wpStoreCartproduct_thumbnail.'" alt="" style="margin:0 25px 0 25px;width:100px;max-width:100px;" /></div><input type="hidden" name="wpStoreCartCategoryPostID" style="width: 80%;" value="'.$wpStoreCartCategoryPostID.'" /></td>
+			</td>
                             
 			</tr>';			
 			
@@ -7006,7 +7963,7 @@ echo '</ul>
 			<input type="submit" name="addNewwpStoreCart_product" value="'; _e('Submit Category', 'wpStoreCart'); echo'" /></div>
 			</form>
 			';	
-			
+
 			echo '
 			<br style="clear:both;" /><br />
 			<h2>Edit Categories</h2>';
@@ -7252,11 +8209,11 @@ echo '</ul>
 			$this->spHeader();
                         $this->wpstorecart_alert();
 
-			echo '<div style="width:75%;max-width:75%;float:left;">';
+			echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/discount.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Coupons <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
 			if ($isanedit != true) {
-				echo '<h2>Add a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>';
+				echo '<h2>Add a Coupon</h2>';
 			} else {
-				echo '<h2>Edit a Coupon <a href="http://wpstorecart.com/documentation/coupons/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
+				echo '<h2>Edit a Coupon</h2>Add a new coupon by <a href="admin.php?page=wpstorecart-coupon">clicking here</a>.<br />';
 			}
 
 
@@ -8173,10 +9130,13 @@ echo '</ul>
                                 `category` VARCHAR( 255 ) NOT NULL,
                                 `thumbnail` VARCHAR( 512 ) NOT NULL,
                                 `description` TEXT NOT NULL,
-                                `postid` INT NOT NULL
+                                `postid` INT NOT NULL,
+                                `showtoall` BOOLEAN NOT NULL DEFAULT '1',
+                                `showtowhichgroups` TEXT NOT NULL,
+                                `discountstoall` BOOLEAN NOT NULL DEFAULT '1',
+                                `discountstowhichgroups` TEXT NOT NULL
                                 );
                                 ";
-
 
                           dbDelta($sql);
                    }
@@ -8440,12 +9400,18 @@ echo '</ul>
                                                     $results = $wpdb->get_results( $sql , ARRAY_A );
                                                     if(isset($results)) {
                                                             foreach ($results as $result) {
-                                                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
-                                                                    if($usepictures=='true') {
-                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
-                                                                    }
-                                                                    if($usetext=='true') {
-                                                                            $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                                                    // Group code
+                                                                    $groupDiscount = $this->groupDiscounts($result['category'], $current_user->ID);
+                                                                    if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                                        
+                                                                    } else {                                                                
+                                                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                        if($usepictures=='true') {
+                                                                                $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
+                                                                        }
+                                                                        if($usetext=='true') {
+                                                                                $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                                                        }
                                                                     }
                                                             }
                                                     }
@@ -8461,12 +9427,19 @@ echo '</ul>
                                                     $results = $wpdb->get_results( $sql , ARRAY_A );
                                                     if(isset($results)) {
                                                             foreach ($results as $result) {
-                                                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
-                                                                    if($usepictures=='true') {
-                                                                            $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
-                                                                    }
-                                                                    if($usetext=='true') {
-                                                                            $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                                                    // Group code
+                                                                    $groupDiscount = $this->groupDiscounts($result['category'], $current_user->ID);
+                                                                    if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                                        
+                                                                    } else {
+                                                                        // end Group Code                                                                
+                                                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                        if($usepictures=='true') {
+                                                                                $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.stripslashes($result['name']).'" /></a>';
+                                                                        }
+                                                                        if($usetext=='true') {
+                                                                                $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                                                        }
                                                                     }
                                                             }
                                                     }
@@ -8481,6 +9454,13 @@ echo '</ul>
                                     case 'categories': // Categories shortcode =========================================================
                                             $output .= '<div class="wpsc-by-category">';
 
+                                            // Group code
+                                            $groupDiscount = $this->groupDiscounts($thecategory, $current_user->ID);
+                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                break;
+                                            }
+                                            // end Group Code
+
                                             if( !isset( $_GET['cpage'] ) || !is_numeric($_GET['cpage'])) {
                                                 $startat = 0;
                                             } else {
@@ -8492,6 +9472,8 @@ echo '</ul>
                                                 $maxImageWidth = $devOptions['wpStoreCartwidth'];
                                                 $maxImageHeight = $devOptions['wpStoreCartheight'];
                                             }
+                                            $quantity = intval($quantity);
+                                            $thecategory = intval($thecategory);
                                             if(is_numeric($quantity) && is_numeric($thecategory)){
                                                 
                                                 if($orderby=='') {
@@ -8598,16 +9580,20 @@ echo '</ul>
                                                                         $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
                                                                         $output .= '</ul>';
                                                                     } else {
-                                                                        if($result['discountprice']>0) {
-                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                        if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) { // If guest cannot see prices, let's hide them here
+                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</span>";
                                                                         } else {
-                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            if($result['discountprice']>0) {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            } else {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
 
-                                                                        if($wpsc_price_type == 'charge') {
+                                                                        if($wpsc_price_type == 'charge') { // If this is a non-membership price
                                                                             // Flat rate shipping implmented here:
                                                                             if($devOptions['flatrateshipping']=='all_single') {
                                                                                 $result['shipping'] = $devOptions['flatrateamount'];
@@ -8691,6 +9677,14 @@ echo '</ul>
                                                             } else {
                                                                 $theuser = $current_user->ID;
                                                             }
+                                                            
+                                                            // Group code
+                                                            $groupDiscount = $this->groupDiscounts($results[0]['category'], $theuser);
+                                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                                break;
+                                                            }
+                                                            // end Group Code
+                                                            
 
                                                             $wpdb->query("UPDATE `{$table_name}` SET `timesviewed` = '{$newTimesViewed}' WHERE `primkey` = {$results[0]['primkey']} LIMIT 1 ;");
                                                             if($primkey == $results[0]['primkey'] && $statset == false) {
@@ -9031,6 +10025,20 @@ echo '</ul>
                                                                 } else {
                                                                     $theActualPrice = $results[0]['price'];
                                                                 }
+                                                                // Group discounts
+                                                                if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                                                                    $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                                    $discountToSubtract = $theActualPrice * $percentDiscount;
+                                                                    if($groupDiscount['gd_saleprice']==true) {
+                                                                        $results[0]['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                    }                                                                      
+                                                                    $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                    if($results[0]['discountprice']==0) { 
+                                                                        $results[0]['price'] = $theActualPrice;
+                                                                    }
+                                                                }   
+                                                                // end group discount
+                                                                
 
                                                                 $output .= '
                                                                 <form method="post" action="">
@@ -9048,12 +10056,22 @@ echo '</ul>
                                                                         <ul class="wpsc-product-info">
                                                                           <li id="list-item-name"><strong>'.stripslashes($results[0]['name']).'</strong></li>';
 
-                                                                    
-
+                                                                          // Group Discounts
+                                                                          if(trim($groupDiscount['gd_display'])!='') {
+                                                                              $output.= '<li id="list-item-group-discount">'.$groupDiscount['gd_display'].'</li>';
+                                                                          }
                                                                           if($results[0]['discountprice']>0) {
-                                                                            $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$results[0]['discountprice'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                                                $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$devOptions['logged_out_price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$devOptions['logged_out_price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            } else {
+                                                                                $output .= '<li id="list-item-price"><strike>Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</strike> Price: '.$devOptions['currency_symbol'].$results[0]['discountprice'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            }
                                                                           } else {
-                                                                            $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                                                $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$devOptions['logged_out_price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            } else {
+                                                                                $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
+                                                                            }
                                                                           }
                                                                           $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
 
@@ -9246,41 +10264,54 @@ echo '</ul>
                                             if($devOptions['frontpageDisplays']=='List all categories' || $devOptions['frontpageDisplays']=='List all categories (Ascending)') {
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
-                                                                if(trim($result['thumbnail']=='')) {
-                                                                    $result['thumbnail'] = plugins_url('/images/default_product_img.jpg' , __FILE__);
-                                                                }
-                                                                if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
-                                                                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
-                                                                        $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
-                                                                    } else {
-                                                                        $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
-                                                                    }
+                                                            
+                                                                // Group code
+                                                                $groupDiscount = $this->groupDiscounts($result['primkey'], $current_user->ID);
+                                                                if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                                    
                                                                 } else {
-                                                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                            
+                                                                    if(trim($result['thumbnail']=='')) {
+                                                                        $result['thumbnail'] = plugins_url('/images/default_product_img.jpg' , __FILE__);
+                                                                    }
+                                                                    if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                        if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                                                                            $permalink = get_permalink($devOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                                                        } else {
+                                                                            $permalink = get_permalink($devOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                                                        }
+                                                                    } else {
+                                                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                    }
+                                                                    if($devOptions['displayType']=='grid'){
+                                                                            $output .= '<div class="wpsc-grid '.$secondcss.'">';
+                                                                    }
+                                                                    if($devOptions['displayType']=='list'){
+                                                                            $output .= '<div class="wpsc-list '.$secondcss.'">';
+                                                                    }
+                                                                    if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                                            $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                                    }
+                                                                    if($usetext=='true' && $devOptions['displayTitle']=='true') {
+                                                                            $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.stripslashes($result['category']).'</h1></a>';
+                                                                    }
+                                                                    if($devOptions['displayintroDesc']=='true'){
+                                                                            $output .= '<p>'.stripslashes($result['description']).'</p>';
+                                                                    }
+                                                                    $output .= '</div>';
                                                                 }
-                                                                if($devOptions['displayType']=='grid'){
-                                                                        $output .= '<div class="wpsc-grid '.$secondcss.'">';
-                                                                }
-                                                                if($devOptions['displayType']=='list'){
-                                                                        $output .= '<div class="wpsc-list '.$secondcss.'">';
-                                                                }
-                                                                if($usepictures=='true' || $result['thumbnail']!='' ) {
-                                                                        $output .= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.$result['category'].'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
-                                                                }
-                                                                if($usetext=='true' && $devOptions['displayTitle']=='true') {
-                                                                        $output .= '<a href="'.$permalink.'"><h1 class="wpsc-h1">'.stripslashes($result['category']).'</h1></a>';
-                                                                }
-                                                                if($devOptions['displayintroDesc']=='true'){
-                                                                        $output .= '<p>'.stripslashes($result['description']).'</p>';
-                                                                }
-                                                                $output .= '</div>';
                                                         }
                                                         $output .= '<div class="wpsc-clear"></div>';
                                                 }
                                             } else { // This is for products:
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
-
+                                                            // Group code
+                                                            $groupDiscount = $this->groupDiscounts($result['category'], $current_user->ID);
+                                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+                                                                
+                                                            } else {
+                                                            // end Group Code
                                                                 // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
                                                                 $wpsc_price_type = 'charge';
                                                                 $membership_value = '';
@@ -9354,9 +10385,17 @@ echo '</ul>
                                                                         $output .= '</ul>';
                                                                     } else {
                                                                         if($result['discountprice']>0) {
-                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            } else {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$result['discountprice']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            }
                                                                         } else {
-                                                                            $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            } else {
+                                                                                $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
@@ -9425,9 +10464,9 @@ echo '</ul>
 
                                                                     }
                                                                 }
-
-
+                                                                
                                                                 $output .= '</div>';
+                                                            }
                                                         }
 
                                                         $output .= '<div class="wpsc-clear"></div>';
@@ -9522,7 +10561,7 @@ echo '</ul>
                                                     }
 
                                                 } else {
-                                                    if($devOptions['requireregistration']=='false') {
+                                                    if($devOptions['requireregistration']=='false' || $devOptions['requireregistration']=='disable') {
                                                         if(@isset($_POST['guest_email'])) {
                                                             $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
                                                         }
@@ -11821,7 +12860,9 @@ if (class_exists("WP_Widget")) {
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {		
-			global $wpdb;
+			global $wpdb, $current_user, $wpStoreCart;
+                        get_currentuserinfo();
+                        $devOptions = $wpStoreCart->getAdminOptions();
 			$output = NULL;
 			$table_name = $wpdb->prefix . "wpstorecart_products";
 		
@@ -11839,11 +12880,17 @@ if (class_exists("WP_Widget")) {
 				$results = $wpdb->get_results( $sql , ARRAY_A );
 				if(isset($results)) {
 					foreach ($results as $result) {
-						$permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
-						if($widgetShowproductImages=='true') {
-							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
-						}
-						$output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                            // Group code
+                                            $groupDiscount = $wpStoreCart->groupDiscounts($result['category'], $current_user->ID);
+                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+
+                                            } else {
+                                                $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                if($widgetShowproductImages=='true') {
+                                                        $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                }
+                                                $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                            }
 					}
 				}
 			} else {
@@ -11891,7 +12938,9 @@ if (class_exists("WP_Widget")) {
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {		
-			global $wpdb;
+			global $wpdb, $current_user, $wpStoreCart;
+                        get_currentuserinfo();
+                        $devOptions = $wpStoreCart->getAdminOptions();
 			$output = NULL;
 			$table_name = $wpdb->prefix . "wpstorecart_products";
 		
@@ -11909,11 +12958,17 @@ if (class_exists("WP_Widget")) {
 				$results = $wpdb->get_results( $sql , ARRAY_A );
 				if(isset($results)) {
 					foreach ($results as $result) {
+                                            // Group code
+                                            $groupDiscount = $wpStoreCart->groupDiscounts($result['category'], $current_user->ID);
+                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
+
+                                            } else {                                            
 						$permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
 						if($widgetShowproductImages=='true') {
 							$output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
 						}
 						$output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                            }
 					}
 				}
 			} else {
@@ -12096,19 +13151,31 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             add_action("admin_print_scripts-$importpage", array(&$wpStoreCart, 'my_import_scripts') );
 
             $categoriesPage = add_submenu_page('wpstorecart-admin','Categories - wpStoreCart ', 'Categories', 'manage_wpstorecart', 'wpstorecart-categories', array(&$wpStoreCart, 'printAdminPageCategories'));
-            $ordersPage = add_submenu_page('wpstorecart-admin','Orders &amp; Customers - wpStoreCart', 'Orders', 'manage_wpstorecart', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
+            $customersPage = add_submenu_page('wpstorecart-admin','Customers - wpStoreCart', 'Customers', 'manage_wpstorecart', 'wpstorecart-customers', array(&$wpStoreCart, 'printAdminPageCustomers'));
+            $addToGroupPage = add_submenu_page(NULL,'Customers - wpStoreCart', 'Customers', 'manage_wpstorecart', 'wpstorecart-addtogroup', array(&$wpStoreCart, 'printAdminPageAddToGroup'));
+            $ordersPage = add_submenu_page('wpstorecart-admin','Orders - wpStoreCart', 'Orders', 'manage_wpstorecart', 'wpstorecart-orders', array(&$wpStoreCart, 'printAdminPageOrders'));
             $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'manage_wpstorecart', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
             $page2a = add_submenu_page(NULL,'ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
+            $page2b = add_submenu_page(NULL,'Group Discounts - wpStoreCart ', 'Group Discounts', 'manage_wpstorecart', 'wpstorecart-groupdiscounts', array(&$wpStoreCart, 'printAdminPageGroupDiscounts'));
+            $profilePage = add_submenu_page(NULL,'Profile - wpStoreCart ', 'Profile', 'manage_wpstorecart', 'wpstorecart-profile', array(&$wpStoreCart, 'printAdminPageProfile'));
+            $invoicePage = add_submenu_page(NULL,'Detailed Order - wpStoreCart ', 'Profile', 'manage_wpstorecart', 'wpstorecart-invoice', array(&$wpStoreCart, 'printAdminPageInvoice'));
+            $emailPage = add_submenu_page(NULL,'Email - wpStoreCart ', 'Email', 'manage_wpstorecart', 'wpstorecart-email', array(&$wpStoreCart, 'printAdminPageEmail'));
             $affiliatespage = add_submenu_page('wpstorecart-admin','Affiliates - wpStoreCart PRO', 'Affiliates', 'manage_wpstorecart', 'wpstorecart-affiliates', array(&$wpStoreCart, 'printAdminPageAffiliates'));
             $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'manage_wpstorecart', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
             $diagnosticsPage = add_submenu_page(NULL,'Diagnostics - wpStoreCart', 'Diagnostics', 'manage_wpstorecart', 'wpstorecart-diagnostics', array(&$wpStoreCart, 'printAdminPageDiagnostics'));
             add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'manage_wpstorecart', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
             add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_admin_scripts_cat') );
+            add_action("admin_print_scripts-$customersPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$ordersPage", array(&$wpStoreCart, 'my_tooltip_script') );
+            add_action("admin_print_scripts-$addToGroupPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$page", array(&$wpStoreCart, 'my_admin_scripts') );
             add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
             add_action("admin_print_scripts-$page2a", array(&$wpStoreCart, 'my_tooltip_script'));
+            add_action("admin_print_scripts-$page2b", array(&$wpStoreCart, 'my_tooltip_script'));
+            add_action("admin_print_scripts-$profilePage", array(&$wpStoreCart, 'my_tooltip_script'));
+            add_action("admin_print_scripts-$invoicePage", array(&$wpStoreCart, 'my_tooltip_script'));
+            add_action("admin_print_scripts-$emailPage", array(&$wpStoreCart, 'my_tooltip_script'));
             add_action("admin_print_scripts-$mainPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
             add_action("admin_print_scripts-$statsPage", array(&$wpStoreCart, 'my_mainpage_scripts') );
             add_action("admin_print_scripts-$affiliatespage", array(&$wpStoreCart, 'my_tooltip_script') );
@@ -12132,14 +13199,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-statistics\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
@@ -12157,14 +13231,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-affiliates\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
@@ -12182,14 +13263,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-coupon\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
@@ -12207,17 +13295,56 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-orders\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
+
+                echo add_screen_meta_link(
+                        'wpsc-customers-link',
+                        'Customers',
+                        'admin.php?page=wpstorecart-customers',
+                        //An array of page/screen IDs specifying where to display the link.
+                        array(
+                                $mainPage,
+                                $settingsPage,
+                                $page,
+                                $editproductpage,
+                                $importpage,
+                                $categoriesPage,
+                                $page2,
+                                $page2a,
+                                $page2b,
+                                $affiliatespage,
+                                $statsPage,
+                                $customersPage,
+                                $ordersPage,
+                                $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
+                        ),
+                        //Additional attributes for the link tag.
+                        array(
+                                'onclick' => 'location=\'admin.php?page=wpstorecart-customers\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
+                        )
+                );
 
 
                 echo add_screen_meta_link(
@@ -12234,14 +13361,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-edit-products\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
@@ -12259,14 +13393,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'onclick' => 'location=\'admin.php?page=wpstorecart-settings\';return true;',
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                         )
                 );
 
@@ -12277,12 +13418,6 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                             $wpstorecartpro=true;
                         }
                     }
-                }
-
-                if($wpstorecartpro) {
-                    $procss = 'background: #6290be;font-weight: bold;color: #FFF;text-shadow: none;';
-                } else {
-                    $procss = 'font-weight: bold;text-shadow: none;';
                 }
 
                 echo add_screen_meta_link(
@@ -12299,15 +13434,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $categoriesPage,
                                 $page2,
                                 $page2a,
+                                $page2b,
                                 $affiliatespage,
                                 $statsPage,
+                                $customersPage,
                                 $ordersPage,
                                 $diagnosticsPage,
+                                $addToGroupPage,
+                                $profilePage,
+                                $invoicePage,
+                                $emailPage,
                         ),
                         //Additional attributes for the link tag.
                         array(
                                 'rel' => '#overlay',
-                                'style' => $procss,
+                                'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                                 'onclick' => 'return true;',
                         )
                 );
@@ -12328,15 +13469,21 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                     $categoriesPage,
                                     $page2,
                                     $page2a,
+                                    $page2b,
                                     $affiliatespage,
                                     $statsPage,
+                                    $customersPage,
                                     $ordersPage,
                                     $diagnosticsPage,
+                                    $addToGroupPage,
+                                    $profilePage,
+                                    $invoicePage,
+                                    $emailPage,
                             ),
                             //Additional attributes for the link tag.
                             array(
                                     'target' => '_blank',
-                                    'style' => 'background: #6290be;font-weight: bold;color: #FFF;text-shadow: none;',
+                                    'style' => 'padding:0 6px 0 6px;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);color:#777;font-size:11px;',
                                     'onclick' => 'location=\'http://wpstorecart.com/store/business-support-wpstorecart-pro/\';return true;',
                             )
                     );
@@ -12450,6 +13597,7 @@ if (isset($wpStoreCart)) {
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartRecentproductsWidget");')); // Register the widget: wpStoreCartRecentproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
+        register_deactivation_hook( __FILE__, array(&$wpStoreCart, 'deactivate') );
 
 	add_shortcode('wpstorecart', array(&$wpStoreCart, 'wpstorecart_mainshortcode'));
         add_action('wp_print_scripts', array(&$wpStoreCart, 'enqueue_my_scripts'));

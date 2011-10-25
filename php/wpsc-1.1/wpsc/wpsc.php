@@ -366,7 +366,14 @@ class wpsc {
 	function del_item($item_id)
 		{
 		$ti = array();
-		$this->itemqtys[$item_id] = 0;
+                unset($this->items[$item_id]);
+                unset($this->itemprices[$item_id]);
+                unset($this->itemqtys[$item_id]);
+                unset($this->itemname[$item_id]);
+                unset($this->itemshipping[$item_id]);
+                unset($this->itemtax[$item_id]);
+                unset($this->itemurl[$item_id]);
+                unset($this->itemimg[$item_id]);
 		foreach($this->items as $item)
 			{
 			if($item != $item_id)
@@ -649,7 +656,7 @@ class wpsc {
 
 
                         // ** Here's where we disable the user login system during checkout if registration is not required
-                        if($devOptions['requireregistration']=='false') {
+                        if($devOptions['requireregistration']=='false' || $devOptions['requireregistration']=='disable') {
                             if(@isset($_POST['guest_email'])) {
                                 $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
                             }
@@ -673,8 +680,8 @@ class wpsc {
                            $isLoggedIn = false;
                         }
                         
-                     // Only shown if the user is not logged in
-                     if($isLoggedIn == false) {
+                     // Only shown if the user is not logged in and registration is okay
+                     if($isLoggedIn == false && $devOptions['requireregistration']!='disable') {
                             /*
                              * Show error messages, then remove the wpscregerror from the URI
                              * @todo Add these into the language options of wpStoreCart
@@ -742,6 +749,8 @@ class wpsc {
                         }
                     }
 
+
+                    if($devOptions['requireregistration']!='disable') {
                     /**
                      * This block detects if required tax information is missing, like state and/or country.
                      */
@@ -825,8 +834,8 @@ class wpsc {
                             }
                         }
                     }
-
                 }
+            }
 
                 if( $isLoggedIn == true || $is_checkout==false) {
 
@@ -946,7 +955,11 @@ class wpsc {
                                             $output_price .= "<td><span> </span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
                                             $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
                                         } else {
-                                            $output_price .= "<td><span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                $output_price .= "<td><span>" . $text['currency_symbol'] . $devOptions['logged_out_price'] . $text['currency_symbol_right']."</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                            } else {
+                                                $output_price .= "<td><span>" . $text['currency_symbol'] . $finalAmount . $text['currency_symbol_right']."</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' /></td>";
+                                            }
                                             $output_remove .= "<td><a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a></td>";
                                         }
                                     } else {
@@ -954,7 +967,11 @@ class wpsc {
                                             $output_price .= "\t\t\t\t\t\t<span> </span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
                                             $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
                                         } else {
-                                            $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $devOptions['logged_out_price'] . $text['currency_symbol_right']. "</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                            } else {
+                                                $output_price .= "\t\t\t\t\t\t<span>" . $text['currency_symbol'] . $finalAmount . $text['currency_symbol_right']."</span><input type='hidden' name='wpsc_item_price[ ]' value='" . $item['price'] . "' />\n";
+                                            }
                                             $output_remove .= "\t\t\t\t\t\t<a class='wpsc-remove' href='?wpsc_remove=" . $item['id'] . "'>" . $text['remove_link'] . "</a><br />\n";
                                         }
                                     }
@@ -1142,7 +1159,11 @@ class wpsc {
                     }
 
                     if(($devOptions['displaysubtotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowSubtotal']=='true' ) {
-                        $output .= "\t\t\t\t\t\t<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                            $output .= "\t\t\t\t\t\t<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . $devOptions['logged_out_price'] . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        } else {
+                            $output .= "\t\t\t\t\t\t<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        }
                     }
 
                     // Tax is calculated and displayed here
@@ -1205,7 +1226,11 @@ class wpsc {
                             if($mastertax > 0) {
                                 $taxamount = ($this->total + $totalshipping) * ($mastertax /100);
                             }
-                            $output .= "\t\t\t\t\t\t<span id='wpsc-tax"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['tax'] . ": <strong>" . $text['currency_symbol'] . number_format($taxamount,2) . $text['currency_symbol_right'] ."</strong> (".$mastertax."%)</span><br />\n";
+                            if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                $output .= "\t\t\t\t\t\t<span id='wpsc-tax"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['tax'] . ": <strong>" . $text['currency_symbol'] . $devOptions['logged_out_price'] . $text['currency_symbol_right'] ."</strong> (".$mastertax."%)</span><br />\n";
+                            } else {
+                                $output .= "\t\t\t\t\t\t<span id='wpsc-tax"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['tax'] . ": <strong>" . $text['currency_symbol'] . number_format($taxamount,2) . $text['currency_symbol_right'] ."</strong> (".$mastertax."%)</span><br />\n";
+                            }
                         }
                     }
 
@@ -1214,7 +1239,11 @@ class wpsc {
                     }
 
                     if(($devOptions['displaytotal']=='true' && $wpscWidgetSettings['iswidget']!='true') || $wpscWidgetSettings['widgetShowTotal']=='true' ) {
-                        $output .= "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping + $taxamount,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                            $output .= "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . $devOptions['logged_out_price'] . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        } else {
+                            $output .= "\t\t\t\t\t\t<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping + $taxamount,2) . $text['currency_symbol_right'] ."</strong></span><br />\n";
+                        }
                     }
 
                     if(!$cart_is_empty) {

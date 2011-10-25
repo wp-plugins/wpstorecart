@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 2.8.0
-Tested up to: 3.2.1
-Stable tag: 2.4.14
+Tested up to: 3.3
+Stable tag: 2.5.0
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -34,8 +34,8 @@ See what people are saying:
 * Guest checkout
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
-* PayPal payments (Authorize.NET, 2CheckOut, Liberty Reserve, Quickbooks available)
-* Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, and Safari 5
+* PayPal payments (Authorize.NET, 2CheckOut, Liberty Reserve, Quickbooks, Skrill/Moneybookers also available)
+* Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
 * **and much, much MORE!**
 
 ![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
@@ -83,6 +83,19 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.5.0 =
+* Updated: Changes the Orders and Coupons pages so that they match the rest of the admin panel by having icons
+* Added: Customers admin page
+* Added: Add Users to Group admin page
+* Added: Added Customer Profile, including the ability to see what each user currently has in their cart
+* Added: Added a new Detailed Order admin page
+* Updated: Improved the remove from cart functionality
+* Added: Got wpStoreCart prepared for Wordpress 3.3.  wpStoreCart 2.4.x had several issues with Wordpress 3.3 beta 1, which are fixed in this version.
+* Fixed: Resolved an Authorize.NET error message
+* Updated: Database schema updated for the wpstorecart_categories table, adding 4 new fields to enable the group discount functionality.
+* Added: You can now uninstall wpStoreCart completely, deleting all products, settings, coupons, orders, etc.
+* Fixed: Bug on Edit Product page that sometimes resulted in hidden products on the sortable page.
 
 = 2.4.14 =
 * Fixed: Page pagination now displays correctly on ALL category pages.

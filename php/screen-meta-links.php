@@ -83,11 +83,22 @@ class wsScreenMetaLinks10 {
 		if ( empty($links) ){
 			return;
 		}
-		
+
+                global $wp_db_version;
+
+                if ( $wp_db_version < 18715 ) { // If this is less than Wordpress 3.3 Beta 1
+                    $screenmeta = '#screen-meta-links';
+                }
+                if ( $wp_db_version >= 18715 ) { // If this is equal to or greater than Wordpress 3.3 Beta 1
+                    echo '<div id="screen-meta-links-wpsc"></div>';
+                    $screenmeta = '#screen-meta-links-wpsc';
+                }
+
 		?>
+                
 		<script type="text/javascript">
 			(function($, links){
-				var container = $('#screen-meta-links');
+				var container = $("<?PHP echo $screenmeta;?>");
 				for(var i = 0; i < links.length; i++){
 					container.append(
 						$('<div/>')
@@ -139,7 +150,8 @@ class wsScreenMetaLinks10 {
 		if ( empty($links) ){
 			return;
 		}
-		
+
+                
 		?>
 		<style type="text/css">
 		.custom-screen-meta-link-wrap {
