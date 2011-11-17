@@ -144,6 +144,7 @@ if (isset($wpStoreCart)) {
 			HandleError("File could not be saved.");
 			exit(0);
 		}
+                @chmod($save_path.$file_name,0644);
 
 		exit(0);
 

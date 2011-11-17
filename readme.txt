@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 2.8.0
 Tested up to: 3.3
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -34,6 +34,7 @@ See what people are saying:
 * Guest checkout
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
+* Advanced group settings, including groups discounts, group only products, unlimited groups
 * PayPal payments (Authorize.NET, 2CheckOut, Liberty Reserve, Quickbooks, Skrill/Moneybookers also available)
 * Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
 * **and much, much MORE!**
@@ -84,8 +85,26 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 2.5.2 = 
+* Added: Related items & accessories, including discounts and combo packs.
+* Added: By default, clicking add to cart will now redirect to the checkout page
+* Fixed: there was an issue with group discounts not applying to the main page.  This has been fixed.
+* Updated: Switched to NicEdit instead of TinyMCE in the administration due to new issues with TinyMCE and Wordpress 3.3 beta
+* Updated: Added Qty (quantity) to the Language settings
+* Fixed: the invisible login and register buttons should now appear
+* Fixed: patched a few minor issues with Quickbooks Merchant Services payment gateway
+* Fixed: Uploads will now attempt to chmod to 655 permissions automatically
+* Updated: Updated to ShareYourCart version 2.0 (Commented out while issues are resolved however)
+* Fixed: Login widget now takes the "Other button classes" and has the .wpsc-button and .wpsc-login-button classes attached to it
+* Updated: By default, new installs will now see the price in grid and list views
+* Fixed: There were multiple CSS issues on the Overview/MyStore page that were fixed
+* Added: XDebug support added when using TESTING MODE.  This is so that the wpStoreCart developers can use XDebug to easily debug the Ajax code in Netbeans.
+* Fixed: 2CO now redirects after IPN call
+* Updated: Every method inside the wpStoreCart class now contains proper PHPDOC blocks.
+* Updated: PHPUnit testing implementation started
+
 = 2.5.1 =
-* Fixed: There was an issue with the settings variable being renamed.  
+* Fixed: There was an issue with the settings variable being renamed. 
 
 = 2.5.0 =
 * Updated: Changes the Orders and Coupons pages so that they match the rest of the admin panel by having icons

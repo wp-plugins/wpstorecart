@@ -903,6 +903,7 @@ else
 
                     }
                     if($QBMSStatus == 'capture') {
+                        $table_name2 = $wpdb->prefix . "wpstorecart_products";
                         $cart->empty_cart();
                         // ALL COOL, mark the order paid
                         $sql = "UPDATE `{$table_name}` SET `orderstatus` = 'Completed' WHERE `primkey` = {$keytoedit}";
@@ -915,12 +916,14 @@ else
                                         if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
                                                 $current_item = explode('*', $specific_item);
                                                 if(isset($current_item[0]) && isset($current_item[1])) {
-                                                        $sql2 = "SELECT `primkey`, `inventory`, `useinventory` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
-                                                        $wpStoreCart->assignSerialNumber($current_item[0], $keyToLookup);
+                                                        $sql2 = "SELECT `primkey`, `inventory`, `useinventory` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$current_item[0]};";
+                                                        $wpStoreCart->assignSerialNumber($current_item[0], $keytoedit);
                                                         $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
-                                                        if(isset($moreresults) && $moreresults[0]['useinventory']==1) {
-                                                                        $newInventory = $moreresults[0]['inventory'] - $current_item[1];
-                                                                        $wpdb->query("UPDATE `{$table_name2}` SET `inventory` = '{$newInventory}' WHERE `primkey` = {$moreresults[0]['primkey']} LIMIT 1 ;");
+                                                        if(isset($moreresults[0])){
+                                                            if( $moreresults[0]['useinventory']==1) {
+                                                                $newInventory = $moreresults[0]['inventory'] - $current_item[1];
+                                                                $wpdb->query("UPDATE `{$table_name2}` SET `inventory` = '{$newInventory}' WHERE `primkey` = {$moreresults[0]['primkey']} LIMIT 1 ;");
+                                                            }
                                                         }
                                                 }
                                         }

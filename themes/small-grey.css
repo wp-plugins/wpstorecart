@@ -12,6 +12,8 @@
 .wpsc-libertyreservecheckout{background:transparent url('small-grey/libertyreservecheckout.png') top left no-repeat;}
 .wpsc-qbmscheckout{background:transparent url('small-grey/checkout.png') top left no-repeat;}
 .wpsc-moneybookerscheckout{background:transparent url('small-grey/moneybookerscheckout.png') top left no-repeat;}
+.wpsc-login-button{background:transparent url('small-grey/login.png') top left no-repeat;}
+.wpsc-register-button {background:transparent url('small-grey/register.png') top left no-repeat;}
 .wpsc-product-img {float:left;margin:10px 10px 10px 10px; border:1px solid #555;}
 .wpsc-button:hover {opacity:0.7;}
 .wpsc-hide {display:inline;}

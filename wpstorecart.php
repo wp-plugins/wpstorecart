@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.1
+Version: 2.5.2
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -17,7 +17,6 @@ of the GNU Lesser General Public License as published by the Free Software Found
 either version 2.1 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 See the GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along with this 
@@ -29,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.1
+ * @version 2.5.2
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -52,10 +51,10 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.1';
-$wpstorecart_version_int = 205001; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.2';
+$wpstorecart_version_int = 205002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
-$testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
+$testing_mode = true; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is set to true.  Default is E_ALL
 $APjavascriptQueue = NULL;
@@ -311,6 +310,11 @@ if (!class_exists("wpStoreCart")) {
         var $wpStoreCartRegistrationFields = null;
 
         /**
+         * var integer $wpStoreCartVariationCount The number of variations called  Added in 2.5.2
+         */
+        var $wpStoreCartVariationCount = 0;
+        
+        /**
          * wpStoreCart() Constructor Method
          *
          * The initial constructor call that is initialized when the wpStoreCart object is invoked
@@ -443,7 +447,7 @@ if (!class_exists("wpStoreCart")) {
         */
        function deactivate() {
            $devOptions = $this->getAdminOptions();
-           if($devOptions['uninstall']=='true') {
+           if(isset($devOptions['uninstall']) && $devOptions['uninstall']=='true') {
                 $this->uninstall();
            }
        }
@@ -609,36 +613,63 @@ if (!class_exists("wpStoreCart")) {
            return $output;
        }
 
+       /**
+        * No CURL error message
+        */
         function wpscErrorNoCURL() {
             echo $this->wpscError('no_curl');
         }
 
+        /**
+         * Register_globals error message
+         */
         function wpscErrorRegisterGlobals() {
             echo $this->wpscError('register_globals');
         }
 
+        /**
+         * No main page error message
+         */
         function wpscErrorNoPage() {
             if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
                 echo $this->wpscError('nopage');
             }
         }
 
+        /**
+         * Testing mode enabled error message
+         */
         function wpscErrorTestingMode() {
             echo $this->wpscError('testingmode');
         }
 
+        /**
+         * No Upload Directory error message
+         */
         function wpscErrorNoUploadDir() {
             echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/');
         }
 
+        /**
+         * No wpstorecart upload directory error message
+         */
         function wpscErrorNoUploadWpDir() {
             echo $this->wpscError('nouploadsdir',WP_CONTENT_DIR . '/uploads/wpstorecart/');
         }
 
+        /**
+         * USPS incorrectly configured error message
+         */
         function wpscErrorUSPS() {
             echo $this->wpscError('uspsnotconfigured');
         }
 
+        /**
+         *
+         * Saves the last error message into the settings, which is then available in the diagnostics information 
+         * 
+         * @global boolean $testing_mode 
+         */
         function save_error(){
             global $testing_mode;
             if($testing_mode==true) {
@@ -648,6 +679,14 @@ if (!class_exists("wpStoreCart")) {
             }
         }
 
+        /**
+         * 
+         * wpStoreCart's custom initialization
+         *
+         * @global boolean $testing_mode
+         * @global object $current_user
+         * @global object $wpdb 
+         */
         function register_custom_init() {
             global $testing_mode;
 
@@ -712,6 +751,9 @@ if (!class_exists("wpStoreCart")) {
 
         }
 
+                /**
+                 * Initialization
+                 */
 		function  init() {
                     $this->getAdminOptions();
                 }
@@ -721,9 +763,9 @@ if (!class_exists("wpStoreCart")) {
                  * Checks to see if a column exists in a mysql table, if not, it creates it
                  *
                  * @global object $wpdb
-                 * @param <type> $db
-                 * @param <type> $column
-                 * @param <type> $column_attr
+                 * @param string $db
+                 * @param string $column
+                 * @param string $column_attr
                  */
 		function add_column_if_not_exist($db, $column, $column_attr = "VARCHAR( 255 ) NULL" ){
 			global $wpdb;
@@ -740,6 +782,9 @@ if (!class_exists("wpStoreCart")) {
 			}
 		}		
 
+                /**
+                 * Settings header code.
+                 */
                 function spSettings() {
 			echo '
                         <script type="text/javascript">
@@ -854,6 +899,15 @@ if (!class_exists("wpStoreCart")) {
 
                 }
 
+                /**
+                 *
+                 * wpStoreCart header
+                 * 
+                 * @global int $wpstorecart_version_int
+                 * @global boolean $testing_mode
+                 * @global type $wp_db_version
+                 * @global boolean $testing_mode 
+                 */
 		function spHeader() {
                         global $wpstorecart_version_int, $testing_mode, $wp_db_version;
 
@@ -989,6 +1043,7 @@ if (!class_exists("wpStoreCart")) {
                         <ul id="wpsc-marketing-drop-down" style="display:none;" class="jeegoocontext cm_default">
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-coupon" class="spmenu">Coupons</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/group.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-groupdiscounts" class="spmenu">Group Discounts</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/images.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-combos" class="spmenu">Combos</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu">ShareYourCart&#8482;</a></li>
                         </ul>
 
@@ -1018,7 +1073,7 @@ if (!class_exists("wpStoreCart")) {
                                 jQuery("#contextual-help-link").jeegoocontext("contextual-help-link-drop-down", {openBelowContext: true, event: \'mouseover\', ignoreHeightOverflow: true, submenuLeftOffset: -1, '; if ( $wp_db_version >= 18715 ) { echo 'startTopOffset: -21, startLeftOffset:-164,';} echo' fadeIn: 0, autoHide: true});
                             //]]>
                         </script>
-';
+                        ';
 
                     global $testing_mode;
                     if($testing_mode==true && trim($devOptions['plugin_error'])!='') {
@@ -1028,7 +1083,14 @@ if (!class_exists("wpStoreCart")) {
 		}		
 		
 		
-		//Returns an array of admin options
+	
+        /**
+         *
+         * Returns an array of admin options
+         * 
+         * @param string $action
+         * @return array 
+         */
         function getAdminOptions($action=NULL) {
 		
             $apAdminOptions = array('mainpage' => '',
@@ -1153,7 +1215,7 @@ if (!class_exists("wpStoreCart")) {
                                     'checkoutimagewidth' => '25',
                                     'checkoutimageheight' => '25',
                                     'checkoutlinktoproduct' => 'false',
-                                    'displaypriceonview' => 'false',
+                                    'displaypriceonview' => 'true',
                                     'menu_style' => 'version3',
                                     'admin_capability' => 'manage_options',
                                     'orders_profile' => 'display',
@@ -1204,7 +1266,15 @@ if (!class_exists("wpStoreCart")) {
                                     'gd_saleprice' => 'true',
                                     'show_price_to_guests' => 'true',
                                     'logged_out_price' => '?.??',
-                                    'uninstall' => 'false'
+                                    'uninstall' => 'false',
+                                    'qty' => 'Qty:',
+                                    'combo_enable' => 'true',
+                                    'combo_display_prices' => 'true',
+                                    'combo_display_links' => 'true',
+                                    'combo_display_thumbs' => 'true',
+                                    'redirect_to_checkout' => 'true',
+                                    'debug_parameter' => 'X_DEBUG_START_SESSION=default',
+                                    'where_to_display_accessories' => 'At the very bottom of the page'
                                     );
 
 
@@ -1240,7 +1310,43 @@ if (!class_exists("wpStoreCart")) {
         }
 
 
-        function wpstorecart_addtocart($primkey) {
+        /**
+         *
+         * Returns an Add to Cart button for the specified product, optionally with an increased or decreased price
+         * 
+         * @global object $wpdb
+         * @global $wpsc_buy_now $wpsc_buy_now
+         * @global object $wpdb
+         * @global integer $wpsc_membership_product_id
+         * @global $purchaser_user_id $purchaser_user_id
+         * @global $purchaser_email $purchaser_email
+         * @global $membershipOptions $membershipOptions
+         * @global string $wpsc_table_name
+         * @global string $wpsc_self_path
+         * @global $wpsc_paypal_testmode $wpsc_paypal_testmode
+         * @global $wpsc_paypal_ipn $wpsc_paypal_ipn
+         * @global $wpsc_membership_product_name $wpsc_membership_product_name
+         * @global $wpsc_membership_product_number $wpsc_membership_product_number
+         * @global $wpsc_button_classes $wpsc_button_classes
+         * @global $wpsc_paypal_currency_code $wpsc_paypal_currency_code
+         * @global $wpsc_paypal_email $wpsc_paypal_email
+         * @global $wpsc_price_type $wpsc_price_type
+         * @global $wpsc_membership_trial1_allow $wpsc_membership_trial1_allow
+         * @global $wpsc_membership_trial2_allow $wpsc_membership_trial2_allow
+         * @global $wpsc_membership_trial1_amount $wpsc_membership_trial1_amount
+         * @global $wpsc_membership_trial2_amount $wpsc_membership_trial2_amount
+         * @global $wpsc_membership_regular_amount $wpsc_membership_regular_amount
+         * @global $wpsc_membership_trial1_numberof $wpsc_membership_trial1_numberof
+         * @global $wpsc_membership_trial2_numberof $wpsc_membership_trial2_numberof
+         * @global $wpsc_membership_regular_numberof $wpsc_membership_regular_numberof
+         * @global $wpsc_membership_trial1_increment $wpsc_membership_trial1_increment
+         * @global $wpsc_membership_trial2_increment $wpsc_membership_trial2_increment
+         * @global $wpsc_membership_regular_increment $wpsc_membership_regular_increment
+         * @param type $primkey
+         * @param type $price
+         * @return string 
+         */
+        function wpstorecart_addtocart($primkey, $price = NULL) {
             global $wpdb;
             $output = '';
             $devOptions = $this->getAdminOptions();
@@ -1312,11 +1418,26 @@ if (!class_exists("wpStoreCart")) {
                                             $result['shipping'] = '0.00';
                                         }
 
-                                        // Discount prices
-                                        if($results[0]['discountprice'] > 0) {
-                                            $theActualPrice = $results[0]['discountprice'];
+
+                                        // Discount prices, as well as prices specifically set when calling this method
+                                        if($price!=NULL) {
+                                            if($price > 0) {
+                                                $theActualPrice = $price;
+                                            } else {
+                                                // Discount prices
+                                                if($results[0]['discountprice'] > 0) {
+                                                    $theActualPrice = $results[0]['discountprice'];
+                                                } else {
+                                                    $theActualPrice = $results[0]['price'];
+                                                }
+                                            }                                            
                                         } else {
-                                            $theActualPrice = $results[0]['price'];
+                                            // Discount prices
+                                            if($results[0]['discountprice'] > 0) {
+                                                $theActualPrice = $results[0]['discountprice'];
+                                            } else {
+                                                $theActualPrice = $results[0]['price'];
+                                            }                                            
                                         }
 
                                         $output .= '
@@ -1597,6 +1718,9 @@ echo '</ul>
 
         }
 
+        /**
+         * wpStoreCart Admin Panel: Diagnostics
+         */
         function printAdminPageDiagnostics() {
             $devOptions = $this->getAdminOptions();
             if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart'))
@@ -1744,15 +1868,14 @@ echo '</ul>
 		
         /**
          *
-         * Prints out the admin page
+         * Prints out the Settings admin page
          *
          * @global object $wpdb
-         * @global <type> $wp_roles
-         * @global <type> $devOptions
-         * @global <type> $devOptions
+         * @global object $wp_roles
+         * @global array $devOptions
          */
         function printAdminPage() {
-			global $wpdb;
+			global $wpdb, $testing_mode;
 
                         $this->wpStoreCartSettings = NULL;
                         $devOptions = $this->getAdminOptions('flush');
@@ -2267,7 +2390,31 @@ echo '</ul>
                                 if (isset($_POST['uninstall'])) {
  					$devOptions['uninstall'] = $wpdb->escape($_POST['uninstall']);
 				}
-
+                                if (isset($_POST['qty'])) {
+ 					$devOptions['qty'] = $wpdb->escape($_POST['qty']);
+				}                                
+                                if (isset($_POST['combo_enable'])) {
+ 					$devOptions['combo_enable'] = $wpdb->escape($_POST['combo_enable']);
+				}  
+                                if (isset($_POST['combo_display_prices'])) {
+ 					$devOptions['combo_display_prices'] = $wpdb->escape($_POST['combo_display_prices']);
+				}  
+                                if (isset($_POST['combo_display_links'])) {
+ 					$devOptions['combo_display_links'] = $wpdb->escape($_POST['combo_display_links']);
+				}  
+                                if (isset($_POST['combo_display_thumbs'])) {
+ 					$devOptions['combo_display_thumbs'] = $wpdb->escape($_POST['combo_display_thumbs']);
+				}                                  
+                                if (isset($_POST['redirect_to_checkout'])) {
+ 					$devOptions['redirect_to_checkout'] = $wpdb->escape($_POST['redirect_to_checkout']);
+				}        
+                                if (isset($_POST['debug_parameter'])) {
+ 					$devOptions['debug_parameter'] = $wpdb->escape($_POST['debug_parameter']);
+				}               
+                                if (isset($_POST['where_to_display_accessories'])) {
+ 					$devOptions['where_to_display_accessories'] = $wpdb->escape($_POST['where_to_display_accessories']);
+				}                                 
+                                
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
  					$devOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
@@ -2468,8 +2615,17 @@ echo '</ul>
 
                         <h2>Advanced Options</h2>
                         <table class="widefat">
-			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>';
 
+                        if($testing_mode) {
+                             echo '
+                            <tr><td><h3>Debug Parameter: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-40009899" /><div class="tooltip-content" id="example-content-40009899">The wpStoreCart developers use Xdebug for debugging purposes.  While in testing mode, you can additionally use additional parameters here.  </div></h3></td>
+                            <td class="tableDescription"><p>Customize the Xdebug parameter.</p></td>
+                            <td><input type="text" name="debug_parameter" value="'; _e(apply_filters('format_to_edit',$devOptions['debug_parameter']), 'wpStoreCart'); echo'" />
+                            </td></tr>';                       
+                        }
+                        
+                        echo '
 			<tr><td><h3>Google Analytics UA: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4000" /><div class="tooltip-content" id="example-content-4000">Insert your Google Analytics UA code in order to track ecommerce conversions using Google Analytics.  Leave this blank if you\'re not using Google Analytics.  Note, this does not insert tracking code anywhere except when a customer purchases something.</div></h3></td>
 			<td class="tableDescription"><p>Insert your Google Analytics UA-XXXXX-XX code here to keep track of sales using Google Analytics.  Leave blank if you don\'t use Google Analytics.</p></td>
 			<td><input type="text" name="ga_trackingnum" value="'; _e(apply_filters('format_to_edit',$devOptions['ga_trackingnum']), 'wpStoreCart'); echo'" />
@@ -2745,6 +2901,33 @@ echo '</ul>
 
 				$option = '<option value="'.$theOption.'"';
 				if($theOption == $devOptions['showproductgallerywhere']) {
+					$option .= ' selected="selected"';
+				}
+				$option .='>';
+				$option .= $theOption;
+				$option .= '</option>';
+				echo $option;
+                        }
+
+   			echo '
+			</select>
+			</td></tr>
+
+			<tr><td><h3>Where to display product accessories &amp; combos? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-69991234560167" /><div class="tooltip-content" id="example-content-69991234560167">You can either display the accessories &amp; combos after the product\'s thumbnail, add to cart button, intro description, description, or at the very end of the product page (default.) <u>NOTE: If you set this to the same value as the picture gallery, the gallery will display first!</u></div></h3></td>
+			<td class="tableDescription"><p>Where on the product page you wish to display accessories &amp; combos. </p></td>
+			<td>
+                        <select name="where_to_display_accessories">
+';
+
+                        $theOptionsTbgwx[0] = 'Directly after the Thumbnail';
+                        $theOptionsTbgwx[1] = 'Directly after the Add to Cart';
+                        $theOptionsTbgwx[2] = 'Directly after the Intro Description';
+                        $theOptionsTbgwx[3] = 'Directly after the Description';
+                        $theOptionsTbgwx[4] = 'At the very bottom of the page';
+                        foreach ($theOptionsTbgwx as $theOption) {
+
+				$option = '<option value="'.$theOption.'"';
+				if($theOption == $devOptions['where_to_display_accessories']) {
 					$option .= ' selected="selected"';
 				}
 				$option .='>';
@@ -3074,6 +3257,12 @@ echo '</ul>
 
                         <table class="widefat">
 			<thead><tr><th>Option</th><th>Description</th><th>Value</th></tr></thead><tbody>
+                        
+			<tr><td><h3>Clicking on Add to Cart redirects to checkout? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3346346734798" /><div class="tooltip-content" id="example-content-3346346734798">If you set this to Yes, then when a person adds an item to the cart, they will also be redirected to the checkout page.</div></h3></td>
+			<td class="tableDescription"><p>Select "Yes" to send customers to checkout immediately aftering adding to cart, or select "No" to keep them on the same page</p></td>
+			<td><p><label for="redirect_to_checkout_yes"><input type="radio" id="redirect_to_checkout_yes" name="redirect_to_checkout" value="true" '; if ($devOptions['redirect_to_checkout'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="redirect_to_checkout_no"><input type="radio" id="redirect_to_checkout_no" name="redirect_to_checkout" value="false" '; if ($devOptions['redirect_to_checkout'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
+			</td></tr>
+
 			<tr><td><h3>Add to Cart button classes</h3></td>
 			<td class="tableDescription"><p>Additional Classes for Add to Cart buttons.  Enter classes without periods, space separated. </p></td>
 			<td><input type="text" name="button_classes_addtocart" value="'; _e(apply_filters('format_to_edit',$devOptions['button_classes_addtocart']), 'wpStoreCart'); echo'" />
@@ -3407,6 +3596,11 @@ echo '</ul>
 			<td><input type="text" name="cart_title" value="'; _e(apply_filters('format_to_edit',$devOptions['cart_title']), 'wpStoreCart'); echo'" />
 			</td></tr>
 
+			<tr><td><h3>Qty (Quantity)</h3></td>
+			<td class="tableDescription"><p>Default: <i>Qty:</i></p></td>
+			<td><input type="text" name="qty" value="'; _e(apply_filters('format_to_edit',$devOptions['qty']), 'wpStoreCart'); echo'" />
+			</td></tr>
+
 			<tr><td><h3>Single Item</h3></td>
 			<td class="tableDescription"><p>Default: <i>Item</i></p></td>
 			<td><input type="text" name="single_item" value="'; _e(apply_filters('format_to_edit',$devOptions['single_item']), 'wpStoreCart'); echo'" />
@@ -3662,7 +3856,7 @@ echo '</ul>
 
 			<tr><td><h3>Require Registration? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.  There are 2 "No" options, the first one leaves registration optional, the 2nd "No" removes the ability to register altogether.</div></h3></td>
 			<td class="tableDescription"><p>Controls whether or not your site requires registration before checkout completes.</p></td>
-			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes, only registered users can buy</label><br /><label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, but make it optional to register</label><br /><label for="requireregistration_disable"><input type="radio" id="requireregistration_disable" name="requireregistration" value="disable" '; if ($devOptions['requireregistration'] == "disable") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, disable registeration. Guest checkout only.</label></p>
+			<td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($devOptions['requireregistration'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes, only registered users can buy</label><br /><label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($devOptions['requireregistration'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, but make it optional to register</label><br /><label for="requireregistration_disable"><input type="radio" id="requireregistration_disable" name="requireregistration" value="disable" '; if ($devOptions['requireregistration'] == "disable") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No, disable registration. Guest checkout only.</label></p>
 			</td></tr>
 			<tr><td><h3>Show Prices To Guests? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9984745996" /><div class="tooltip-content" id="example-content-9984745996">Set to "Yes" if you want to show guests (non-logged in users) the full price of products.  Set to "No" if you want to hide prices from guests.</div></h3></td>
 			<td class="tableDescription"><p>Display prices to guests.  Turn off to hide the prices from non-logged in users.</p></td>
@@ -3680,7 +3874,7 @@ echo '</ul>
                             /* <![CDATA[ */
 
                             function addwpscfield() {
-                                jQuery.ajax({ url: "'.plugins_url('/php/addfield.php' , __FILE__).'", type:"POST", data:"createnewfieldname="+jQuery("#createnewfieldname").val()+"&createnewfieldtype="+jQuery("#createnewfieldtype").val()+"&createnewfieldrequired="+jQuery("input:radio[name=createnewfieldrequired]:checked").val(), success: function(txt){
+                                jQuery.ajax({ url: "'.plugins_url('/php/addfield.php' , __FILE__).'", type:"POST", data:"createnewfieldname="+jQuery("#createnewfieldname").val()+"&createnewfieldtype="+jQuery("#createnewfieldtype").val()+"&createnewfieldrequired="+jQuery("input:radio[name=createnewfieldrequired]:checked").val()'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(txt){
                                     jQuery("#requiredul").prepend("<li style=\'font-size:90%;cursor:move;background: url('.plugins_url('/images/sort.png' , __FILE__).') top left no-repeat;width:523px;min-width:523px;height:35px;min-height:35px;padding:4px 0 0 30px;margin-bottom:-8px;\' id=\'requiredinfo_"+txt+"\'><img onclick=\'delwpscfield("+txt+");\' style=\'cursor:pointer;position:relative;top:4px;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /><input type=\'text\' value=\'"+jQuery("#createnewfieldname").val()+"\' name=\'required_info_name[]\' /><input type=\'hidden\' name=\'required_info_key[]\' value=\'"+txt+"\' /><select name=\'required_info_type[]\' id=\'ri_"+txt+"\'><option value=\'input (text)\'>Input (text)</option><option value=\'input (numeric)\'>Input (numeric)</option><option value=\'textarea\'>Input Textarea</option><option value=\'states\'>Input US States</option><option value=\'countries\'>Input Countries</option><option value=\'email\'>Input Email Address</option><option value=\'separator\'>--- Separator ---</option><option value=\'header\'>Header &lt;h2&gt;&lt;/h2&gt;</option><option value=\'text\'>Text &lt;p&gt;&lt;/p&gt;</option></select><label for=\'required_info_required_"+txt+"\'><input type=\'radio\' id=\'required_info_required_"+txt+"_yes\' name=\'required_info_required_"+txt+"\' value=\'required\' /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for=\'required_info_required_"+txt+"_no\'><input type=\'radio\' id=\'required_info_required_"+txt+"_no\' name=\'required_info_required_"+txt+"\' value=\'optional\' /> Optional</label></li>");
                                     jQuery("#ri_"+txt).val(jQuery("#createnewfieldtype").val());
                                     if(jQuery("input:radio[name=createnewfieldrequired]:checked").val()=="required") {
@@ -3695,7 +3889,7 @@ echo '</ul>
                             }
 
                             function delwpscfield(keytodel) {
-                                jQuery.ajax({ url: "'.plugins_url('/php/delfield.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
+                                jQuery.ajax({ url: "'.plugins_url('/php/delfield.php' , __FILE__).'", type:"POST", data:"delete="+keytodel'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(){
                                     jQuery("#requiredinfo_"+keytodel).remove();
                                 }});
                             }
@@ -3705,7 +3899,7 @@ echo '</ul>
                                     jQuery(function() {
 
                                             jQuery("#requiredsort ul").sortable({ opacity: 0.6, cursor: \'move\', update: function() {
-                                                    var order = jQuery(this).sortable("serialize") + \'&action=updateRecordsListings\';
+                                                    var order = jQuery(this).sortable("serialize") + "&action=updateRecordsListings'; if($testing_mode){echo '&'.$devOptions['debug_parameter'];} echo'";
                                                     jQuery.post("'.plugins_url('/php/sortfields.php' , __FILE__).'", order, function(theResponse){
                                                             jQuery("#requiredsort ul").sortable(\'refresh\');
                                                     });
@@ -3811,7 +4005,7 @@ echo '</ul>
                             /* <![CDATA[ */
 
                             function addwpsctax() {
-                                jQuery.ajax({ url: "'.plugins_url('/php/addtax.php' , __FILE__).'", type:"POST", data:"taxprimkey="+jQuery("#taxprimkey").val()+"&taxname="+jQuery("#taxname").val()+"&countriestotax="+jQuery("#countriestotax").val()+"&statestotax="+jQuery("#statestotax").val()+"&taxpercent="+jQuery("#taxpercent").val(), success: function(txt){
+                                jQuery.ajax({ url: "'.plugins_url('/php/addtax.php' , __FILE__).'", type:"POST", data:"taxprimkey="+jQuery("#taxprimkey").val()+"&taxname="+jQuery("#taxname").val()+"&countriestotax="+jQuery("#countriestotax").val()+"&statestotax="+jQuery("#statestotax").val()+"&taxpercent="+jQuery("#taxpercent").val()'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(txt){
                                     if (jQuery("#wpsctax-"+txt).length){
                                         jQuery("#wpsctaxname-"+txt).html(jQuery("#taxname").val());
                                         jQuery("#wpsctaxpercent-"+txt).html(jQuery("#taxpercent").val()+"%");
@@ -3826,7 +4020,7 @@ echo '</ul>
                             }
 
                             function delwpsctax(keytodel) {
-                                jQuery.ajax({ url: "'.plugins_url('/php/deltax.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
+                                jQuery.ajax({ url: "'.plugins_url('/php/deltax.php' , __FILE__).'", type:"POST", data:"delete="+keytodel'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(){
                                     jQuery("#wpsctax-"+keytodel).remove();
                                 }});
                             }
@@ -4519,7 +4713,15 @@ echo '</ul>
         }
 
 		
-		//Prints out the Import/Export admin page =======================================================================
+        /**
+         *
+         * wpStoreCart Admin Panel: Import/Export
+         * 
+         * @global object $wpdb
+         * @global  $user_level
+         * @global int $wpstorecart_version_int
+         * @global boolean $testing_mode 
+         */
         function printAdminPageImport() {
 			global $wpdb, $user_level,$wpstorecart_version_int,$testing_mode;
 
@@ -4769,9 +4971,17 @@ echo '</ul>
 
 
 		
-		//Prints out the Add products admin page =======================================================================
+        /**
+         *
+         * wpStoreCart Admin Panel: Add/Edit Products
+         * 
+         * @global object $wpdb
+         * @global  $user_level
+         * @global boolean $testing_mode
+         * @return NULL
+         */
         function printAdminPageAddproducts() {
-			global $wpdb, $user_level;
+			global $wpdb, $user_level, $testing_mode;
 
 			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
 				die(__('Cheatin&#8217; uh?'));
@@ -5243,8 +5453,34 @@ echo '</ul>
                         echo '
                         <script type="text/javascript">
                             //<![CDATA[
+
+                                var area1, area2;
+
+                                function toggleArea1() {
+                                    if(!area1) {
+                                        area1 = new nicEditor({buttonList : [\'fontFamily\',\'fontSize\',\'fontFormat\',\'bold\',\'italic\',\'underline\',\'strikethrough\',\'ul\',\'ol\',\'left\',\'center\',\'right\',\'justify\',\'forecolor\',\'bgcolor\',\'removeformat\',\'subscript\',\'superscript\',\'image\',\'link\',\'unlink\'], iconsPath:"'.plugins_url('/js/nicedit/nicEditorIcons.gif' , __FILE__).'"}).panelInstance("wpStoreCartproduct_description",{hasPanel : true});
+                                    } else {
+                                        area1.removeInstance("wpStoreCartproduct_description");
+                                        area1 = null;
+                                    }
+                                }
+                                
+                                function toggleArea2() {
+                                    if(!area2) {
+                                        area2 = new nicEditor({buttonList : [\'fontFamily\',\'fontSize\',\'fontFormat\',\'bold\',\'italic\',\'underline\',\'strikethrough\',\'ul\',\'ol\',\'left\',\'center\',\'right\',\'justify\',\'forecolor\',\'bgcolor\',\'removeformat\',\'subscript\',\'superscript\',\'image\',\'link\',\'unlink\'], iconsPath:"'.plugins_url('/js/nicedit/nicEditorIcons.gif' , __FILE__).'"}).panelInstance("wpStoreCartproduct_introdescription");
+                                    } else {
+                                        area2.removeInstance("wpStoreCartproduct_introdescription");
+                                        area2 = null;
+                                    }
+                                }
+
 			jQuery(document).ready(function($) {
                                 //When page loads...
+
+                                
+                                toggleArea1();
+                                toggleArea2();
+
                                 ';
 
                         if(@!isset($_POST['theCurrentTab']) || @$_POST['theCurrentTab']=='') {
@@ -5300,7 +5536,9 @@ echo '</ul>
                                 echo '<li style="display:inline;"><a href="#tab3"><img src="'.plugins_url('/images/buttons_download.jpg' , __FILE__).'" /></a></li>';
                             }
                             if($isanedit == true) {
-                                echo '<a href="'.get_permalink($result['postid']).'"><img src="'.plugins_url('/images/buttons_view_page.jpg' , __FILE__).'" style="display:inline;" /></a>';
+                                echo '
+                                    <li style="display:inline;"><a href="#tab5"><img src="'.plugins_url('/images/buttons_accessories.jpg' , __FILE__).'" /></a></li>
+                                    <a href="'.get_permalink($result['postid']).'"><img src="'.plugins_url('/images/buttons_view_page.jpg' , __FILE__).'" style="display:inline;" /></a>';
                             }
                         echo '
                         </ul>
@@ -5320,16 +5558,18 @@ echo '</ul>
 			echo '
 			<tr>
 			<td><h3>Introduction<br />Description: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">Keep this short and concise, as this text will be used in several places as a quick description of the product.  For higher sales and conversions, sum up the main features and benefits and include a direct call to action.</div></h3></td>
-			<td><textarea class="wpStoreCartproduct_introdescription" id="wpStoreCartproduct_introdescription" name="wpStoreCartproduct_introdescription" style="width: 80%;">'.$wpStoreCartproduct_introdescription.'</textarea>  </td>
+			<td><div id="wpsc_nic_panel2" style="display:block;width:700px;"></div> <textarea class="wpStoreCartproduct_introdescription" id="wpStoreCartproduct_introdescription" name="wpStoreCartproduct_introdescription" style="display:inline;width:708px;margin:0 auto 0 auto;">'.$wpStoreCartproduct_introdescription.'</textarea><p align="right">
+                        <br /><a class="button" onclick="toggleArea2();return false;">Toggle Visual Editor</a>
+                        </p>  </td>
 			</tr>';	
 			
 			
 			echo '
 			<tr>
 			<td><h3>Description: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">Put your complete sales pitch here.  There are many techniques which can help make your product\'s sale page more effective.  At the very least, most sales pages include at least some of the features and benefits of the product, and include one or more calls to action.</div></h3></td>
-			<td><textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="width: 80%;">'.$wpStoreCartproduct_description.'</textarea><p align="right">
-                        <a class="button" onclick="if (!tinyMCE.get(\'wpStoreCartproduct_description\')) {tinyMCE.execCommand(\'mceAddControl\', false, \'wpStoreCartproduct_description\');};">Visual</a>
-                        <a class="button" onclick="if (tinyMCE.get(\'wpStoreCartproduct_description\')) {tinyMCE.execCommand(\'mceRemoveControl\', false, \'wpStoreCartproduct_description\');};">HTML</a></p>
+			<td><div id="wpsc_nic_panel" style="display:block;width:700px;"></div> <textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="display:inline;width:708px;margin:0 auto 0 auto;" >'.$wpStoreCartproduct_description.'</textarea><p align="right">
+                        <br /><a class="button" onclick="toggleArea1();return false;">Toggle Visual Editor</a>
+                        </p>
                         </td>
 			</tr>';			
 
@@ -5438,7 +5678,7 @@ echo '</ul>
                                 <input type="radio" name="wpsc-price-type"  '; if($wpsc_price_type=='membership') {echo ' checked="checked"';} echo'  value="membership" onclick="jQuery(\'#wpsc-variations-li\').hide(\'slow\');jQuery(\'input:radio[name=wpsc-price-type2]\').filter(\'[value=membership]\').prop(\'checked\', true);jQuery(\'#wpsc-membership-tr\').toggle();jQuery(\'#wpsc-price-tr\').toggle();" /> Charge for this product on a reoccuring basis:<br />';
                         }
 
-                        echo '<br /><div style="display:block;float:left;"><b>Full Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].' <br /><b>Sale Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_discountprice" id="wpStoreCartproduct_discountprice" style="width: 58px;" value="'.$wpStoreCartproduct_discountprice.'" />'.$devOptions['currency_symbol_right'].' </div><div style=";display:block;float:left;margin-left:15px;position:relative;top-25px;"> '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
+                        echo '<br /><div style="display:block;float:left;"><b>Full Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_price" id="wpStoreCartproduct_price" style="width: 58px;" value="'.$wpStoreCartproduct_price.'" />'.$devOptions['currency_symbol_right'].' <br /><b>Sale Price:</b> '.$devOptions['currency_symbol'].'<input type="text" class="validate[custom[positiveDecimal]]" name="wpStoreCartproduct_discountprice" id="wpStoreCartproduct_discountprice" style="width: 58px;" value="'.$wpStoreCartproduct_discountprice.'" />'.$devOptions['currency_symbol_right'].' </div><div style=";display:block;float:left;margin-left:15px;position:relative;top-25px;"> '; if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') { echo '<br /><input type="checkbox" name="wpsc_product_flatrateshipping" value="yes" '; if($flatrateshipping_checked == 'yes') {echo 'checked="checked"';} echo ' /> Flat Rate Shipping: '.$devOptions['currency_symbol'];} echo '<input type="';if($devOptions['storetype']=='Digital Goods Only' || $devOptions['flatrateshipping']!='individual') {echo 'hidden';} else {echo 'text';} echo '" name="wpStoreCartproduct_shipping" style="width: 58px;" value="'.$wpStoreCartproduct_shipping.'" />';if($devOptions['storetype']!='Digital Goods Only' && $devOptions['flatrateshipping']=='individual') {echo $devOptions['currency_symbol_right'];} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableusps']=='true') {echo '<br /><input type="checkbox" '; if($usps_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_usps" id="wpsc_product_usps" onclick="if(jQuery(\'#wpsc_product_usps\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer USPS shipping for this product? ';}if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enableups']=='true') {echo '<br /><input type="checkbox" '; if($ups_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_ups" id="wpsc_product_ups" onclick="if(jQuery(\'#wpsc_product_ups\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer UPS shipping for this product? ';} if($devOptions['storetype']!='Digital Goods Only' && $devOptions['enablefedex']=='true') {echo '<br /><input type="checkbox" '; if($fedex_checked == 'yes') {echo 'checked="checked"';} echo ' name="wpsc_product_fedex" id="wpsc_product_fedex" onclick="if(jQuery(\'#wpsc_product_fedex\').is(\':checked\')){jQuery(\'#wpscdimensions\').effect(\'pulsate\', { times:2 }, 500);}" value="yes" /> Offer Fedex shipping for this product? ';} echo '</div><div style="margin-left:20px;display:block;float:left;min-width:120px;min-height:30px;width:120px;height:30px;"><strong>Accept Donations? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-333777" /><div class="tooltip-content" id="example-content-333777">Note that this feature is only supported in the PayPal payment module currently.  If "Yes" is selected, this product is only given away when donations are made.  Note that the price you set above now becomes the minimum suggested donation amount.</div></strong><br /><label for="wpStoreCartproduct_donation_yes"><input type="radio" id="wpStoreCartproduct_donation_yes" name="wpStoreCartproduct_donation" value="1" '; if ($wpStoreCartproduct_donation == 1) { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_donation_no"><input type="radio" id="wpStoreCartproduct_donation_no" name="wpStoreCartproduct_donation" value="false" '; if ($wpStoreCartproduct_donation == 0) { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></div></td>
 
 			</tr>';
 
@@ -5634,13 +5874,13 @@ echo '</ul>
                             <script type="text/javascript">
                                 /* <![CDATA[ */
                                 function delvar(keytodel) {
-                                    jQuery.ajax({ url: "'.plugins_url('/php/delvar.php' , __FILE__).'", type:"POST", data:"delete="+keytodel, success: function(){
+                                    jQuery.ajax({ url: "'.plugins_url('/php/delvar.php' , __FILE__).'", type:"POST", data:"delete="+keytodel'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(){
                                         jQuery("#"+keytodel).remove();
                                     }});
                                 }
 
                                 function addvar() {
-                                    jQuery.ajax({ url: "'.plugins_url('/php/addvar.php' , __FILE__).'", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"&vartype="+jQuery("#vartype_yes").is(":checked")+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val(), success: function(txt){
+                                    jQuery.ajax({ url: "'.plugins_url('/php/addvar.php' , __FILE__).'", type:"POST", data:"createnewvar="+jQuery("#createnewvar").val()+"&varvalue="+jQuery("#varvalue").val()+"&varprice="+jQuery("#varprice").val()+"&vardesc="+jQuery("#vardesc").val()+"&vartype="+jQuery("#vartype_yes").is(":checked")+"'.$codeForKeyToEditAjax.'&vardownloads="+jQuery("#wpStoreCartproduct_variation").val()'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(txt){
                                         if(jQuery("#vartype_yes").is(":checked")) {
                                             jQuery("#varholder").append("<tr id=\'"+txt+"\'><td><img onclick=\'delvar("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'>"+jQuery("#createnewvar").val()+"</p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+jQuery("#varvalue").val()+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>"+jQuery("#varprice").val()+"</p></td><td><p class=\'edit_area\' id=\'vardesc_"+txt+"\'>"+jQuery("#vardesc").val()+"</p></td></tr>");
                                         } else {
@@ -5696,7 +5936,7 @@ echo '</ul>
 
                             </div>
                             <div id="tab2" class="tab_content">
-                                                        <h2>Product Variations &amp; Attributes</h2>
+                            <h2>Product Variations &amp; Attributes</h2>
                             ';
 
                             echo '
@@ -5815,7 +6055,7 @@ echo '</ul>
                                             var query_string = "advvarprice=" + jQuery("#advvarprice").val() + "&advvarkey='.$_GET['keytoedit'].'";
                                             for(var i in registerAdvVarName)
                                             {
-                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val()'; if($testing_mode){$output .= '+"&'.$devOptions['debug_parameter'].'"';}  $output .=';
                                             }
                                             jQuery.ajax({ url: "'.plugins_url('/php/updateadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(){
                                                 
@@ -5826,7 +6066,7 @@ echo '</ul>
                                             var query_string = "advvarkey='.$_GET['keytoedit'].'";
                                             for(var i in registerAdvVarName)
                                             {
-                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
+                                                query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val()'; if($testing_mode){$output .= '+"&'.$devOptions['debug_parameter'].'"';}  $output .=';
                                             }
                                             jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
                                                 jQuery("#advvarprice").val(txt);
@@ -5992,6 +6232,204 @@ echo '</ul>
                             </script>
 
                         </div> 
+                        
+                        <div id="tab5" class="tab_content">
+                        <h2>Accessories, Related Products, &amp; Combo Deals </h2>
+                        <p>The related products &amp; accessories you select here, will be displayed on the product\'s sales page, and can easily added to the cart.  You can also create Combos that reduce the price of the entire package if several items are purchased together.</p>
+                        <br style="clear:both;" />
+                        
+                            <script type="text/javascript">
+                                /* <![CDATA[ */
+                                function delcombo(keytodel) {
+                                    jQuery.ajax({ url: "'.plugins_url('/php/delcombo.php' , __FILE__).'", type:"POST", data:"delete="+keytodel'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(){
+                                        jQuery("#combo-"+keytodel).remove();
+                                    }});
+                                }
+                                
+                                function delcombopack(keytodel) {
+                                    jQuery.ajax({ url: "'.plugins_url('/php/delcombo.php' , __FILE__).'", type:"POST", data:"delete="+keytodel'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo', success: function(){
+                                        jQuery("#combopack-"+keytodel).remove();
+                                    }});
+                                }
+
+                                function addcombo() {
+                                    jQuery.ajax({ url: "'.plugins_url('/php/addcombo.php' , __FILE__).'", type:"POST", data:"wpsc_combo_product_names="+jQuery("#wpsc_combo_product_names").val()+"&wpsc_combo_discount_price="+jQuery("#wpsc_combo_discount_price").val()+"&wpsc_combo_primkey='.intval($_GET['keytoedit']); if($testing_mode){echo '&'.$devOptions['debug_parameter'];}  echo'", success: function(txt){
+                                        var stringToSplit = jQuery("#wpsc_combo_product_names").val();
+                                        var Exploder = stringToSplit.split("||");
+                                        jQuery("#wpsc_combo_tbody").append("<tr id=\'"+txt+"\'><td><img onclick=\'delcombo("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>'.$wpdb->escape($devOptions['currency_symbol']).'"+jQuery("#wpsc_combo_discount_price").val()+"'.$wpdb->escape($devOptions['currency_symbol_right']).'</p></td></tr>");
+
+                                    }});
+                                }
+                                
+                                function addNewCombo() {
+                                    var stringToSplit = jQuery("#wpsc_current_combo").val();
+                                    var Exploder = stringToSplit.split("||");
+                                    jQuery.ajax({ url: "'.plugins_url('/php/addnewcombo.php' , __FILE__).'", type:"POST", data:"wpsc_combo_product_names="+Exploder[0]+"&wpsc_combo_primkey='.intval($_GET['keytoedit']); if($testing_mode){echo '&'.$devOptions['debug_parameter'];}  echo'", success: function(txt){
+                                        jQuery("#wpsc_combopack_tbody").append("<tr id=\'combopack-"+txt+"\'><td><img onclick=\'delcombopack("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url('/images/cross.png' , __FILE__).'\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td></tr>");
+                                    }});                                    
+                                }
+                                
+                                function printCurrentProducts(listOfPrimkeys) {
+                                    jQuery("#wpsc_products_in_combo").html(" ");
+                                    var newExploderY=listOfPrimkeys.split(",");
+                                    for (var i = 0; i < newExploderY.length; i++) {
+                                        if(newExploderY[i]!=0) {
+                                            jQuery.ajax({        
+                                                   type: "POST",
+                                                   url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                                                   data: "primkey="+newExploderY[i]'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
+                                                   success: function(txt) {
+                                                        if(txt.length > 0) {
+                                                            jQuery("<div>"+txt+"</div> ").appendTo("#wpsc_products_in_combo");
+                                                        }
+                                                   }
+                                            });   
+                                        }
+                                    }
+                                }
+                                
+                                function printListOfProducts(listOfPrimkeys, id) {
+                                    jQuery("#wpsc_products_in_combo"+id).html(" ");
+                                    var newExploderY=listOfPrimkeys.split(",");
+                                    for (var i = 0; i < newExploderY.length; i++) {
+                                        if(newExploderY[i]!=0) {
+                                            jQuery.ajax({        
+                                                   type: "POST",
+                                                   url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                                                   data: "primkey="+newExploderY[i]'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
+                                                   success: function(txt) {
+                                                        if(txt.length > 0) {
+                                                            jQuery("<div>"+txt+"</div> ").appendTo("#wpsc_products_in_combo"+id);
+                                                        }
+                                                   }
+                                            });   
+                                        }
+                                    }
+                                }
+                                
+                                jQuery(document).ready(function() {
+                                    var newSplitZ = jQuery("#wpsc_current_combo").val(); 
+                                    var newExploderZ=newSplitZ.split("||");
+                                    printCurrentProducts(newExploderZ[2]);
+                                });
+
+                                /* ]]> */
+                            </script>
+
+                        <table class="widefat"><tbody><tr><td>
+                        <h3>Related Products &amp; Accessories</h3>
+                        <table class="widefat">
+                            <thead><tr><th></th><th>Product</th><th>Price if Bought With Main Item</th></tr></thead>
+                            <tbody>
+                                
+                                <tr><td></td><td><select name="wpsc_combo_product_names" id="wpsc_combo_product_names" onchange="var newSplit = jQuery(this).val(); var newExploder=newSplit.split(\'||\');jQuery(\'#wpsc_combo_discount_price\').val(newExploder[2])">
+                        ';
+                                                
+                        $listOfAllProducts = $wpdb->get_results("SELECT `name`, `primkey`, `price`, `discountprice` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey` <> ".intval($_GET['keytoedit'])."; ", ARRAY_A);
+;
+                        $productCount = 0;
+                        $defaultprice = 0;
+                        if(isset($listOfAllProducts)){
+                            foreach($listOfAllProducts as $currentProduct) {
+                                $productCount++;
+                                $pricetolist = NULL;
+                                if($currentProduct['price'] < $currentProduct['discountprice']) {
+                                    $pricetolist = $currentProduct['discountprice'];
+                                } else {
+                                    $pricetolist = $currentProduct['price'];
+                                }
+                                if($productCount==1) {
+                                    $defaultprice = $pricetolist;
+                                }
+                                echo '<option value="'.$currentProduct['primkey'].'||'.$this->slug($currentProduct['name']).'||'.$pricetolist.'">'.$currentProduct['name'].'</option>';
+                            }
+                        }
+                        
+                            
+                        echo '</select>
+                            </td><td>'.$devOptions['currency_symbol'].'<input type="text" value="'.$defaultprice.'" name="wpsc_combo_discount_price" id="wpsc_combo_discount_price" />'.$devOptions['currency_symbol_right'].' <input type="submit" value="Add New" class="button-secondary" style="float:right;" onclick="addcombo();return false;" /></td>
+                                </tr>
+
+                            </tbody>
+                        </table><br />
+                        
+                        <table class="widefat">
+                            <thead><tr><th></th><th>Product</th><th>Price if Bought With Main Item</th></tr></thead>
+                            <tbody id="wpsc_combo_tbody">
+                                
+                                
+                        ';
+                                                
+                        $listOfAllCombos = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `foreignkey` = ".intval($_GET['keytoedit'])." AND `type`='productcombo'; ", ARRAY_A);
+;
+                        if(isset($listOfAllCombos)){
+                            foreach($listOfAllCombos as $currentCombo) {
+                                $exploder = explode('||', $currentCombo['value']);
+                                $product_name = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey` = ".intval($exploder[0])."; ", ARRAY_A);
+                                echo '<tr id="combo-'.$currentCombo['primkey'].'"><td><img onclick="delcombo('.$currentCombo['primkey'].');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> </td><td>'.$product_name[0]['name'].'</td><td>'.$devOptions['currency_symbol'].$exploder[1].$devOptions['currency_symbol_right'].'</td></tr>';
+                            }
+                        }
+                            
+                        echo '
+
+                            </tbody>
+                        </table>
+                        </td></tr></table>
+                        <br />
+                        
+                        <table class="widefat"><tbody><tr><td>
+                        <h3>Combo Packs</h3>
+                        <table class="widefat">
+                            <thead><tr><th></th><th>Combo Pack</th><th>Items in Combo Pack</th><th></th></tr></thead>
+                            <tbody>
+                            <tr><td></td><td>
+                        <select id="wpsc_current_combo" onchange="var newSplitX = jQuery(this).val(); var newExploderX=newSplitX.split(\'||\');printCurrentProducts(newExploderX[2]);">
+                        ';
+
+                        $listOfAllComboPacks = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='combopack';", ARRAY_A);
+                        if(isset($listOfAllComboPacks)){
+                            foreach($listOfAllComboPacks as $currentComboPack) {
+                                $theComboExplode = explode('||',$currentComboPack['value']);
+                                echo '<option value="'.$currentComboPack['primkey'].'||'.$this->slug($theComboExplode[0]).'||'.$theComboExplode[1].'">'.$theComboExplode[0].'</option>';
+                            }   
+                        }
+                        
+                        
+                        echo '
+                        </select>
+                        </td><td id="wpsc_products_in_combo"></td><td><button style="float:right;" class="button-secondary" onclick="addNewCombo();return false;">Add New</button></td></tr>
+                        </tbody>
+                        </table>
+                        <br />
+                        
+                        <table class="widefat">
+                            <thead><tr><th></th><th>Product</th><th>Items in Combo Pack</th></tr></thead>
+                            <tbody id="wpsc_combopack_tbody">
+                                
+                                
+                        ';
+                              
+                        $listOfAllCombos = NULL;
+                        $listOfAllCombos = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `foreignkey` = ".intval($_GET['keytoedit'])." AND `type`='assignedcombo'; ", ARRAY_A);
+;
+                        if(isset($listOfAllCombos)){
+                            foreach($listOfAllCombos as $currentCombo) {
+                                $product_name = $wpdb->get_results("SELECT `value` FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey` = ".intval($currentCombo['value'])."; ", ARRAY_A);
+                                $exploder = NULL;
+                                $exploder = explode('||', $product_name[0]['value']);
+                                echo '<tr id="combopack-'.intval($currentCombo['primkey']).'"><td><img onclick="delcombopack('.intval($currentCombo['primkey']).');" style="cursor:pointer;" src="'.plugins_url('/images/cross.png' , __FILE__).'" /> </td><td>'.$exploder[0].'</td><td><script type="text/javascript"> /* <![CDATA[ */ printListOfProducts("'.$exploder[1].'", '.intval($currentCombo['primkey']).'); /* ]]> */ </script> <div id="wpsc_products_in_combo'.intval($currentCombo['primkey']).'"></div></td></tr>';
+                            }
+                        }
+                            
+                        echo '
+
+                            </tbody>
+                        </table>
+
+                        </td></tr></table>
+                        
+                        </div>                            
+                      
 			<div class="submit">
                         ';
 
@@ -6064,7 +6502,41 @@ echo '</ul>
 		
 		}	
 		// END Prints out the Add products admin page =======================================================================		
-
+        
+        /**
+         *
+         * wpStoreCart Admin Panel: Profile
+         * 
+         * @global object $wpdb
+         * @global  $user_level
+         * @global type $user_info4
+         * @global object $wpdb
+         * @global integer $wpsc_membership_product_id
+         * @global $purchaser_user_id $purchaser_user_id
+         * @global $purchaser_email $purchaser_email
+         * @global $membershipOptions $membershipOptions
+         * @global string $wpsc_table_name
+         * @global string $wpsc_self_path
+         * @global $wpsc_paypal_testmode $wpsc_paypal_testmode
+         * @global $wpsc_paypal_ipn $wpsc_paypal_ipn
+         * @global $wpsc_membership_product_name $wpsc_membership_product_name
+         * @global $wpsc_membership_product_number $wpsc_membership_product_number
+         * @global $wpsc_button_classes $wpsc_button_classes
+         * @global $wpsc_paypal_currency_code $wpsc_paypal_currency_code
+         * @global $wpsc_paypal_email $wpsc_paypal_email
+         * @global $wpsc_price_type $wpsc_price_type
+         * @global $wpsc_membership_trial1_allow $wpsc_membership_trial1_allow
+         * @global $wpsc_membership_trial2_allow $wpsc_membership_trial2_allow
+         * @global $wpsc_membership_trial1_amount $wpsc_membership_trial1_amount
+         * @global $wpsc_membership_trial2_amount $wpsc_membership_trial2_amount
+         * @global $wpsc_membership_regular_amount $wpsc_membership_regular_amount
+         * @global $wpsc_membership_trial1_numberof $wpsc_membership_trial1_numberof
+         * @global $wpsc_membership_trial2_numberof $wpsc_membership_trial2_numberof
+         * @global $wpsc_membership_regular_numberof $wpsc_membership_regular_numberof
+         * @global $wpsc_membership_trial1_increment $wpsc_membership_trial1_increment
+         * @global $wpsc_membership_trial2_increment $wpsc_membership_trial2_increment
+         * @global $wpsc_membership_regular_increment $wpsc_membership_regular_increment 
+         */
         function printAdminPageProfile() {
             global $wpdb, $user_level;
                 if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
@@ -6318,7 +6790,14 @@ echo '</ul>
 
                 echo '</div>';
         }
-
+        
+        /**
+         *
+         * wpStoreCart Admin Panel: Customers
+         * 
+         * @global object $wpdb
+         * @global  $user_level 
+         */
         function printAdminPageCustomers() {
             global $wpdb, $user_level;
                 if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
@@ -6384,6 +6863,12 @@ echo '</ul>
 
         }
 
+        /**
+         *
+         * wpStoreCart Admin Panel: Send Email
+         * 
+         * @global object $wpdb 
+         */
         function printAdminPageEmail() {
             global $wpdb;
             if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
@@ -6431,6 +6916,13 @@ echo '</ul>
 
         }
 
+        /**
+         *
+         * wpStoreCart Admin Panel: Group Discounts
+         * 
+         * @global object $wpdb
+         * @global  $user_level 
+         */
         function printAdminPageGroupDiscounts() {
             global $wpdb, $user_level;
                 if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
@@ -6511,8 +7003,202 @@ echo '</ul>
                 ';
 
                 echo '</div>';
+          }        
+        
+        /**
+         *
+         * wpStoreCart Admin Panel: Combos
+         * 
+         * @global object $wpdb
+         * @global  $user_level
+         * @global boolean $testing_mode 
+         */
+        function printAdminPageCombos() {
+            global $wpdb, $user_level, $testing_mode;
+                if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
+                        die(__('Cheatin&#8217; uh?'));
+                }
+
+
+                $devOptions = $this->getAdminOptions();
+                $table_name = $wpdb->prefix . "wpstorecart_products";
+
+                $this->spHeader();
+                $this->wpstorecart_alert();
+
+                if(isset($_POST['combo_enable']) && isset($_POST['combo_display_prices']) && isset($_POST['combo_display_links']) && isset($_POST['combo_display_thumbs'])){
+                    $devOptions['combo_enable'] = $wpdb->escape($_POST['combo_enable']);
+                    $devOptions['combo_display_prices'] = $wpdb->escape($_POST['combo_display_prices']);
+                    $devOptions['combo_display_links'] = $wpdb->escape($_POST['combo_display_links']);
+                    $devOptions['combo_display_thumbs'] = $wpdb->escape($_POST['combo_display_thumbs']);
+
+                    update_option($this->adminOptionsName, $devOptions);
+                }
+
+                // Here's where identify and begin setting up editing abilities
+                $isanedit = false;
+                $editComboName = NULL;
+                $editComboItems = '0';
+                $editProductList = NULL;
+                if(isset($_GET['wpsccomboedit'])) {
+                    $isanedit = true;
+                    $editkey = intval($_GET['wpsccomboedit']);
+                    $editresults = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey`={$editkey}",ARRAY_A);
+                    if(isset($editresults[0]['value'])) {
+                        $editexplode=explode('||', $editresults[0]['value']);
+                        $editComboName = $editexplode[0];
+                        $editComboItems = $editexplode[1];
+                        $editProductNameExplode = explode(',', $editComboItems);
+                        foreach ($editProductNameExplode as $editProductNameExploder) {
+                            $theEditResults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$editProductNameExploder};", ARRAY_A);
+                            if(isset($theEditResults[0]['name'])) {
+                                $editProductList .= '<li id="wpsc_edit_names_'.$editProductNameExploder.'"><img onclick="delProductName('.$editProductNameExploder.');" src="'.plugins_url('/images/cross.png' , __FILE__).'" alt="" />'.$theEditResults[0]['name'].'</li>';
+                            }
+                        }                        
+                    }
+                }
+                
+                // Here's the javascript functions that handle this form
+                echo '
+                <script type="text/javascript">
+                    /* <![CDATA[ */
+
+                    function createNewCombo() {
+                        jQuery.ajax({        
+                               type: "POST",
+                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/createnewcombo.php",
+                               data: "primkeys="+jQuery("#wpsccomboproducts").val()+"&combopackname="+jQuery("#combopackname").val()'; if($isanedit) {echo '+"&isanedit='.$editkey.'"';} echo''; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
+                               success: function(txt) {
+                                    window.location = "admin.php?page=wpstorecart-combos";
+                               }
+                            });                        
+                    }
+
+                    function delCombo(primkey) {
+                        jQuery.ajax({        
+                               type: "POST",
+                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/delcombo.php",
+                               data: "delete="+primkey'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
+                               success: function(txt) {
+                                    jQuery("#wpsc_combo_id_"+primkey).fadeOut("slow");
+                               }
+                            });                          
+                    }
+                    
+                    function delProductName(key) {
+                        jQuery("#wpsc_edit_names_"+key).remove();   
+                        var wpsccombotoedit = jQuery("#wpsccomboproducts").val();
+                        jQuery("#wpsccomboproducts").val(wpsccombotoedit.replace(","+key, ""));
+                    }
+
+                    function getProductName(primkey) {
+                        jQuery.ajax({        
+                               type: "POST",
+                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                               data: "primkey="+primkey'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
+                               success: function(txt) {
+                                    var newSplitX = jQuery("#wpsccomboproducts").val();
+                                    var newExploderX=newSplitX.split(\',\');
+                                    var blackList = \'no\';
+                                    for (var i = 0; i < newExploderX.length; i++) {
+                                        if (newExploderX[i]==primkey) {
+                                            blackList = \'yes\';
+                                        }
+                                    }
+                                    if(blackList == \'no\') {
+                                        jQuery("<li id=\"wpsc_edit_names_"+primkey+"\"><img src=\"'.plugins_url('/images/cross.png' , __FILE__).'\" onclick=\"delProductName("+primkey+");\" />" + txt + "</li>").appendTo("#wpscProductsInCombo");
+                                        jQuery("#wpsccomboproducts").val(jQuery("#wpsccomboproducts").val()+","+primkey);
+                                    }
+                               }
+                            });                          
+                    }
+
+                    /* ]]> */
+                </script>
+                <div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/Box_content.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Combo Packages <a href="http://wpstorecart.com/documentation/combos/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />';
+
+                // Here's the main form
+                echo '<h3>Add &amp; Edit "Combo Packs"</h3>
+                    <table class="widefat">
+                        <thead><tr><th></th><th>"Combo Pack" Name</th><th>Products In "Combo Pack"</th></tr></thead>
+                        <tbody>';
+
+                    $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='combopack';" , ARRAY_A );
+                    if(isset($theResults[0])) {
+                        foreach($theResults as $theResult) {
+                            $exploder = explode('||', $theResult['value']);
+                            echo "<tr id=\"wpsc_combo_id_{$theResult['primkey']}\"><td><a href=\"admin.php?page=wpstorecart-combos&wpsccomboedit={$theResult['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"\" /></a> <a href=\"\" onclick=\"if (confirm('Are you sure you want to delete this combo pack?')) {delCombo({$theResult['primkey']});}return false;\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"Delete\" /></a></td><td>{$exploder[0]}</td>
+                            
+                            <td>";
+                            
+                            $productNameExplode = explode(',', $exploder[1]);
+                            foreach ($productNameExplode as $productNameExploder) {
+                                $theResults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$productNameExploder};", ARRAY_A);
+                                if(isset($theResults[0]['name'])) {
+                                    echo $theResults[0]['name'].', ';
+                                }
+                            }
+                            
+                            echo "                            
+                            </td></form></tr>";
+                        }
+                    }
+
+                echo '
+                        <tr><td>'; if($isanedit){echo 'Edit';}else{echo'New';} echo': </td><td>
+                <form action="'. $_SERVER["REQUEST_URI"].'" method="post">
+                    <input type="hidden" name="formtype" value="combo" />
+                    <input type="hidden" name="wpsccomboproducts" id="wpsccomboproducts" value="'.$editComboItems.'" />
+                    <input type="text" name="combopackname" id="combopackname" value="'.$editComboName.'" /></td><td> 
+
+                        <select name="wpStoreCartAddComboProduct" id="wpStoreCartAddComboProduct">';
+			
+			$table_name2 = $wpdb->prefix . "wpstorecart_products";
+			$grabCats = "SELECT * FROM `{$table_name2}`;";
+			$results2 = $wpdb->get_results( $grabCats , ARRAY_A );
+			if(isset($results2)) {
+				foreach ($results2 as $pagg) {
+					$option = '<option value="'.$pagg['primkey'].'"';
+					if($wpStoreCartproduct==$pagg['primkey']) {
+						$option .= ' selected="selected"';
+					}
+					$option .='>';
+					$option .= $pagg['name'];
+					$option .= '</option>';
+					echo $option;
+				}
+			}
+			echo '
+			</select><button onclick="getProductName(jQuery(\'#wpStoreCartAddComboProduct\').val());return false;" class="button-secondary">Include this product in combo</button>
+                    <br /><ul id="wpscProductsInCombo">'.$editProductList.'</ul>
+                    <input type="submit" value="'; if($isanedit){echo 'Submit Edits for this Combo';}else{echo'Create this Combo';} echo'" style="float:right;" onclick="createNewCombo();return false;" class="button-primary" />'; if($isanedit){echo '<button class="button-secondary" style="float:right" onclick="window.location = \'admin.php?page=wpstorecart-combos\';return false;">Start a new combo</button>';} echo '</td></tr></tbody>
+                    </table>
+                </form>
+                <br />
+                <h3>Settings</h3>
+                <form action="'. $_SERVER["REQUEST_URI"].'" method="post">
+                    <input type="hidden" name="formtype" value="settings" />
+                    <table>
+                    <tr><td>Enable Combos &amp; Accessories? </td><td><input type="radio" name="combo_enable" value="true"'; if($devOptions['combo_enable']=='true') {echo' checked="true"';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="combo_enable" value="false" '; if($devOptions['combo_enable']=='false') {echo' checked="true" ';} echo'/> No</td></tr>
+                    <tr><td>Display the Prices? </td><td><input type="radio" name="combo_display_prices" value="true" '; if($devOptions['combo_display_prices']=='true') {echo' checked="true" ';} echo'/> Yes &nbsp; &nbsp; <input type="radio" name="combo_display_prices" value="false" '; if($devOptions['combo_display_prices']=='false') {echo' checked="true" ';} echo' /> No</td></tr>
+                    <tr><td>Display item names as links? </td><td><input type="radio" name="combo_display_links" value="true" '; if($devOptions['combo_display_links']=='true') {echo' checked="true" ';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="combo_display_links" value="false" '; if($devOptions['combo_display_links']=='false') {echo' checked="true" ';} echo' /> No</td></tr>
+                    <tr><td>Display the item\'s thumbnail? </td><td><input type="radio" name="combo_display_thumbs" value="true" '; if($devOptions['combo_display_thumbs']=='true') {echo' checked="true" ';} echo' /> Yes &nbsp; &nbsp; <input type="radio" name="combo_display_thumbs" value="false" '; if($devOptions['combo_display_thumbs']=='false') {echo' checked="true" ';} echo' /> No</td></tr>
+                    </table><br />
+                    <input type="submit" value="Update Settings"  />
+                </form>
+                <br />
+                ';
+
+                echo '</div>';
           }
 
+        /**
+         *
+         * wpStoreCart Admin Panel: Add to Group
+         * 
+         * @global object $wpdb
+         * @global  $user_level 
+         */
         function printAdminPageAddToGroup() {
             global $wpdb, $user_level;
                 if ( function_exists('current_user_can') && !current_user_can('edit_users') ) { //
@@ -6541,6 +7227,13 @@ echo '</ul>
 
         }
 
+        /**
+         *
+         * Group Manager.  This is a method that displays administrative functions for groups.
+         * 
+         * @global  $wp_roles
+         * @global object $wpdb 
+         */
           function GroupManagerByRoles() {
                 global $wp_roles, $wpdb;
                 $theResults = NULL;
@@ -6626,7 +7319,7 @@ echo '</ul>
 
                     $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_categories` WHERE `primkey`={$category_id};";
                     $results = $wpdb->get_results( $grabrecord , ARRAY_A );
-                    if(isset($results[0])) {
+                    if(isset($results[0])) { 
                             $showtoall = stripslashes($results[0]['showtoall']);
                             if($showtoall == 0) { // If this group shouldn't be shown to specific groups, right here will say it can't be shown at all.  Next we'll do a permission check to see if we can reverse that decision
                                     $return_value['can_see_this_category'] = false;
@@ -6649,6 +7342,9 @@ echo '</ul>
                                     }
                             }
 
+                    } else {
+                        $return_value['can_have_discount'] = true; // No category matched this category number, so discount is assumed as yes
+                        $return_value['can_see_this_category'] = true; 
                     }
 
                     if($return_value['can_have_discount'] == true) { // Here at the end, if it's detemined this user still gets a discount, let's figure out how much
@@ -6676,6 +7372,13 @@ echo '</ul>
 
             }
 
+          /**
+           *
+           * Allows administration of groups based off of single users
+           * 
+           * @global  $wp_roles
+           * @global object $wpdb 
+           */
           function groupManagerByUser() {
                 global $wp_roles, $wpdb;
                 $theResults = NULL;
@@ -6725,9 +7428,17 @@ echo '</ul>
                 }
 
           }
-
+          
+          /**
+           *
+           * Allows and provides an interface to the administrative task of removing users from groups
+           * 
+           * @global  $wp_roles
+           * @global object $wpdb
+           * @global boolean $testing_mode 
+           */
           function groupManagerDeleteByUser() {
-                global $wp_roles, $wpdb;
+                global $wp_roles, $wpdb, $testing_mode;
                 $theResults = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='groupdiscount';" , ARRAY_A );
                 if(isset($theResults[0])) {
 
@@ -6742,7 +7453,7 @@ echo '</ul>
                             foreach ($blogusers as $user) {
                                 $user_check = new WP_User( $user->ID );
                                 if($user_check->has_cap( $cap_name )) {
-                                    echo '<tr id="delete_user_'.$user->ID.$cap_name.'"><td>' . $user->display_name . '</td><td>'.$cap_name.'<img src="'.plugins_url('/images/cross.png' , __FILE__).'" alt="" style="float:right;cursor:pointer;" onclick="jQuery.ajax({ url: \''.plugins_url('/php/delgroupmembership.php' , __FILE__).'\', type:\'POST\', data:\'cap_name='.$cap_name.'&user_id='.$user->ID.'\' });jQuery(\'#delete_user_'.$user->ID.$cap_name.'\').fadeOut(\'slow\');" /></td></tr>';
+                                    echo '<tr id="delete_user_'.$user->ID.$cap_name.'"><td>' . $user->display_name . '</td><td>'.$cap_name.'<img src="'.plugins_url('/images/cross.png' , __FILE__).'" alt="" style="float:right;cursor:pointer;" onclick="jQuery.ajax({ url: \''.plugins_url('/php/delgroupmembership.php' , __FILE__).'\', type:\'POST\', data:\'cap_name='.$cap_name.'&user_id='.$user->ID; if($testing_mode){echo '&'.$devOptions['debug_parameter'];}  echo'\' });jQuery(\'#delete_user_'.$user->ID.$cap_name.'\').fadeOut(\'slow\');" /></td></tr>';
                                 }
                             }
                         }
@@ -6757,9 +7468,17 @@ echo '</ul>
 
           }
 
-		//Prints out the Edit products admin page =======================================================================
+
+        /**
+         * 
+         * wpStoreCart Admin Panel: Edit Products
+         *
+         * @global object $wpdb
+         * @global  $user_level
+         * @global boolean $testing_mode 
+         */
         function printAdminPageEditproducts() {
-			global $wpdb, $user_level;
+			global $wpdb, $user_level, $testing_mode;
 
 
 			$devOptions = $this->getAdminOptions();if ( function_exists('current_user_can') && !current_user_can('manage_wpstorecart') ) {
@@ -6884,7 +7603,7 @@ echo '</ul>
                                     jQuery(function() {
 
                                             jQuery("#requiredsort tbody").sortable({ opacity: 0.6, cursor: \'move\', handle : \'.handle\',  update: function() {
-                                                    var order = jQuery("#requiredsort tbody").sortable("serialize") + \'&action=updateRecordsListings\';
+                                                    var order = jQuery("#requiredsort tbody").sortable("serialize") + "&action=updateRecordsListings'; if($testing_mode){echo '&'.$devOptions['debug_parameter'];}  echo'";
                                                     //alert(jQuery("#requiredsort tbody").sortable("serialize"));
                                                     jQuery.post("'.plugins_url('/php/sortproducts.php' , __FILE__).'", order, function(theResponse){
                                                             jQuery("#requiredsort tbody").sortable(\'refresh\');
@@ -6905,8 +7624,7 @@ echo '</ul>
                                 })
                            }
 
-
-                        //]]>
+                            /* ]]> */
                         </script>
                         ';
 			echo '<div style="width:75%;max-width:75%;float:left;"><img src="'.plugins_url('/images/edit.png' , __FILE__).'" alt="" style="float:left;" /><h2 style="font-size:32px;">&nbsp;&nbsp;&nbsp;Edit Products <a href="http://wpstorecart.com/documentation/adding-editing-products/" target="_blank"><img src="'.plugins_url('/images/bighelp.png' , __FILE__).'" /></a></h2><br style="clear:both;" />
@@ -7014,7 +7732,12 @@ echo '</ul>
 		}		
 		//END Prints out the Edit products admin page =======================================================================
 		
-
+        /**
+         *
+         * wpStoreCart Admin Panel: Invoice
+         * 
+         * @global object $wpdb 
+         */
         function printAdminPageInvoice() {
             global $wpdb;
 
@@ -7094,7 +7817,42 @@ echo '</ul>
 
         }
 
-		//Prints out the Orders admin page =======================================================================
+
+        /**
+         *
+         * wpStoreCart Admin Panel: Orders
+         * 
+         * @global object $wpdb
+         * @global type $user_info3
+         * @global type $userinfo2
+         * @global type $user_info4
+         * @global object $wpdb
+         * @global integer $wpsc_membership_product_id
+         * @global  $purchaser_user_id
+         * @global  $purchaser_email
+         * @global  $membershipOptions
+         * @global string $wpsc_table_name
+         * @global string $wpsc_self_path
+         * @global $wpsc_paypal_testmode $wpsc_paypal_testmode
+         * @global $wpsc_paypal_ipn $wpsc_paypal_ipn
+         * @global  $wpsc_membership_product_name
+         * @global  $wpsc_membership_product_number
+         * @global $wpsc_button_classes $wpsc_button_classes
+         * @global $wpsc_paypal_currency_code $wpsc_paypal_currency_code
+         * @global $wpsc_paypal_email $wpsc_paypal_email
+         * @global  $wpsc_price_type
+         * @global  $wpsc_membership_trial1_allow
+         * @global  $wpsc_membership_trial2_allow
+         * @global  $wpsc_membership_trial1_amount
+         * @global  $wpsc_membership_trial2_amount
+         * @global  $wpsc_membership_regular_amount
+         * @global  $wpsc_membership_trial1_numberof
+         * @global  $wpsc_membership_trial2_numberof
+         * @global  $wpsc_membership_regular_numberof
+         * @global  $wpsc_membership_trial1_increment
+         * @global  $wpsc_membership_trial2_increment
+         * @global  $wpsc_membership_regular_increment 
+         */
         function printAdminPageOrders() {
 			global $wpdb, $user_info3;
 
@@ -7614,7 +8372,14 @@ echo '</ul>
 
 
 	
-		//Prints out the Categories admin page =======================================================================
+
+        /**
+         *
+         * wpStoreCart Admin Panel: Categories
+         * 
+         * @global object $wpdb
+         * @global boolean $testing_mode 
+         */
         function printAdminPageCategories() {
 			global $wpdb, $testing_mode;
 
@@ -8017,11 +8782,12 @@ echo '</ul>
 				
 		
 
-
-		
-		
-		
-		//Prints out the Coupons admin page =======================================================================
+        /**
+         *
+         * wpStoreCart Admin Panel: Coupons
+         * 
+         * @global object $wpdb 
+         */
         function printAdminPageCoupons() {
 			global $wpdb;
 
@@ -8329,7 +9095,13 @@ echo '</ul>
 		
 		
 		
-		//Prints out the Statistics admin page =======================================================================
+        /**
+         *
+         * wpStoreCart Admin Panel: Statistics
+         * 
+         * @global object $wpdb
+         * @global array $devOptions 
+         */
         function printAdminPageStatistics() {
 			global $wpdb, $devOptions;
 
@@ -8347,7 +9119,14 @@ echo '</ul>
 		// ==========================================================================================================		
 		
 
-		//Prints out the Overview admin page =======================================================================
+
+        /**
+         *
+         * wpStoreCart Admin Panel: Overview
+         * 
+         * @global object $wpdb
+         * @return type 
+         */
         function printAdminPageOverview() {
 			global $wpdb;
 
@@ -8432,7 +9211,7 @@ echo '</ul>
                                     </div>
                                 </div>
 
-                                <div class="postbox-container" style="width:45%;">
+                                <div class="postbox-container" style="width:45%;padding-left:10px;">
                                     <div class="postbox">
                                         <div class="handlediv" title="_">
                                             <br />
@@ -8456,7 +9235,7 @@ echo '</ul>
                             } else {
                                 // Loop through each feed item and display each item as a hyperlink.
                                 foreach ( $rss_items as $item ) {
-                                    echo '<li><a style="font-weight:bold;font-size:120%;" target="_blank" href="'. $item->get_permalink() .'" title="Posted "'.$item->get_date('j F Y | g:i a').'">'.$item->get_title().'</a><br />'.$item->get_description().'</li>';
+                                    echo '<li><a style="font-weight:bold;font-size:120%;" target="_blank" href="'. $item->get_permalink() .'" title="Posted">'.$item->get_title().'</a><br />'.$item->get_description().'</li>';
                                 }
                             }
                         echo '</ul>';
@@ -8528,7 +9307,15 @@ echo '</ul>
 		
 		}
 		// ==========================================================================================================
-		
+	/**
+         *
+         * Returns the number of sales, add to cart, or product view on a specific date 
+         * 
+         * @global object $wpdb
+         * @param string $dateToLookup 8 digit in this format YYYYMMDD
+         * @param string $typeToLookup sales, cart, or views
+         * @return integer  
+         */	
 	function numberOfSales($dateToLookup, $typeToLookup = 'sales') {
             global $wpdb;
             $output = 0;
@@ -8576,7 +9363,12 @@ echo '</ul>
         }
 
 
-		//Prints out the Affiliate admin page =======================================================================
+        /**
+         *
+         * wpStoreCart Admin Panel: Affiliates
+         * 
+         * @global object $wpdb 
+         */
         function printAdminPageAffiliates() {
 			global $wpdb;
 
@@ -8596,7 +9388,13 @@ echo '</ul>
 		// ==========================================================================================================
 		
 
-		//Prints out the Help admin page =======================================================================
+
+        /**
+         *
+         * wpStoreCart Admin Panel: Help redirect
+         * 
+         * @global object $wpdb 
+         */
         function printAdminPageHelp() {
 			global $wpdb;
 
@@ -8625,7 +9423,13 @@ echo '</ul>
 		
 		
 		
-		// Dashboard widget code=======================================================================
+                /**
+                 * 
+                 * Dashboard widget code
+                 *
+                 * @global object $wpdb
+                 * @global string $wpstorecart_version 
+                 */
 		function wpstorecart_main_dashboard_widget_function() {
 			global $wpdb, $wpstorecart_version;
 
@@ -8719,7 +9523,10 @@ echo '</ul>
         		echo '</ul>';
 		} 
 		
-		// Create the function use in the action hook
+		
+                /**
+                 * Create the function use in the action hook
+                 */
 		function wpstorecart_main_add_dashboard_widgets() {
 			wp_add_dashboard_widget('wpstorecart_main_dashboard_widgets', 'wpStoreCart Overview', array(&$this, 'wpstorecart_main_dashboard_widget_function'));	
 		} 
@@ -8730,8 +9537,6 @@ echo '</ul>
                  */
 		function  addHeaderCode() {
                         
-			//echo '<!-- wpStoreCart BEGIN -->';
-
 			wp_enqueue_script('wpsc', plugins_url('/php/wpsc-1.1/wpsc/wpsc-javascript.php' , __FILE__), array('jquery'),'1.3.2' );
                     
 
@@ -8770,7 +9575,6 @@ echo '</ul>
 
                         }
 
-			//echo '<!-- wpStoreCart END -->';
         }
 
 
@@ -8780,7 +9584,7 @@ echo '</ul>
          *
          * @global  $wpsc_buy_now
          * @global object $wpdb
-         * @global <type> $wpsc_membership_product_id
+         * @global integer $wpsc_membership_product_id
          * @global <type> $purchaser_user_id
          * @global <type> $purchaser_email
          * @global <type> $membershipOptions
@@ -8937,11 +9741,11 @@ echo '</ul>
          *
          * wpStoreCart code that needs to be loaded into the footer
          *
-         * @global <type> $is_checkout
-         * @global <type> $cart
+         * @global boolean $is_checkout
+         * @global object $cart
          * @global boolean $wpscCarthasBeenCalled
-         * @global <type> $wpsc
-         * @global <type> $wpsc_cart_type
+         * @global object $wpsc
+         * @global string $wpsc_cart_type
          * @return string
          */
         function addFooterCode(){
@@ -8994,18 +9798,13 @@ echo '</ul>
         }
 
 
-        /**
-         *
-         * @param string $content
-         * @return string
-         * @todo examine if this does anything, and remove it if it doesn't. 
-         */
-        function  addContent($content = '') {
-            $content .= "<p>wpStoreCart</p>";
-            return $content;
-        }
-
-
+                /**
+                 *
+                 * This method creates the database schema during installation
+                 * 
+                 * @global object $wpdb
+                 * @global int $wpstorecart_db_version 
+                 */
                 function wpstorecart_install_wpms() {
 
                    global $wpdb;
@@ -9194,7 +9993,15 @@ echo '</ul>
                 }
 
 
-		// Installation ==============================================================================================		
+
+                /**
+                 *
+                 * Installs wpStoreCart
+                 * 
+                 * @global object $wpdb
+                 * @global int $wpstorecart_db_version
+                 * @return type 
+                 */
 		function wpstorecart_install() {
 		   global $wpdb;
 		   global $wpstorecart_db_version;
@@ -9220,6 +10027,14 @@ echo '</ul>
 		// END Installation ==============================================================================================
 				
 
+                /**
+                 *
+                 * Returns an HTML picture gallery that is associated with the product specified in $productid
+                 * 
+                 * @global object $wpdb
+                 * @param integer $productid
+                 * @return string 
+                 */
                 function wpstorecart_picture_gallery($productid) {
                     global $wpdb;
 
@@ -9246,10 +10061,239 @@ echo '</ul>
                     return $output;
 
                 }
+                
+                /**
+                 *
+                 * Returns XHTML for the Frontend product accessories for the specified product with $primkey
+                 * 
+                 * @global object $wpdb
+                 * @global object $current_user
+                 * @global boolean $testing_mode
+                 * @param type $primkey The key of the product you wish to display the accessories of
+                 * @return string 
+                 */
+                function productAccessories($primkey) {
+                    global $wpdb, $current_user, $testing_mode;
+                    
+                    $devOptions = $this->getAdminOptions();
+                                       
+                    if($devOptions['combo_enable']=='true') {
+                        
+                        wp_get_current_user();
+                        if ( 0 == $current_user->ID ) {
+                            // Not logged in.
+                            $theuser = 0;
+                        } else {
+                            $theuser = $current_user->ID;
+                        }                        
 
-		// Shortcode =========================================
+                        
+                        $output = NULL;
+                        $atLeast1Product = false;
+                        $theAccessories = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE (`type`='productcombo' OR `type`='assignedcombo') AND `foreignkey`='{$primkey}';", ARRAY_A);
+                        if(isset($theAccessories[0]['primkey'])) {
+                            $maxImageWidth = $devOptions['wpStoreCartwidth'];
+                            $maxImageHeight = $devOptions['wpStoreCartheight'];                        
+                            $output.= '
+                            <script type="text/javascript">                            
+                            /* <![CDATA[ */
+
+                            jQuery.fn.getCheckboxVal = function(){
+                                var vals = [];
+                                var i = 0;
+                                this.each(function(){
+                                    vals[i++] = jQuery(this).val();
+                                });
+                                return vals;
+                            }
+
+                            function wpscSubmitMultiAddToCart() {
+                                var productsToAdd = jQuery("input[name=\'wpsc-add-product-combo\']:checked").getCheckboxVal();
+                                jQuery.ajax({        
+                                       type: "POST",
+                                       url: "'.WP_PLUGIN_URL.'/wpstorecart/php/multiaddtocart.php",
+                                       data: { productsToAddArray : productsToAdd },
+                                       success: function() {
+';
+                                        if($devOptions['redirect_to_checkout']=='true' && $devOptions['checkoutpageurl']!='' ) {
+                                            $output.= 'window.location = "'.$devOptions['checkoutpageurl'].'";';          
+                                        } else {
+                                            $output.= 'location.reload(true);';
+                                        }
+                                        $output.= '
+                                       }
+                                    });                             
+                            }
+
+                            /* ]]> */
+                            </script>
+                            <form><input type="checkbox" name="wpsc-add-product-combo" checked="checked" value="'.$primkey.'" style="width:1px;height:1px;max-width:1px;max-height:1px;overflow:hidden;display:none;" /><table class="wpsc-product-accessories">';
+                            foreach ($theAccessories as $theAccessory){
+                                if($theAccessory['type']=='productcombo') {
+                                    $exploded = explode('||', $theAccessory['value']);
+                                    $theCurrentAccProduct = $wpdb->get_results("SELECT `primkey`, `name`, `price`, `discountprice`, `shipping`, `thumbnail`, `postid`, `category` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$exploded[0]}", ARRAY_A);
+                                    if(isset($theCurrentAccProduct[0]['primkey'])) {
+                                        foreach($theCurrentAccProduct as $currentAccProduct) {
+                                            $atLeast1Product = true;
+                                            $thePrice = $devOptions['currency_symbol'].$currentAccProduct['price'].$devOptions['currency_symbol_right'];
+                                            $theOriginalPrice = $thePrice;
+                                            $isADiscount = false;
+                                            $theNameToDisplay = NULL;
+
+                                            $groupDiscount = $this->groupDiscounts($currentAccProduct['category'], $theuser);
+                                            if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {                                        
+
+                                                // This hides products that are in a category that current user does not have permissions to see
+                                            } else {
+
+                                                // These people can see the current category and continue to calculate price
+                                                if(($currentAccProduct['disountprice'] < $currentAccProduct['price']) && $currentAccProduct['discountprice']!='0.00') {
+                                                    $thePrice = $devOptions['currency_symbol'].$currentAccProduct['discountprice'].$devOptions['currency_symbol_right'];
+                                                    $isADiscount = true;
+                                                }
+                                                if($exploded[1] < $currentAccProduct['price']) {
+                                                    $thePrice = $devOptions['currency_symbol'].$exploded[1].$devOptions['currency_symbol_right'];
+                                                    $isADiscount = true;                                        
+                                                }                                   
+                                                if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) { // If guest cannot see prices, let's hide them here
+                                                    $thePrice = $devOptions['currency_symbol'].$devOptions['logged_out_price'].$devOptions['currency_symbol_right'];
+                                                    $theOriginalPrice = $thePrice;
+                                                }
+                                                if($devOptions['combo_display_links']=='true') {
+                                                    $theNameToDisplay = '<a href="'.get_permalink($currentAccProduct['postid']).'" alt="">'.$currentAccProduct['name'].'</a>';
+                                                } else {
+                                                    $theNameToDisplay = $currentAccProduct['name'];
+                                                }
+
+                                                // Group discounts
+                                                if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                                                    $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                    $discountToSubtract = $currentAccProduct['price'] * $percentDiscount;
+                                                    if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
+                                                        $gdDiscountPrice = number_format($currentAccProduct['price'] - $discountToSubtract, 2);
+                                                    }                                                                      
+                                                    $currentAccProduct['price'] = number_format($currentAccProduct['price'] - $discountToSubtract, 2);
+                                                    if($gdDiscountPrice==0) { 
+                                                        // No change
+                                                    } else {
+                                                        if($gdDiscountPrice < $exploded[1]) {
+                                                            $isADiscount = true; 
+                                                            $thePrice = $devOptions['currency_symbol'].$gdDiscountPrice.$devOptions['currency_symbol_right'];
+                                                        }
+                                                    }
+                                                }   
+                                                // end group discount                                                
+
+                                                $output.= '<tr><td style="vertical-align:middle;width:15px;"><input type="checkbox" name="wpsc-add-product-combo" value="'.$currentAccProduct['primkey'].'" /></td>';if($devOptions['combo_display_thumbs']=='true') { $output.='<td style="vertical-align:middle"><img src="'.$currentAccProduct['thumbnail'].'" alt="" '; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= ' /></td>';} $output.='<td style="vertical-align:middle">'.$theNameToDisplay.'</td>';if($devOptions['combo_display_prices']=='true') { $output.='<td style="vertical-align:middle">'; if($isADiscount){ $output.= '<strike>'.$theOriginalPrice.'</strike><br /> ';} $output .= $thePrice.'</td>';} $output.='</tr>';
+                                            }
+                                        }
+                                    }
+                                }
+                                if($theAccessory['type']=='assignedcombo') {
+                                    $assignedComboDisplay = array();
+                                    $assignedComboDisplayName = NULL;
+                                    $theNamesToDisplay = NULL;
+                                    $checkBoxes = NULL;
+                                    $theTotalPriceOfComboPack = 0;
+                                    $grabComboPack = $wpdb->get_results("SELECT `value` FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `primkey`='{$theAccessory['value']}';", ARRAY_A);
+                                    if(isset($grabComboPack[0]['value'])) {
+                                        $explodeLevel1 = explode('||',$grabComboPack[0]['value']);
+                                        $assignedComboDisplayName=$explodeLevel1[0];
+                                        if(isset($explodeLevel1[1])) {
+                                            $explodeLevel2 = explode(',',$explodeLevel1[1]);
+                                            if(isset($explodeLevel2[0])) {
+                                                foreach($explodeLevel2 as $newComboToWorkWith) {
+                                                    if($newComboToWorkWith!=0) {
+                                                        $the_new_results = $wpdb->get_results("SELECT `price`, `discountprice`, `postid`, `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$newComboToWorkWith}';", ARRAY_A);
+                                                        if($the_new_results[0]['discountprice']==0 || $the_new_results[0]['discountprice']=='0.00' || ($the_new_results[0]['price'] < $the_new_results[0]['discountprice'] && ($the_new_results[0]['discountprice']!=0 || $the_new_results[0]['discountprice']!='0.00') ) ) {
+                                                            $theTotalPriceOfComboPack = $theTotalPriceOfComboPack + $the_new_results[0]['price'];
+                                                        } else {
+                                                            $theTotalPriceOfComboPack = $theTotalPriceOfComboPack + $the_new_results[0]['discountprice'];
+                                                        }
+                                                        if($devOptions['combo_display_links']=='true') {
+                                                            $theNamesToDisplay .= '<a href="'.get_permalink($the_new_results[0]['postid']).'" alt="">'.$the_new_results[0]['name'].'</a> ';
+                                                        } else {
+                                                            $theNamesToDisplay .= $the_new_results[0]['name'].' ';
+                                                        }                                                        
+                                                        $checkBoxes .= '<input type="checkbox" name="wpsc-add-product-combo" class="wpsc-add-product-combo-pack-'.$theAccessory['value'].'" value="'.$newComboToWorkWith.'"  style="display:none;" />';
+                                                        $the_new_results = NULL;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if($theTotalPriceOfComboPack!=0) {
+                                        if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) { // If guest cannot see prices, let's hide them here
+                                            $theTotalPriceOfComboPack = $devOptions['logged_out_price'];
+                                        }                                        
+                                        $output .= '<tr><td style="vertical-align:middle;width:15px;"><input type="checkbox" name="wpsc-add-product-combo-meta-'.$theAccessory['value'].'" onclick="if(jQuery(this).prop(\'checked\') == true){jQuery(\'.wpsc-add-product-combo-pack-'.$theAccessory['value'].'\').attr(\'checked\', true);} else {jQuery(\'.wpsc-add-product-combo-pack-'.$theAccessory['value'].'\').attr(\'checked\', false);}" >'.$checkBoxes.'</td>';
+                                        if($devOptions['combo_display_thumbs']=='true') { $output.='<td style="vertical-align:middle"><img src="'.plugins_url('/images/default_product_img.jpg' , __FILE__).'" alt="" '; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= 'style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= ' /></td>';}
+                                        $output.='<td style="vertical-align:middle">'.$assignedComboDisplayName.'<br />'.$theNamesToDisplay.'</td>';if($devOptions['combo_display_prices']=='true') { $output.='<td style="vertical-align:middle">'; $output .= $devOptions['currency_symbol'].$theTotalPriceOfComboPack.$devOptions['currency_symbol_right'].'</td>';} $output.='</tr>';
+                                    }
+                                }
+                            }
+                            if($atLeast1Product) {
+                                $output .= '<tr><td></td>'; if($devOptions['combo_display_thumbs']=='true') { $output.='<td></td>';}  if($devOptions['combo_display_prices']=='true') { $output.='<td></td>';} $output.='<td><input type="submit" value="'.$devOptions['addtocart'].'" class="wpsc-button wpsc-addtocart" onclick="wpscSubmitMultiAddToCart();return false;" /></td></tr>';
+                            }
+                            $output.= '</table></form>';
+                        }
+
+                        return $output;
+                    }
+                }
+
+
+                /**
+                 *
+                 * The main wpStoreCart shortcode, which provides a large amount of the wpStoreCart functionality
+                 * 
+                 * @global object $wpdb
+                 * @global type $cart
+                 * @global object $wpsc
+                 * @global boolean $is_checkout
+                 * @global object $current_user
+                 * @global boolean $testing_mode
+                 * @global string $wpsc_cart_type
+                 * @global $wpsc_buy_now $wpsc_buy_now
+                 * @global object $wpdb
+                 * @global integer $wpsc_membership_product_id
+                 * @global $purchaser_user_id $purchaser_user_id
+                 * @global $purchaser_email $purchaser_email
+                 * @global $membershipOptions $membershipOptions
+                 * @global string $wpsc_table_name
+                 * @global string $wpsc_self_path
+                 * @global $wpsc_paypal_testmode $wpsc_paypal_testmode
+                 * @global $wpsc_paypal_ipn $wpsc_paypal_ipn
+                 * @global $wpsc_membership_product_name $wpsc_membership_product_name
+                 * @global $wpsc_membership_product_number $wpsc_membership_product_number
+                 * @global $wpsc_button_classes $wpsc_button_classes
+                 * @global $wpsc_paypal_currency_code $wpsc_paypal_currency_code
+                 * @global $wpsc_paypal_email $wpsc_paypal_email
+                 * @global $wpsc_price_type $wpsc_price_type
+                 * @global $wpsc_membership_trial1_allow $wpsc_membership_trial1_allow
+                 * @global $wpsc_membership_trial2_allow $wpsc_membership_trial2_allow
+                 * @global $wpsc_membership_trial1_amount $wpsc_membership_trial1_amount
+                 * @global $wpsc_membership_trial2_amount $wpsc_membership_trial2_amount
+                 * @global $wpsc_membership_regular_amount $wpsc_membership_regular_amount
+                 * @global $wpsc_membership_trial1_numberof $wpsc_membership_trial1_numberof
+                 * @global $wpsc_membership_trial2_numberof $wpsc_membership_trial2_numberof
+                 * @global $wpsc_membership_regular_numberof $wpsc_membership_regular_numberof
+                 * @global $wpsc_membership_trial1_increment $wpsc_membership_trial1_increment
+                 * @global $wpsc_membership_trial2_increment $wpsc_membership_trial2_increment
+                 * @global $wpsc_membership_regular_increment $wpsc_membership_regular_increment
+                 * @global type $affiliatemanager
+                 * @global type $affiliatesettings
+                 * @global type $affiliatepurchases
+                 * @global type $userinfo2
+                 * @global object $current_user
+                 * @global object $wp_roles
+                 * @global string $wpstorecart_version
+                 * @param type $atts
+                 * @param type $content
+                 * @return type 
+                 */
 		function wpstorecart_mainshortcode($atts, $content = null) {
-			global $wpdb, $cart, $wpsc, $is_checkout, $current_user;
+			global $wpdb, $cart, $wpsc, $is_checkout, $current_user, $testing_mode;
 
                         $statset = false;
 			$table_name = $wpdb->prefix . "wpstorecart_products";
@@ -9568,6 +10612,28 @@ echo '</ul>
                                                                 if($devOptions['displayintroDesc']=='true'){
                                                                         $output .= '<p>'.stripslashes($result['introdescription']).'</p>';
                                                                 }
+                                                                
+                                                                if($result['discountprice'] > 0) {
+                                                                    $theActualPrice = $result['discountprice'];
+                                                                } else {
+                                                                    $theActualPrice = $result['price'];
+                                                                }
+
+                                                                // Group discounts
+                                                                if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                                                                    $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                                    $discountToSubtract = $theActualPrice * $percentDiscount;
+                                                                    if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
+                                                                        $result['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                    }                                                                      
+                                                                    $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                    if($result['discountprice']==0) { 
+                                                                        $result['price'] = $theActualPrice;
+                                                                    }
+                                                                }   
+                                                                // end group discount                                                                   
+                                                                
+                                                                
                                                                 if($devOptions['displaypriceonview']=='true'){
                                                                     if($wpsc_price_type == 'membership') {
                                                                         $output .= '<ul class="wpsc-product-info">';
@@ -9580,6 +10646,9 @@ echo '</ul>
                                                                         $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
                                                                         $output .= '</ul>';
                                                                     } else {
+                                                                        
+                                                                        
+                                                                        
                                                                         if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) { // If guest cannot see prices, let's hide them here
                                                                             $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</span>";
                                                                         } else {
@@ -9589,6 +10658,7 @@ echo '</ul>
                                                                                 $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\">{$devOptions['currency_symbol']}{$result['price']}{$devOptions['currency_symbol_right']}</span>";
                                                                             }
                                                                         }
+                                                                        
                                                                     }
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
@@ -9600,12 +10670,8 @@ echo '</ul>
                                                                             } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
                                                                                 $result['shipping'] = '0.00';
                                                                             }
-
-                                                                            if($result['discountprice'] > 0) {
-                                                                                $theActualPrice = $result['discountprice'];
-                                                                            } else {
-                                                                                $theActualPrice = $result['price'];
-                                                                            }
+                                                                           
+                                                                            
                                                                             $output .= '
                                                                             <form method="post" action="">
                                                                                     <input type="hidden" name="my-item-id" value="'.$result['primkey'].'" />
@@ -9617,7 +10683,7 @@ echo '</ul>
                                                                                     <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
                                                                                     <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
                                                                                     <input type="hidden" id="my-item-variation" name="my-item-variation" value="0" />
-                                                                                    <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
+                                                                                    <label class="wpsc-qtylabel">'.$devOptions['qty'].' <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
                                                                             ';
 
@@ -9754,6 +10820,9 @@ echo '</ul>
                                                             if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Thumbnail') {
                                                                 $output.= $this->wpstorecart_picture_gallery($primkey);
                                                             }
+                                                            if($devOptions['where_to_display_accessories']=='Directly after the Thumbnail') {
+                                                                $output .= $this->productAccessories($primkey);
+                                                            }                                                              
 
                                                             if($wpsc_price_type == 'charge') {
                                                                 // Product variations
@@ -9921,6 +10990,11 @@ echo '</ul>
                                                                                                     query_string += "&advvarcombo[]=" + jQuery("#variation_"+registerAdvVarName[i]).val();
                                                                                                     var_string += " " + jQuery("#variation_"+registerAdvVarName[i]).val();
                                                                                                 }
+                                                                                                ';
+                                                                                 
+                                                                                                if($testing_mode){$output.= 'query_string += "&'.$devOptions['debug_parameter'].'"';}
+                                                                                 
+                                                                                                $output .= '
                                                                                                 jQuery.ajax({ url: "'.plugins_url('/php/loadadvvar.php' , __FILE__).'", type:"POST", data:query_string, success: function(txt){
                                                                                                     advancedVariationPrice = parseFloat(txt);
                                                                                                     ';
@@ -10029,7 +11103,7 @@ echo '</ul>
                                                                 if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
                                                                     $percentDiscount = $groupDiscount['discount_amount'] / 100;
                                                                     $discountToSubtract = $theActualPrice * $percentDiscount;
-                                                                    if($groupDiscount['gd_saleprice']==true) {
+                                                                    if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
                                                                         $results[0]['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
                                                                     }                                                                      
                                                                     $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
@@ -10073,7 +11147,7 @@ echo '</ul>
                                                                                 $output .= '<li id="list-item-price">Price: '.$devOptions['currency_symbol'].$results[0]['price'].$devOptions['currency_symbol_right'].'</li>';
                                                                             }
                                                                           }
-                                                                          $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
+                                                                          $output .= '<li id="list-item-qty"><label class="wpsc-individualqtylabel">'.$devOptions['qty'].' <input type="text" name="my-item-qty" value="1" size="3"  class="wpsc-individualqty" /></label>					   </li>';
 
 
                                                                         if($goutput!=NULL) {
@@ -10164,22 +11238,37 @@ echo '</ul>
                                                             if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Add to Cart') {
                                                                 $output.= $this->wpstorecart_picture_gallery($primkey);
                                                             }
+                                                            if($devOptions['where_to_display_accessories']=='Directly after the Add to Cart') {
+                                                                $output .= $this->productAccessories($primkey);
+                                                            }                                                              
 
                                                             if($devOptions['showproductdescription']=='true') {
                                                                     $output .= stripslashes($results[0]['introdescription']) . '&nbsp; &nbsp;';
                                                                     if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Intro Description') {
                                                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                                                     }
+                                                                    if($devOptions['where_to_display_accessories']=='Directly after the Intro Description') {
+                                                                        $output .= $this->productAccessories($primkey);
+                                                                    }                                                                      
                                                                     $output .= stripslashes($results[0]['description']);
                                                                     if($devOptions['showproductgallery']=='true'  && $devOptions['showproductgallerywhere']=='Directly after the Description') {
                                                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                                                     }
+                                                                    if($devOptions['where_to_display_accessories']=='Directly after the Description') {
+                                                                        $output .= $this->productAccessories($primkey);
+                                                                    }                                                                    
                                                             } else {
                                                                     if($devOptions['showproductgallery']=='true'  && ($devOptions['showproductgallerywhere']=='Directly after the Description' || $devOptions['showproductgallerywhere']=='Directly after the Intro Description')) {
                                                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                                                     }
+                                                                    if($devOptions['where_to_display_accessories']=='Directly after the Description' || $devOptions['where_to_display_accessories']=='Directly after the Intro Description') {
+                                                                        $output .= $this->productAccessories($primkey);
+                                                                    }                                                                    
                                                             }
-
+                                                            
+                                                            if($devOptions['where_to_display_accessories']=='At the very bottom of the page') {
+                                                                $output .= $this->productAccessories($primkey);
+                                                            }
                                                     } else {
                                                             $output .= '<div class="wpsc-error">This product has been removed, but the shortcode associated with it was not.</div>';
                                                     }
@@ -10306,6 +11395,8 @@ echo '</ul>
                                             } else { // This is for products:
                                                 if(isset($results)) {
                                                         foreach ($results as $result) {
+                                                            
+                                                            
                                                             // Group code
                                                             $groupDiscount = $this->groupDiscounts($result['category'], $current_user->ID);
                                                             if ($groupDiscount['can_see_this_category']==false && $devOptions['gd_enable']=='true') {
@@ -10384,6 +11475,27 @@ echo '</ul>
                                                                         $output.="<li class=\"list-item-price\">{$devOptions['subscription_price']} {$devOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$devOptions['currency_symbol_right']} {$devOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</li>";
                                                                         $output .= '</ul>';
                                                                     } else {
+                                                                        // Discount prices
+                                                                        if($result['discountprice'] > 0) {
+                                                                            $theActualPrice = $result['discountprice'];
+                                                                        } else {
+                                                                            $theActualPrice = $result['price'];
+                                                                        }                                                                        
+
+                                                                        // Group discounts
+                                                                        if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                                                                            $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                                            $discountToSubtract = $theActualPrice * $percentDiscount;
+                                                                            if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
+                                                                                $result['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                            }                                                                      
+                                                                            $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                            if($result['discountprice']==0) { 
+                                                                                $result['price'] = $theActualPrice;
+                                                                            }
+                                                                        }   
+                                                                        // end group discount                                                                        
+                                                                        
                                                                         if($result['discountprice']>0) {
                                                                             if($devOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
                                                                                 $output.="<span class=\"wpsc-{$devOptions['displayType']}-price\"><strike>{$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</strike> {$devOptions['currency_symbol']}{$devOptions['logged_out_price']}{$devOptions['currency_symbol_right']}</span>";
@@ -10401,18 +11513,34 @@ echo '</ul>
                                                                 }
                                                                 if($devOptions['displayAddToCart']=='true'){
                                                                     if($wpsc_price_type == 'charge') {
+                                                                        
+                                                                        // Discount prices
+                                                                        if($result['discountprice'] > 0) {
+                                                                            $theActualPrice = $result['discountprice'];
+                                                                        } else {
+                                                                            $theActualPrice = $result['price'];
+                                                                        }                                                                        
+
+                                                                        // Group discounts
+                                                                        if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                                                                            $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                                            $discountToSubtract = $theActualPrice * $percentDiscount;
+                                                                            if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
+                                                                                $result['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                            }                                                                      
+                                                                            $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
+                                                                            if($result['discountprice']==0) { 
+                                                                                $result['price'] = $theActualPrice;
+                                                                            }
+                                                                        }                                                                           
+                                                                        
                                                                         // Flat rate shipping implmented here:
                                                                         if($devOptions['flatrateshipping']=='all_single') {
                                                                             $result['shipping'] = $devOptions['flatrateamount'];
                                                                         } elseif($devOptions['flatrateshipping']=='off' || $devOptions['flatrateshipping']=='all_global') {
                                                                             $result['shipping'] = '0.00';
                                                                         }
-                                                                        // Discount prices
-                                                                        if($result['discountprice'] > 0) {
-                                                                            $theActualPrice = $result['discountprice'];
-                                                                        } else {
-                                                                            $theActualPrice = $result['price'];
-                                                                        }
+
                                                                         $output .= '
                                                                         <form method="post" action="">
 
@@ -10424,7 +11552,7 @@ echo '</ul>
                                                                                 <input type="hidden" id="my-item-img" name="my-item-img" value="'.$result['thumbnail'].'" />
                                                                                 <input type="hidden" id="my-item-url" name="my-item-url" value="'.get_permalink($result['postid']).'" />
                                                                                 <input type="hidden" id="my-item-tax" name="my-item-tax" value="0" />
-                                                                                <label class="wpsc-qtylabel">Qty: <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
+                                                                                <label class="wpsc-qtylabel">'.$devOptions['qty'].' <input type="text" name="my-item-qty" value="1" size="3" class="wpsc-qty" /></label>
 
                                                                         ';
 
@@ -10868,15 +11996,15 @@ echo '</ul>
 			return do_shortcode($output);
 		}
 		// END SHORTCODE ================================================
+		
 
-		function add_script_swfobject($posts){
-			if (empty($posts)) return $posts;
-		 
-			wp_enqueue_script('swfobject');
-
-			return $posts;
-		}		
-
+                /**
+                 *
+                 * CSS for the wizard overlay
+                 * 
+                 * @global string $APjavascriptQueue
+                 * @global string $hasOverlayCss 
+                 */
                 function overlay_css() {
                     global $APjavascriptQueue, $hasOverlayCss;
 
@@ -10951,10 +12079,19 @@ echo '</ul>
                 }
 
 
+                /**
+                 * Enqueues scripts needed for some wpStoreCart admin pages
+                 */
                 function my_import_scripts() {
                     wp_enqueue_script('swfupload');
                 }
-
+                
+                /**
+                 *
+                 * Enqueues scripts needed for some wpStoreCart admin pages
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function my_mainpage_scripts() {
 			global $APjavascriptQueue;
 
@@ -10991,6 +12128,12 @@ echo '</ul>
 
 		}		
 		
+                /**
+                 *
+                 * Enqueues scripts needed for some wpStoreCart admin pages
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function my_tooltip_script() {
 			global $APjavascriptQueue;
 
@@ -11039,6 +12182,12 @@ echo '</ul>
 		}
 
 
+                /**
+                 *
+                 * Loads javascript and CSS needed for some wpStoreCart admin pages
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function admin_script_anytime() {
 			global $APjavascriptQueue;
 
@@ -11076,6 +12225,9 @@ echo '</ul>
 			
 		}
 
+                /**
+                 * Enqueues stylesheets for the frontend
+                 */
                 function enqueue_my_styles() {
 
                     if(!is_admin()) {
@@ -11105,6 +12257,9 @@ echo '</ul>
                     }
                 }
 
+                /**
+                 * Enqueues thickbox and jQuery UI effects for the frontend
+                 */
                 function enqueue_my_scripts() {
                     $devOptions = $this->getAdminOptions();
                     wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
@@ -11113,6 +12268,12 @@ echo '</ul>
                     }
                 }
 
+                /**
+                 *
+                 * Enqueues scripts needed for some wpStoreCart admin pages
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function my_admin_scripts_cat(){
 			global $APjavascriptQueue;
 
@@ -11302,16 +12463,16 @@ echo '</ul>
 		}
 
 
+                /**
+                 *
+                 * Enqueues scripts needed for some wpStoreCart admin pages
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function my_admin_scripts(){
 			global $APjavascriptQueue;
 
-                        
-			wp_tiny_mce( false , // true makes the editor "teeny"
-				array(
-					"editor_selector" => "wpStoreCartproduct_description"
-				)
-			);		 
-
+			wp_enqueue_script('wpscniceditor', plugins_url('/js/nicedit/nicEdit.js' , __FILE__), array('jquery'),'1.4');		 
                         wp_enqueue_script('jeditable-wpsc', WP_PLUGIN_URL .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
@@ -11616,6 +12777,9 @@ echo '</ul>
 
 		}			
 
+                /**
+                 * Code echo'd on the admin footer
+                 */
                 function placeAdminFooter() {
                     echo '			<!-- overlayed element -->
                         <div class="apple_overlay" id="overlay">
@@ -11626,6 +12790,9 @@ echo '</ul>
                         </div>';
                 }
 
+                /**
+                 * Enqueues scripts necessary for some wpStoreCart admin pages to work
+                 */
                 function placeAdminHeaderEnqueue() {
                     wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
                     wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
@@ -11633,6 +12800,12 @@ echo '</ul>
                     wp_enqueue_script('jeegoocontext',WP_PLUGIN_URL . '/wpstorecart/js/jeegoocontext/jeegoocontext/jquery.jeegoocontext.min.js',array('jquery'),'1.4' );
                 }
 
+                /**
+                 *
+                 * Code that needs to be echo'd out in the admin panel for wpStoreCart
+                 * 
+                 * @global string $APjavascriptQueue 
+                 */
 		function placeAdminHeaderCode() {
 			global $APjavascriptQueue;
 
@@ -11745,6 +12918,16 @@ echo '</ul>
 			echo $APjavascriptQueue;
 		}
 				
+                /**
+                 *
+                 * Prepares text for emails 
+                 * 
+                 * @global object $current_user
+                 * @global object $wpdb
+                 * @param string $theEmail The text that needs to be emailed.
+                 * @param integer $theEmailAddressOrderID
+                 * @return string 
+                 */
                 function makeEmailTxt($theEmail, $theEmailAddressOrderID = 0) {
                     global $current_user, $wpdb;
                     get_currentuserinfo();
@@ -11841,6 +13024,15 @@ echo '</ul>
 
                 }
 
+                /**
+                 *
+                 * Returns a string containing the specific products associated with the order specified with $keyToLookup 
+                 * 
+                 * @global object $wpdb
+                 * @param integer $keyToLookup
+                 * @param string $type
+                 * @return string 
+                 */
                 function splitOrderIntoProduct($keyToLookup, $type="default") {
                     global $wpdb;
                     $table_name = $wpdb->prefix . "wpstorecart_orders";
@@ -11925,6 +13117,15 @@ echo '</ul>
                     return $output;
                 }
 
+        /**
+         * 
+         * Returns a string that lists all downloads associated with a product.  Use the $type parameter to return different styles of list.
+         *
+         * @global object $wpdb
+         * @param integer $primkey
+         * @param string $type  If $type = 'download' then it will allow a person to download the file (if they have purchased it)  If $type='edit' then it will allow admins to administrate
+         * @return string 
+         */
         function listProductDownloads($primkey, $type="download") {
             global $wpdb;
             $table_name = $wpdb->prefix . "wpstorecart_orders";
@@ -12043,13 +13244,28 @@ echo '</ul>
         }
 
 
+        /**
+         *
+         * Returns a slug of the input string, suitable URLs, HTML and other space/character sensitive operations
+         * 
+         * @param string $str
+         * @return string 
+         */
         function slug($str) {
                 $str = strtolower(trim($str));
                 $str = preg_replace('/[^a-z0-9-]/', '_', $str);
                 $str = preg_replace('/-+/', "_", $str);
                 return $str;
         }
-
+        
+        
+        /**
+         * 
+         * returns the custom registration data from the database
+         *
+         * @global object $wpdb
+         * @return array 
+         */
         function grab_custom_reg_fields() {
             global $wpdb;
             $table_name = $wpdb->prefix . "wpstorecart_meta";
@@ -12065,10 +13281,10 @@ echo '</ul>
 
         /**
          *
-         * Creates
+         * Outputs an array of custom customer contact information
          *
          * @global object $wpdb
-         * @param <type> $contactmethods
+         * @param array $contactmethods
          * @return array
          */
         function add_custom_contactmethod( $contactmethods ) {
@@ -12087,6 +13303,12 @@ echo '</ul>
             return $contactmethods;
         }
 
+        /**
+         *
+         * Returns a string contain all the custom form elements that are created from the custom registration fields
+         * 
+         * @return string 
+         */
         function show_custom_reg_fields(){
             $devOptions = $this->getAdminOptions();
 
@@ -12436,6 +13658,16 @@ echo '</ul>
 
         }
 
+        /**
+         * 
+         * Creates additional profile fields for the user
+         *
+         * @global object $wpdb
+         * @param integer $user_id
+         * @param string $password
+         * @param array $meta
+         * @return NULL
+         */
         function register_extra_fields($user_id, $password="", $meta=array()) {
             global $wpdb;
             if ( !current_user_can( 'edit_user', $user_id ) ) { 
@@ -12459,6 +13691,15 @@ echo '</ul>
             }
         }
 
+        /**
+         *
+         * Server side validation for customer custom registration fields
+         * 
+         * @global object $wpdb
+         * @param string $login
+         * @param string $email
+         * @param object $errors 
+         */
         function check_fields($login, $email, $errors) {
                 global $wpdb;
 
@@ -12551,6 +13792,13 @@ echo '</ul>
             return $params['RATEV3RESPONSE']['1ST']['1']['RATE'];
         }
 
+        /**
+         *
+         * Attempts to start sessions before anything else gets a chance to.  Not a big deal anymore ever since the dragon cart update.
+         * 
+         * @global type $cart
+         * @global string $wpsc_cart_type 
+         */
         function wpstorecart_needs_to_start_sessions_before_anything_else() {
                 global $cart, $wpsc_cart_type;
                 require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/wpsc-1.1/wpsc/wpsc-config.php');
@@ -12595,9 +13843,9 @@ if (class_exists("wpStoreCart")) {
  */
 if (class_exists("WP_Widget")) {
 
-	// ------------------------------------------------------------------
-	// ------------------------------------------------------------------
-
+        /**
+         * The categories widget
+         */
 	class wpStoreCartCategoryWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartCategoryWidget() {
@@ -12682,7 +13930,9 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 
 
-
+        /**
+         * The Checkout Widget
+         */
 	class wpStoreCartCheckoutWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartCheckoutWidget() {
@@ -12772,6 +14022,9 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 
 
+        /**
+         * The Login widget
+         */
         class wpStoreCartLoginWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartLoginWidget() {
@@ -12815,7 +14068,7 @@ if (class_exists("WP_Widget")) {
                                                                     
                                 <label>'.$devOptions['username'].' <input type="text" value="" name="log" /></label><br />
                                 <label>'.$devOptions['password'].' <input type="password" value="" name="pwd"  /></label><br />
-                                <input type="submit" value="Login" />
+                                <input type="submit" value="Login" class="wpsc-button wpsc-login-button '.$devOptions['button_classes_meta'].'" />
 
                             </form>
 
@@ -12852,6 +14105,9 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 	// ------------------------------------------------------------------ 
  
+        /**
+         * The Top Products widget
+         */
 	class wpStoreCartTopproductsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartTopproductsWidget() {
@@ -12930,6 +14186,9 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 	// ------------------------------------------------------------------
 	
+        /**
+         * The Recent Products widget
+         */
 	class wpStoreCartRecentproductsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartRecentproductsWidget() {
@@ -13009,9 +14268,10 @@ if (class_exists("WP_Widget")) {
 	} 	
 
 
-	// wpStoreCartPaymentsWidget ------------------------------------------------------------------
-	// ------------------------------------------------------------------
 
+        /**
+         * The Payments Accepted widget
+         */
 	class wpStoreCartPaymentsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartPaymentsWidget() {
@@ -13134,6 +14394,15 @@ if (class_exists("WP_Widget")) {
  * Initialize the admin panel
  */
 if (!function_exists("wpStoreCartAdminPanel")) {
+    /**
+     *
+     * Creates the wpStoreCart admin panel
+     * 
+     * @global object $wpStoreCart
+     * @global boolean $testing_mode
+     * @global int $wpstorecart_version_int
+     * @return NULL 
+     */
     function wpStoreCartAdminPanel() {
         global $wpStoreCart, $testing_mode, $wpstorecart_version_int;
         if (!isset($wpStoreCart)) {
@@ -13157,6 +14426,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             $page2 = add_submenu_page('wpstorecart-admin','Coupons &amp; Discounts - wpStoreCart ', 'Coupons', 'manage_wpstorecart', 'wpstorecart-coupon', array(&$wpStoreCart, 'printAdminPageCoupons'));
             $page2a = add_submenu_page(NULL,'ShareYourCart.com - wpStoreCart ', 'ShareYourCart&#8482;', 'manage_wpstorecart', 'wpstorecart-shareyourcart', array(&$wpStoreCart, 'printAdminPageShareYourCart'));
             $page2b = add_submenu_page(NULL,'Group Discounts - wpStoreCart ', 'Group Discounts', 'manage_wpstorecart', 'wpstorecart-groupdiscounts', array(&$wpStoreCart, 'printAdminPageGroupDiscounts'));
+            $page2c = add_submenu_page(NULL,'Combos - wpStoreCart ', 'Combos', 'manage_wpstorecart', 'wpstorecart-combos', array(&$wpStoreCart, 'printAdminPageCombos'));
             $profilePage = add_submenu_page(NULL,'Profile - wpStoreCart ', 'Profile', 'manage_wpstorecart', 'wpstorecart-profile', array(&$wpStoreCart, 'printAdminPageProfile'));
             $invoicePage = add_submenu_page(NULL,'Detailed Order - wpStoreCart ', 'Profile', 'manage_wpstorecart', 'wpstorecart-invoice', array(&$wpStoreCart, 'printAdminPageInvoice'));
             $emailPage = add_submenu_page(NULL,'Email - wpStoreCart ', 'Email', 'manage_wpstorecart', 'wpstorecart-email', array(&$wpStoreCart, 'printAdminPageEmail'));
@@ -13173,6 +14443,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             add_action("admin_print_scripts-$page2", array(&$wpStoreCart, 'admin_script_anytime'), 1);
             add_action("admin_print_scripts-$page2a", array(&$wpStoreCart, 'my_tooltip_script'));
             add_action("admin_print_scripts-$page2b", array(&$wpStoreCart, 'my_tooltip_script'));
+            add_action("admin_print_scripts-$page2c", array(&$wpStoreCart, 'my_tooltip_script'));
             add_action("admin_print_scripts-$profilePage", array(&$wpStoreCart, 'my_tooltip_script'));
             add_action("admin_print_scripts-$invoicePage", array(&$wpStoreCart, 'my_tooltip_script'));
             add_action("admin_print_scripts-$emailPage", array(&$wpStoreCart, 'my_tooltip_script'));
@@ -13200,6 +14471,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13232,6 +14504,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13264,6 +14537,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13296,6 +14570,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13329,6 +14604,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13362,6 +14638,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13394,6 +14671,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13435,6 +14713,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                 $page2,
                                 $page2a,
                                 $page2b,
+                                $page2c,
                                 $affiliatespage,
                                 $statsPage,
                                 $customersPage,
@@ -13470,6 +14749,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
                                     $page2,
                                     $page2a,
                                     $page2b,
+                                    $page2c,
                                     $affiliatespage,
                                     $statsPage,
                                     $customersPage,
@@ -13500,6 +14780,13 @@ if (!function_exists("wpStoreCartAdminPanel")) {
  * END Initialize the admin panel
  */
 
+/**
+ *
+ * Depreciated
+ * 
+ * @param type $activities
+ * @return string 
+ */
 function wpsc_list_activities($activities)
 {
 	// Create an array which we fill with out own activities.
@@ -13597,7 +14884,11 @@ if (isset($wpStoreCart)) {
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartRecentproductsWidget");')); // Register the widget: wpStoreCartRecentproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
-        register_deactivation_hook( __FILE__, array(&$wpStoreCart, 'deactivate') );
+        $devOptions = $wpStoreCart->getAdminOptions();
+        if(isset($devOptions['uninstall']) && $devOptions['uninstall']=='true') {
+            register_deactivation_hook( __FILE__, array(&$wpStoreCart, 'deactivate') );
+        }        
+        
 
 	add_shortcode('wpstorecart', array(&$wpStoreCart, 'wpstorecart_mainshortcode'));
         add_action('wp_print_scripts', array(&$wpStoreCart, 'enqueue_my_scripts'));
@@ -13619,8 +14910,9 @@ if (isset($wpStoreCart)) {
         add_action('register_post',array(&$wpStoreCart, 'check_fields'),10,3);
 
         //Filters
-	add_filter('the_posts', array(&$wpStoreCart, 'add_script_swfobject')); 
+	//add_filter('the_posts', array(&$wpStoreCart, 'add_script_swfobject')); 
         //add_filter('threewp_activity_monitor_list_activities','wpsc_list_activities'); // for ThreeWP Activity Monitor version 2
+        //require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/shareyourcart_v2/class.shareyourcart-wpstorecart.php');
 
 }
  /**

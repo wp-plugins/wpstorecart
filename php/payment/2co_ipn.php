@@ -1,6 +1,6 @@
 <?php
 
-// wpStoreCart, (c) 2010 wpStoreCart.com.  All rights reserved.
+// wpStoreCart, LLC (c) 2010, 2011 wpStoreCart.com.  All rights reserved.
 
 global $wpsc_error_reporting;
 if($wpsc_error_reporting==false) {
@@ -84,6 +84,40 @@ if ($my2CO->validateIpn())
             // Send an email when purchase is submitted
             if(isset($results)) {
                 mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                header ('HTTP/1.1 301 Moved Permanently');
+                if($status == 'Completed') { 
+                    if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
+                        if(!headers_sent()) {
+                            header ('Location: '.get_permalink($devOptions['mainpage']).'?wpsc=success');
+                        } else {
+                            echo '<script type="text/javascript">
+                            <!--
+                            window.location = "'.get_permalink($devOptions['mainpage']).'?wpsc=success"
+                            //-->
+                            </script>';
+                        }
+                    } else {
+                        if(!headers_sent()) {
+                            header ('Location: '.get_permalink($devOptions['mainpage']).'&wpsc=success');
+                        } else { 
+                            echo '<script type="text/javascript">
+                            <!--
+                            window.location = "'.get_permalink($devOptions['mainpage']).'&wpsc=success"
+                            //-->
+                            </script>';  
+                        }
+                    }
+                } else {
+                    if(!headers_sent()) {
+                        header ('Location: '.get_permalink($devOptions['mainpage']));
+                    } else { 
+                        echo '<script type="text/javascript">
+                        <!--
+                        window.location = "'.get_permalink($devOptions['mainpage']).'"
+                        //-->
+                        </script>';  
+                    }                    
+                }
             }
 
             }

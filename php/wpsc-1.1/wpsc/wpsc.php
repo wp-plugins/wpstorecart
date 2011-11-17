@@ -14,7 +14,7 @@ http://www.webforce.co.nz/cart/
 
 **********************************************************************/
 
-global $wpStoreCart, $devOptions, $wpsc, $wpsc_error_reporting, $wpsc_cart_type, $wpsc_cart_sub_type, $wpdb;
+global $wpStoreCart, $devOptions, $wpsc, $wpsc_error_reporting, $wpsc_cart_type, $wpsc_cart_sub_type, $wpdb, $testing_mode;
 
 if($wpsc_error_reporting==false) {
     error_reporting(0);
@@ -133,9 +133,86 @@ class wpsc {
 		return $items;
 	}
 
+        /**
+         *
+         * Adds multiple items to the cart at once
+         * 
+         * @global type $wpdb
+         * @global type $current_user
+         * @global type $wpStoreCart
+         * @param type $items_to_add
+         * @param type $qty
+         * @param type $masterProduct 
+         */
+        function multi_add_item($items_to_add, $qty=1, $masterProduct=NULL) {
+            global $wpdb, $current_user, $wpStoreCart;
+
+            $devOptions = $wpStoreCart->getAdminOptions();
+            
+            wp_get_current_user();
+            if ( 0 == $current_user->ID ) {
+                // Not logged in.
+                $theuser = 0;
+            } else {
+                $theuser = $current_user->ID;
+            }                
+            
+            // Combos discounts are calculated here
+            if($masterProduct!=NULL) { 
+                $theAccessories = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='productcombo' AND `foreignkey`='{$masterProduct}';", ARRAY_A);
+                foreach($theAccessories as $theAccessory) {
+                    $exploded = explode('||', $theAccessory['value']);
+                    $theComboPrice[$exploded[0]] = $exploded[1];
+                }
+            }             
+            
+            
+            foreach ($items_to_add as $item_to_add) {
+
+                if(($item_to_add['disountprice'] < $item_to_add['price']) && $item_to_add['discountprice']!='0.00') {
+                    $thePrice = $item_to_add['discountprice'];
+                } else {
+                    $thePrice = $item_to_add['price'];
+                }
+                
+                if(isset($theComboPrice[$item_to_add['primkey']])) {
+                        $thePrice = $theComboPrice[$item_to_add['primkey']];
+                }
+                
+                $groupDiscount = $wpStoreCart->groupDiscounts($item_to_add['category'], $theuser);
+                
+                // Group discounts
+                if ($groupDiscount['can_have_discount']==true && $devOptions['gd_enable']=='true') {
+                    $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                    if($groupDiscount['gd_saleprice']==true) {
+                        if($item_to_add['discountprice']=='0.00') { // Group discount calculated if we're basing the discount off of the regular price
+                            $discountToSubtract = $item_to_add['price'] * $percentDiscount;
+                            $gdDiscountPrice = number_format($item_to_add['price'] - $discountToSubtract, 2);
+                        } else { // Group discount calculated if we're basing the discount off of the discounted price
+                            $discountToSubtract = $item_to_add['discountprice'] * $percentDiscount;
+                            $gdDiscountPrice = number_format($item_to_add['discountprice'] - $discountToSubtract, 2);
+                        }
+                    }                                                                      
+                    if($gdDiscountPrice==0) { 
+                        // No change
+                    } else {
+                        if($gdDiscountPrice < $thePrice) {
+                            $thePrice = $gdDiscountPrice;
+                        }
+                    }
+                }   
+                // end group discount                  
+                
+                                 
+                $this->add_item($item_to_add['primkey'], $qty, $thePrice, $item_to_add['name'], $item_to_add['shipping'], 0, get_permalink($item_to_add['postid']), $item_to_add['thumbnail'], '0.00', true);
+            }
+        }
 
 	// ADD AN ITEM
-	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00') {
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00', $is_multi_add = false) {
+                global $wpStoreCart;
+                
+                $devOptions = $wpStoreCart->getAdminOptions();
 		// VALIDATION
 		$valid_item_qty = $valid_item_price = false;
 
@@ -173,6 +250,22 @@ class wpsc {
 				
 				}
 			$this->_update_total();
+                        
+                        if(!$is_multi_add && $devOptions['redirect_to_checkout']=='true' && $devOptions['checkoutpageurl']!='' ) {
+                            if (!headers_sent()) {
+                                header('Location: '.$devOptions['checkoutpageurl']);
+                                exit;
+                            } else {
+                                echo '
+                                <script type="text/javascript">
+                                /* <![CDATA[ */
+                                window.location = "'.$devOptions['checkoutpageurl'].'"
+                                /* ]]> */
+                                </script>
+                                ';          
+                                exit;
+                            }                        
+                        }
 
 			return true;
 			}
@@ -314,6 +407,10 @@ class wpsc {
 		// IF NO ITEM IDs, THE CART IS EMPTY
 		if (isset($_POST['wpsc_item_id']))
 			{
+                    
+                            
+                    
+                    
 			// IF THE ITEM QTY IS AN INTEGER, OR ZERO, OR EMPTY
 			// UPDATE THE ITEM
 			if (preg_match("/^[0-9-]+$/i", $item_qtys) || $item_qtys == '')
@@ -363,8 +460,7 @@ class wpsc {
 	IF USING AN INPUT WITH TYPE IMAGE, INTERNET EXPLORER DOES NOT SUBMIT THE VALUE, ONLY X AND Y COORDINATES WHERE BUTTON WAS CLICKED
 	CAN'T USE A HIDDEN INPUT EITHER SINCE THE CART FORM HAS TO ENCOMPASS ALL ITEMS TO RECALCULATE TOTAL WHEN A QUANTITY IS CHANGED, WHICH MEANS THERE ARE MULTIPLE REMOVE BUTTONS AND NO WAY TO ASSOCIATE THEM WITH THE CORRECT HIDDEN INPUT
 	*/
-	function del_item($item_id)
-		{
+	function del_item($item_id) {
 		$ti = array();
                 unset($this->items[$item_id]);
                 unset($this->itemprices[$item_id]);
@@ -383,7 +479,16 @@ class wpsc {
 			}
 		$this->items = $ti;
 		$this->_update_total();
-		}
+                
+                // Combos discounts are calculated here
+                global $wpdb;
+                $theAccessories = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='productcombo' AND `foreignkey`='{$item_id}';", ARRAY_A);
+                foreach($theAccessories as $theAccessory) {
+                    $exploded = explode('||', $theAccessory['value']);
+                    $this->del_item($exploded[0]);
+                }                
+                
+        }
 
 
 	// EMPTY THE CART
