@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.3
+Version: 2.5.4
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.3
+ * @version 2.5.4
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.3';
-$wpstorecart_version_int = 205003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.4';
+$wpstorecart_version_int = 205004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -62,7 +62,7 @@ $wpsc_cart_type = 'session';
 $wpsc_cart_sub_type = 'dragon';
 
 // Let's pull in all our actions.  Added in 2.4.4
-require_once(WP_PLUGIN_DIR.'/wpstorecart/php/actions.php');
+include_once(WP_PLUGIN_DIR.'/wpstorecart/php/actions.php');
 
 /**
  * Let's make sure the manage_wpstorecart role is added to the administrator.
@@ -107,7 +107,7 @@ if($wpsc_error_reporting==true) {
         }
 
         if (!function_exists('wpscErrorReport')) {
-        /**
+            /**
              * wpStoreCart advanced error reporting
              *
              * @return NULL
@@ -578,6 +578,22 @@ if (!class_exists("wpStoreCart")) {
             update_option('wpStoreCartAdminOptions', $devOptions);
        }
 
+       
+       
+       /**
+        *
+        * PHPUnit test method to insure that testing mode is always off before a release
+        * 
+        * @assert (0) == 0
+        * @param integer $a 
+        * return boolean
+        */
+       function testingMode($a) {
+           global $testing_mode;
+           return $testing_mode;
+       }
+       
+       
        /**
         *
         * wpStoreCart non-fatal error messages
@@ -4533,7 +4549,7 @@ echo '</ul>
 			 </div>';		
 		
 		}
-		//END Prints out the admin page ================================================================================		
+		//END Prints out the admin page 		
 
 
 	/**
@@ -4966,7 +4982,7 @@ echo '</ul>
                              ';
 
         }
-		//END Prints out the admin page ================================================================================
+		//END Prints out the admin page 
 
 
 
@@ -6501,7 +6517,7 @@ echo '</ul>
         		 </div></div>';
 		
 		}	
-		// END Prints out the Add products admin page =======================================================================		
+		// END Prints out the Add products admin page		
         
         /**
          *
@@ -7714,7 +7730,7 @@ echo '</ul>
 						}
 					}
 		
-					echo "<tr id=\"sort_{$result['primkey']}\" style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><td style=\"vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img class=\"handle\" src=\"".plugins_url('/images/TransferDocument.png' , __FILE__)."\" alt=\"\" style=\"float:left;cursor:move;{$display_none}\" /><input type=\"checkbox\" class=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /><br />&nbsp;{$result['primkey']}&nbsp;<a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"Edit\" /></a>&nbsp;<a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"Delete\" /></a>&nbsp;<input type=\"hidden\" name=\"required_info_key[]\" id=\"requiredinfo_{$num}\" value=\"{$result['primkey']}\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['name'])."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr($result['introdescription'],0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr($result['description'],0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">{$result['price']}</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($currentCat)."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['inventory'])."</td></tr>";
+					echo "<tr id=\"sort_{$result['primkey']}\" style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><td style=\"vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img class=\"handle\" src=\"".plugins_url('/images/TransferDocument.png' , __FILE__)."\" alt=\"\" style=\"float:left;cursor:move;{$display_none}\" /><input type=\"checkbox\" class=\"checkbox\" name=\"myCheckbox[]\" value=\"{$result['primkey']}\" /><br />&nbsp;{$result['primkey']}&nbsp;<a href=\"admin.php?page=wpstorecart-add-products&keytoedit={$result['primkey']}\"><img src=\"".plugins_url('/images/pencil.png' , __FILE__)."\" alt=\"Edit\" /></a>&nbsp;<a onclick=\"if (! confirm('Are you sure you want to delete this product?')) { return false;}\" href=\"admin.php?page=wpstorecart-edit-products&keytodelete={$result['primkey']}\"><img src=\"".plugins_url('/images/cross.png' , __FILE__)."\" alt=\"Delete\" /></a>&nbsp;<input type=\"hidden\" name=\"required_info_key[]\" id=\"requiredinfo_{$num}\" value=\"{$result['primkey']}\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(strip_tags($result['name']))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['introdescription']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['description']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">{$result['price']}</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($currentCat)."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['inventory'])."</td></tr>";
 				
                                         $num++;
 				}
@@ -7730,7 +7746,7 @@ echo '</ul>
 			';
 		
 		}		
-		//END Prints out the Edit products admin page =======================================================================
+		//END Prints out the Edit products admin page 
 		
         /**
          *
@@ -8365,7 +8381,7 @@ echo '</ul>
 			<br style="clear:both;" />';	
 		
 		}	
-		// END Prints out the Orders admin page =======================================================================		
+		// END Prints out the Orders admin page 	
 				
 		
 
@@ -8778,7 +8794,7 @@ echo '</ul>
 			<br style="clear:both;" />';	
 		
 		}	
-		// END Prints out the Categories admin page =======================================================================		
+		// END Prints out the Categories admin page		
 				
 		
 
@@ -9091,7 +9107,7 @@ echo '</ul>
 			<br style="clear:both;" />';	
 		
 		}	
-		// END Prints out the Coupons admin page =======================================================================			
+		// END Prints out the Coupons admin page 			
 		
 		
 		
@@ -9116,7 +9132,7 @@ echo '</ul>
 			require_once(WP_PLUGIN_DIR.'/wpstorecart/saStoreCartPro/statistics.php');
 		
 		}
-		// ==========================================================================================================		
+			
 		
 
 
@@ -9306,7 +9322,7 @@ echo '</ul>
 
 		
 		}
-		// ==========================================================================================================
+		
 	/**
          *
          * Returns the number of sales, add to cart, or product view on a specific date 
@@ -9385,7 +9401,7 @@ echo '</ul>
                         echo '</div>';
 		
 		}
-		// ==========================================================================================================
+		
 		
 
 
@@ -9419,7 +9435,7 @@ echo '</ul>
 			
 		
 		}
-		// ==========================================================================================================
+		
 		
 		
 		
@@ -10024,7 +10040,7 @@ echo '</ul>
 
 		   
 		}
-		// END Installation ==============================================================================================
+		
 				
 
                 /**
@@ -11995,7 +12011,7 @@ echo '</ul>
 
 			return do_shortcode($output);
 		}
-		// END SHORTCODE ================================================
+		// END SHORTCODE
 		
 
                 /**
@@ -13823,10 +13839,7 @@ echo '</ul>
 
     }
 
- /*
- * ===============================================================================================================
- * End Main wpStoreCart Class
- */	
+//End the Main class	
 } 
 // The end of the IF statement
 
@@ -13838,7 +13851,7 @@ if (class_exists("wpStoreCart")) {
  
  
 /**
- * ===============================================================================================================
+ * 
  * wpStoreCartCheckoutWidget SIDEBAR WIDGET
  */
 if (class_exists("WP_Widget")) {
@@ -14195,7 +14208,14 @@ if (class_exists("WP_Widget")) {
 			parent::WP_Widget(false, $name = 'wpStoreCart Recent Products');
 		}
 
-		/** @see WP_Widget::widget */
+		/**
+                 *
+                 * @global type $wpdb
+                 * @global type $current_user
+                 * @global type $wpStoreCart
+                 * @param type $args
+                 * @param type $instance 
+                 */
 		function widget($args, $instance) {		
 			global $wpdb, $current_user, $wpStoreCart;
                         get_currentuserinfo();
@@ -14237,7 +14257,12 @@ if (class_exists("WP_Widget")) {
 			echo $after_widget;
 		}
 
-		/** @see WP_Widget::update */
+		/**
+                 *
+                 * @param type $new_instance
+                 * @param type $old_instance
+                 * @return type 
+                 */
 		function update($new_instance, $old_instance) {	
 			$instance['title']= strip_tags(stripslashes($new_instance['title']));
 			$instance['numberOfproductsToDisplay'] = strip_tags(stripslashes($new_instance['numberOfproductsToDisplay']));
@@ -14248,7 +14273,10 @@ if (class_exists("WP_Widget")) {
 			return $instance;
 		}
 
-		/** @see WP_Widget::form */
+		/**
+                 *
+                 * @param type $instance 
+                 */
 		function form($instance) {				
 			@$title = esc_attr($instance['title']);
 			@$numberOfproductsToDisplay = htmlspecialchars($instance['numberOfproductsToDisplay']);
@@ -14278,7 +14306,13 @@ if (class_exists("WP_Widget")) {
 			parent::WP_Widget(false, $name = 'wpStoreCart Payments Accepted');
 		}
 
-		/** @see WP_Widget::widget */
+		/**
+                 *
+                 * @global type $wpdb
+                 * @global type $wpStoreCart
+                 * @param type $args
+                 * @param type $instance 
+                 */
 		function widget($args, $instance) {
 			global $wpdb, $wpStoreCart;
 			$output = NULL;
@@ -14323,7 +14357,12 @@ if (class_exists("WP_Widget")) {
 			echo $after_widget;
 		}
 
-		/** @see WP_Widget::update */
+		/**
+                 *
+                 * @param type $new_instance
+                 * @param type $old_instance
+                 * @return type 
+                 */
 		function update($new_instance, $old_instance) {
 			$instance['title']= strip_tags(stripslashes($new_instance['title']));
                         $instance['widgetShowAmericanExpress'] = strip_tags(stripslashes($new_instance['widgetShowAmericanExpress']));
@@ -14341,7 +14380,9 @@ if (class_exists("WP_Widget")) {
 			return $instance;
 		}
 
-		/** @see WP_Widget::form */
+		/** 
+                 * 
+                 */
 		function form($instance) {
 			@$title = esc_attr($instance['title']);
                         @$widgetShowAmericanExpress = htmlspecialchars($instance['widgetShowAmericanExpress']);
@@ -14381,7 +14422,7 @@ if (class_exists("WP_Widget")) {
 
 }
 /**
- * ===============================================================================================================
+ * 
  * END wpStoreCartTopproductsWidget SIDEBAR WIDGET
  */
 
@@ -14390,7 +14431,7 @@ if (class_exists("WP_Widget")) {
  
 
  /**
- * ===============================================================================================================
+ * 
  * Initialize the admin panel
  */
 if (!function_exists("wpStoreCartAdminPanel")) {
@@ -14776,7 +14817,7 @@ if (!function_exists("wpStoreCartAdminPanel")) {
     }   
 }
  /**
- * ===============================================================================================================
+ * 
  * END Initialize the admin panel
  */
 
@@ -14837,7 +14878,7 @@ function wpsc_list_activities($activities)
 }
  
  /**
- * ===============================================================================================================
+ * 
  * Call everything
  */
 
@@ -14916,7 +14957,7 @@ if (isset($wpStoreCart)) {
 
 }
  /**
- * ===============================================================================================================
+ * 
  */
 
 
