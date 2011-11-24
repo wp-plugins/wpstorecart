@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 2.8.0
 Tested up to: 3.3
-Stable tag: 2.5.4
+Stable tag: 2.5.5
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -84,6 +84,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.5.5 =
+* Added: Can now specify pre-uploaded files for use with product's downloads
+* Added: Began adding unit testing to wpStoreCart.
 
 = 2.5.4 =
 * Fixed: patched an issue that allowed html from a product to be displayed in wp-admin > wpStoreCart > Edit Products

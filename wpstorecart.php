@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.4
+Version: 2.5.5
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.4
+ * @version 2.5.5
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.4';
-$wpstorecart_version_int = 205004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.5';
+$wpstorecart_version_int = 205005; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -585,7 +585,7 @@ if (!class_exists("wpStoreCart")) {
         * PHPUnit test method to insure that testing mode is always off before a release
         * 
         * @assert (0) == 0
-        * @param integer $a 
+        * 
         * return boolean
         */
        function testingMode($a) {
@@ -5852,7 +5852,21 @@ echo '</ul>
 			echo '
 			<tr';if($devOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
 			<td><h3>Downloadable<br />Files: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at: '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></h3></td>
-			<td><input type="hidden" name="wpStoreCartproduct_download" style="width: 200px;" value="'.$wpStoreCartproduct_download.'" /><br />
+			<td>
+                            <script type="text/javascript">
+                                /* <![CDATA[ */
+                                    function wpscPrompter() {
+                                        var reply = prompt("Please enter the filename of the already uploaded file you wish to add", "")
+                                        if(reply!=null) {
+                                            jQuery("#wpStoreCartproduct_download").val(jQuery("#wpStoreCartproduct_download").val() + reply + "||");
+                                        }
+                                        return false;
+                                    }
+                                /* ]]> */
+                            </script>                        
+                        
+
+                        <a href="" onclick="wpscPrompter();return false;" style="float:right;"><button onclick="return false;" class="button-secondary">Add a Pre-Uploaded File to this Product</button></a><br style="clear:both;" /><a href="" onclick="jQuery(\'#wpStoreCartproduct_download\').toggle();return false;" style="float:right;margin-top:2px;"><button onclick="return false;" class="button-secondary">Show/Hide Advanced Edit</button></a><br style="clear:both;" /><input type="text" name="wpStoreCartproduct_download" id="wpStoreCartproduct_download" style="width: 200px;display:none;float:right;" value="'.$wpStoreCartproduct_download.'" /><br />
 			Upload file(s): <span id="spanSWFUploadButton"></span>
                         <div id="upload-progressbar-container">
                             <div id="upload-progressbar">

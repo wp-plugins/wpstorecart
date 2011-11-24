@@ -96,6 +96,12 @@ class wpsc {
             
         }
 
+        /**
+         * Returns the best guess for the user's IP address
+         * 
+         * @global object $wpdb
+         * @return string  
+         */
         function get_ip_address() {
             global $wpdb;
             if ( isset($_SERVER["REMOTE_ADDR"]) )    {
@@ -109,8 +115,11 @@ class wpsc {
         }
 
 
-	
-	// GET CART CONTENTS
+        /**
+         * Get the contents of the current shopping cart
+         * 
+         * @return array 
+         */
 	function get_contents() {
 		$items = array();
 		foreach($this->items as $tmp_item)
@@ -208,7 +217,22 @@ class wpsc {
             }
         }
 
-	// ADD AN ITEM
+        /**
+         * Add an item to the current cart
+         * 
+         * @global object $wpStoreCart
+         * @param int $item_id
+         * @param int $item_qty
+         * @param float $item_price
+         * @param string $item_name
+         * @param float $item_shipping
+         * @param float $item_tax
+         * @param string $item_url
+         * @param string $item_img
+         * @param mixed $item_subscriptionprice
+         * @param bool $is_multi_add
+         * @return mixed
+         */
 	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00', $is_multi_add = false) {
                 global $wpStoreCart;
                 
