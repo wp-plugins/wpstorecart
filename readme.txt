@@ -1,10 +1,10 @@
-=== wpStoreCart - Ecommerce Plugin for Wordpress ===
+﻿=== wpStoreCart - Ecommerce Plugin for Wordpress ===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 2.8.0
 Tested up to: 3.3
-Stable tag: 2.5.5
+Stable tag: 2.5.6
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -85,8 +85,10 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 2.5.6 =
+* Fixed: Spelling & typo corrections
+
 = 2.5.5 =
-* Added: Can now specify pre-uploaded files for use with product's downloads
 * Added: Began adding unit testing to wpStoreCart.
 
 = 2.5.4 =
