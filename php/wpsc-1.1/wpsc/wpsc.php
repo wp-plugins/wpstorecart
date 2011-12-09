@@ -968,7 +968,7 @@ class wpsc {
 
                 if( $isLoggedIn == true || $is_checkout==false) {
 
-                    $output .= "\t<form method='post' action='$form_action'>\n";
+                    $output .= "\t <form method=\"post\" action=\"$form_action\"> \n";
 
                     $output .= "\t\t\t\t\t\t<strong id='wpsc-title'>" . $text['cart_title'] . "</strong> (" . $this->itemcount . "&nbsp;" . $text['items_in_cart'] .")<br />\n";
 
