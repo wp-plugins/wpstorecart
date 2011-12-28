@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.9
+Version: 2.5.10
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.9
+ * @version 2.5.10
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.9';
-$wpstorecart_version_int = 205009; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.10';
+$wpstorecart_version_int = 205010; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -245,22 +245,7 @@ if(!function_exists('copyr')) {
     }
 }
 
-// Copy the theme if needed
-/**
-if(!file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php')) {
-    @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
-} else {
-    require_once(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/version.php');
-    global $wpsc_default_theme_version;
-    $wpsc_default_theme_old_version = $wpsc_default_theme_version;
-    require_once(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/version.php');
-    global $wpsc_default_theme_version;
-    $wpsc_default_theme_new_version = $wpsc_default_theme_version;
-    if($wpsc_default_theme_new_version > $wpsc_default_theme_old_version) {
-        @copyr(WP_CONTENT_DIR.'/plugins/wpstorecart/wpStoreCartTheme/', WP_CONTENT_DIR.'/themes/wpStoreCartTheme/');
-    }
-}
-*/
+
 
 // Try and fix things for people who have magic quotes on
 if (@get_magic_quotes_gpc()) {
@@ -2034,19 +2019,19 @@ echo '</ul>
 
 
 				if (isset($_POST['emailonpurchase'])) {
-					$devOptions['emailonpurchase'] = $wpdb->escape($_POST['emailonpurchase']);
+					$devOptions['emailonpurchase'] = esc_attr($_POST['emailonpurchase']);
 				}	
 				if (isset($_POST['emailonapproval'])) {
-					$devOptions['emailonapproval'] = $wpdb->escape($_POST['emailonapproval']);
+					$devOptions['emailonapproval'] = esc_attr($_POST['emailonapproval']);
 				}	
 				if (isset($_POST['emailonshipped'])) {
-					$devOptions['emailonshipped'] = $wpdb->escape($_POST['emailonshipped']);
+					$devOptions['emailonshipped'] = esc_attr($_POST['emailonshipped']);
 				}	
 				if (isset($_POST['emailsig'])) {
-					$devOptions['emailsig'] = $wpdb->escape($_POST['emailsig']);
+					$devOptions['emailsig'] = esc_attr($_POST['emailsig']);
 				}
 				if (isset($_POST['emailserialnumber'])) {
-					$devOptions['emailserialnumber'] = $wpdb->escape($_POST['emailserialnumber']);
+					$devOptions['emailserialnumber'] = esc_attr($_POST['emailserialnumber']);
 				}
 				if (isset($_POST['cart_title'])) {
  					$devOptions['cart_title'] = $wpdb->escape($_POST['cart_title']);
@@ -2750,27 +2735,27 @@ echo '</ul>
 
 			<tr><td><h3>Email Sent On Purchase <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-40" /><div class="tooltip-content" id="example-content-40">wpStoreCart attempts to send an email directly after a purchase is made.  This gives the customer feedback that their purchase was successful, and should also inform them that there will be a delay pending the approval of the purchase from a store admin.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when a customer purchases something.</p></td>
-			<td><textarea name="emailonpurchase" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonpurchase']), 'wpStoreCart'); echo'</textarea>
+			<td><textarea name="emailonpurchase" style="width:300px;height:250px;">'; echo stripslashes($devOptions['emailonpurchase']); echo'</textarea>
 			</td></tr>	
 
 			<tr><td><h3>Email Sent On Approval <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-41" /><div class="tooltip-content" id="example-content-41">wpStoreCart attempts to send an email once the order has been approved by an admin.  This lets the customer know that their order is fulfilled, and for digital downloads, it means they now have immediate access to their order.  Physical products are not yet shipped at this stage.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when an admin approves an order.</p></td>
-			<td><textarea name="emailonapproval" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonapproval']), 'wpStoreCart'); echo'</textarea>
+			<td><textarea name="emailonapproval" style="width:300px;height:250px;">'; echo stripslashes($devOptions['emailonapproval']); echo'</textarea>
 			</td></tr>	
 
 			<tr><td><h3>Email Sent When Shipped <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-42" /><div class="tooltip-content" id="example-content-42">wpStoreCart attempts to send an email after you\'ve marked an order shipped.  This let\'s customers know the status of their order.  You will need to manually send or update tracking information at this time.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when you\'ve shipped a product.</p></td>
-			<td><textarea name="emailonshipped" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailonshipped']), 'wpStoreCart'); echo'</textarea>
+			<td><textarea name="emailonshipped" style="width:300px;height:250px;">'; echo stripslashes($devOptions['emailonshipped']); echo'</textarea>
 			</td></tr>				
 
 			<tr><td><h3>Email Sent When Issuing Serial Number <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-429998987" /><div class="tooltip-content" id="example-content-429998987">wpStoreCart attempts to send an email when a serial number is issued for a product. Each serial number issued has a separate email.</div></h3></td>
 			<td class="tableDescription"><p>The email to send when issuing a serial number</p></td>
-			<td><textarea name="emailserialnumber" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailserialnumber']), 'wpStoreCart'); echo'</textarea>
+			<td><textarea name="emailserialnumber" style="width:300px;height:250px;">'; echo stripslashes($devOptions['emailserialnumber']); echo'</textarea>
 			</td></tr>
 
 			<tr><td><h3>Email Signature <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-43" /><div class="tooltip-content" id="example-content-43">The bottom of your emails sent will always contain the same footer or signiture.  Fill that out here.</div></h3></td>
 			<td class="tableDescription"><p>This is always included at the bottom of each email sent out.</p></td>
-			<td><textarea name="emailsig" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$devOptions['emailsig']), 'wpStoreCart'); echo'</textarea>
+			<td><textarea name="emailsig" style="width:300px;height:250px;">'; echo stripslashes($devOptions['emailsig']); echo'</textarea>
 			</td></tr>				
 			
 			</table>
@@ -5241,7 +5226,7 @@ echo '</ul>
                                             }
                                         }
 
-                                        $wpStoreCartproduct_name = $wpdb->escape($_POST['wpStoreCartproduct_name']);
+                                        $wpStoreCartproduct_name = esc_attr($_POST['wpStoreCartproduct_name']);
 					$wpStoreCartproduct_introdescription = $wpdb->escape($_POST['wpStoreCartproduct_introdescription']);
 					$wpStoreCartproduct_description = $wpdb->escape($_POST['wpStoreCartproduct_description']);
 					$wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
@@ -5308,7 +5293,7 @@ echo '</ul>
 				if(isset($results)) {
 					foreach ($results as $result) {
 						
-						$wpStoreCartproduct_name = stripslashes($result['name']);
+						$wpStoreCartproduct_name = $result['name'];
 						$wpStoreCartproduct_introdescription = stripslashes($result['introdescription']);
 						$wpStoreCartproduct_description = stripslashes($result['description']);
 						$wpStoreCartproduct_thumbnail = stripslashes($result['thumbnail']);
@@ -10278,6 +10263,71 @@ echo '</ul>
                         return $output;
                     }
                 }
+                
+                /**
+                 *
+                 * See if the current user has purchased the specified product.  Does not work for guest checkout
+                 * 
+                 * @global object $wpdb
+                 * @global object $cart
+                 * @global object $wpsc
+                 * @global boolean $is_checkout
+                 * @global object $current_user
+                 * @global boolean $testing_mode
+                 * @param type $primkey 
+                 * @return boolean 
+                 */
+                
+                function hasPurchased($primkey, $email=NULL) {
+                    global $wpdb, $current_user;
+
+                    $email = $wpdb->escape($email);
+                    $haspurchased = false;
+
+                    $devOptions = $this->getAdminOptions();		
+                    wp_get_current_user();
+                         
+                    if($email==NULL) { 
+                        if ( 0 == $current_user->ID ) {
+
+                        } else {
+                            $table_name99 = $wpdb->prefix . "wpstorecart_orders";
+                            $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `wpuser`={$current_user->ID};";
+                            $results = $wpdb->get_results( $sql , ARRAY_A );
+                            if(isset($results)) {
+                                foreach($results as $result) {
+                                    $specific_items = explode(",", $result['cartcontents']);
+                                    foreach($specific_items as $specific_item) {
+                                        if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
+                                            $current_item = explode('*', $specific_item);
+                                            if(isset($current_item[0]) && $current_item[0]==$primkey && $result['orderstatus']=='Completed') {
+                                                    $haspurchased = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }   
+                    } else { // Here we look up an order by email only!
+                        $table_name99 = $wpdb->prefix . "wpstorecart_orders";
+                        $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `email`='{$email}';";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        if(isset($results)) {
+                            foreach($results as $result) {
+                                $specific_items = explode(",", $result['cartcontents']);
+                                foreach($specific_items as $specific_item) {
+                                    if($specific_item != '0*0') { // This is filler, all cart entries contain a 0*0 entry
+                                        $current_item = explode('*', $specific_item);
+                                        if(isset($current_item[0]) && $current_item[0]==$primkey && $result['orderstatus']=='Completed') {
+                                                $haspurchased = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
+                    }
+                    return $haspurchased;
+                }
 
 
                 /**
@@ -14496,6 +14546,9 @@ if (!function_exists("wpStoreCartAdminPanel")) {
             $statsPage = add_submenu_page('wpstorecart-admin','Statistics - wpStoreCart PRO', 'Statistics', 'manage_wpstorecart', 'wpstorecart-statistics', array(&$wpStoreCart, 'printAdminPageStatistics'));
             $diagnosticsPage = add_submenu_page(NULL,'Diagnostics - wpStoreCart', 'Diagnostics', 'manage_wpstorecart', 'wpstorecart-diagnostics', array(&$wpStoreCart, 'printAdminPageDiagnostics'));
             add_submenu_page('wpstorecart-admin','Help - wpStoreCart PRO', 'Help', 'manage_wpstorecart', 'wpstorecart-help', array(&$wpStoreCart, 'printAdminPageHelp'));
+
+
+            
             add_action("admin_print_scripts-$settingsPage", array(&$wpStoreCart, 'my_tooltip_script') );
             add_action("admin_print_scripts-$categoriesPage", array(&$wpStoreCart, 'my_admin_scripts_cat') );
             add_action("admin_print_scripts-$customersPage", array(&$wpStoreCart, 'my_tooltip_script') );
@@ -14977,10 +15030,6 @@ if (isset($wpStoreCart)) {
         //require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/shareyourcart_v2/class.shareyourcart-wpstorecart.php');
 
 }
- /**
- * 
- */
-
 
 
 ?>
