@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.10
+Version: 2.5.11
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.10
+ * @version 2.5.11
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.10';
-$wpstorecart_version_int = 205010; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.11';
+$wpstorecart_version_int = 205011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -6910,6 +6910,7 @@ echo '</ul>
                     'Reply-To: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
                     'X-Mailer: PHP/' . phpversion();
 
+                @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                 mail($to, $subject, $message, $headers);
                 echo '<div class="updated"><p><strong>';
                 echo "The email to {$to} was sent.";
@@ -11957,6 +11958,7 @@ echo '</ul>
                                                         'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
                                                     // Send an email when purchase is submitted
+                                                    @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                                                     @mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
 
                                                     $message = wordwrap("A note was added to a recent order. Here is the contents:<br /> {$orderText}", 70);
@@ -11966,6 +11968,7 @@ echo '</ul>
                                                         'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
                                                     // Send an email when purchase is submitted
+                                                    @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                                                     @mail($devOptions['wpStoreCartEmail'], 'A note was added to a recent order!', $message, $headers);
                                                 }
                                             }
@@ -13104,6 +13107,7 @@ echo '</ul>
                             $sql = "SELECT `email` FROM `{$table_name}` WHERE `primkey`={$orderid};";
                             $results = $wpdb->get_results( $sql , ARRAY_A );
                             if(isset($results)) {
+                                @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                                 mail($results[0]['email'], 'The serial number for your recent purchase', $message, $headers);
                             }
                         }

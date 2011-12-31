@@ -944,6 +944,7 @@ else
 
                         // Send an email when purchase is submitted
                         if(isset($results)) {
+                                @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                                 mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
                         }
 
