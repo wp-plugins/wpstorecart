@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.11
+Version: 2.5.12
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.11
+ * @version 2.5.12
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.11';
-$wpstorecart_version_int = 205011; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.12';
+$wpstorecart_version_int = 205012; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -60,6 +60,12 @@ $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is 
 $APjavascriptQueue = NULL;
 $wpsc_cart_type = 'session';
 $wpsc_cart_sub_type = 'dragon';
+$wpstorecart_benchmark = true; // Added in 2.5.12, this allows for benchmarking
+
+/* If benchmarking is on, start the benchmark */
+if($wpstorecart_benchmark){
+	$benchmark_start_old = microtime(true);
+}
 
 // Let's pull in all our actions.  Added in 2.4.4
 include_once(WP_PLUGIN_DIR.'/wpstorecart/php/actions.php');
@@ -322,41 +328,6 @@ if (!class_exists("wpStoreCart")) {
             $wp_roles->add_cap( 'wpstorecart_manager', 'edit_published_posts' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'edit_published_pages' );
             $wp_roles->add_cap( 'wpstorecart_manager', 'manage_wpstorecart' );
-
-            /**
-             * ShareYourCart integration
-             */
-            if($devOptions['shareyourcart_secret']=='') { // Let's try to activate ShareYourCart.com the first time it is installed
-                $devOptions['shareyourcart_secret']='93d66d12-7c6c-11e0-8e44-0018518d6618'; // If we haven't registered, let's try to!
-                update_option($this->adminOptionsName, $devOptions);
-                require_once(WP_PLUGIN_DIR.'/wpstorecart/php/shareyourcart/shareyourcart-sdk.php');
-                if(trim($devOptions['shareyourcart_clientid'])=='' ||  trim($devOptions['shareyourcart_appid'])=='') {
-                    if (!function_exists('curl_init')) {
-                        // We'll stop trying to use ShareYourCart if cURL is not availble.
-                    } else {
-                        ob_start();
-                        try {
-                            $new_client = shareyourcart_registerAPI(trim($devOptions['shareyourcart_secret']), trim('http://'.$_SERVER['HTTP_HOST']), trim($devOptions['wpStoreCartEmail']));
-                        } catch (Exception $e) {
-                            ob_end_clean();
-                            echo $e->getMessage();
-                            $new_client = false;
-                        }
-                        if(!$new_client) {
-                            if(is_admin()) {
-                                $devOptions['shareyourcart_failedreg'] = 'true';
-                            }
-                        } else {
-                          $devOptions['shareyourcart_clientid'] = $new_client['client_id'];
-                          $devOptions['shareyourcart_appid'] = $new_client['app_key'];
-                          $devOptions['shareyourcart_activate'] = 'true';
-                          $devOptions['shareyourcart_failedreg'] = 'false';
-                        }
-                        update_option($this->adminOptionsName, $devOptions);
-                    }
-                }
-            }
-            // End ShareYourCart integration
 
             $devOptions['run_updates']='true';
             if (intval(str_replace('.','',$devOptions['database_version']))==$wpstorecart_version_int) { // This will force wpStoreCart to run the Update method if we're not using the latest version. the intval/str_replace stuff is there because we used to use a 2.1.9 format, and now we use 201009 format.
@@ -1045,7 +1016,7 @@ if (!class_exists("wpStoreCart")) {
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-coupon" class="spmenu">Coupons</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/group.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-groupdiscounts" class="spmenu">Group Discounts</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/images.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-combos" class="spmenu">Combos</a></li>
-                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu">ShareYourCart&#8482;</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=class.shareyourcart-wp.php" class="spmenu">ShareYourCart&#8482;</a></li>
                         </ul>
 
                         <script type="text/javascript">
@@ -1280,7 +1251,8 @@ if (!class_exists("wpStoreCart")) {
                                     'paymate_testmode' => 'false',
                                     'paymate_login' => '',
                                     'paymate_currency' => 'USD',
-                                    'paymate_ipn' => ''
+                                    'paymate_ipn' => '',
+                                    'completely_disable_shareyourcart' => 'false'
                                     );
 
 
@@ -2419,7 +2391,11 @@ echo '</ul>
 				}               
                                 if (isset($_POST['where_to_display_accessories'])) {
  					$devOptions['where_to_display_accessories'] = $wpdb->escape($_POST['where_to_display_accessories']);
-				}                                 
+				}                            
+                                if (isset($_POST['completely_disable_shareyourcart'])) {
+ 					$devOptions['completely_disable_shareyourcart'] = $wpdb->escape($_POST['completely_disable_shareyourcart']);
+				}                                   
+                                
                                 
 				if (isset($_POST['admin_capability'])) {
                                         global $wp_roles;
@@ -2669,6 +2645,11 @@ echo '</ul>
 			<tr><td><h3>Uninstall wpStoreCart? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-33463467347" /><div class="tooltip-content" id="example-content-33463467347">If you set this to Yes, and then deactivate wpStoreCart anytime afterwords, it will DELETE all products, orders, coupons, categories, and all other wpStoreCart data.</div></h3></td>
 			<td class="tableDescription"><p>Selecting "No" will retain all data, even if wpStoreCart is deleted or deactivated.  Better safe than sorry, leave this on No!</p></td>
 			<td><p><label for="uninstall_yes"><input type="radio" id="uninstall_yes" name="uninstall" value="true" '; if ($devOptions['uninstall'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="uninstall_no"><input type="radio" id="uninstall_no" name="uninstall" value="false" '; if ($devOptions['uninstall'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
+			</td></tr>
+                        
+			<tr><td><h3>Completely Disable ShareYourCart? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-33463467347655" /><div class="tooltip-content" id="example-content-33463467347655">If you set this to Yes, then ShareYourCart will be removed.</div></h3></td>
+			<td class="tableDescription"><p>Selecting "Yes" will remove ShareYourCart and completely disable it.  <strong>Must refresh after you update this setting</strong></p></td>
+			<td><p><label for="completely_disable_shareyourcart_yes"><input type="radio" id="completely_disable_shareyourcart_yes" name="completely_disable_shareyourcart" value="true" '; if ($devOptions['completely_disable_shareyourcart'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="completely_disable_shareyourcart_no"><input type="radio" id="completely_disable_shareyourcart_no" name="completely_disable_shareyourcart" value="false" '; if ($devOptions['completely_disable_shareyourcart'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p></td>
 			</td></tr>
 
 			<tr style="display:none;"><td><h3>Admin Menu Style <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-799934534" /><div class="tooltip-content" id="example-content-799934534">Allows you to use the classic admin panel style from wpStoreCart 1.x and 2.x, the new style of wpStoreCart 3, or a mixture of both. </div></h3></td>
@@ -15028,12 +15009,24 @@ if (isset($wpStoreCart)) {
         add_action('user_register',  array(&$wpStoreCart, 'register_extra_fields'));
         add_action('register_post',array(&$wpStoreCart, 'check_fields'),10,3);
 
-        //Filters
-	//add_filter('the_posts', array(&$wpStoreCart, 'add_script_swfobject')); 
-        //add_filter('threewp_activity_monitor_list_activities','wpsc_list_activities'); // for ThreeWP Activity Monitor version 2
-        //require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/shareyourcart_v2/class.shareyourcart-wpstorecart.php');
+        if(!isset($devOptions['completely_disable_shareyourcart']) || $devOptions['completely_disable_shareyourcart']=='false') {
+            require_once(WP_CONTENT_DIR . '/plugins/wpstorecart/php/shareyourcart_v2/class.shareyourcart-wpstorecart.php');
+        }
 
 }
 
+if($wpstorecart_benchmark){
+	global $benchmark_total_old;
+	$benchmark_end_old = microtime(true);
+	$benchmark_total_old = number_format($benchmark_end_old - $benchmark_start_old, 4);
+	$wpstorecart_version_old = $wpstorecart_version;
+	function wpsc_benchmark_old() {
+		global $benchmark_total_old, $wpstorecart_version_old;
+		echo '
+<!-- wpStoreCart '.$wpstorecart_version_old.' Benchmark: '.$benchmark_total_old.'-->
+';
+	}
+	add_action('wp_footer','wpsc_benchmark_old',10000);
+}
 
 ?>

@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 3.0.0
-Tested up to: 3.3
-Stable tag: 2.5.11
+Tested up to: 3.3.1
+Stable tag: 2.5.12
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -84,6 +84,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.5.12 =
+* Fixed: Updated to ShareYourCart 2.0
+* Added: Benchmarking 
 
 = 2.5.11 =
 * Fixed: Patched an issue where emails were not sent out if the sendmail_from address did not match the wpStoreCart admin email, which should improve the number of emails successfully sent
