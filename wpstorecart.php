@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.12
+Version: 2.5.13
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.12
+ * @version 2.5.13
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.12';
-$wpstorecart_version_int = 205012; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.13';
+$wpstorecart_version_int = 205013; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -60,7 +60,7 @@ $wpsc_error_level = E_ALL; // The error level to use if wpsc_error_reporting is 
 $APjavascriptQueue = NULL;
 $wpsc_cart_type = 'session';
 $wpsc_cart_sub_type = 'dragon';
-$wpstorecart_benchmark = true; // Added in 2.5.12, this allows for benchmarking
+$wpstorecart_benchmark = false; // Added in 2.5.12, this allows for benchmarking
 
 /* If benchmarking is on, start the benchmark */
 if($wpstorecart_benchmark){
@@ -1016,7 +1016,7 @@ if (!class_exists("wpStoreCart")) {
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/money.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-coupon" class="spmenu">Coupons</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/group.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-groupdiscounts" class="spmenu">Group Discounts</a></li>
                             <li class="icon"><span class="icon"><img src="'.plugins_url('/images/images.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-combos" class="spmenu">Combos</a></li>
-                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=class.shareyourcart-wp.php" class="spmenu">ShareYourCart&#8482;</a></li>
+                            <li class="icon"><span class="icon"><img src="'.plugins_url('/images/shareyourcart.png' , __FILE__).'" /></span><a href="admin.php?page=wpstorecart-shareyourcart" class="spmenu">ShareYourCart&#8482;</a></li>
                         </ul>
 
                         <script type="text/javascript">
@@ -10382,6 +10382,7 @@ echo '</ul>
                                     'displaytype' => '',
                                     'orderby' => '',
                                     'ordertype' => '',
+                                    'allowguests' => 'false',
                             ), $atts));
 
                             // This allows the shortcode to override the global setting
@@ -10450,11 +10451,41 @@ echo '</ul>
                                         $output.= $this->wpstorecart_picture_gallery($primkey);
                                         break;
                                     case 'haspurchased': // If a person has purchased shortcode =========================================================
+                                        
+                                        $table_name99 = $wpdb->prefix . "wpstorecart_orders";
                                             if ( 0 == $current_user->ID ) {
                                                 // Not logged in.
+                                                if($allowguests=='true') {
+                                                    if($devOptions['requireregistration']=='false' || $devOptions['requireregistration']=='disable') {
+                                                        if(@isset($_POST['guest_email'])) {
+                                                            $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
+                                                        }
+                                                        if(@isset($_SESSION['wpsc_email'])) {
+                                                            $isLoggedIn = true;
+                                                            $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `email`='{$wpdb->escape($_SESSION['wpsc_email'])}';";
+                                                        } else {
+                                                            $output .= '
+                                                                <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                    <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                    <input type="submit">
+                                                                </form>
+                                                                ';
+                                                            $isLoggedIn = false;
+
+                                                        }
+                                                    } else {
+                                                       $isLoggedIn = false;
+                                                    }                                                    
+                                                }
                                             } else {
-                                                $table_name99 = $wpdb->prefix . "wpstorecart_orders";
+                                                // User is logged in, use this SQL:
+                                                $isLoggedIn = true;
                                                 $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `wpuser`={$current_user->ID};";
+                                            }    
+                                            
+                                            if($isLoggedIn) {
+                                                
+                                                
                                                 $results = $wpdb->get_results( $sql , ARRAY_A );
                                                 if(isset($results)) {
                                                     foreach($results as $result) {
