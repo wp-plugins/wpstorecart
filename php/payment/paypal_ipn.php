@@ -111,10 +111,24 @@ if ($myPaypal->validateIpn())
                 'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
                 'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
+
             // Send an email when purchase is submitted
-            if(isset($results)) {
-                mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+            @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
+            if($current_user->ID != 0) {
+                @mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
+            } else {
+                // Send an email when purchase is submitted
+                if(isset($results[0]['email'])) {
+                    @mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                } else {                
+                    if(@isset($_SESSION['wpsc_email'])) {
+                        @mail($_SESSION['wpsc_email'], 'Your order has been fulfilled!', $message, $headers);
+                    } elseif(@isset($_POST['payer_email'])) {
+                        @mail($_POST['payer_email'], 'Your order has been fulfilled!', $message, $headers);
+                    }
+                }
             }
+
             }
      }
 }

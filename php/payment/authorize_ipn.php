@@ -81,6 +81,7 @@ if ($myAuthorize->validateIpn())
                     'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
                     'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
 
+                @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                 // Send an email when purchase is submitted
                 if(isset($results)) {
                     mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
