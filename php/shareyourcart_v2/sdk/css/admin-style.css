@@ -252,6 +252,29 @@ select {
     margin-top: 40px;
 }
 
+.syc-update-nag {
+	line-height: 19px;
+	padding: 5px 0;
+	font-size: 12px;
+	text-align: center;
+	/*margin: 0 15px;*/
+	border-width: 1px;
+	border-style: solid;
+	/*border-top-width: 0;
+	border-top-style: none;*/
+	-moz-border-radius: 0 0 3px 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-khtml-border-bottom-right-radius: 3px;
+	-khtml-border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: 3px;
+	
+	background-color: #FFFBCC;
+	border-color: #E6DB55;
+	color: #555;
+}
+
 .clr {
 	clear:both;
 }
@@ -362,3 +385,22 @@ select {
     position: fixed;
 }
 /* ------- VERTICAL BUTTON STYLING -------------*/
+
+/* -------- UPDATE MESSAGES --------------- */
+
+.wrap div.updated, .wrap div.error  {
+border-width: 1px;
+border-style: solid;
+padding: 0 .6em;
+margin: 5px 0 15px;
+-moz-border-radius: 3px;
+-khtml-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+
+background-color: lightYellow;
+border-color: #E6DB55;
+}
+
+/* -------- FINISH UPDATE MESSAGES --------------- */
+

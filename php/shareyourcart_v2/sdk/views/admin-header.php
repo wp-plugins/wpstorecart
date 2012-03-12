@@ -18,6 +18,6 @@ document.getElementById('syc-form').addEventListener('submit', changetext, false
 
 var changetext = function(){
 	var textarea = document.getElementById('syc_button_textarea').value;
-	document.getElementById('syc_button_textarea').value = escape(textarea);	
+	document.getElementById('syc_button_textarea').value = encodeURIComponent(textarea);	
 }
 </script>
