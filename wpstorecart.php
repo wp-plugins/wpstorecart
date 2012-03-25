@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.15
+Version: 2.5.16
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.15
+ * @version 2.5.16
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.15';
-$wpstorecart_version_int = 205015; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.16';
+$wpstorecart_version_int = 205016; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -10311,6 +10311,18 @@ echo '</ul>
                     return $haspurchased;
                 }
 
+                
+                function wpscGdCheck() {
+                    if (@function_exists('imagecreatetruecolor')) {
+                        return true;
+                    }
+                    elseif (@function_exists('imagecreate')) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }                    
 
                 /**
                  *
@@ -11775,33 +11787,73 @@ echo '</ul>
                                             if($_GET['wpsc']=='orders') {
                                                 $output .= $devOptions['myordersandpurchases'];
 
+                                             
+                                                
                                                 // ** Here's where we disable the user login system during checkout if registration is not required
                                                 if ( is_user_logged_in() ) {
                                                     $isLoggedIn = true;
-                                                    if(class_exists('ThreeWP_Activity_Monitor')) {
-                                                        do_action('threewp_activity_monitor_new_activity', array(
-                                                            'activity_type' => 'wpsc-orders-view',
-                                                            'tr_class' => '',
-                                                            'activity' => array(
-                                                                "" => "%user_display_name_with_link% has viewed their Downloads and Orders page.",
-                                                            ),
-                                                        ));
-                                                    }
 
                                                 } else {
                                                     if($devOptions['requireregistration']=='false' || $devOptions['requireregistration']=='disable') {
                                                         if(@isset($_POST['guest_email'])) {
-                                                            $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
+                                                            
+                                                            if((@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
+                                                                @include_once(WP_PLUGIN_DIR.'/wpstorecart/php/securimage/securimage.php');
+                                                                @$securimage = new Securimage();
+                                                                @$securimage->code_length = rand(3, 5);
+                                                                @$securimage->num_lines = rand(3, 6);                                                                                                                            
+                                                                if (@$securimage->check($_POST['captcha_code']) == false && (@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck() )) {
+                                                                    $output .= 'CAPTCHA failed!<br /><br />';
+                                                                } else {
+                                                                    $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);                                                                
+                                                                } 
+                                                            }
+                                                            
+                                                            if(@!is_object($securimage)) { // If captcha failed
+                                                                $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']); 
+                                                            }
+                                                            
                                                         }
                                                         if(@isset($_SESSION['wpsc_email'])) {
+ 
                                                             $isLoggedIn = true;
+                                                            
                                                         } else {
-                                                            $output .= '
-                                                                <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
-                                                                    <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                                                    <input type="submit">
-                                                                </form>
-                                                                ';
+                                                            if(@!isset($securimage)) {
+                                                                if((@extension_loaded('gd') && @function_exists('gd_info'))) {
+                                                                    @include_once(WP_PLUGIN_DIR.'/wpstorecart/php/securimage/securimage.php');
+                                                                    @$securimage = new Securimage();
+                                                                    @$securimage->code_length = rand(3, 5);
+                                                                    @$securimage->num_lines = rand(3, 6);                                                                
+                                                                    if (@$securimage->check($_POST['captcha_code']) == false && (@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
+                                                                        $output .= 'CAPTCHA failed!<br /><br />';
+                                                                    } else {
+                                                                        $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);                                                                
+                                                                    } 
+                                                                }
+
+                                                                if(@!is_object($securimage)) { // If captcha failed
+                                                                    $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']); 
+                                                                }                        
+                                                            }
+                                                            if((@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
+                                                                $captcha = '
+                                                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                        <img id="wpsc-captcha" src="'.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
+                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
+                                                                        <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                        <input type="submit">
+                                                                    </form>
+                                                                    ';
+                                                            } else {
+                                                                    $captcha = '
+                                                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                        <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                        <input type="submit">
+                                                                    </form>
+                                                                    ';                                                            
+                                                            }
+                                                            $output .= $captcha;                                                            
                                                             $isLoggedIn = false;
 
                                                         }
@@ -11926,13 +11978,26 @@ echo '</ul>
 
 
                                                     } else {
-                                                        $output .= '<br />Email: ' . $_SESSION['wpsc_email'] . '<br />';
-                                                        $output .= '
-                                                            <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
-                                                                <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
-                                                                <input type="submit">
-                                                            </form>
-                                                            ';
+                                                            if((@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
+                                                                $captcha = '
+                                                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                        <img id="wpsc-captcha" src="'.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
+                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
+                                                                        <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                        <input type="submit">
+                                                                    </form>
+                                                                    ';
+                                                            } else {
+                                                                    $captcha = '
+                                                                    <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
+                                                                        <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
+                                                                        <input type="submit">
+                                                                    </form>
+                                                                    ';                                                            
+                                                            }
+                                                            $output .= $captcha; 
+
+                                                        
                                                     }
 
                                                 }

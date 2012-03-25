@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 3.0.0
 Tested up to: 3.3.1
-Stable tag: 2.5.15
+Stable tag: 2.5.16
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -85,11 +85,14 @@ Or, if you want to install manually:
 
 == Changelog ==
 
-= 2.5.15 = 
+= 2.5.16 =
+* Added: Captch security added to guest order lookup
+
+= 2.5.15 =
 * Updated: Updated to latest ShareYourCart point release
 
 = 2.5.14 =
-* Fixed: Rewrote the email functions to prevent the frequent reports on non-functioning emails.
+* Fixed: Did some things to try and minimize the email issues users have been reporting.
 
 = 2.5.13 = 
 * Updated: Updated to latest ShareYourCart point release
