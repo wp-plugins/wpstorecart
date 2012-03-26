@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.16
+Version: 2.5.17
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.16
+ * @version 2.5.17
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.16';
-$wpstorecart_version_int = 205016; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.17';
+$wpstorecart_version_int = 205017; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -192,6 +192,33 @@ if($wpsc_error_reporting==true) {
         restore_error_handler(); // Restore error handler
 }
 
+if (!function_exists('wpsc_ini_get_bool')) {
+    /**
+     *
+     * A better ini_get() implementation 
+     * 
+     * @param string $a
+     * @return boolean
+     */
+    function wpsc_ini_get_bool($a) {
+        $b = @ini_get($a);
+
+        switch (strtolower($b))
+        {
+        case 'on':
+        case 'yes':
+        case 'true':
+            return 'assert.active' !== $a;
+
+        case 'stdout':
+        case 'stderr':
+            return 'display_errors' === $a;
+
+        default:
+            return (bool) (int) $b;
+        }
+    }
+}
 
 
 // Create the proper directory structure if it is not already created
@@ -689,7 +716,7 @@ if (!class_exists("wpStoreCart")) {
                 add_action('admin_notices', array(&$this, 'wpscErrorNoUploadWpDir'));
             }
 
-            if (@ini_get('register_globals')==1) {
+            if (wpsc_ini_get_bool('register_globals')==1) {
                 add_action('admin_notices', array(&$this, 'wpscErrorRegisterGlobals'));
             }
             if(!isset($devOptions['mainpage']) || !is_numeric($devOptions['mainpage'])) {
