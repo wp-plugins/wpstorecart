@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 3.0.0
-Tested up to: 3.3.1
-Stable tag: 2.5.18
+Tested up to: 3.4
+Stable tag: 2.5.19
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -85,8 +85,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 2.5.19 =
+* Wordpress 3.4 Beta 1 compatible
+
 = 2.5.18 =
-* * Fixed: Removed references to WP_PLUGIN_URL and replaced them with plugin_url() which supports SSL
+* Fixed: Removed references to WP_PLUGIN_URL and replaced them with plugin_url() which supports SSL
 
 = 2.5.17 =
 * Fixed: Patched an issue where register_globals was reported as on when it was really off
