@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.21
+Version: 2.5.22
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.21
+ * @version 2.5.22
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,7 +51,7 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.21';
+$wpstorecart_version = '2.5.22';
 $wpstorecart_version_int = 205021; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -3380,12 +3380,12 @@ echo '</ul>
                             </td></tr>
 
                             <tr><td><h3>Enable UPS Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81235" /><div class="tooltip-content" id="example-content-81235">This allows you to ship via UPS and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
-                            <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for UPS.</p></td>
+                            <td class="tableDescription"><p>If set to Yes, will allow customers to select UPS as a shipping option and will give shipping price quotes for UPS.</p></td>
                             <td><p><label for="enableups"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_yes" name="enableups" value="true" '; if ($devOptions['enableups'] == "true") { _e('checked="checked"', "wpStoreCart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableups_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableups_no" name="enableups" value="false" '; if ($devOptions['enableups'] == "false") { _e('checked="checked"', "wpStoreCart"); }; echo '/> No</label></p>
                             </td></tr>
 
                             <tr style="display:none;"><td><h3>Enable FedEx Shipping? <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-81236" /><div class="tooltip-content" id="example-content-81236">This allows you to ship via FedEx and allows the customer to calculate the shipping rates before purchase.</div></h3></td>
-                            <td class="tableDescription"><p>If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for FedEx.</p></td>
+                            <td class="tableDescription"><p>If set to Yes, will allow customers to select FedEx as a shipping option and will give shipping price quotes for FedEx.</p></td>
                             <td><p><label for="enablefedex"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_yes" name="enablefedex" value="true" '; /*if ($devOptions['enablefedex'] == "true") { _e('checked="checked"', "wpStoreCart"); };*/ echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enablefedex_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enablefedex_no" name="enablefedex" value="false" '; /*if ($devOptions['enablefedex'] == "false") {*/ _e('checked="checked"', "wpStoreCart"); /*};*/ echo '/> No</label></p>
                             </td></tr>
 

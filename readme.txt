@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 3.0.0
 Tested up to: 3.4
-Stable tag: 2.5.21
+Stable tag: 2.5.22
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -84,6 +84,9 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.5.22 =
+* Fixed: Corrected a couple of typos
 
 = 2.5.21 =
 * Updated: jQuery Sparkline upgraded from version 1.5.1 to 1.6
