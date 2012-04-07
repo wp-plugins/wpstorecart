@@ -22,7 +22,7 @@ if(current_user_can('administrator')) {
 
     update_option('wpStoreCartAdminOptions', $devOptions);
     header("HTTP/1.1 301 Moved Permanently");
-    header ('Location: '.WP_PLUGIN_URL.'/wpstorecart/php/wizard/wizard_setup_end.php');
+    header ('Location: '.plugins_url().'/wpstorecart/php/wizard/wizard_setup_end.php');
     exit();
 
 }

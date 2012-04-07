@@ -7,8 +7,8 @@ $allowedToAccess = true;
 if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
 
     echo '
-    <center><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;cursor:pointer;" onclick="jQuery(\'#buypro\').submit();" /></center>
-    <center><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/affiliates.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
+    <center><img src="'.plugins_url().'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;cursor:pointer;" onclick="jQuery(\'#buypro\').submit();" /></center>
+    <center><img src="'.plugins_url().'/wpstorecart/images/affiliates.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
     <input type="hidden" name="cmd" value="_s-xclick">
     <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">

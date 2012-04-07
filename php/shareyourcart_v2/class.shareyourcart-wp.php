@@ -33,7 +33,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 			
 			//make sure we add this instance
 			self::$_INSTANCES []= $this;
-			$this->_PLUGIN_PATH  = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
+			$this->_PLUGIN_PATH  = plugins_url().'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
 
 			//setup the hooks
 			register_activation_hook(self::getPluginFile(),            array(&$this,'activateHook'));
@@ -183,7 +183,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 			$file = SyC::relativepath(dirname(__FILE__),$file);
 
 			//append the relative path to the current file's URL
-			return WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)).$file;
+			return plugins_url().'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)).$file;
 		}
 
 		/**

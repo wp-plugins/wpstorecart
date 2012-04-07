@@ -35,7 +35,7 @@ if (isset($wpStoreCart)) {
         $wpsc['item_tax']               = 'my-item-tax';                // TAXES
 
 	// PATH TO THE DIRECTORY CONTAINING WPSC FILES
-	$wpsc['path'] =  WP_PLUGIN_URL.'/wpstorecart/php/wpsc-1.1/wpsc/';
+	$wpsc['path'] =  plugins_url().'/wpstorecart/php/wpsc-1.1/wpsc/';
 
 	// THE PATH AND FILENAME WHERE SHOPPING CART CONTENTS SHOULD BE POSTED WHEN A VISITOR CLICKS THE CHECKOUT BUTTON
 	// USED AS THE ACTION ATTRIBUTE FOR THE SHOPPING CART FORM

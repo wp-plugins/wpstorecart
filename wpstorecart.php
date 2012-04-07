@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.17
+Version: 2.5.18
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.17
+ * @version 2.5.18
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.17';
-$wpstorecart_version_int = 205017; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.18';
+$wpstorecart_version_int = 205018; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1238,7 +1238,7 @@ if (!class_exists("wpStoreCart")) {
                                     'field_order_3' => '3',
                                     'field_order_4' => '4',
                                     'pcicompliant' => 'false',
-                                    'paypalipnurl' => WP_PLUGIN_URL.'/wpstorecart/php/payment/paypal_ipn.php',
+                                    'paypalipnurl' => plugins_url().'/wpstorecart/php/payment/paypal_ipn.php',
                                     'button_classes_addtocart' => '',
                                     'button_classes_checkout' => '',
                                     'button_classes_meta' => '',
@@ -1505,7 +1505,7 @@ if (!class_exists("wpStoreCart")) {
                                             $wpsc_button_classes = $devOptions['button_classes_addtocart'];
                                             $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
                                             $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
-                                            $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                                            $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
                                             $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                                             $wpsc_buy_now = $devOptions['buy_now'];
                                             require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
@@ -6304,7 +6304,7 @@ echo '</ul>
                                         if(newExploderY[i]!=0) {
                                             jQuery.ajax({        
                                                    type: "POST",
-                                                   url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                                                   url: "'.plugins_url().'/wpstorecart/php/getproductname.php",
                                                    data: "primkey="+newExploderY[i]'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
                                                    success: function(txt) {
                                                         if(txt.length > 0) {
@@ -6323,7 +6323,7 @@ echo '</ul>
                                         if(newExploderY[i]!=0) {
                                             jQuery.ajax({        
                                                    type: "POST",
-                                                   url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                                                   url: "'.plugins_url().'/wpstorecart/php/getproductname.php",
                                                    data: "primkey="+newExploderY[i]'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
                                                    success: function(txt) {
                                                         if(txt.length > 0) {
@@ -7097,7 +7097,7 @@ echo '</ul>
                     function createNewCombo() {
                         jQuery.ajax({        
                                type: "POST",
-                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/createnewcombo.php",
+                               url: "'.plugins_url().'/wpstorecart/php/createnewcombo.php",
                                data: "primkeys="+jQuery("#wpsccomboproducts").val()+"&combopackname="+jQuery("#combopackname").val()'; if($isanedit) {echo '+"&isanedit='.$editkey.'"';} echo''; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
                                success: function(txt) {
                                     window.location = "admin.php?page=wpstorecart-combos";
@@ -7108,7 +7108,7 @@ echo '</ul>
                     function delCombo(primkey) {
                         jQuery.ajax({        
                                type: "POST",
-                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/delcombo.php",
+                               url: "'.plugins_url().'/wpstorecart/php/delcombo.php",
                                data: "delete="+primkey'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
                                success: function(txt) {
                                     jQuery("#wpsc_combo_id_"+primkey).fadeOut("slow");
@@ -7125,7 +7125,7 @@ echo '</ul>
                     function getProductName(primkey) {
                         jQuery.ajax({        
                                type: "POST",
-                               url: "'.WP_PLUGIN_URL.'/wpstorecart/php/getproductname.php",
+                               url: "'.plugins_url().'/wpstorecart/php/getproductname.php",
                                data: "primkey="+primkey'; if($testing_mode){echo '+"&'.$devOptions['debug_parameter'].'"';}  echo',
                                success: function(txt) {
                                     var newSplitX = jQuery("#wpsccomboproducts").val();
@@ -9742,7 +9742,7 @@ echo '</ul>
                             $wpsc_button_classes = $devOptions['button_classes_addtocart'];
                             $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
                             $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
-                            $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                            $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
                             $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                             $wpsc_buy_now = $devOptions['buy_now'];
                             require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
@@ -10142,7 +10142,7 @@ echo '</ul>
                                 var productsToAdd = jQuery("input[name=\'wpsc-add-product-combo\']:checked").getCheckboxVal();
                                 jQuery.ajax({        
                                        type: "POST",
-                                       url: "'.WP_PLUGIN_URL.'/wpstorecart/php/multiaddtocart.php",
+                                       url: "'.plugins_url().'/wpstorecart/php/multiaddtocart.php",
                                        data: { productsToAddArray : productsToAdd },
                                        success: function() {
 ';
@@ -11359,7 +11359,7 @@ echo '</ul>
                                                                         $wpsc_button_classes = $devOptions['button_classes_addtocart'];
                                                                         $wpsc_paypal_ipn = $devOptions['paypalipnurl'];
                                                                         $wpsc_paypal_testmode = $devOptions['paypaltestmode'];
-                                                                        $wpsc_self_path = WP_PLUGIN_URL.'/wpsc-membership-pro/';
+                                                                        $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
                                                                         $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                                                                         $wpsc_buy_now = $devOptions['buy_now'];
                                                                         require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
@@ -11781,7 +11781,7 @@ echo '</ul>
                                                 $table_name_products = $wpdb->prefix . "wpstorecart_products";
                                                 $sql = "SELECT `primkey`, `postid` FROM `{$table_name_products}` ORDER BY `primkey` ASC;";
                                                 $results = $wpdb->get_results( $sql , ARRAY_A );
-                                                $affiliatesettings['base_url'] = WP_PLUGIN_URL;
+                                                $affiliatesettings['base_url'] = plugins_url();
                                                 if(isset($results)) {
                                                     foreach ($results as $result) {
                                                         $affiliatesettings['available_products'] = $affiliatesettings['available_products'] . $result['primkey'] . ',';
@@ -11866,8 +11866,8 @@ echo '</ul>
                                                             if((@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
                                                                 $captcha = '
                                                                     <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
-                                                                        <img id="wpsc-captcha" src="'.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
-                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
+                                                                        <img id="wpsc-captcha" src="'.plugins_url().'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
+                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.plugins_url().'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
                                                                         <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
                                                                         <input type="submit">
                                                                     </form>
@@ -12008,8 +12008,8 @@ echo '</ul>
                                                             if((@extension_loaded('gd') && @function_exists('gd_info') && $this->wpscGdCheck())) {
                                                                 $captcha = '
                                                                     <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">
-                                                                        <img id="wpsc-captcha" src="'.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
-                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.WP_PLUGIN_URL.'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
+                                                                        <img id="wpsc-captcha" src="'.plugins_url().'/wpstorecart/php/securimage/securimage_show.php" alt="CAPTCHA Image" /><br />
+                                                                        <input type="text" name="captcha_code" size="10" maxlength="6" /> <a href="#" onclick="document.getElementById(\'wpsc-captcha\').src = \''.plugins_url().'/wpstorecart/php/securimage/securimage_show.php?\' + Math.random(); return false">[ Different Image ]</a><br />                                                                        
                                                                         <label><span>'. $devOptions['email'] .' <ins><div class="wpsc-required-symbol">'.$devOptions['required_symbol'].'</div></ins></span><input type="text" name="guest_email" value="'.$_SESSION['wpsc_email'].'" /></label>
                                                                         <input type="submit">
                                                                     </form>
@@ -12297,8 +12297,8 @@ echo '</ul>
 
             
                         $APjavascriptQueue .= '
-                            <link href="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/basic.css" type="text/css" rel="stylesheet" />
-                            <script type="text/javascript" src="'.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/_shared/EnhanceJS/enhance.js"></script>
+                            <link href="'.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/basic.css" type="text/css" rel="stylesheet" />
+                            <script type="text/javascript" src="'.plugins_url() . '/wpstorecart/js/jqVisualize/_shared/EnhanceJS/enhance.js"></script>
                             <script type="text/javascript">
                             /* <![CDATA[ */
                             // Run capabilities test
@@ -12306,13 +12306,13 @@ echo '</ul>
                             jQuery(document).ready(function($) {
                                             enhance({
                                                     loadScripts: [
-                                                            \''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/js/excanvas.js\',
-                                                            \''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/js/visualize.jQuery.js\',
-                                                            \''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/js/example.js\'
+                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/excanvas.js\',
+                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/visualize.jQuery.js\',
+                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/example.js\'
                                                     ],
                                                     loadStyles: [
-                                                            \''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/visualize.css\',
-                                                            \''.WP_PLUGIN_URL . '/wpstorecart/js/jqVisualize/charting/css/visualize-light.css\'
+                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize.css\',
+                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize-light.css\'
                                                     ]
                                             });
                             });
@@ -12321,9 +12321,9 @@ echo '</ul>
                                 ';
 
 
-                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
                         $this->overlay_css();
 
 		}		
@@ -12339,17 +12339,17 @@ echo '</ul>
 
                         wp_enqueue_script('jquery-ui-core',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-sortable',array('jquery'),'1.4');
-			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jq-validation-engine-en', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
-                        wp_enqueue_script('jq-validation-engine', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
-                        wp_enqueue_script('imagemapster', WP_PLUGIN_URL .'/wpstorecart/js/imagemapster/jquery.imagemapster.1.2b2.js',array('jquery'),'1.6');
+			wp_enqueue_script('ezpz_tooltip',plugins_url() . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jq-validation-engine-en', plugins_url() .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
+                        wp_enqueue_script('jq-validation-engine', plugins_url() .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
+                        wp_enqueue_script('imagemapster', plugins_url() .'/wpstorecart/js/imagemapster/jquery.imagemapster.1.2b2.js',array('jquery'),'1.6');
 
 
 			$APjavascriptQueue .= '
-                        <link rel="stylesheet" href="'.WP_PLUGIN_URL .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />    
+                        <link rel="stylesheet" href="'.plugins_url() .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />    
                         ';
 
                         $this->overlay_css();
@@ -12363,7 +12363,7 @@ echo '</ul>
 					border: 1px solid black;
 					background-color: white;
 					max-width:345px;
-					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+					background: #FFFFFF url(\''.plugins_url() . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
                                         z-index:999999;
 				}
 
@@ -12391,14 +12391,14 @@ echo '</ul>
 		function admin_script_anytime() {
 			global $APjavascriptQueue;
 
-                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
-			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
-			wp_enqueue_script('anytime',WP_PLUGIN_URL . '/wpstorecart/js/anytime/anytimec.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+			wp_enqueue_script('ezpz_tooltip',plugins_url() . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+			wp_enqueue_script('anytime',plugins_url() . '/wpstorecart/js/anytime/anytimec.js',array('jquery'),'1.4' );
                         $this->overlay_css();
 		
-			$APjavascriptQueue .= '<link type="text/css" rel="stylesheet" href="' . WP_PLUGIN_URL . '/wpstorecart/js/anytime/anytimec.css" />
+			$APjavascriptQueue .= '<link type="text/css" rel="stylesheet" href="' . plugins_url() . '/wpstorecart/js/anytime/anytimec.css" />
 			<style type="text/css">
 				.tooltip-content {
 					display: none;        /* required */
@@ -12409,7 +12409,7 @@ echo '</ul>
 					width:345px;
 					min-width:345px;
 					max-width:345px;
-					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+					background: #FFFFFF url(\''.plugins_url() . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
                                         z-index:999999;
 				}			
 			</style>
@@ -12462,7 +12462,7 @@ echo '</ul>
                  */
                 function enqueue_my_scripts() {
                     $devOptions = $this->getAdminOptions();
-                    wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
+                    wp_enqueue_script('jquery-ui-effects', plugins_url() .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
                     if($devOptions['useimagebox']=='thickbox' && !is_admin()) {
                         wp_enqueue_script('thickbox',null,array('jquery'));
                     }
@@ -12477,16 +12477,16 @@ echo '</ul>
 		function my_admin_scripts_cat(){
 			global $APjavascriptQueue;
 
-                        wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
+                        wp_enqueue_script('jquery-ui-effects', plugins_url() .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
-			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+			wp_enqueue_script('ezpz_tooltip',plugins_url() . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
 
 			if (session_id() == "") {@session_start();};
 
 			$APjavascriptQueue = '';
 
 			$APjavascriptQueue .= '
-                        <link rel="stylesheet" href="'.WP_PLUGIN_URL .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />
+                        <link rel="stylesheet" href="'.plugins_url() .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />
 
 			<style type="text/css">
 				.tooltip-content {
@@ -12498,7 +12498,7 @@ echo '</ul>
 					width:345px;
 					min-width:345px;
 					max-width:345px;
-					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+					background: #FFFFFF url(\''.plugins_url() . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
                                         z-index:999999;
 				}
 
@@ -12538,7 +12538,7 @@ echo '</ul>
 			};
 
 			var productUploadSuccessEventHandler2 = function (file, server_data, receivedResponse) {
-                                jQuery("#uploadimage2").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+                                jQuery("#uploadimage2").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_thumbnail.value = "'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name;
                                 jQuery(\'#show_thumbnail_img\').attr(\'src\',"'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name);
                                 this.startUpload();
@@ -12623,7 +12623,7 @@ echo '</ul>
 
 			window.onload = function () {
 				var settings_object2 = {
-					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "9999 MB",
@@ -12632,7 +12632,7 @@ echo '</ul>
 					file_upload_limit : "0",
 					file_post_name: "Filedata",
 					button_placeholder_id : "spanSWFUploadButton2",
-					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
 					button_width: 61,
 					button_height: 22,
 					debug : false,
@@ -12655,9 +12655,9 @@ echo '</ul>
 			</script>
 			';
 
-                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
                         $this->overlay_css();
 
 		}
@@ -12673,21 +12673,21 @@ echo '</ul>
 			global $APjavascriptQueue;
 
 			wp_enqueue_script('wpscniceditor', plugins_url('/js/nicedit/nicEdit.js' , __FILE__), array('jquery'),'1.4');		 
-                        wp_enqueue_script('jeditable-wpsc', WP_PLUGIN_URL .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
-                        wp_enqueue_script('jquery-ui-effects', WP_PLUGIN_URL .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
+                        wp_enqueue_script('jeditable-wpsc', plugins_url() .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
+                        wp_enqueue_script('jquery-ui-effects', plugins_url() .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
-			wp_enqueue_script('ezpz_tooltip',WP_PLUGIN_URL . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
+			wp_enqueue_script('ezpz_tooltip',plugins_url() . '/wpstorecart/js/jquery.ezpz_tooltip.js',array('jquery'),'1.4' );
                         wp_enqueue_script('jquery-ui-core',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-sortable',array('jquery'),'1.4');
-                        wp_enqueue_script('jq-validation-engine-en', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
-                        wp_enqueue_script('jq-validation-engine', WP_PLUGIN_URL .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
+                        wp_enqueue_script('jq-validation-engine-en', plugins_url() .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
+                        wp_enqueue_script('jq-validation-engine', plugins_url() .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
 
 			if (session_id() == "") {@session_start();};
 			
 			$APjavascriptQueue = '';
 			
 			$APjavascriptQueue .= '
-                        <link rel="stylesheet" href="'.WP_PLUGIN_URL .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />
+                        <link rel="stylesheet" href="'.plugins_url() .'/wpstorecart/js/formValidator/css/validationEngine.jquery.css" type="text/css" media="all" />
 
 			<style type="text/css">
 				.tooltip-content {
@@ -12699,7 +12699,7 @@ echo '</ul>
 					width:345px;
 					min-width:345px;
 					max-width:345px;
-					background: #FFFFFF url(\''.WP_PLUGIN_URL . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
+					background: #FFFFFF url(\''.plugins_url() . '/wpstorecart/images/tooltip001.jpg\') top left no-repeat;
                                         z-index:999999;
 				}
 
@@ -12739,25 +12739,25 @@ echo '</ul>
 			}; 
 
 			var productUploadSuccessEventHandler = function (file, server_data, receivedResponse) {
-                                jQuery("#uploadimage1").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+                                jQuery("#uploadimage1").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_download.value = document.wpstorecartaddproductform.wpStoreCartproduct_download.value + file.name + "||";
                                 this.startUpload();
 			}; 
 			
 			var productUploadSuccessEventHandler2 = function (file, server_data, receivedResponse) {
-                                jQuery("#uploadimage2").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+                                jQuery("#uploadimage2").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_thumbnail.value = "'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name;
                                 jQuery(\'#show_thumbnail_img\').attr(\'src\',"'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name);
                                 this.startUpload();
 			}; 			
 
 			var productUploadSuccessEventHandler3 = function (file, server_data, receivedResponse) {
-                                jQuery("#uploadimage3").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+                                jQuery("#uploadimage3").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_variation.value = document.wpstorecartaddproductform.wpStoreCartproduct_variation.value + file.name + "****";
                                 this.startUpload();
 			};
 			var productUploadSuccessEventHandler4 = function (file, server_data, receivedResponse) {
-                                jQuery("#uploadimage4").attr("src","'.WP_PLUGIN_URL.'/wpstorecart/images/white.gif");
+                                jQuery("#uploadimage4").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
 				document.wpstorecartaddproductform.wpStoreCartproduct_download_pg.value = document.wpstorecartaddproductform.wpStoreCartproduct_download_pg.value + file.name + "||";
                                 this.startUpload();
 			};
@@ -12872,7 +12872,7 @@ echo '</ul>
                         var swfu4;
 			window.onload = function () { 
 				var settings_object = { 
-					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php", 
+					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php", 
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
 					file_size_limit : "2048 MB",
@@ -12881,7 +12881,7 @@ echo '</ul>
 					file_upload_limit : "0",
 					file_post_name: "Filedata",					
 					button_placeholder_id : "spanSWFUploadButton",
-					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
 					button_width: 61,
 					button_height: 22,
 					debug : false, 
@@ -12894,7 +12894,7 @@ echo '</ul>
 				}; 
 				
 				var settings_object2 = { 
-					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php", 
+					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php", 
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
 					file_size_limit : "9999 MB",
@@ -12903,7 +12903,7 @@ echo '</ul>
 					file_upload_limit : "0",
 					file_post_name: "Filedata",					
 					button_placeholder_id : "spanSWFUploadButton2",
-					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
 					button_width: 61,
 					button_height: 22,
 					debug : false, 
@@ -12916,7 +12916,7 @@ echo '</ul>
 				}; 				
 
 				var settings_object3 = {
-					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "2048 MB",
@@ -12925,7 +12925,7 @@ echo '</ul>
 					file_upload_limit : "0",
 					file_post_name: "Filedata",
 					button_placeholder_id : "spanSWFUploadButton3",
-					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
 					button_width: 61,
 					button_height: 22,
 					debug : false,
@@ -12938,7 +12938,7 @@ echo '</ul>
 				};
 
 				var settings_object4 = {
-					upload_url : "'.WP_PLUGIN_URL.'/wpstorecart/php/upload.php",
+					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
 					post_params: {"PHPSESSID" : "'.session_id().'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "2048 MB",
@@ -12947,7 +12947,7 @@ echo '</ul>
 					file_upload_limit : "0",
 					file_post_name: "Filedata",
 					button_placeholder_id : "spanSWFUploadButton4",
-					button_image_url : "'.WP_PLUGIN_URL.'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
 					button_width: 61,
 					button_height: 22,
 					debug : false,
@@ -12970,9 +12970,9 @@ echo '</ul>
 			</script>			
 			';
 
-                        wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                        wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                        wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
                         $this->overlay_css();
 
 		}			
@@ -12994,10 +12994,10 @@ echo '</ul>
                  * Enqueues scripts necessary for some wpStoreCart admin pages to work
                  */
                 function placeAdminHeaderEnqueue() {
-                    wp_enqueue_script('toolbox_expose',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
-                    wp_enqueue_script('jqt_overlay',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
-                    wp_enqueue_script('jqt_overlay_apple',WP_PLUGIN_URL . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
-                    wp_enqueue_script('jeegoocontext',WP_PLUGIN_URL . '/wpstorecart/js/jeegoocontext/jeegoocontext/jquery.jeegoocontext.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('toolbox_expose',plugins_url() . '/wpstorecart/js/jqt_overlay/toolbox.expose.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('jqt_overlay',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('jqt_overlay_apple',plugins_url() . '/wpstorecart/js/jqt_overlay/overlay.apple.min.js',array('jquery'),'1.4' );
+                    wp_enqueue_script('jeegoocontext',plugins_url() . '/wpstorecart/js/jeegoocontext/jeegoocontext/jquery.jeegoocontext.min.js',array('jquery'),'1.4' );
                 }
 
                 /**
@@ -13283,7 +13283,7 @@ echo '</ul>
                                         } else { // Download products below:
                                             if(@isset($variationdownloads)) { // If we've got variations that have downloads
                                                 foreach ($variationdownloads as $variationdownload) {
-                                                    $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&isvariation=true&variationdl='.$variationdownload.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].'</a><br />';
+                                                    $output .= '<a href="'.plugins_url().'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&isvariation=true&variationdl='.$variationdownload.'"><img src="'.plugins_url().'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].'</a><br />';
                                                 }
                                             }
                                             
@@ -13292,12 +13292,12 @@ echo '</ul>
                                                 $downloadcount = 0;
                                                 foreach($multidownloads as $multidownload) {
                                                     if($multidownload!='') {
-                                                        $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&part='.$downloadcount.'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].' #'.$downloadcount.'</a><br />';
+                                                        $output .= '<a href="'.plugins_url().'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'&part='.$downloadcount.'"><img src="'.plugins_url().'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].' '.$thevariationdetail[0].' '.$thevariationdetail[1].' #'.$downloadcount.'</a><br />';
                                                     }
                                                         $downloadcount++;
                                                 }
                                             } else {
-                                                $output .= '<a href="'.WP_PLUGIN_URL.'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].'</a>';
+                                                $output .= '<a href="'.plugins_url().'/wpstorecart/php/download.php?file='.$moreresults[0]['primkey'].'"><img src="'.plugins_url().'/wpstorecart/images/disk.png">'.$moreresults[0]['name'].'</a>';
                                             }
                                         }
                                         if($current_item[1]!=1) {
@@ -13309,7 +13309,7 @@ echo '</ul>
                                         if($current_item[1]!=1) {
                                             $output .= '(x'.$current_item[1].')';
                                         }
-                                        $output .= '<a href="#" onclick="deleteItemInCart('.$current_item[0].');"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png"></a><br /></div>';
+                                        $output .= '<a href="#" onclick="deleteItemInCart('.$current_item[0].');"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a><br /></div>';
                                     }
                                 }
                             }
@@ -13388,7 +13388,7 @@ echo '</ul>
                             if(@isset($variationdownloads)) { // If we've got variations that have downloads
                                     foreach ($variationdownloads as $variationdownload) {
                                             if($variationdownload!='') {
-                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($variationdownload).'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$variationdownload.'</a> (Variation Download)<br />';
+                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($variationdownload).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$variationdownload.'</a> (Variation Download)<br />';
                                             }
                                     }
                             }
@@ -13398,12 +13398,12 @@ echo '</ul>
                                     $downloadcount = 0;
                                     foreach($multidownloads as $multidownload) {
                                             if($multidownload!='') {
-                                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
+                                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
                                             }
                                                     $downloadcount++;
                                     }
                             } else {
-                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
+                                    $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
                             }
                     }
 
@@ -13429,12 +13429,12 @@ echo '</ul>
                                     $downloadcount = 0;
                                     foreach($multidownloads as $multidownload) {
                                             if($multidownload!='') {
-                                                    $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.WP_PLUGIN_URL.'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png"></a></div><br />';
+                                                    $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div><br />';
                                             }
                                                     $downloadcount++;
                                     }
                             } else {
-                                    $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.WP_PLUGIN_URL.'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.WP_PLUGIN_URL.'/wpstorecart/images/cross.png"></a></div>';
+                                    $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div>';
                             }
                     }
 

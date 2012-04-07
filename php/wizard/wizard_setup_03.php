@@ -17,7 +17,7 @@ $devOptions = $wpStoreCart->getAdminOptions();
 if(current_user_can('administrator')) {
     if(get_option('template')=='wpStoreCartTheme' || get_option('stylesheet')=='wpStoreCartTheme' || !file_exists(WP_CONTENT_DIR.'/themes/wpStoreCartTheme/index.php')) {
         header("HTTP/1.1 301 Moved Permanently");
-        header ('Location: '.WP_PLUGIN_URL.'/wpstorecart/php/wizard/wizard_setup_04.php');
+        header ('Location: '.plugins_url().'/wpstorecart/php/wizard/wizard_setup_04.php');
         exit();
     }
 

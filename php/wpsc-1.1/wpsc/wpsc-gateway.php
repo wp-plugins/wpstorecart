@@ -377,8 +377,8 @@ else
                 
                 if($paymentGateway == 'authorize.net') {
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/php/payment/Authorize.php');
-                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/authorize_ipn.php';
-                    $paymentGatewayOptions['success'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/authorize_success.php';
+                    $paymentGatewayOptions['ipn'] = plugins_url().'/wpstorecart/php/payment/authorize_ipn.php';
+                    $paymentGatewayOptions['success'] = plugins_url().'/wpstorecart/php/payment/authorize_success.php';
                     $paymentGatewayOptions['authorizenettestmode'] = $devOptions['authorizenettestmode'];
                     $paymentGatewayOptions['authorizenetemail'] = $devOptions['authorizenetemail'];
                     $paymentGatewayOptions['authorizenetsecretkey'] = $devOptions['authorizenetsecretkey'];
@@ -477,7 +477,7 @@ else
 
                 if($paymentGateway == '2checkout') {
                     include_once(WP_PLUGIN_DIR.'/wpstorecart/php/payment/TwoCo.php');
-                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpstorecart/php/payment/2co_ipn.php';
+                    $paymentGatewayOptions['ipn'] = plugins_url().'/wpstorecart/php/payment/2co_ipn.php';
                     $paymentGatewayOptions['2checkouttestmode'] = $devOptions['2checkouttestmode'];
                     $paymentGatewayOptions['2checkoutemail'] = $devOptions['2checkoutemail'];
                     $paymentGatewayOptions['theCartNames'] = '';
@@ -579,7 +579,7 @@ else
 
 
                 if($paymentGateway == 'moneybookers') {
-                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpsc-payments-pro/moneybookers/mb_ipn.php';
+                    $paymentGatewayOptions['ipn'] = plugins_url().'/wpsc-payments-pro/moneybookers/mb_ipn.php';
                     $paymentGatewayOptions['mb_login'] = $devOptions['mb_login'];
                     $paymentGatewayOptions['mb_secretword'] = $devOptions['mb_secretword'];
                     $paymentGatewayOptions['mb_logo'] = $devOptions['mb_logo'];
@@ -690,8 +690,8 @@ else
 
                 if($paymentGateway == 'libertyreserve') {
                     @include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/libertyreserve/lb.php');
-                    $paymentGatewayOptions['ipn'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbi.php';
-                    $paymentGatewayOptions['success'] = WP_PLUGIN_URL.'/wpsc-payments-pro/lr/lbs.php';
+                    $paymentGatewayOptions['ipn'] = plugins_url().'/wpsc-payments-pro/lr/lbi.php';
+                    $paymentGatewayOptions['success'] = plugins_url().'/wpsc-payments-pro/lr/lbs.php';
                     if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
                         $failedpermalink = get_permalink($devOptions['mainpage']) .'?wpsc=failed';
                     } else {

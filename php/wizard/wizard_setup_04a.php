@@ -18,7 +18,7 @@ if(current_user_can('administrator')) {
 
     switch_theme('wpStoreCartTheme', 'wpStoreCartTheme');
     header("HTTP/1.1 301 Moved Permanently");
-    header ('Location: '.WP_PLUGIN_URL.'/wpstorecart/php/wizard/wizard_setup_04.php');
+    header ('Location: '.plugins_url().'/wpstorecart/php/wizard/wizard_setup_04.php');
     exit();
 
 }
