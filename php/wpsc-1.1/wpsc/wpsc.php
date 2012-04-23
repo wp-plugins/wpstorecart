@@ -318,7 +318,7 @@ class wpsc {
 		if(@isset($_POST['ccoupon'])) {
 			global $wpdb;
 
-			$thecoupon = $_POST['ccoupon'];
+			$thecoupon = $wpdb->escape($_POST['ccoupon']);
 		
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 			// Try adding the coupon hooks here
