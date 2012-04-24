@@ -1058,7 +1058,7 @@ else
                                     if(isset($_SESSION['validcouponamount'])) {
                                         @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
                                     }
-                                    if(isset($_SESSION['validcouponpercent'])) { //
+                                    if(isset($_SESSION['validcouponpercent']) && $_SESSION['validcouponpercent'] != 0) { //
                                         $discount_priceper = round(($item['qty'] * $item['price']) * ($_SESSION['validcouponpercent'] / 100), 2);
                                         @$myPaypal->addField('discount_amount_cart', $discount_priceper);
                                     }
@@ -1089,7 +1089,7 @@ else
                         if(isset($_SESSION['validcouponamount'])) {
                             @$myPaypal->addField('discount_amount_cart', $_SESSION['validcouponamount']);
                         }
-                        if(isset($_SESSION['validcouponpercent'])) { //
+                        if(isset($_SESSION['validcouponpercent']) && $_SESSION['validcouponpercent'] != 0) { //
                             @$myPaypal->addField('discount_rate_cart', $_SESSION['validcouponpercent']);
                         }
                         $couponset = true;
