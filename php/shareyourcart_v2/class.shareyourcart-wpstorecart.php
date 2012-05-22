@@ -62,7 +62,11 @@ class ShareYourCartWPStoreCart extends ShareYourCartWordpressPlugin {
 	 */
 	protected function isCartActive()
 	{
-		return true;
+		//check if WPStoreCart is active
+		if (!function_exists( 'is_plugin_active' ) )
+		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+
+		return is_plugin_active( 'wpstorecart/wpstorecart.php' );
 	}
 
 	/**
@@ -72,7 +76,7 @@ class ShareYourCartWPStoreCart extends ShareYourCartWordpressPlugin {
 	 */
 	protected function getSecretKey()
 	{
-		return '5cdd34e1-c767-4540-8abd-1217bd99171d';
+		return '8074d6a4-6f14-4d25-a0ee-7a7fbfdd1499';
 	}
 
 	/*
@@ -114,6 +118,26 @@ class ShareYourCartWPStoreCart extends ShareYourCartWordpressPlugin {
 				break;
 			}
 		}
+	}
+	
+	/**
+	*
+	* Return the jQuery sibling selector for the product button
+	*
+	*/
+	protected function getProductButtonPosition(){
+		$selector = parent::getProductButtonPosition();
+		return (!empty($selector) ? $selector : ".wpsc-button.wpsc-addtocart");
+	}
+	
+	/**
+	*
+	* Return the jQuery sibling selector for the cart button
+	*
+	*/
+	protected function getCartButtonPosition(){
+		$selector = parent::getCartButtonPosition();
+		return (!empty($selector) ? $selector : "#wpsc-total");
 	}
 
 	/**
@@ -358,8 +382,6 @@ class ShareYourCartWPStoreCart extends ShareYourCartWordpressPlugin {
 		return $output.$result;
 	}
 }
-
-new ShareYourCartWPStoreCart();
 
 //TODO: see why this is not used
 add_action(ShareYourCartWordpressPlugin::getPluginFile(), array('ShareYourCartWPStoreCart','uninstallHook'));

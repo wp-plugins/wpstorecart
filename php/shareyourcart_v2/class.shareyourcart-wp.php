@@ -16,7 +16,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 	abstract class ShareYourCartWordpressPlugin extends ShareYourCartBase {
 
 		protected static $_INSTANCES = array();
-		protected static $_VERSION = 1;
+		protected static $_VERSION = 3;
 		protected $_PLUGIN_PATH;
 
 		/**
@@ -33,7 +33,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 			
 			//make sure we add this instance
 			self::$_INSTANCES []= $this;
-			$this->_PLUGIN_PATH  = plugins_url().'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
+			$this->_PLUGIN_PATH  = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
 
 			//setup the hooks
 			register_activation_hook(self::getPluginFile(),            array(&$this,'activateHook'));
@@ -109,6 +109,17 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 
 			return $plugin;
 		}
+	
+	/**
+	*
+	* Get the upload directory 
+	*
+	*/
+	public function getUploadDir(){
+		$dir = wp_upload_dir();
+		
+      return (!empty($dir['path']) ? $dir['path'] : parent::getUploadDir());
+    }
 
 		/**
 	*
@@ -183,7 +194,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 			$file = SyC::relativepath(dirname(__FILE__),$file);
 
 			//append the relative path to the current file's URL
-			return plugins_url().'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)).$file;
+			return WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)).$file;
 		}
 
 		/**
@@ -196,7 +207,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 
 			//if the cart is not loaded, do not load this plugin further
 			if(!$this->isCartActive()) return;
-//if(!$this->existsTable($this->getTableName('shareyourcart_coupons'))) throw new Exception('abc');
+
 			add_action('wp_head',                                   array(&$this,'showPageHeader'));
 			add_action('admin_menu',                                array(&$this,'showAdminMenu'));
 
@@ -357,9 +368,7 @@ if(!class_exists('ShareYourCartWordpressPlugin',false)){
 			//is active
 			if(!$this->isCartActive()) {
 
-				header("HTTP/1.0 403");
-				echo "Shopping Cart is not active";
-				exit;
+				throw new Exception(SyC::t('sdk','Shopping Cart is not active'));
 			}
 
 			parent::couponCallback();

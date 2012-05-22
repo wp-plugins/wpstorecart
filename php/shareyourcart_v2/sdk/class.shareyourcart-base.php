@@ -17,8 +17,9 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 
 	//this array is used to hold function calls between different instances of this class
 	private static $_SINGLE_FUNCTIONS_CALLS = array();
-	private static $_SDK_VERSION = '1.6';  //the first one is the SDK main version, while the second one is it's revision
+	private static $_SDK_VERSION = '1.8';  //the first one is the SDK main version, while the second one is it's revision
 	protected static $_DB_VERSION = '1.1';
+	protected $SDK_ANALYTICS = true;
 	
 	/**
     * Constructor
@@ -34,10 +35,15 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		
 		//now, add the api version to the button_js, in order to force users to download the latest
 		//JS file
-		$this->SHAREYOURCART_BUTTON_JS .= '?v='. $this->getConfigValue('api_version');
+		if(!$this->isDebugMode()){
+			$this->SHAREYOURCART_BUTTON_JS .= '?v='. $this->getConfigValue('api_version');
+		} else { //for debug mode, use a different JS ( one that is not minified, and can be cached thus debugged
+			$this->SHAREYOURCART_BUTTON_JS = $this->SHAREYOURCART_API.'/js/button.dev.js';
+		}
 		$this->SHAREYOURCART_BUTTON_URL .= '?client_id='. $this->getClientId();
 		
-		//set the language
+		//set the language & it's loader
+		SyC::setLanguageLoader(array(&$this,'loadLanguage'));
 		SyC::setLanguage($this->getConfigValue('lang'));
 	}
 	
@@ -74,7 +80,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	protected abstract function setConfigValue($field, $value);
 
 	/**
-	 * Abstract setConfigValue
+	 * Abstract getConfigValue
 	 * @param string option
 	 * @param string value
 	 * @return string
@@ -147,6 +153,24 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	
 	/**
 	*
+	* Return the jQuery sibling selector for the product button
+	*
+	*/
+	protected function getProductButtonPosition(){
+		return $this->getConfigValue('product_button_position');
+	}
+	
+	/**
+	*
+	* Return the jQuery sibling selector for the cart button
+	*
+	*/
+	protected function getCartButtonPosition(){
+		return $this->getConfigValue('cart_button_position');
+	}
+	
+	/**
+	*
 	* Get the plugin version.
 	* @return an integer
 	*
@@ -165,6 +189,18 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 			throw new Exception(SyC::t('sdk','The Plugin Version must be an integer'));
 		
 		return self::$_SDK_VERSION.'.'.$minor_version;
+	}
+	
+	/**
+	*
+	* Returns TRUE if the account is in debug mode
+	*
+	*/
+	public function isDebugMode()
+	{
+		$val =$this->getConfigValue('debug');
+		
+		return !empty($val);
 	}
 	
 	/**
@@ -233,6 +269,12 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		
 			$activated = $this->activate($message);
 		}
+		
+		//set some default value, like the button skin
+		$skin = $this->getConfigValue('button_skin');
+		if(empty($skin)){
+			$this->setConfigValue("button_skin", "light");
+		}
 
 		return true;
 	}
@@ -292,12 +334,12 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	public function deactivate(&$message = null) {
 
 		//send the notification to the API
-		$this->setAccountStatus($this->getSecretKey(), $this->getClientID(), $this->getAppKey(), false, $message);
+		$success = $this->setAccountStatus($this->getSecretKey(), $this->getClientID(), $this->getAppKey(), false, $message);
 
 		//no matter what the API says, disable this plugin
 		$this->setConfigValue("account_status", "inactive");
 
-		return true;
+		return $success;
 	}
 
 	/**
@@ -387,9 +429,9 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	 * @param null
 	 * @return boolean
 	 */
-	public function showButton() {
+	public function showButton($position = null) {
 
-		echo $this->getButton();
+		echo $this->getButton($position);
 	}
 
 	/**
@@ -397,12 +439,12 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	 * get the button code
 	 *
 	 */
-	public function getButton() {
+	public function getButton($position = null) {
 
 		//make sure the API is active
 		if(!$this->isActive()) return;
 
-		return $this->renderButton($this->getButtonCallbackURL());
+		return $this->renderButton($this->getButtonCallbackURL(), $position);
 	}
 
 	/**
@@ -410,38 +452,44 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	 * @param null
 	 * @return boolean
 	 */
-	protected function renderButton($callback_url) {
-		ob_start();
-
-		$current_button_type = $this->getConfigValue("button_type");
-		$button_html = $this->getConfigValue("button_html");
+	protected function renderButton($callback_url,$position = null) {
 		
-		$button_img = $this->getConfigValue("btn-img");
-		$button_img_width = $this->getConfigValue("btn-img-width");
-		$button_img_height = $this->getConfigValue("btn-img-height");
+		$data = array(
+		'current_button_type' => $this->getConfigValue("button_type"),
+		'button_html' => $this->getConfigValue("button_html"),
 		
-		$button_img_hover = $this->getConfigValue("btn-img-h");
-		$button_img_hover_width = $this->getConfigValue("btn-img-h-width");
-		$button_img_hover_height = $this->getConfigValue("btn-img-h-height");
+		'button_img' => $this->getConfigValue("btn-img"),
+		'button_img_width' => $this->getConfigValue("btn-img-width"),
+		'button_img_height' => $this->getConfigValue("btn-img-height"),
+		
+		'button_img_hover' => $this->getConfigValue("btn-img-h"),
+		'button_img_hover_width' => $this->getConfigValue("btn-img-h-width"),
+		'button_img_hover_height' => $this->getConfigValue("btn-img-h-height"),
 
-		switch ($current_button_type)
+		'is_product_page' => $this->isSingleProduct(),
+		
+		'position_'.(SyC::startsWith($position,"/*before*/") ? 'before' : 'after') => $position,
+		);
+		
+		$output = null;
+		switch ($data['current_button_type'])
 		{
 			case '1':
-				include(dirname(__FILE__) . '/views/button.php');
+				$output = $this->renderView('button',$data);
 				break;
 			case '2':
-				include(dirname(__FILE__) . '/views/button-img.php');
+				$output = $this->renderView('button-img',$data);
 				break;
 			case '3':
-				include(dirname(__FILE__) . '/views/button-custom.php');
+				$output = $this->renderView('button-custom',$data);
 				break;
 			default:
-				include(dirname(__FILE__) . '/views/button.php');
+				$output = $this->renderView('button',$data);
 				break;
 		}
 
 
-		return ob_get_clean();
+		return $output;
 	}
 
 	/**
@@ -463,7 +511,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 
 		if($this->isSingleProduct() && !$this->getConfigValue('hide_on_product')){
 
-			return	$this->getButton();
+			return	$this->getButton($this->getProductButtonPosition());
 		}
 
 		//else return nothing
@@ -489,7 +537,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 
 		if(!$this->getConfigValue('hide_on_checkout')){
 
-			return $this->getButton();
+			return $this->getButton($this->getCartButtonPosition(),false);
 		}
 
 		//return nothing
@@ -517,11 +565,9 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		if (!$this->isFirstCall(__FUNCTION__))
 		return;
 
-		$data = $this->getCurrentProductDetails();
-
-		ob_start();
-		include(dirname(__FILE__) . '/views/page-header.php');
-		return ob_get_clean();
+		return $this->renderView('page-header',array(
+			'data' => $this->getCurrentProductDetails(),
+			));
 	}
 
 	/**
@@ -546,11 +592,9 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		return;
 		
 		//check the SDK status
-		$this->checkSDKStatus(true); //for a check, as the admin might have changed the language in the configure page, so we need to sync with it
+		$this->checkSDKStatus(true); //force a check, as the admin might have changed the language in the configure page, so we need to sync with it
 
-		ob_start();
-		include(dirname(__FILE__) . '/views/admin-header.php');
-		return ob_get_clean();
+		return $this->renderView('admin-header');
 	}
 
 	/**
@@ -574,7 +618,8 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		if (!$this->isFirstCall(__FUNCTION__))
 		return;
 
-		$status_message = '';
+		$status_message = ''; //this is to be used for good messages
+		$error_message = ''; //this is to be used for bad messages
 		$refresh = false;
 		
 		//check if this is a post for this particular page
@@ -593,7 +638,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 			} else {
 
 				//the account did not activate, so show the error
-				$status_message = $message;
+				$error_message = $message;
 			}
 			
 			//since we might have changed the status, REFRESH
@@ -603,7 +648,14 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		else if ($_SERVER['REQUEST_METHOD'] == 'POST' &&
 		!empty($_POST['disable-API'])){
 			
-			$this->deactivate($status_message);
+			$message = '';
+			if($this->deactivate($message) == true) {
+				
+				$status_message = $message;
+			} else {
+			
+				$error_message = $message;
+			}
 			
 			//since we might have changed the status, REFRESH
 			$refresh = true;
@@ -612,7 +664,14 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		else if ($_SERVER['REQUEST_METHOD'] == 'POST' &&
 		!empty($_POST['enable-API'])){
 			
-			$this->activate($status_message);
+			$message = '';
+			if($this->activate($message) == true) {
+				
+				$status_message = $message;
+			} else {
+			
+				$error_message = $message;
+			}
 			
 			//since we might have changed the status, REFRESH
 			$refresh = true;
@@ -629,16 +688,12 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 				$show_form = !$this->recover($this->getSecretKey(), @$_REQUEST['domain'], @$_REQUEST['email'], $status_message);
 			}
 			
-			//if we need to show the form
+			//if we need to show the form, the recovery failed
 			if($show_form)
 			{
 				//if there is a message, put the form on a new line
-				if(!empty($status_message))
-					$status_message .= "<br /><br />";
-				
-				ob_start();
-				include(dirname(__FILE__) . '/views/account-recover-partial.php');
-				$status_message .= ob_get_clean();
+				$error_message = $status_message;
+				$status_message = $this->renderView('account-recover-partial');
 			} 
 			else 
 			{
@@ -671,6 +726,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 				}
 				else
 				{
+					//put it in the status message, as it will be moved to error_message in the following IF
 					$status_message = SyC::t('sdk',"Error. You must agree with the terms and conditions bellow");
 				}
 			}
@@ -678,13 +734,9 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 			//if we need to show the form
 			if($show_form)
 			{
-				//if there is a message, put the form on a new line
-				if(!empty($status_message))
-					$status_message .= "<br /><br />";
-				
-				ob_start();
-				include(dirname(__FILE__) . '/views/account-create-partial.php');
-				$status_message .= ob_get_clean();
+				//move any message to errors
+				$error_message = $status_message;
+				$status_message = $this->renderView('account-create-partial');
 			}
 		}
 		
@@ -695,30 +747,38 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		//just to make sure the UI is using the latest value
 		if($refresh)
 		{
-			//first, save the status message
+			//make sure to save the messages
 			$_SESSION['_syc_status_message'] = $status_message;
-			
-			//recreate the url ( but before that make sure there is no syc-account parameter in it )
-			unset($_GET['syc-account']);
-			$url = '?'.http_build_query($_GET,'','&');
-			
-			@header("HTTP/1.1 302 Found");
-			@header("Location: $url");
-			echo "<meta http-equiv=\"refresh\" content=\"0; url=$url\">"; //it can happen that the headers have allready been sent, so use the html version as well
-			exit;
+			$_SESSION['_syc_error_message'] = $error_message;
+		}
+		else
+		{
+			//load the variables, if any
+		
+			//if there is a status message
+			if(!empty($_SESSION['_syc_status_message']))
+			{
+				$status_message = $_SESSION['_syc_status_message'];
+				unset($_SESSION['_syc_status_message']);
+			}
+		
+			//if there is an error message
+			if(!empty($_SESSION['_syc_error_message']))
+			{
+				$error_message = $_SESSION['_syc_error_message'];
+				unset($_SESSION['_syc_error_message']);
+			}
 		}
 		
-		//if there is a status message
-		if(!empty($_SESSION['_syc_status_message']))
-		{
-			$status_message = $_SESSION['_syc_status_message'];
-			unset($_SESSION['_syc_status_message']);
-		}
-
 		// Display the view
-		ob_start();
-		include(dirname(__FILE__) . '/views/admin-page.php');
-		return ob_get_clean();
+		return $this->renderView('admin-page',array(
+			'html' => $html,
+			'show_header' => $show_header,
+			'show_footer' => $show_footer,
+			'status_message' => $status_message,
+			'error_message' => $error_message,
+			'refresh' => $refresh,
+		));
 	}
 
 	/**
@@ -761,10 +821,14 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 
 			//set the show'
 			$this->setConfigValue("hide_on_checkout", empty($_POST['show_on_checkout']));
+			
+			//set button position
+			$this->setConfigValue("product_button_position",$_POST['product_button_position']);
+			$this->setConfigValue("cart_button_position",$_POST['cart_button_position']);
 
 			if($_FILES["button-img"]["name"]!='') {
 
-				$target_path = dirname(__FILE__). "/img/";
+				$target_path = $this->getUploadDir();
 
 				$target_path = $target_path . 'button-img.png';
 
@@ -782,7 +846,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 			}
 
 			if($_FILES["button-img-hover"]["name"]!='') {
-				$target_path = dirname(__FILE__). "/img/";
+				$target_path = $this->getUploadDir();
 
 				$target_path = $target_path . 'btn-img-hover.png';
 
@@ -802,23 +866,36 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 			$status_message = SyC::t('sdk','Button settings successfully updated.');
 		}
 
-		$current_button_type = $this->getConfigValue("button_type");
-		$current_skin = $this->getConfigValue("button_skin");
-		$current_position = $this->getConfigValue("button_position");
-		$show_on_checkout = !$this->getConfigValue("hide_on_checkout");
-		$show_on_product = !$this->getConfigValue("hide_on_product");
-		$show_on_single_row = !$this->getConfigValue("dont_set_height");
-
-		$button_html = $this->getConfigValue("button_html");
-		$button_img = $this->getConfigValue("btn-img");
-		$button_img_hover = $this->getConfigValue("btn-img-h");
-
 		//render the view
-		ob_start();
-		include(dirname(__FILE__) . '/views/button-settings-page.php');
-		return ob_get_clean();
+		return $this->renderView('button-settings-page', array(
+			'current_button_type' => $this->getConfigValue("button_type"),
+			'current_skin' => $this->getConfigValue("button_skin"),
+			'current_position' => $this->getConfigValue("button_position"),
+			'show_on_checkout' => !$this->getConfigValue("hide_on_checkout"),
+			'show_on_product' => !$this->getConfigValue("hide_on_product"),
+			'show_on_single_row' => !$this->getConfigValue("dont_set_height"),
+
+			'button_html' => $this->getConfigValue("button_html"),
+			'button_img' => $this->getConfigValue("btn-img"),
+			'button_img_hover' => $this->getConfigValue("btn-img-h"),
+			
+			'html' => $html,
+			'show_header' => $show_header,
+			'show_footer' => $show_footer,
+			'status_message' => $status_message,
+		));
 	}
 
+	/**
+	*
+	* Override this function and provide a writable folder to upload
+	* the files to
+	*
+	*/
+	public function getUploadDir(){
+      return dirname(_FILE_). "/img/";
+    }
+	
 	/**
 	 * showDocumentation
 	 * @param null
@@ -839,13 +916,15 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		//this is a single call function
 		if (!$this->isFirstCall(__FUNCTION__))
 		return;
-			
-		$action_url = $this->getButtonCallbackURL();
 
 		//render the view
-		ob_start();
-		include(dirname(__FILE__) . '/views/documentation.php');
-		return ob_get_clean();
+		return $this->renderView('documentation',array(
+			'action_url' => $this->getButtonCallbackURL(),
+			
+			'html' => $html,
+			'show_header' => $show_header,
+			'show_footer' => $show_footer,
+		));
 	}
 	
 	/**
@@ -862,9 +941,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	 */
 	public function getUpdateNotification(){
 		//render the view
-		ob_start();
-		include(dirname(__FILE__) . '/views/update-notification-partial.php');
-		return ob_get_clean();
+		return $this->renderView('update-notification-partial');
 	}
 
 	/*
@@ -895,6 +972,10 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 
 			header("HTTP/1.0 403");
 			echo $e->getMessage();
+			
+			if($this->isDebugMode()){
+				echo $e->getTraceAsString();
+			}
 		}
 	}
 
@@ -954,7 +1035,7 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		
 		//we can't relly on the fact that the table has been properly created, so check it!
 		if(!$this->existsTable($tableName))
-			throw new Exception(SyC::t('sdk','Cannot create table "{table_name}". Check your database permissions.', array('{table_name}' => $tableName)));
+			throw new Exception(SyC::t('sdk','Cannot create table "{table_name}". Check your database permissions or manually run the following SQL command and try again:<br /><strong>{sql}</strong>', array('{table_name}' => $tableName,'{sql}' => nl2br($sql))));
 	}
 	
 	/**
@@ -977,11 +1058,48 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	 */
 	protected function dropTable($tableName) {
 
-		$this->executeNonQuery("DROP TABLE $tableName");
+		$sql = "DROP TABLE $tableName";
+		$this->executeNonQuery($sql);
 		
 		//we can't relly on the fact that the table has been properly droped, so check it!
-		if(!$this->existsTable($tableName))
-			throw new Exception(SyC::t('sdk','Cannot drop table "{table_name}". Check your database permissions.', array('{table_name}' => $tableName)));
+		if($this->existsTable($tableName))
+			throw new Exception(SyC::t('sdk','Cannot drop table "{table_name}". Check your database permissions or manually run the following SQL command and try again:<br /><strong>{sql}</strong>', array('{table_name}' => $tableName, '{sql}' => nl2br($sql))));
+	}
+	
+	/**
+	*
+	* Render the specified views. we use special variable names here to avoid conflict when extracting data
+	*
+	*/
+	protected function renderView($_viewName_, $_data_=NULL, $_return_=true){
+		
+		//get information about the Top Parent class
+		$_reflection_ = new ReflectionClass(get_class($this));
+		$_viewFile_ = dirname($_reflection_->getFileName())."/views/$_viewName_.php";
+		
+		//check if there is a file in the specified location
+		if(!file_exists($_viewFile_)){
+			
+			//the view has not been overrided, so use the SDK one
+			$_viewFile_ = dirname(__FILE__) . "/views/$_viewName_.php";
+		}
+
+		//extract the data
+		if(is_array($_data_))
+			extract($_data_,EXTR_PREFIX_SAME,'data');
+		else
+			$data=$_data_;
+			
+		//render the view
+		if($_return_)
+		{
+			ob_start();
+			ob_implicit_flush(false);
+			require($_viewFile_);
+			return ob_get_clean();
+		}
+		else
+			require($_viewFile_);
 	}
 
 	/**
@@ -1003,20 +1121,53 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 		$message = '';
 		if(is_array($result = $this->getSDKStatus($this->getSecretKey(), $this->getClientId(), $this->getAppKey(), $message)))
 		{
+		   
 			//save the data
 			$this->setConfigValue('api_version', @$result['api_version']);
 			$this->setConfigValue('latest_version', @$result['plugin_latest_version']);
 			$this->setConfigValue('download_url', @$result['plugin_download_url']);
+			$this->setConfigValue('debug', @$result['debug']);
 			
 			//set the current language the SDK should be displayed in
 			if(isset($result['lang'])){
 				$this->setConfigValue('lang', $result['lang']);
 				SyC::setLanguage($result['lang']);
+			
+				//check if there is a new translation available for this language
+				if(!empty($result['lang_checksum']) && $result['lang_checksum'] != SyC::getLanguageChecksum()){
+				
+					//download the translation
+					$messages = $this->getSDKTranslation(SyC::getLanguage());
+				
+					//save the translation
+					$this->setConfigValue('messages', $messages);
+				}
 			}
 		}else{
 			//simply log the error, for now!
 			error_log(print_r($message,true));
 		}	
+	}
+	
+	/**
+	*
+	* Language loader ( from the DB )
+	*
+	*/
+	public function loadLanguage($lang, $category)
+	{
+		//see if we have the language saved in the db
+		$messages = $this->getConfigValue('messages');
+		
+		if(empty($messages)) //no language is saved, so revert to the file one
+		{
+			$messages = SyC::loadFileLanguage($lang,$category);
+		}
+		
+		//make sure we have an array for this variable
+		if(!is_array($messages)) $messages=array();
+		
+		return $messages;
 	}
 	
 	/*
@@ -1041,6 +1192,10 @@ abstract class ShareYourCartBase extends ShareYourCartAPI {
 	public function UncaughtExceptionHandler(Exception $e) {
 		//@header("HTTP/1.0 403");
 		echo $e->getMessage();
+		
+		if($this->isDebugMode()){
+			echo $e->getTraceAsString();
+		}
 	}
 }
 
