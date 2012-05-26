@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.26
+Version: 2.5.27
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.26
+ * @version 2.5.27
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.26';
-$wpstorecart_version_int = 205026; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.27';
+$wpstorecart_version_int = 205027; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1637,21 +1637,22 @@ if (!class_exists("wpStoreCart")) {
             <center>
             <img src="'.plugins_url('/images/products/pro.png' , __FILE__).'" alt="wpstorecart" onclick="jQuery(\'#buypro\').submit();" style="cursor:pointer;"  />
             <p style="font-size:10px">Includes 5+ payment gateways, affiliate program, stats, business support &amp; more.  Order now!</p>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
-            <input type="hidden" name="cmd" value="_s-xclick">
-            <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
-            <table>
-            <tr><td><input type="hidden" name="on0" value="License">License</td></tr><tr><td><select name="os0">
-                    <option value="Single Domain">Single Domain $29.99</option>
-                    <option value="2 Domains">2 Domains $49.99</option>
-                    <option value="10 Domains">10 Domains $209.99</option>
-                    <option value="Unlimited Domains">Unlimited Domains $389.99</option>
-            </select> </td></tr>
-            </table>
-            <input type="hidden" name="currency_code" value="USD">
-            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0"  alt="PayPal - The safer, easier way to pay online!">
-            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
+			<table>
+			<tr><td><input type="hidden" name="on0" value="License">License</td></tr><tr><td><select name="os0">
+				<option value="Blogger - 1 Domain -">Blogger - 1 Domain -$24.95 USD</option>
+				<option value="PRO - 1 Domain -">PRO - 1 Domain -$49.99 USD</option>
+				<option value="PRO - 2 Domains -">PRO - 2 Domains -$89.99 USD</option>
+				<option value="PRO - 10 Domains -">PRO - 10 Domains -$399.99 USD</option>
+				<option value="PRO - Unlimited Domains -">PRO - Unlimited Domains -$1,299.99 USD</option>
+			</select> </td></tr>
+			</table>
+			<input type="hidden" name="currency_code" value="USD">
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+			</form>
             </center>';
             
             echo '
