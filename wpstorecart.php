@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.28
+Version: 2.5.29
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.28
+ * @version 2.5.29
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.28';
-$wpstorecart_version_int = 205028; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.29';
+$wpstorecart_version_int = 205029; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1504,6 +1504,8 @@ if (!class_exists("wpStoreCart")) {
                                             $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
                                             $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                                             $wpsc_buy_now = $devOptions['buy_now'];
+                                            global $wpsc_membership_product_itemurl;
+                                            $wpsc_membership_product_itemurl = get_permalink($results[0]['postid']);                                            
                                             require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
                                             $output .= wpscMembershipButton();
 
@@ -9642,9 +9644,9 @@ echo '</ul>
          * @return string
          */
         function displaySubscriptionBuyNow($itemPrimkey, $listDetails = false) {
-            global $wpsc_buy_now, $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment;
+            global $wpsc_buy_now, $wpdb, $wpsc_membership_product_id, $purchaser_user_id, $purchaser_email, $membershipOptions, $wpsc_table_name, $wpsc_self_path, $wpsc_paypal_testmode, $wpsc_paypal_ipn, $wpsc_membership_product_name, $wpsc_membership_product_number, $wpsc_button_classes, $wpsc_paypal_currency_code, $wpsc_paypal_email, $wpsc_price_type,$wpsc_membership_trial1_allow, $wpsc_membership_trial2_allow, $wpsc_membership_trial1_amount , $wpsc_membership_trial2_amount, $wpsc_membership_regular_amount,$wpsc_membership_trial1_numberof,$wpsc_membership_trial2_numberof,$wpsc_membership_regular_numberof,$wpsc_membership_trial1_increment,$wpsc_membership_trial2_increment,$wpsc_membership_regular_increment, $wpsc_membership_product_itemurl;
             if(isset($itemPrimkey) && is_numeric($itemPrimkey)) {
-                $sql = "SELECT * FROM `{$table_name}` WHERE `primkey`={$itemPrimkey};";
+                $sql = "SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$itemPrimkey};";
                 $results = $wpdb->get_results( $sql , ARRAY_A );
                 if(isset($results)) {
                     // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
@@ -9734,6 +9736,9 @@ echo '</ul>
                             }
                             $wpsc_membership_product_name = $resultsMembership[0]['name'];
                             $wpsc_membership_product_number = $resultsMembership[0]['primkey'];
+                            
+                            $wpsc_membership_product_itemurl = get_permalink($results[0]['postid']);
+
                             $wpsc_paypal_currency_code = $devOptions['currency_code'];
                             $wpsc_paypal_email = $devOptions['paypalemail'];
                             $wpsc_button_classes = $devOptions['button_classes_addtocart'];
@@ -11359,6 +11364,8 @@ echo '</ul>
                                                                         $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
                                                                         $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                                                                         $wpsc_buy_now = $devOptions['buy_now'];
+                                                                        global $wpsc_membership_product_itemurl;
+                                                                        $wpsc_membership_product_itemurl = get_permalink($results[0]['postid']);
                                                                         
                                                                         require_once(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
                                                                         $output .= wpscMembershipButton();
