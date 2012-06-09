@@ -12,6 +12,13 @@ if (!function_exists('add_action'))
 
 if (isset($wpStoreCart)) {
 
+        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');  
+        if(!isset($_POST['wpstorecart_download_hash'])) {die("death 1");}
+        
+        if( $_POST['wpstorecart_download_hash'] != $wpStoreCartOptions['wpstorecart_download_hash'] ) {
+            die("death 2");
+        }    
+    
 	/* Handles the error output. This error message will be sent to the uploadSuccess event handler.  The event handler
 	will have to check for any error messages and react as needed. */
 	function HandleError($message) {

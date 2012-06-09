@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.29
+Version: 2.5.30
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.29
+ * @version 2.5.30
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.29';
-$wpstorecart_version_int = 205029; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.30';
+$wpstorecart_version_int = 205030; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1275,7 +1275,8 @@ if (!class_exists("wpStoreCart")) {
                                     'paymate_login' => '',
                                     'paymate_currency' => 'USD',
                                     'paymate_ipn' => '',
-                                    'completely_disable_shareyourcart' => 'false'
+                                    'completely_disable_shareyourcart' => 'false',
+                                    'wpstorecart_download_hash' => sha1(rand(-4096, 4096))
                                     );
 
 
@@ -4871,7 +4872,7 @@ echo '</ul>
                                     window.onload = function () {
                                             var settings_object = {
                                                     upload_url : "'.plugins_url('/php/upload.php' , __FILE__).'",
-                                                    post_params: {"PHPSESSID" : "'.session_id().'"},
+                                                    post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
                                                     flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
                                                     file_size_limit : "2048 MB",
                                                     file_types : "*.*",
@@ -5878,7 +5879,7 @@ echo '</ul>
 			echo '
 			<tr>
 			<td><h3>Product<br />Thumbnail: <img src="'.plugins_url('/images/help.png' , __FILE__).'" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.  You can add an unlimited amount of additional pictures by clicking on the Pictures tab.</div></h3></td>
-			<td><div style="float:left;"><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /><br />
+			<td><div style="float:left;"><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.$wpStoreCartproduct_thumbnail.'" /><input type="hidden" name="wpstorecart_download_hash" value="'.$devOptions['wpstorecart_download_hash'].'" /><br />
 			Upload a file: <span id="spanSWFUploadButton2"></span>
                         <div id="upload-progressbar-container2">
                             <div id="upload-progressbar2">
@@ -12481,6 +12482,8 @@ echo '</ul>
                  */
 		function my_admin_scripts_cat(){
 			global $APjavascriptQueue;
+                        
+                        $devOptions = $this->getAdminOptions();
 
                         wp_enqueue_script('jquery-ui-effects', plugins_url() .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
 			wp_enqueue_script('swfupload');
@@ -12629,7 +12632,7 @@ echo '</ul>
 			window.onload = function () {
 				var settings_object2 = {
 					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
-					post_params: {"PHPSESSID" : "'.session_id().'"},
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "9999 MB",
 					file_types : "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.tiff;",
@@ -12677,6 +12680,8 @@ echo '</ul>
 		function my_admin_scripts(){
 			global $APjavascriptQueue;
 
+                        $devOptions = $this->getAdminOptions();
+                        
 			wp_enqueue_script('wpscniceditor', plugins_url('/js/nicedit/nicEdit.js' , __FILE__), array('jquery'),'1.4');		 
                         wp_enqueue_script('jeditable-wpsc', plugins_url() .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
                         wp_enqueue_script('jquery-ui-effects', plugins_url() .'/wpstorecart/js/jquery-ui-effects-1.8.11.min.js',array('jquery'),'1.4');
@@ -12878,7 +12883,7 @@ echo '</ul>
 			window.onload = function () { 
 				var settings_object = { 
 					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php", 
-					post_params: {"PHPSESSID" : "'.session_id().'"},
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
 					file_size_limit : "2048 MB",
 					file_types : "*.*",
@@ -12900,7 +12905,7 @@ echo '</ul>
 				
 				var settings_object2 = { 
 					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php", 
-					post_params: {"PHPSESSID" : "'.session_id().'"},
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
 					file_size_limit : "9999 MB",
 					file_types : "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.tiff;",
@@ -12922,7 +12927,7 @@ echo '</ul>
 
 				var settings_object3 = {
 					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
-					post_params: {"PHPSESSID" : "'.session_id().'"},
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "2048 MB",
 					file_types : "*.*",
@@ -12944,7 +12949,7 @@ echo '</ul>
 
 				var settings_object4 = {
 					upload_url : "'.plugins_url().'/wpstorecart/php/upload.php",
-					post_params: {"PHPSESSID" : "'.session_id().'"},
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
 					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
 					file_size_limit : "2048 MB",
 					file_types : "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.tiff;",
