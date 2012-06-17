@@ -149,7 +149,7 @@ else
                     // USPS
                     $totalshippingcalculated = $wpStoreCart->USPSParcelRate($totalweight, $_SESSION['wpsc_zipcode'] );
 
-                    $usps_shipping_total = number_format($totalshippingcalculated, 2);
+                    $usps_shipping_total = number_format($totalshippingcalculated, 2, '.', '');
                     
                 }
 
@@ -259,7 +259,7 @@ else
                         if($mastertax > 0) {
                             $taxamount = $theTotal * ($mastertax /100);
                         }
-                        return number_format($taxamount,2);
+                        return number_format($taxamount,2, '.', '');
 
                     } else {
                         // Taxes aren't enabled or are incorrectly configured
@@ -352,7 +352,7 @@ else
                         $wpdb->query( $sql );
                     }
 
-                    $totalPrice = number_format($totalPrice  + $totalShipping + $theTaxAmount, 2) ; // Apply the coupon plus shipping
+                    $totalPrice = number_format($totalPrice  + $totalShipping + $theTaxAmount, 2, '.', '') ; // Apply the coupon plus shipping
 
                     $cart->empty_cart();
                     
@@ -467,7 +467,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2, '.', '');
 
                     //
                     $cart->empty_cart();
@@ -562,7 +562,7 @@ else
                         $wpdb->query( $sql );
                     }
 
-                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2, '.', '');
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
@@ -669,7 +669,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2, '.', '');
 
                     //
                     $cart->empty_cart();
@@ -786,7 +786,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2);
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount,2, '.', '');
 
                     //
                     $cart->empty_cart();
@@ -887,7 +887,7 @@ else
 
                     // Specify any custom value, here we send the primkey of the order record
                     $paymentGatewayOptions['invoice'] = $lastID;
-                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount, 2);
+                    $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount, 2, '.', '');
                     $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/quickbooks-php-devkit/';
 
                     global $QBMSTransaction, $QBMSErrorMessage, $QBMSStatus;
