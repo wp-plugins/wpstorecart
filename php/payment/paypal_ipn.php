@@ -6,7 +6,7 @@ global $wpsc_error_reporting;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
-global $wpdb, $wpStoreCart;
+global $wpdb, $wpStoreCart, $wpstorecart_version;
 
 if (!function_exists('add_action'))
 {
@@ -115,16 +115,16 @@ if ($myPaypal->validateIpn())
             // Send an email when purchase is submitted
             @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
             if($current_user->ID != 0) {
-                @mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
+                @wp_mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
             } else {
                 // Send an email when purchase is submitted
                 if(isset($results[0]['email'])) {
-                    @mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                    @wp_mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
                 } else {                
                     if(@isset($_SESSION['wpsc_email'])) {
-                        @mail($_SESSION['wpsc_email'], 'Your order has been fulfilled!', $message, $headers);
+                        @wp_mail($_SESSION['wpsc_email'], 'Your order has been fulfilled!', $message, $headers);
                     } elseif(@isset($_POST['payer_email'])) {
-                        @mail($_POST['payer_email'], 'Your order has been fulfilled!', $message, $headers);
+                        @wp_mail($_POST['payer_email'], 'Your order has been fulfilled!', $message, $headers);
                     }
                 }
             }

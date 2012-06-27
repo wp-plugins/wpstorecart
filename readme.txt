@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
 Requires at least: 3.0.0
 Tested up to: 3.4
-Stable tag: 2.5.31
+Stable tag: 2.5.32
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -84,6 +84,10 @@ Or, if you want to install manually:
 6. Shipping options
 
 == Changelog ==
+
+= 2.5.32 =
+* Fixed: Removed dead URLs from context help.
+* Updated: mail() function replaced with wp_mail()
 
 = 2.5.31 =
 * Fixed: Patched an issue where very large order amounts were not being correctly passed to payment gateways

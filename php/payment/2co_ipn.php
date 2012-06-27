@@ -6,7 +6,7 @@ global $wpsc_error_reporting;
 if($wpsc_error_reporting==false) {
     error_reporting(0);
 }
-global $wpdb, $wpStoreCart;
+global $wpdb, $wpStoreCart, $wpstorecart_version;
 if (!function_exists('add_action'))
 {
     require_once("../../../../../wp-config.php");
@@ -83,7 +83,7 @@ if ($my2CO->validateIpn())
 
             // Send an email when purchase is submitted
             if(isset($results)) {
-                mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                wp_mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
                 header ('HTTP/1.1 301 Moved Permanently');
                 if($status == 'Completed') { 
                     if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {

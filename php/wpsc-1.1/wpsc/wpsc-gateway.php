@@ -890,7 +890,7 @@ else
                     $paymentGatewayOptions['theCartPrice'] = number_format($paymentGatewayOptions['theCartPrice'] + $paymentGatewayOptions['totalShipping'] + $theTaxAmount, 2, '.', '');
                     $paymentGatewayOptions['path']=WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/quickbooks-php-devkit/';
 
-                    global $QBMSTransaction, $QBMSErrorMessage, $QBMSStatus;
+                    global $QBMSTransaction, $QBMSErrorMessage, $QBMSStatus, $wpstorecart_version;
                     include_once(WP_PLUGIN_DIR.'/wpsc-payments-pro/qbms/qb_start.php');
                     if($QBMSStatus == 'failedauthorize' || $QBMSStatus == 'failedcapture') {
                         if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {
@@ -945,7 +945,7 @@ else
                         // Send an email when purchase is submitted
                         if(isset($results)) {
                                 @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
-                                mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
+                                wp_mail($results[0]['email'], 'Your order has been fulfilled!', $message, $headers);
                         }
 
                         if(strpos(get_permalink($devOptions['mainpage']),'?')===false) {

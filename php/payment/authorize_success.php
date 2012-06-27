@@ -28,13 +28,13 @@ if (isset($wpStoreCart)) {
         // Send an email when purchase is submitted
         @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
         if($current_user->ID != 0) {
-            @mail($current_user->user_email, 'Thank you for your recent purchase', $message, $headers);
+            @wp_mail($current_user->user_email, 'Thank you for your recent purchase', $message, $headers);
         } else {
             if(@isset($_SESSION['wpsc_email'])) {
-                @mail($_SESSION['wpsc_email'], 'Thank you for your recent purchase', $message, $headers);
+                @wp_mail($_SESSION['wpsc_email'], 'Thank you for your recent purchase', $message, $headers);
             }
             if(@isset($_POST['payer_email'])) {
-                @mail($_POST['payer_email'], 'Thank you for your recent purchase', $message, $headers);
+                @wp_mail($_POST['payer_email'], 'Thank you for your recent purchase', $message, $headers);
             }
         }
         

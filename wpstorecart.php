@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.31
+Version: 2.5.32
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -589,7 +589,7 @@ if (!class_exists("wpStoreCart")) {
                $output .= __('<div style="float:left;margin-top:10px;"><a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay" style="text-decoration:none;"><img src="'.plugins_url('/images/wizard/button_setup_wizard2.png' , __FILE__).'" /></a></div><div style="float:left;width:77%;margin-left:10px;"><strong>wpStoreCart is almost ready! Configuration required.</strong>  The <i>easiest</i> and <i>best way</i> to configure wpStoreCart is to <a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay">click here</a> to run the <a href="'.plugins_url('/php/wizard/wizard_setup_01.php' , __FILE__).'" rel="#overlay">Setup Wizard</a>.  You can also automatically create a "main page" and a "checkout page" for your store by <a href="admin.php?page=wpstorecart-admin&wpscaction=createpages">clicking here</a>, or you can create your own pages first &amp; then visit <a href="admin.php?page=wpstorecart-settings">the settings page</a> to specify which pre-existing pages to use.  See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.</div><br style="clear:both;" />');
            }
            if($theError=='register_globals') {
-               $output .= __('<strong>wpStoreCart has detected that register_globals is set to ON.</strong>  This is a major security risk that can make it much easier for a hacker to gain full access to your website and it\'s data.  Please disable register_globals by following <a href="http://wpstorecart.com/forum/viewtopic.php?f=2&t=2" target="_blank">the directions here</a> before using wpStoreCart. Your shopping cart, checkout, and add to cart functionality will not work while register_globals is set to On. See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
+               $output .= __('<strong>wpStoreCart has detected that register_globals is set to ON.</strong>  This is a major security risk that can make it much easier for a hacker to gain full access to your website and it\'s data.  Please disable register_globals by following <a href="https://wpstorecart.com/documentation/error-messages/disable-register-globals/" target="_blank">the directions here</a> before using wpStoreCart. Your shopping cart, checkout, and add to cart functionality will not work while register_globals is set to On. See <a href="http://wpstorecart.com/documentation/error-messages/" target="_blank">this help entry</a> for more details.');
            }
            if($theError=='nouploadsdir') {
                $output .= '<strong>wpStoreCart has detected that a required folder is missing and we could not automatically create it.</strong>  Please manually create this folder and give it 0777 permissions: '.$variables;
@@ -6919,7 +6919,7 @@ echo '</ul>
                     'X-Mailer: PHP/' . phpversion();
 
                 @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
-                mail($to, $subject, $message, $headers);
+                wp_mail($to, $subject, $message, $headers);
                 echo '<div class="updated"><p><strong>';
                 echo "The email to {$to} was sent.";
                 echo '</strong></p></div>';
@@ -12070,10 +12070,10 @@ echo '</ul>
                                                     // Send an email when purchase is submitted
                                                     @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
                                                     if($current_user->ID != 0) {
-                                                        @mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
+                                                        @wp_mail($current_user->user_email, 'Your order has been fulfilled!', $message, $headers);
                                                     } else {
                                                         if(@isset($_SESSION['wpsc_email'])) {
-                                                            @mail($_SESSION['wpsc_email'], 'Your order has been fulfilled!', $message, $headers);
+                                                            @wp_mail($_SESSION['wpsc_email'], 'Your order has been fulfilled!', $message, $headers);
                                                         }
                                                     }
                                                     
@@ -12085,7 +12085,7 @@ echo '</ul>
 
                                                     // Send an email when purchase is submitted
                                                     @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
-                                                    @mail($devOptions['wpStoreCartEmail'], 'A note was added to a recent order!', $message, $headers);
+                                                    @wp_mail($devOptions['wpStoreCartEmail'], 'A note was added to a recent order!', $message, $headers);
                                                 }
                                             }
                                             if($_GET['wpsc']=='failed') {
@@ -13228,7 +13228,7 @@ echo '</ul>
                             $results = $wpdb->get_results( $sql , ARRAY_A );
                             if(isset($results)) {
                                 @ini_set("sendmail_from", $devOptions['wpStoreCartEmail']);
-                                mail($results[0]['email'], 'The serial number for your recent purchase', $message, $headers);
+                                wp_mail($results[0]['email'], 'The serial number for your recent purchase', $message, $headers);
                             }
                         }
                     }
