@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.35
+Version: 2.5.36
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.35
+ * @version 2.5.36
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.35';
-$wpstorecart_version_int = 205035; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.36';
+$wpstorecart_version_int = 205036; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -13187,7 +13187,7 @@ $output .= '$_SERVER =';
                      * @param integer $orderid The order that has the serial number associated with it
                      */
                 function assignSerialNumber($productid, $orderid=0) {
-                    global $wpdb;
+                    global $wpdb, $wpstorecart_version;
                     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
                     $table_name2 = $wpdb->prefix . "wpstorecart_products";
                     $table_name = $wpdb->prefix . "wpstorecart_orders";
@@ -13216,7 +13216,7 @@ $output .= '$_SERVER =';
                         }
                         if($results111 && $results222 && $results333 && $orderid!=0) {
                             // Do the email here
-                            $sql2 = "SELECT `name` FROM `{$table_name2}` WHERE `primkey`={$current_item[0]};";
+                            $sql2 = "SELECT `name` FROM `{$table_name2}` WHERE `primkey`={$productid};";
                             $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
                             $theProductsName = $devOptions['single_item'];
                             if(isset($moreresults) && $moreresults[0]['name']!='') {
@@ -13225,7 +13225,8 @@ $output .= '$_SERVER =';
                             $theEmail = $devOptions['emailserialnumber'];
                             $theEmail = str_replace("[productname]", $theProductsName, $theEmail);
                             $theEmail = str_replace("[serialnumber]", $grab_one[0], $theEmail);
-                            $message = $theEmail;
+                            $message = wpscMakeEmailTxt($theEmail, $orderid);
+                            
 
                             $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
                                 'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
