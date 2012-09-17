@@ -73,7 +73,8 @@ class Paypal extends PaymentGateway
 		$postString .="cmd=_notify-validate"; // append ipn command
 
 		// open the connection to paypal
-		$fp = fsockopen($urlParsed[host], "80", $errNum, $errStr, 30);
+		//$fp = fsockopen($urlParsed[host], "80", $errNum, $errStr, 30);
+                $fp = fsockopen('ssl://'.$urlParsed[host], "443", $errNum, $errStr, 30);
 
 		if(!$fp)
 		{
