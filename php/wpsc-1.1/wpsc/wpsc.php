@@ -1269,6 +1269,10 @@ class wpsc {
                                                     $(".wpsc-authorizenetcheckout").show("drop", { direction: "down" }, 1000);
                                                     $(".wpsc-2checkoutcheckout").show("drop", { direction: "down" }, 1000);
                                                     $(".wpsc-libertyreservecheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-qbmscheckout").show("drop", { direction: "down" }, 1000);
+                                                    $(".wpsc-moneybookerscheckout").show("drop", { direction: "down" }, 1000);
+
+
                                                 }
                                             });
 
