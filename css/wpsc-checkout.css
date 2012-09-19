@@ -1,0 +1,4 @@
+#wpsc-checkout-steps { list-style:none; width:100%; overflow:hidden; margin:0px; padding:0px;}
+#wpsc-checkout-steps li {font-size:24px; float:left; padding:10px; opacity:0.5;}
+#wpsc-checkout-steps li span {font-size:11px; display:block;}
+#wpsc-checkout-steps li.current { opacity:1.0;} 
