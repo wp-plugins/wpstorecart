@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.41
+Version: 2.5.42
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.41
+ * @version 2.5.42
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.41';
-$wpstorecart_version_int = 205041; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.42';
+$wpstorecart_version_int = 205042; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1634,6 +1634,31 @@ if (!class_exists("wpStoreCart")) {
             echo "<li><span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"http://chart.apis.google.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div></li>";
             echo '</ul>';
 
+            echo '
+            <h3>Support Our Development</h3>
+            <div class="updated fade" style="padding:5px 5px 5px 5px;">
+            <h1>Limited 90% OFF Sale!</h1>
+            wpStoreCart 3 is in beta.  wpStoreCart 2.5.x will no longer be supported after October 31st, 2012.  <br /><br />
+            Until then, you can buy a wpStoreCart PRO 10 Domain License for 80% off or Unlimited Domain license for over a 90% discount! <br /><br />
+            <table>
+                <tr><td>10 Domain License</td><td><strike>$399</strike> <strong style="font-size:14px;">$79</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="FVKGQ6UBKHFYA">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</td></tr>
+                <tr><td>Unlimited Domains</td><td><strike>$1299</strike> <strong style="font-size:14px;">$99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="RS78NKYSJ7TW4">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</td></tr>
+            </table><br /><br />
+            <strong><i>*Yes, this does include free upgrades to wpStoreCart 3 PRO 10 Domain/Unlimited Domain license, and all other future versions, forever!</i></strong>
+            </div>';            
+            
             if(!$wpstorecartpro) {
             echo '<h3>More Ecommerce Tools</h3>';
             echo '
@@ -1658,39 +1683,10 @@ if (!class_exists("wpStoreCart")) {
 			</form>
             </center>';
             
-            echo '
-            <h3>Support Our Development</h3>
-            If you have found this plugin useful, PayPal donations are always appreciated:<center>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-            <input type="hidden" name="cmd" value="_s-xclick">
-            <input type="hidden" name="hosted_button_id" value="9LWHPC2QC4F7Q">
-            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
-            </center>or Flattr us to help keep development going strong:<center>
-            <script type="text/javascript">
-            /* <![CDATA[ */
-                (function() {
-                    var s = document.createElement(\'script\'), t = document.getElementsByTagName(\'script\')[0];
-                    s.type = \'text/javascript\';
-                    s.async = true;
-                    s.src = \'http://api.flattr.com/js/0.6/load.js?mode=auto\';
-                    t.parentNode.insertBefore(s, t);
-                })();
-            /* ]]> */
-            </script>
-            <a class="FlattrButton" style="display:none;" rev="flattr;button:compact;" href="http://wpstorecart.com"></a>
-            <noscript><a href="http://flattr.com/thing/348418/wpStoreCart" target="_blank">
-            <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
-            </center>
-            Or at the very least we\'d appreciate it if you give us a <a href="http://wordpress.org/extend/plugins/wpstorecart/">good rating at the plugin directory</a>, link to our site, blog, tweet, or post about wpStoreCart.
-            ';
+
             }
 echo '
-<div class="updated fade">
-<h3>Upgrade Notice</h3>
-wpStoreCart 3 is in beta.  wpStoreCart 2.5.x will no longer be supported after October 31st, 2012.  
-</div>
+
 <h3>Get Support</h3>
 <ul>
 <li> <img src="'.plugins_url('/images/help.png' , __FILE__).'" /> <a href="https://wpstorecart.com/documentation/" target="_blank">Documentation</a></li>
