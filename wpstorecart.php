@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 2.5.43
+Version: 2.5.44
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -28,7 +28,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart
  *
  * @package wpstorecart
- * @version 2.5.43
+ * @version 2.5.44
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010, 2011, 2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -51,8 +51,8 @@ if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
 global $wpStoreCart, $cart, $wpsc, $wpstorecart_version, $wpstorecart_version_int, $testing_mode, $wpstorecart_db_version, $wpsc_error_reporting, $wpsc_error_level, $wpsc_cart_type, $wpsc_cart_sub_type;
 
 //Global variables:
-$wpstorecart_version = '2.5.43';
-$wpstorecart_version_int = 205043; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '2.5.44';
+$wpstorecart_version_int = 205044; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_db_version = $wpstorecart_version_int; // Legacy, used to check db version
 $testing_mode = false; // Enables or disables testing mode.  Should be set to false unless using on a test site, with test data, with no actual customers
 $wpsc_error_reporting = false; // Enables or disables the advanced error reporting utilities included with wpStoreCart.  Should be set to false unless using on a test site, with test data, with no actual customers
@@ -1638,17 +1638,40 @@ if (!class_exists("wpStoreCart")) {
             <h3>Support Our Development</h3>
             <div class="updated fade" style="padding:5px 5px 5px 5px;">
             <h1>Limited 90% OFF Sale!</h1>
-            wpStoreCart 3 is in beta.  wpStoreCart 2.5.x will no longer be supported after October 31st, 2012.  <br /><br />
-            Until then, you can buy a wpStoreCart PRO 10 Domain License for 80% off or Unlimited Domain license for over a 90% discount! <br /><br />
+            wpStoreCart is celebrating our 2 year anniversary!  Buy now to get your lifetime license before these deals expire in:<br />
+            <div id="wpscCountDown"></div>
+            <script type="text/javascript">jQuery("#wpscCountDown").countdown({until: new Date(2012, 10-1, 31), format: "dHMS"});</script>
+            <br /><br />
             <table>
-                <tr><td>10 Domain License</td><td><strike>$399</strike> <strong style="font-size:14px;">$79</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                <tr><td>Blogger 1 Domain</td><td><strike>$25</strike><br /><strong style="font-size:14px;">$6.99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="L8XC626VLXKU2">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</td></tr>                
+                <tr><td>PRO 1 Domain</td><td><strike>$50</strike><br /><strong style="font-size:14px;">$9.99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="GG8L8CHHPWD9A">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</td></tr>             
+                <tr><td>PRO 2 Domain</td><td><strike>$90</strike><br /><strong style="font-size:14px;">$16.99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="76U6KHQBX58CA">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</td></tr>            
+                <tr><td>PRO 10 Domain</td><td><strike>$399</strike><br /><strong style="font-size:14px;">$49.99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="FVKGQ6UBKHFYA">
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
 </td></tr>
-                <tr><td>Unlimited Domains</td><td><strike>$1299</strike> <strong style="font-size:14px;">$99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                <tr><td>PRO Unlimited Domains</td><td><strike>$1299</strike><br /><strong style="font-size:14px;">$79.99</strong></td><td><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="RS78NKYSJ7TW4">
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
@@ -1656,7 +1679,7 @@ if (!class_exists("wpStoreCart")) {
 </form>
 </td></tr>
             </table><br /><br />
-            <strong><i>*Yes, this does include free upgrades to wpStoreCart 3 PRO 10 Domain/Unlimited Domain license, and all other future versions, forever!</i></strong>
+            <strong><i>*Yes, this does include free upgrades to wpStoreCart 3 licenses, and all other future versions, forever! Buy once, get ALL FUTURE UPGRADES!</i></strong>
             </div>';            
             
             if(!$wpstorecartpro) {
@@ -12366,6 +12389,11 @@ $output .= '$_SERVER =';
                         wp_enqueue_script('jq-validation-engine-en', plugins_url() .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js',array('jquery'),'1.6');
                         wp_enqueue_script('jq-validation-engine', plugins_url() .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js',array('jquery'),'1.6');
                         wp_enqueue_script('imagemapster', plugins_url() .'/wpstorecart/js/imagemapster/jquery.imagemapster.min.js',array('jquery'),'1.6');
+                        
+                        wp_enqueue_script('jquery-countdown', plugins_url() .'/wpstorecart/js/jquery.countdown/jquery.countdown.min.js',array('jquery'),'1.6');
+                        wp_register_style('jquery-countdown-css', plugins_url() .'/wpstorecart/js/jquery.countdown/jquery.countdown.css');
+                        wp_enqueue_style( 'jquery-countdown-css');                        
+                        
 
 
 			$APjavascriptQueue .= '
