@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.5
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -72,19 +72,19 @@ Or, if you want to install manually:
 
 == Screenshots ==
  
-1. The optional "Setup Wizard"
+1. View your orders, which appear in an Ajax table.  Click on any field to edit it.
 
-2. More of the "Setup Wizard", this time asking what type of stuff you sell
+2. Options page
 
-3. Screenshot of the default wpStoreCart Wordpress theme, which can be downloaded for free from our website
+3. Edit products
 
-4. Registration options
+4. Adding a new product
 
-5. More registration options
-
-6. Shipping options
 
 == Changelog ==
+
+= 3.0.4 =
+* Updated screenshots
 
 = 3.0.3 =
 * Fixed: Patched an issue where the newsales() alert was not being reset correctly
@@ -108,6 +108,12 @@ Or, if you want to install manually:
 
 = 3.0.1 =
 * wpStoreCart 3 BETA 1 released
+
+= 2.5.45 =
+* Updated: Settings updated
+
+= 2.5.44 =
+* Updated: 2 year anniversary sale announced
 
 = 2.5.43 =
 * Fixed: Google Charts would not display on SSL secured sites.  Switched to https://chart.googleapis.com/chart which fixes the issue
