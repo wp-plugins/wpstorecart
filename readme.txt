@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.5
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -14,7 +14,7 @@ The next generation of Wordpress ecommerce.  Easy to use & fully customizable, i
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
 
 See whats new:
-[youtube http://www.youtube.com/watch?v=0Y1RbFbxrDg&hd=1]
+[youtube http://www.youtube.com/watch?v=CqWI8nMs2Mg&hd=1]
 
 **Hightlighted Features:**
 
@@ -82,6 +82,9 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 3.0.5 =
+* Updated intro video
 
 = 3.0.4 =
 * Updated screenshots

@@ -757,7 +757,7 @@ if (!function_exists('wpscAdminHeader')) {
             </script>              
 
                 <div id="wpsc-new-video" title="<?php _e('What\'s new in wpStoreCart 3','wpstorecart'); ?>" style="display:none;position:relative;z-index:999999;">
-                    <iframe width="853" height="480" src="https://www.youtube.com/embed/0Y1RbFbxrDg?version=3&amp;hl=en_US&amp;autoplay=1&amp;modestbranding=1&amp;rel=0&amp;autohide=1" frameborder="0" allowfullscreen></iframe>
+                    <iframe width="853" height="480" src="https://www.youtube.com/embed/CqWI8nMs2Mg?version=3&amp;hl=en_US&amp;autoplay=1&amp;modestbranding=1&amp;rel=0&amp;autohide=1" frameborder="0" allowfullscreen></iframe>
 
                 </div>
 
