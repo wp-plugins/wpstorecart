@@ -1,10 +1,10 @@
-=== wpStoreCart ===
+=== wpStoreCart 3 ===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
-Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill
-Requires at least: 3.0.0
+Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
+Requires at least: 3.3.0
 Tested up to: 3.5
-Stable tag: 2.5.45
+Stable tag: 3.0.3
 
 The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -13,8 +13,8 @@ The next generation of Wordpress ecommerce.  Easy to use & fully customizable, i
 [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
 
-See what people are saying:
-[youtube http://www.youtube.com/watch?v=j0qJS7zEGPM&hd=1]
+See whats new:
+[youtube http://www.youtube.com/watch?v=0Y1RbFbxrDg&hd=1]
 
 **Hightlighted Features:**
 
@@ -24,6 +24,7 @@ See what people are saying:
 * Product properties such as weight & dimensions
 * Fully configurable product & category display
 * Search products using default Wordpress search
+* Track ecommerce statistics with Google Analytics & Piwik ecommerce integration
 * USPS & UPS shipping integration
 * Multi-language & currency support
 * Works with any theme
@@ -85,11 +86,28 @@ Or, if you want to install manually:
 
 == Changelog ==
 
-= 2.5.45 =
-* Updated: Settings updated
+= 3.0.3 =
+* Fixed: Patched an issue where the newsales() alert was not being reset correctly
+* Added: New Shipping tab in edit products admin panel
+* Worked on getting the shipping API finished.  Made several changes and patched some issues.
+* Fixed: Google Charts would not display on SSL secured sites.  Switched to https://chart.googleapis.com/chart which fixes the issue
+* Added: wp_wpstorecart_packages database table added
+* Added: Quick validation added to Guest checkout
+* Updated: Login widget addressed so that it better handles guests, including allowing guest to sign out
+* Added: Alerts via Text messaging completed
+* Added: Alerts via Email completed
+* Added: Admin panel is now responsive to screen size.
+* Fixed: Hiding prices for guests patch
+* Fixed: Previous users who are missing a required registration field must enter in the missing information before completing checkout.
+* Fixed: Guests now have to fill out all required information, to enable shipping for guests to function properly
+* Added: Upgrade/App Store Added
 
-= 2.5.44 =
-* Updated: 2 year anniversary sale announced
+= 3.0.2 =
+* wpStoreCart 3 BETA 2 released
+* Fixed: Setting an Alert to wp-admin = OFF now correctly hides the alert from the admin panel
+
+= 3.0.1 =
+* wpStoreCart 3 BETA 1 released
 
 = 2.5.43 =
 * Fixed: Google Charts would not display on SSL secured sites.  Switched to https://chart.googleapis.com/chart which fixes the issue
@@ -663,9 +681,6 @@ Or, if you want to install manually:
 * First draft of wpStoreCart.
 
 == Upgrade Notice ==
-
-= 2.5.30 =
-* Important Security Update! Please update now!
 
 = 2.5.24 =
 * Important Security Update! Please update now!

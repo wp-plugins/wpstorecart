@@ -1,3 +1,4 @@
+// wpsc EZPZ Tooltip v1.1.  Maintained by wpStoreCart, LLC.  Offered under the same license and forked from:
 // EZPZ Tooltip v1.0; Copyright (c) 2009 Mike Enriquez, http://theezpzway.com; Released under the MIT License
 (function($){
 	$.fn.ezpz_tooltip = function(options){
@@ -23,7 +24,7 @@
 				$("#" + this.id + ", #" + getContentId(this.id)).mouseover(function(){
 					content.css('display', 'block');
 				}).mouseout(function(){
-					content.css('display', 'none');
+					settings.hideContent(content);
 					settings.afterHide();
 				});
 			}
@@ -50,8 +51,9 @@
 		function getElementDimensionsAndPosition(element){
 			var height = element.outerHeight(true);
 			var width = element.outerWidth(true);
-			var top = $(element).offset().top;
-			var left = $(element).offset().left;
+			var top = $(element).offsetTop;
+			var left = $(element).offsetLeft;
+                        
 			var info = new Array();
 			
 			// Set dimensions
@@ -105,16 +107,20 @@
 	$.fn.ezpz_tooltip.defaults = {
 		contentPosition: 'aboveRightFollow',
 		stayOnContent: false,
-		offset: 10,
+		offset: 0,
 		contentId: "",
-		beforeShow: function(content){},
+		beforeShow: function(content){
+                    content.stop().show();
+                },
 		showContent: function(content){
 			content.show();
 		},
 		hideContent: function(content){
-			content.hide();
+			content.stop().slideUp();
 		},
-		afterHide: function(){}
+		afterHide: function(content){
+                        //content.css('display', 'none');
+                }
 	};
 	
 })(jQuery);
