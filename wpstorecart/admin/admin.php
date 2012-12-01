@@ -6317,7 +6317,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 while ($icounter < $numberofpages) {
                         $pagenum = $icounter + 1;
                         $offeset = $icounter * $numberofrecords;
-                        echo '<a href="admin.php?page=wpstorecart-edit-products&startrecord='.$offeset.'">'.$pagenum.'</a> ';
+                        echo '<a href="admin.php?page=wpstorecart-edit-product&startrecord='.$offeset.'">'.$pagenum.'</a> ';
                         $icounter++;
                 }
                 echo '</div><br />';

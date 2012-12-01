@@ -153,6 +153,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 $wpscPaymentGateway['total_shipping'] = 0; // The total shipping for the cart
                 $wpscPaymentGateway['total_price_with_shipping'] = 0; // The total price of the cart, including shipping charges
                 $wpscPaymentGateway['final_price'] = 0; // The total price + the shipping price + calculated taxes
+                $wpscPaymentGateway['final_price_with_discounts'] = 0; // The total price + the shipping price + calculated taxes + discounts
                 $wpscPaymentGateway['is_coupon_set'] = false;  // False if no coupon has been set, true if there has been
                 $wpscPaymentGateway['discount_amount'] = 0; // The amount to subtract from the total
                 $wpscPaymentGateway['discount_percent'] = 0; // The percent to subtract from the total
@@ -184,7 +185,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                         }
                         if(($wpStoreCartOptions['storetype']!='Digital Goods Only' && $wpStoreCartOptions['flatrateshipping']=='individual') && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
                             if($results[0]['shipping']!='0.00') {
-                                $wpscPaymentGateway['total_shipping'] = number_format(round($wpscPaymentGateway['total_shipping'] + round($results[0]['shipping'] * $item['qty'], 2), 2), 2);
+                                $wpscPaymentGateway['total_shipping'] = number_format(round($wpscPaymentGateway['total_shipping'] + round($results[0]['shipping'] * $item['qty'], 2), 2), 2,'.' ,'');
                             }
                         } else {
                             $wpscPaymentGateway['total_shipping'] = 0;
@@ -192,10 +193,10 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                     }
 
                     if($wpStoreCartOptions['flatrateshipping']=='all_global' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
-                        $wpscPaymentGateway['total_shipping'] = number_format(round($wpStoreCartOptions['flatrateamount'], 2), 2);
+                        $wpscPaymentGateway['total_shipping'] = number_format(round($wpStoreCartOptions['flatrateamount'], 2), 2,'.' ,'');
                     }
                     if($wpStoreCartOptions['flatrateshipping']=='all_single' && ($shipping_type=='shipping_offered_by_flatrate' || $shipping_type_widget=='shipping_offered_by_flatrate')) {
-                        $wpscPaymentGateway['total_shipping'] = number_format(round($wpStoreCartOptions['flatrateamount'] * $item['qty'], 2), 2);
+                        $wpscPaymentGateway['total_shipping'] = number_format(round($wpStoreCartOptions['flatrateamount'] * $item['qty'], 2), 2,'.' ,'');
 
                     }
 
@@ -207,11 +208,11 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
 
                     if($wpscPaymentGateway['is_coupon_set']==false && (@$_SESSION['validcouponid']==$item['id'])) {
                         if(isset($_SESSION['validcouponamount'])) {
-                            $wpscPaymentGateway['discount_amount'] = number_format(round($_SESSION['validcouponamount'], 2), 2);
+                            $wpscPaymentGateway['discount_amount'] = number_format(round($_SESSION['validcouponamount'], 2), 2,'.' ,'');
                         }
                         if(isset($_SESSION['validcouponpercent']) && $_SESSION['validcouponpercent'] != 0) { //
                             $discount_priceper = round(($item['qty'] * $item['price']) * ($_SESSION['validcouponpercent'] / 100), 2);
-                            $wpscPaymentGateway['discount_amount'] = number_format(round($discount_priceper, 2), 2);
+                            $wpscPaymentGateway['discount_amount'] = number_format(round($discount_priceper, 2), 2,'.' ,'');
                         }
                         $wpscPaymentGateway['is_coupon_set'] = true;
                     }
@@ -226,7 +227,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 }
 
                 if($shipping_type=='shipping_offered_by_usps' || $shipping_type_widget=='shipping_offered_by_usps') {
-                    $wpscPaymentGateway['total_shipping'] = number_format(round($usps_shipping_total, 2), 2); // We use the calculated USPS shipping total if applicable
+                    $wpscPaymentGateway['total_shipping'] = number_format(round($usps_shipping_total, 2), 2,'.' ,''); // We use the calculated USPS shipping total if applicable
 
                 }
                 
@@ -246,7 +247,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 
                 if(@isset($_SESSION['validcouponamount']) && $wpscPaymentGateway['is_coupon_set']==false) {
                     if(isset($_SESSION['validcouponamount'])) {
-                        $wpscPaymentGateway['discount_amount'] = number_format(round($_SESSION['validcouponamount'], 2), 2);
+                        $wpscPaymentGateway['discount_amount'] = number_format(round($_SESSION['validcouponamount'], 2), 2,'.' ,'');
                     }
                     if(isset($_SESSION['validcouponpercent']) && $_SESSION['validcouponpercent'] != 0) { //
                         $wpscPaymentGateway['discount_percent'] = $_SESSION['validcouponpercent'];
@@ -287,7 +288,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 }                 
 
                 // Price with shipping
-                $wpscPaymentGateway['total_price_with_shipping']  = number_format(round($wpscPaymentGateway['total_price'] + $wpscPaymentGateway['total_shipping'], 2), 2);
+                $wpscPaymentGateway['total_price_with_shipping']  = number_format(round($wpscPaymentGateway['total_price'] + $wpscPaymentGateway['total_shipping'], 2), 2,'.' ,'');
                 
                 // Tax
                 $wpscPaymentGateway['order_tax'] = wpscCalculateTaxes($wpscPaymentGateway['total_price_with_shipping']);
@@ -296,9 +297,15 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 }
 
                 // Calculate final tallys
-                $wpscPaymentGateway['final_price'] = number_format(round($wpscPaymentGateway['total_price_with_shipping'] + $wpscPaymentGateway['order_tax'], 2), 2);
+                $wpscPaymentGateway['final_price'] = number_format(round($wpscPaymentGateway['total_price_with_shipping'] + $wpscPaymentGateway['order_tax'], 2), 2,'.' ,'');
+                $wpscPaymentGateway['final_price_with_discounts'] = $wpscPaymentGateway['final_price']; // Same as final_price if no discounts are applied
                 
-              
+                // Calculate final tally with discounts applied
+                if($wpscPaymentGateway['discount_amount'] > 0) {
+                    $wpscPaymentGateway['final_price_with_discounts'] = number_format(round($wpscPaymentGateway['final_price'] - $wpscPaymentGateway['discount_amount'], 2), 2,'.' ,'');
+                }
+                
+                
                 wpsc_process_payment_gateways(); // Action hook to process payments
                 
                 $wpsc_shoppingcart->empty_cart();     // EMPTY THE CART

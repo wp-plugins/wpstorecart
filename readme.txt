@@ -4,9 +4,9 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.5
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 
-The next generation of Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
+Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
 == Description ==
 
@@ -82,6 +82,11 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 3.0.6 =
+* Fixed: Patched an issue on the Edit Products screen preventing paged mode from functioning correctly
+* Added: Introduced the $wpscPaymentGateway['final_price_with_discounts'] value for payment gateways
+* Fixed: Fixed an issue with orders over $1000 on some payment gateways
 
 = 3.0.5 =
 * Updated intro video
