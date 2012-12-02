@@ -1,7 +1,7 @@
 <?php
 /*
  * ===============================================================================================================
- * wpStoreCartCheckoutWidget SIDEBAR WIDGET
+ * wpStoreCartCategoryWidget SIDEBAR WIDGET
  */
 if (class_exists("WP_Widget")) {
 
@@ -91,7 +91,253 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 	// ------------------------------------------------------------------
 
+        
+        function wpscCategoryWidgetEnqueue() {
+            wp_register_style('wpsc-jstree-css', plugins_url() . '/wpstorecart/js/jstree/themes/apple/style.css');
+            wp_enqueue_style('wpsc-jstree-css');   
+            wp_enqueue_script('jquery');
+            wp_enqueue_script('wpsc-jstree', plugins_url() . '/wpstorecart/js/jstree/jquery.jstree.js');            
+        }
+        
+        add_action('wp_enqueue_scripts', 'wpscCategoryWidgetEnqueue');
+        
+        
+        /*
+        * ===============================================================================================================
+        * wpStoreCartAdvancedCategoryWidget SIDEBAR WIDGET
+        */
+	class wpStoreCartAdvancedCategoryWidget extends WP_Widget {
+		/** constructor */
+		function wpStoreCartAdvancedCategoryWidget() {
+			parent::WP_Widget(false, $name = 'wpStoreCart Advanced Categories');
+		}
 
+		/** @see WP_Widget::widget */
+		function widget($args, $instance) {
+                    
+                        
+                    
+			global $wpdb;
+			$output = NULL;
+			$table_name = $wpdb->prefix . "wpstorecart_categories";
+
+                        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
+
+			extract( $args );
+			$title = apply_filters('widget_title', $instance['title']);
+
+			echo $before_widget;
+			if ( $title ) { echo $before_title . $title . $after_title; }
+
+                        $output .= '<div id="wpsc-adv-cat-widget"><ul>';
+                        $sql = "SELECT * FROM `{$table_name}` WHERE `parent`=0  ORDER BY `parent` DESC;";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        if(isset($results)) {
+                                foreach ($results as $result) {
+                                        if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                            if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                            } else {
+                                                $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                            }
+                                        } else {
+                                            $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                        }
+
+                                        $output .= '
+                                        <li>
+                                                <a href="'.$permalink.'">'.$result['category'].'</a>';
+
+
+                                                    $sql2 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result['primkey']}  ORDER BY `parent` DESC;";
+                                                    $results2 = $wpdb->get_results( $sql2 , ARRAY_A );
+                                                    if(isset($results2)) {
+                                                            $output .= '<ul>';                                                    
+                                                            foreach ($results2 as $result2) {
+                                                                if($result2['postid'] == 0 || $result2['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                        $permalink2 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result2['primkey'];
+                                                                    } else {
+                                                                        $permalink2 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result2['primkey'];
+                                                                    }
+                                                                } else {
+                                                                    $permalink2 = get_permalink( $result2['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                }                                                            
+                                                                $output .= '<li><a href="'.$permalink2.'">'.$result2['category'].'</a>';
+
+                                                                    $sql3 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result2['primkey']}  ORDER BY `parent` DESC;";
+                                                                    $results3 = $wpdb->get_results( $sql3 , ARRAY_A );
+                                                                    if(isset($results3)) {
+                                                                            $output .= '<ul>';                                                    
+                                                                            foreach ($results3 as $result3) {
+                                                                                if($result3['postid'] == 0 || $result3['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                        $permalink3 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result3['primkey'];
+                                                                                    } else {
+                                                                                        $permalink3 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result3['primkey'];
+                                                                                    }
+                                                                                } else {
+                                                                                    $permalink3 = get_permalink( $result3['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                }                                                            
+                                                                                $output .= '<li><a href="'.$permalink3.'">'.$result3['category'].'</a>';
+                                                                                
+                                                                                    $sql4 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result3['primkey']}  ORDER BY `parent` DESC;";
+                                                                                    $results4 = $wpdb->get_results( $sql4 , ARRAY_A );
+                                                                                    if(isset($results4)) {
+                                                                                            $output .= '<ul>';                                                    
+                                                                                            foreach ($results4 as $result4) {
+                                                                                                if($result4['postid'] == 0 || $result4['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                                        $permalink4 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result4['primkey'];
+                                                                                                    } else {
+                                                                                                        $permalink4 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result4['primkey'];
+                                                                                                    }
+                                                                                                } else {
+                                                                                                    $permalink4 = get_permalink( $result4['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                                }                                                            
+                                                                                                $output .= '<li><a href="'.$permalink4.'">'.$result4['category'].'</a>';
+                                                                                                
+                                                                                                    $sql5 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result4['primkey']}  ORDER BY `parent` DESC;";
+                                                                                                    $results5 = $wpdb->get_results( $sql5 , ARRAY_A );
+                                                                                                    if(isset($results5)) {
+                                                                                                            $output .= '<ul>';                                                    
+                                                                                                            foreach ($results5 as $result5) {
+                                                                                                                if($result5['postid'] == 0 || $result5['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                                                        $permalink5 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result5['primkey'];
+                                                                                                                    } else {
+                                                                                                                        $permalink5 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result5['primkey'];
+                                                                                                                    }
+                                                                                                                } else {
+                                                                                                                    $permalink5 = get_permalink( $result5['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                                                }                                                            
+                                                                                                                $output .= '<li><a href="'.$permalink5.'">'.$result5['category'].'</a>';
+                                                                                                                
+                                                                                                                    $sql6 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result5['primkey']}  ORDER BY `parent` DESC;";
+                                                                                                                    $results6 = $wpdb->get_results( $sql6 , ARRAY_A );
+                                                                                                                    if(isset($results6)) {
+                                                                                                                            $output .= '<ul>';                                                    
+                                                                                                                            foreach ($results6 as $result6) {
+                                                                                                                                if($result6['postid'] == 0 || $result6['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                                                                        $permalink6 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result6['primkey'];
+                                                                                                                                    } else {
+                                                                                                                                        $permalink6 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result6['primkey'];
+                                                                                                                                    }
+                                                                                                                                } else {
+                                                                                                                                    $permalink6 = get_permalink( $result6['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                                                                }                                                            
+                                                                                                                                $output .= '<li><a href="'.$permalink6.'">'.$result6['category'].'</a>';
+                                                                                                                                
+                                                                                                                                    $sql7 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result6['primkey']}  ORDER BY `parent` DESC;";
+                                                                                                                                    $results7 = $wpdb->get_results( $sql7 , ARRAY_A );
+                                                                                                                                    if(isset($results7)) {
+                                                                                                                                            $output .= '<ul>';                                                    
+                                                                                                                                            foreach ($results7 as $result7) {
+                                                                                                                                                if($result7['postid'] == 0 || $result7['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                                                                                        $permalink7 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result7['primkey'];
+                                                                                                                                                    } else {
+                                                                                                                                                        $permalink7 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result7['primkey'];
+                                                                                                                                                    }
+                                                                                                                                                } else {
+                                                                                                                                                    $permalink7 = get_permalink( $result7['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                                                                                }                                                            
+                                                                                                                                                $output .= '<li><a href="'.$permalink7.'">'.$result7['category'].'</a>';
+                                                                                                                                                
+                                                                                                                                                    $sql8 = "SELECT * FROM `{$table_name}` WHERE `parent`={$result7['primkey']}  ORDER BY `parent` DESC;";
+                                                                                                                                                    $results8 = $wpdb->get_results( $sql8 , ARRAY_A );
+                                                                                                                                                    if(isset($results8)) {
+                                                                                                                                                            $output .= '<ul>';                                                    
+                                                                                                                                                            foreach ($results8 as $result8) {
+                                                                                                                                                                if($result8['postid'] == 0 || $result8['postid'] == '') { // If there's no dedicated category pages, use the default
+                                                                                                                                                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                                                                                                                                                        $permalink8 = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result8['primkey'];
+                                                                                                                                                                    } else {
+                                                                                                                                                                        $permalink8 = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result8['primkey'];
+                                                                                                                                                                    }
+                                                                                                                                                                } else {
+                                                                                                                                                                    $permalink8 = get_permalink( $result8['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                                                                                                                                }                                                            
+                                                                                                                                                                $output .= '<li><a href="'.$permalink8.'">'.$result8['category'].'</a>';
+                                                                                                                                                                $output .= '</li>';
+                                                                                                                                                            }
+                                                                                                                                                            $output .= '</ul>';
+                                                                                                                                                    }                                                                                                                                                 
+                                                                                                                                                
+                                                                                                                                                $output .= '</li>';
+                                                                                                                                            }
+                                                                                                                                            $output .= '</ul>';
+                                                                                                                                    }                                                                                                                                 
+                                                                                                                                
+                                                                                                                                $output .= '</li>';
+                                                                                                                            }
+                                                                                                                            $output .= '</ul>';
+                                                                                                                    }                                                                                                                
+                                                                                                                
+                                                                                                                $output .= '</li>';
+                                                                                                            }
+                                                                                                            $output .= '</ul>';
+                                                                                                    }    
+                                                                                                    
+                                                                                                $output .= '</li>';
+                                                                                            }
+                                                                                            $output .= '</ul>';
+                                                                                    }                                                                                 
+                                                                                
+                                                                                $output .= '</li>';
+                                                                            }
+                                                                            $output .= '</ul>';
+                                                                    }                                                                
+                                                                
+                                                                $output .= '</li>';
+                                                            }
+                                                            $output .= '</ul>';
+                                                    }
+                                                
+                                        
+                                                
+                                        $output .= '</li>';
+                                }
+                                $output .= '
+                                </ul></div>
+                                <script type="text/javascript">
+                                    jQuery(function () {
+                                            jQuery("#wpsc-adv-cat-widget").jstree({ 
+                                                    "themes" : {
+                                                            "theme" : "default",
+                                                            "dots" : true,
+                                                            "icons" : true
+                                                    },                                            
+                                                    "plugins" : [ "themes", "html_data" ]
+                                            });
+                                    });     
+                                </script>
+                                    ';                                
+                        }
+
+			echo $output;
+			echo $after_widget;
+		}
+
+		/** @see WP_Widget::update */
+		function update($new_instance, $old_instance) {
+			$instance['title']= strip_tags(stripslashes($new_instance['title']));
+			return $instance;
+		}
+
+		/** @see WP_Widget::form */
+		function form($instance) {
+			@$title = esc_attr($instance['title']);
+
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+
+		}
+
+	}
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------        
+        
 
 	class wpStoreCartCheckoutWidget extends WP_Widget {
 		/** constructor */
@@ -548,6 +794,6 @@ if (class_exists("WP_Widget")) {
 	add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartRecentproductsWidget");')); // Register the widget: wpStoreCartRecentproductsWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
-
+        add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartAdvancedCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
 
 ?>

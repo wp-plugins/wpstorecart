@@ -111,6 +111,30 @@ if(!function_exists('wpscGdCheck')) {
 }
 
 
+if(!function_exists('wpscCalculateCategoryDepth')) {
+    function wpscCalculateCategoryDepth() {
+        global $wpdb;
+        
+        $results = $wpdb->get_results("SELECT `parent`, `primkey` FROM `{$wpdb->prefix}wpstorecart_categories`;", ARRAY_A);
+        if(@isset($results[0]['parent'])) {
+            foreach ($results as $result) {
+                if($result['parent']==0) { // Root parent categories
+                    $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_categories` SET `lineage`='{$result['primkey']}' WHERE `primkey`='{$result['primkey']}';");
+                } else {
+                    $parent_results = $wpdb->get_results("SELECT `lineage`, `depth` FROM `{$wpdb->prefix}wpstorecart_categories` WHERE `primkey`='{$result['parent']}';", ARRAY_A);
+                    if(@isset($parent_results[0]['lineage'])) {
+                        $depth = $parent_results[0]['depth'] + 1;
+                        $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_categories` SET `lineage`='{$parent_results[0]['lineage']}-{$result['primkey']}', `depth`={$depth} WHERE `primkey`='{$result['primkey']}';");
+                    }
+                }
+            }
+        }
+        
+        
+    }
+}
+
+
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

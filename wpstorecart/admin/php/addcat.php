@@ -146,7 +146,9 @@ if ( 0 == $current_user->ID ) {
 
 
 
-    }    
+    } 
+    
+    wpscCalculateCategoryDepth();
 
 
 }

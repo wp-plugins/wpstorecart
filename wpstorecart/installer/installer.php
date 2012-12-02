@@ -41,6 +41,11 @@ function wpscAddColumnIfNotExist($db, $column, $column_attr = "VARCHAR( 255 ) NU
 function wpscUpdate() {
     global $wpdb, $wpstorecart_version_int;
 
+    // 3.0.7
+    wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_categories", "lineage", "TEXT NOT NULL" );
+    wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_categories", "depth", "INT NOT NULL" );
+    @wpscCalculateCategoryDepth();
+    
     wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_products", "donation", "BOOLEAN NOT NULL DEFAULT '0'" );
     wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_products", "weight", "INT( 7 ) NOT NULL DEFAULT  '0'" );
     wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_products", "length", "INT( 7 ) NOT NULL DEFAULT  '0'" );
@@ -386,7 +391,9 @@ if(!function_exists('wpscInstallWpms')) {
 	                                `showtoall` BOOLEAN NOT NULL DEFAULT '1',
 	                                `showtowhichgroups` TEXT NOT NULL,
 	                                `discountstoall` BOOLEAN NOT NULL DEFAULT '1',
-	                                `discountstowhichgroups` TEXT NOT NULL
+	                                `discountstowhichgroups` TEXT NOT NULL,
+                                        `lineage` TEXT NOT NULL,
+                                        `depth` INT NOT NULL
 	                                );
 	                                ";
 	

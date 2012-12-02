@@ -5958,6 +5958,7 @@ if(!function_exists('wpscAdminPageCategories')) {
          * The admin page for the designer
          */
         function wpscAdminPageDesign() {
+            global $wpdb;
             wpscCheckAdminPermissions();
             wpscAdminHeader(__('Design Your Store','wpstorecart'));
             $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
@@ -5966,7 +5967,18 @@ if(!function_exists('wpscAdminPageCategories')) {
                 $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?';
             } else {
                 $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&';
-            }            
+            }   
+            
+            
+            $results = $wpdb->get_results("SELECT `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='product' and `status`='publish';",ARRAY_A);
+            if(@isset($results[0]['postid'])) {
+                //postid
+                if(strpos(get_permalink($results[0]['postid']),'?')===false) {
+                    $permalink2 = get_permalink($results[0]['postid']) .'?';
+                } else {
+                    $permalink2 = get_permalink($results[0]['postid']) .'&';
+                }     
+            }
             
             ?>
             <div class="grid_16">
@@ -5989,7 +6001,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                     </a>
                                             </li>
                                             <li>
-                                                    <a class="kwick two" href="#">
+                                                    <a class="kwick two" href="<?php echo $permalink2; ?>wpStoreCartDesigner=true" target="_blank">
                                                         <center><span><?php _e('Products','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/photo.png" alt=""/>
