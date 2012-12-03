@@ -40,7 +40,7 @@ if ( 0 == $current_user->ID ) {
 ';
     
     global $wpstorecart_upload_dir;
-    $wpStoreCartProductDesignerPath = $wpstorecart_upload_dir.'/themes/product/';             
+    $wpStoreCartProductDesignerPath = $wpstorecart_upload_dir.'/themes/main/';             
     
     // Write/create the CSS file
     $wpscProductDesignerFileContents = $orderComment . $wpscProductDesignerCSS;

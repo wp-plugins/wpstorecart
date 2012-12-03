@@ -2042,17 +2042,20 @@ if (!function_exists('wpscAdminPageMain')) {
                                         $maxitems = 0;
                                         @include_once(ABSPATH . WPINC . '/feed.php');
                                         @$rss = fetch_feed('https://wpstorecart.com/category/blog/feed/');
-                                        if (!is_wp_error( $rss ) ) : // Checks that the object is created correctly
+                                        if (!is_wp_error( $rss ) ) { // Checks that the object is created correctly
                                             // Figure out how many total items there are, but limit it to 2.
                                             $maxitems = $rss->get_item_quantity(3);
 
                                             // Build an array of all the items, starting with element 0 (first element).
                                             $rss_items = $rss->get_items(0, $maxitems);
-                                        endif;
+                                        } else {
+                                            $error_string = $rss->get_error_message();
+                                            echo '<div id="message" class="error"><p>'.__('Error','wpstorecart') . ' '. $error_string . '</p></div>';
+                                        }
 
 
                                         echo '<ul>';
-                                            if (@$maxitems == 0) {
+                                            if (@$maxitems === 0) {
                                                 echo '<li>'.__('No items', 'wpstorecart').'</li>';
                                             } else {
                                                 // Loop through each feed item and display each item as a hyperlink.
