@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.5
-Stable tag: 3.0.10
+Stable tag: 3.0.11
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
@@ -82,6 +82,9 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 3.0.11 =
+* Just trying to get the Wordpress SVN server to correctly parse the plugin to resolve the updating/download issues
 
 = 3.0.10 =
 * Just trying to get the Wordpress SVN server to correctly parse the plugin to resolve the updating/download issues
