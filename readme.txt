@@ -5,6 +5,7 @@ Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,a
 Requires at least: 3.3.0
 Tested up to: 3.5
 Stable tag: 3.0.12
+License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
 
