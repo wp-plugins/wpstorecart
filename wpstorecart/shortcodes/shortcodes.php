@@ -488,7 +488,7 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
         
         wp_enqueue_script('jquery');
-        wp_enqueue_script('wpsc-load-variation', plugins_url() . '/wpstorecart/js/wpstorecart/wpsc-load-variation.js');
+        wp_enqueue_script('wpsc-load-variation', plugins_url() . '/wpstorecart/js/wpstorecart/wpsc-load-variation-big.js');
         
         if(is_page() && ($post->ID == $wpStoreCartOptions['checkoutpage'])) { // If we're visiting the checkout page, load gritter
             wp_register_style('wpsc-checkout', plugins_url() . '/wpstorecart/css/wpsc-checkout.css');

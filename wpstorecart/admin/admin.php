@@ -2692,11 +2692,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 }                            
                             echo '<li><a href="#tab4"><img src="'.plugins_url() . '/wpstorecart/images/images.png" /> '.__('Pictures','wpstorecart').'</a></li>';
                                 if($wpStoreCartproduct_producttype=='product') {
-                                    echo '<li id="wpsc-variations-li"><a href="#tab2"><img src="'.plugins_url() . '/wpstorecart/images/chart_organisation.png" /> '.__('Attributes &amp; Variations','wpstorecart').'</a></li>';
+                                    echo '<li id="wpsc-variations-li"><a href="#tab2"><img src="'.plugins_url() . '/wpstorecart/images/chart_organisation.png" /> '.__('Variations','wpstorecart').'</a></li>';
                                 }
-                                if($wpStoreCartproduct_producttype=='variation' || $wpStoreCartproduct_producttype=='variation_draft') {
-                                    echo '<li id="wpsc-variations-li"><a href="#tab2"><img src="'.plugins_url() . '/wpstorecart/images/chart_organisation.png" /> '.__('Attributes','wpstorecart').'</a></li>';
-                                }                                
+                             
                                 if($wpStoreCartOptions['storetype']!='Physical Goods Only'){
                                     echo '<li style="display:inline;"><a href="#tab3"><img src="'.plugins_url() . '/wpstorecart/images/server_go.png" /> '.__('Downloads &amp; Serial #','wpstorecart').'</a></li>';
                                 }
@@ -3410,6 +3408,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                             
                             echo '</div>'; // End shipping Tab
                             
+                            
+                            
+                            // VARIATIONS
                             echo '
                             <div id="tab2" class="tab_content">';
                             ?>
@@ -3455,184 +3456,253 @@ if(!function_exists('wpscAdminPageCategories')) {
                             <?php
                             echo '<div class="box">';
 
-                            if($wpStoreCartproduct_producttype=='product') {
-                                echo '<h2>'.__('Product Variations &amp; Attributes', 'wpstorecart').'</h2>';
-                                echo '<p>'.__('Only display the Add to Cart button for this product when the attributes &amp; variations are also displayed?', 'wpstorecart').'<br />&nbsp; &nbsp; &nbsp; &nbsp; <label for="enableproduct_display_add_to_cart_variations"><input type="radio" id="enableproduct_display_add_to_cart_variations_yes" name="enableproduct_display_add_to_cart_variations" value="yes" '; if ($display_add_to_cart_at_all_times == "yes") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableproduct_display_add_to_cart_variations_no"><input type="radio" id="enableproduct_display_add_to_cart_variations_no" name="enableproduct_display_add_to_cart_variations" value="no" '; if ($display_add_to_cart_at_all_times == "no") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No (always displays add to cart buttons)','wpstorecart').'</label> </p>';                               
-                            }
 
                             $wpscVariationParent = intval($_GET['keytoedit']);
-                            
-                            echo '<h2>'.__('Attributes:','wpstorecart').'</h2>';
-                            echo '<a href="" onclick="wpscCreateNewAttribute();return false;" class="button-secondary" >'.__('Create a New Attribute','wpstorecart').'</a><br /><br />';
-                            
-                            $wpscAttributesResults = wpscProductGetAttributes($wpscVariationParent);
-                            $wpscAttributesGroup = wpscProductGetAttributeGroups($wpscAttributesResults);
-                            $wpscProductGetAttribute = wpscProductGetAttributeKeyArray($wpscAttributesGroup);
-                            
-                            $datasetCount = 0;
-                            foreach ($wpscProductGetAttribute as $wpscAttributesGroupKey) {
-                                $wpscDatasets[$datasetCount] = array();
-                                echo '<legend>'.$wpscAttributesGroupKey.'</legend>';
-                                echo '<table class="widefat" id="wpsc-attribute-group-table-'.wpscSlug($wpscAttributesGroupKey).'">';
-                                echo '<tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr>';
-                                foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
-                                    echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td>'.$wpscFinalAttributeGroup['primkey'].'</td>';
-                                    echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['title'].'</div></td>';
-                                    echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['price'].'</div></td>';
-                                    echo '<td>'.$wpscFinalAttributeGroup['type'].'</td>';
-                                    echo '<td>';
-                                    if($wpscFinalAttributeGroup['useinventory']==0) {
-                                        _e('No','wpstorecart');
-                                    } else {
-                                        _e('Yes','wpstorecart');
-                                    }
-                                    echo '</td></tr>';
-                                    array_push($wpscDatasets[$datasetCount], $wpscFinalAttributeGroup['primkey'].'||'.$wpscFinalAttributeGroup['title'].'||'.$wpscFinalAttributeGroup['price']);
-                                }
-                                echo '</table><br /><br />';
-                                $datasetCount++;
-                            }
-
-                                             
-                            echo '<h2>'.__('Attribute SKU &amp; Inventory:','wpstorecart').'</h2>';
-                            
-                           
-                            echo '<table class="widefat">';
-                            echo '<thead><tr><th>'.__('#', 'wpstorecart').'</th>';
-                            for ($iterationA = 0; $iterationA < $datasetCount; $iterationA++) {
-                                echo '<th>'.$wpscProductGetAttribute[$iterationA].'</th>';
-                            }
-                            echo '<th>'.__('wpStoreCart ID', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('SKU', 'wpstorecart').'</th><th>'.__('Inventory', 'wpstorecart').'</th><th>'.__('Saved &amp; Available for Purchase?', 'wpstorecart').'</th>';
-                            echo '</tr></thead><tbody>';
-                            $wpscAttributeComboNumber = 1;
-                            foreach(wpscPossibleCombinationArray($wpscDatasets) as $wpscAttributeSKUInventory) {
-                                echo '<tr><td>#'.$wpscAttributeComboNumber.'</td>';
-                                $wpscHoldUniqueKey = NULL;
-                                $wpscHoldPriceDifference = 0;
-                                $wpscHoldName = NULL;
-                                foreach($wpscAttributeSKUInventory as $wpscAttributeSKUInventoryCurrent) {
-                                    $xpld = explode('||',$wpscAttributeSKUInventoryCurrent);
-                                    echo '<td><strong>'.$xpld[1] .'</strong></td>';
-                                    $wpscHoldUniqueKey .= $xpld[0].'A';
-                                    $wpscHoldPriceDifference = $wpscHoldPriceDifference + $xpld[2];
-                                    $wpscHoldName .= $xpld[1] .' - ';
-                                }
-                                
-                                // Load the saved attribute data if any
-                                $wpscAttributeIsSaveToDatabase = false;
-                                $wpscAttributesGetDatabase = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `postid`='{$wpscVariationParent}' AND `status`='{$wpscHoldUniqueKey}';", ARRAY_A);
-                                if(isset($wpscAttributesGetDatabase[0]['primkey'])) {
-                                    $wpscAttributeIsSaveToDatabase = true;
-                                    $wpscCurrentAttributeSKU = $wpscAttributesGetDatabase[0]['options'];
-                                    $wpscCurrentAttributeQuantity = $wpscAttributesGetDatabase[0]['inventory'];
-                                } else {
-                                    $wpscCurrentAttributeSKU = '';
-                                    $wpscCurrentAttributeQuantity = 0;                                    
-                                }
-                                
-                                echo '<td><input name="wpsc_acc_combo_uk_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_uk_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldUniqueKey.'" readonly="true" style="border:none;" /></td><td><input name="wpsc_acc_combo_pricediff_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_pricediff_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldPriceDifference.'" readonly="true" style="border:none;" /></td><td><input name="wpsc_acc_combo_sku_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_sku_'.$wpscAttributeComboNumber.'" type="text" value="'.$wpscCurrentAttributeSKU.'" /></td><td> <input name="wpsc_acc_combo_quantity_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_quantity_'.$wpscAttributeComboNumber.'" type="text" value="'.$wpscCurrentAttributeQuantity.'" style="width:80px;" /><input type="hidden" name="wpsc_acc_combo_name_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_name_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldName.'" /></td>';
-                                if($wpscAttributeIsSaveToDatabase) {
-                                    echo '<td class="wpsc_are_attributes_saved">'.__('Saved &amp; Available','wpstorecart').'</td>';
-                                } else {
-                                    echo '<td class="wpsc_are_attributes_saved"><img src="'.plugins_url().'/wpstorecart/images/alert.png" alt=" " style="float:left;" />'.__('This particular combination has net yet been saved to the database, and so is unavailable to order until it is finalized and saved.','wpstorecart').'</td>';
-                                }
-                                echo '</tr>';
-                                $xpld = NULL;
-                                $wpscHoldName = NULL;
-                                $wpscAttributeComboNumber++;
-                            }
-                            echo '</tbody></table><input type="hidden" value="'.$wpscAttributeComboNumber.'" name="wpsc_acc_max_items" id="wpsc_acc_max_items" /></form><br />';
-                            echo '
-                                <script type="text/javascript">
-                                
-                                    function wpscDirectSaveAttributeGroups() {
-                                        jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/saveattributes.php", data:jQuery("#wpstorecartaddproductform").serialize(), success: function(response) {
-                                            jQuery( ".wpsc_are_attributes_saved" ).html("'.__('Saved &amp; Available','wpstorecart').'");
-                                            jQuery( "#wpscAttributesSavedDialog" ).dialog("open");
-                                            jQuery("#wpscAttributesSavedDialog").fadeTo(2700, 0.2, function() {
-                                                jQuery("#wpscAttributesSavedDialog").dialog("close");
-                                                jQuery("#wpscAttributesSavedDialog").css({ opacity: 1.0 });
-                                            });
-
-                                        }});                                     
-                                    }
-
-                                    function wpscSaveAttributeGroups() {
-                                        if (confirm("'.__('Wait! Are you sure want to save these attributes?  If you add or subtract any Attribute Group after saving, it will invalidate these attribute combinations.  That means you should finalize all possible Attribute Groups before saving.  If you are definitely ready to save, then please confirm.  However, if you will be adding additional Attribute Groups, then please cancel to abort saving now.  If this message sounds like gerberish or you just want some futher clarification, please watch the Video Tutorial for this section before proceeding.','wpstorecart').'")==true) {
-                                                wpscDirectSaveAttributeGroups();
-                                            return false;
-                                        } else {
-                                            return false;
-                                        }                                    
-                                       
-                                    }
-                                </script>
-                                ';
-                            
-                            if($wpscAttributeIsSaveToDatabase) {
-                                echo __('When you are ready to update the above attribute combinations ','wpstorecart').' <button class="button-secondary" onclick="wpscDirectSaveAttributeGroups();return false;">'.__('click here to save.','wpstorecart').'</button><br /><br /><br /><br />';
+                            $wpscIsVariations = wpscProductCheckForVariations($wpscVariationParent);
+                            $wpscIsAttributes = wpscProductCheckForAttributes($wpscVariationParent);  
+                            $display_selection = "display:none;";
+                            $display_attributes = "display:none;";
+                            $display_variations = "display:none;";
+                            $display_var_options = "";   
+                            if( $wpscIsAttributes ) { 
+                                $display_attributes = 'display:inline;';
                             } else {
-                                echo __('Wait until you\'ve added all the Attribute Groups you plan to add for this product, then ','wpstorecart').' <button class="button-secondary" onclick="wpscSaveAttributeGroups();return false;">'.__('click here to save &amp; update the attribute data.','wpstorecart').'</button><br /><br /><br /><br />';
+                                if($wpscIsVariations) {
+                                    $display_variations = 'display:inline;';
+                                }
                             }
-                                
-                            // VARIATIONS V3 ==========================================================================================================================================
-                            // ========================================================================================================================================================
+                            
+                            if ( !$wpscIsAttributes && !$wpscIsVariations ) {
+                                $display_selection = "display:inline;";
+                                $display_var_options = "display:none;";
+                            } else {
+                                $display_var_options = 'display:inline;';
+                                $display_selection = "display:none;";
+                            }
+                            if($wpStoreCartproduct_producttype!='product') {
+                                $display_selection = "display:none;";
+                            }
+                            
+                            echo '<div id="wpsc-choose-variation" style="'.$display_selection.'">';
+                                echo '<h2>'.__('Choose a variation type', 'wpstorecart') . '</h2>';
+                                echo '
+                                <div style="float:left;width:49%;border-right:1px #ECECEC solid;">
+                                    <center>
+                                        <h3>'.__('Simple Variations', 'wpstorecart') . '</h3>
+                                        </center><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span> '.__('Choose Simple Variations if you have a product that has only one main difference between your variations.  Simple Variations are initially exact clones of the main product, however you can fully edit them with their own images, galleries, downloads, prices, inventory, and other standard product options.  A good example of when to use Simple Variations, is if you sold the same software, but sold a version for Windows, a version for Mac OS, and a version for Linux.  However, if the same software had a Lite, PRO, and Enterprise version for all 3 platforms, then you would want to use the Advanced Attributes variation instead, to deal with all the possible variations combinations.', 'wpstorecart') . '</div><center>
+                                        <img src="'.plugins_url().'/wpstorecart/images/variations_icon.png" alt="" /><br />
+                                        <button onclick="jQuery(\'#wpsc-choose-variation\').hide();jQuery(\'#wpsc-variation-controls\').show();jQuery(\'#wpsc-simple-variation-div\').show();return false;" class="button-primary" style="width:100%;height:2em;font-size:1.8em;">'.__('Choose Simple Variations', 'wpstorecart') . '</button>
+                                    </center>
+                                </div>
+                                <div style="float:right;width:49%;border-left:1px #ECECEC solid;">
+                                    <center>
+                                        <h3>'.__('Advanced Attributes', 'wpstorecart') . '</h3>
+                                        </center><div class="ui-state-highlight ui-corner-all" style="padding: 10px;"><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span> '.__('Choose Advanced Attributes if you have a product that has multiple differences between variations.  Advanced Attributes each have their own price and optionally inventory.  A good example of when to use Advanced Attributes, is if you sold a tshirt in 3 colors, and 3 sizes.  In this way, you could have separate prices and inventory controls for all 9 different shirts.  wpStoreCart will generate all the product attribute combinations based on the the number of attributes you create for a product.  We suggest you watch the video tutorial before using Advanced Attributes to fully understand how to utilize the advanced capabilities and to prevent data lose through misconfiguration.', 'wpstorecart') . '</div><center>
+                                        <img src="'.plugins_url().'/wpstorecart/images/attributes_icon.png" alt="" /><br />
+                                        <button onclick="jQuery(\'#wpsc-choose-variation\').hide();jQuery(\'#wpsc-advanced-attribute-div\').show();jQuery(\'#wpsc-variation-controls\').show();return false;" class="button-primary" style="width:100%;height:2em;font-size:1.8em;">'.__('Choose Advanced Attributes', 'wpstorecart') . '</button>
+                                    </center>
+                                </div>
+                                <br style="clear:both;" />
+                                ';
+                             echo '</div>';
                             
                             if($wpStoreCartproduct_producttype=='product') {
-                                echo '<h2>'.__('Variations', 'wpstorecart').'</h2>';
-                                
-                                echo '
-                                <script type="text/javascript">
-                                
-
-                                    function wpscCreateNewVariationFromClone(parentPrimkey) {
-                                        jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/addnewvariation.php", data: { parentPrimkey: parentPrimkey, wpscVariationGrouping: jQuery(\'#wpscVariationGrouping\').val() }, success: function(response) {
-                                            jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/products/loadvariation.php", data: { wpscVarKey: "'.$wpscVariationParent.'"}, success: function(XreturnedData) {
-                                                wpscCurrentDescription = XreturnedData.description.substr(0,128);
-                                                wpscCurrentIntroDescription = XreturnedData.introdescription.substr(0,128);
-                                                if(XreturnedData.discountprice > 0) {wpscCurrentPrice = "<strike>"+XreturnedData.price+"</strike> " + XreturnedData.discountprice;} else {wpscCurrentPrice = XreturnedData.price;}                                                
-                                                jQuery("#wpscVariationListTbody").append(\'<tr id="sort_\' + response + \'" style="height:62px;min-height:62px;max-height:62px;overflow:hidden;"><td style="vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;"><img class="handle" src="'.plugins_url() . '/wpstorecart/images/TransferDocument.png" alt="" style="float:left;cursor:move;display:none;" /><input type="checkbox" class="checkbox" name="wpscMultiCheckbox[]" value="\' + response + \'" style="display:none;" /><br />&nbsp;\'+ response +\'&nbsp;<a href="admin.php?page=wpstorecart-new-product&keytoedit=\' + response + \'"><img src="'.plugins_url() . '/wpstorecart/images/pencil.png" alt="'.__('Edit', 'wpstorecart').'" /></a>&nbsp;<a onclick="wpscDeleteVariation(\'+response+\');return false;" href="#"><img src="'.plugins_url() . '/wpstorecart/images/cross.png" alt="'.__('Delete', 'wpstorecart').'" /></a>&nbsp;<input type="hidden" name="required_info_key[]" value="\'+response+\'" /><br /></td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">'.__('Clone of', 'wpstorecart').' \'+XreturnedData.name+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentIntroDescription+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentDescription+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;"><img src="\'+XreturnedData.thumbnail+\'" alt="" style="max-width:50px;max-height:50px;" /></td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentPrice+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+XreturnedData.inventory+\'</td></tr>\');
-                                            }});                                              
-                                        }});                             
-                                        return false;
-                                    }
-                                    
-                                    function wpscDeleteVariation(variationKey) {
-                                        if(confirm("'.__('Are you sure you want to delete this variation?','wpstorecart').'")) {
-                                            jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/delete.php", { "primkey": variationKey, "tablename": "wpstorecart_products" }, function(data) {
-                                                jQuery("#sort_" + variationKey).hide();
-                                            });                                            
-                                        }
-                                        return false;
-                                    }
-                                    
-                                </script>
-                                ';
-                                
-                                echo '<a href="" onclick="wpscCreateNewVariationFromClone('.$wpscVariationParent.');return false;" class="button-secondary" >'.__('Create a New Variation','wpstorecart').'</a><br /><br />';
-                                
-                                $wpscVariationGroupName = __('Options','wpstorecart');
-                                
-                                $wpscVariationResults = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='variation' AND `postid`='{$wpscVariationParent}';", ARRAY_A);
-                                if(@isset($wpscVariationResults[0]['primkey'])) {
-
-                                    echo '<table class="widefat" id="requiredsort">
-                                    <thead><tr><th><input type="checkbox" style="display:none;" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'wpscMultiCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'wpscMultiCheckbox\', false);ischecked=false;}" /> '.__('Primkey/Actions', 'wpstorecart').'</th><th>'.__('Name', 'wpstorecart').'</th><th>'.__('Intro description', 'wpstorecart').'</th><th class="tableDescription">'.__('Description', 'wpstorecart').'</th><th>'.__('Thumbnail', 'wpstorecart').'</th><th>'.__('Price', 'wpstorecart').'</th><th>'.__('Inventory', 'wpstorecart').'</th></tr></thead><tbody id="wpscVariationListTbody">';                                    
-
-                                    foreach($wpscVariationResults as $result) {
-                                        echo "<tr id=\"sort_{$result['primkey']}\" style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><td style=\"vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img class=\"handle\" src=\"".plugins_url() . "/wpstorecart/images/TransferDocument.png\" alt=\"\" style=\"float:left;cursor:move;display:none;\" /><input type=\"checkbox\" class=\"checkbox\" name=\"wpscMultiCheckbox[]\" value=\"{$result['primkey']}\" style=\"display:none;\" /><br />&nbsp;{$result['primkey']}&nbsp;<a href=\"admin.php?page=wpstorecart-new-product&keytoedit={$result['primkey']}\"><img src=\"".plugins_url() . "/wpstorecart/images/pencil.png\" alt=\"".__('Edit', 'wpstorecart')."\" /></a>&nbsp;<a onclick=\"wpscDeleteVariation({$result['primkey']});return false;\" href=\"#\"><img src=\"".plugins_url() . "/wpstorecart/images/cross.png\" alt=\"".__('Delete', 'wpstorecart')."\" /></a>&nbsp;<input type=\"hidden\" name=\"required_info_key[]\" id=\"requiredinfo_{$num}\" value=\"{$result['primkey']}\" /><br /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(strip_tags($result['name']))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['introdescription']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['description']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">"; if($result['discountprice'] > 0) {echo '<strike>'.$result['price'].'</strike> '. $result['discountprice'];} else {echo $result['price'];} echo "</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['inventory'])."</td></tr>";
-                                        if($result['options']!='' && $result['options']!=NULL) {
-                                            $wpscVariationGroupName = $result['options'];
-                                        }
-                                    }
-
-                                    echo '
-                                    </tbody></table><br />
-                                    '.__('Name this product\'s variations group: ','wpstorecart').' <input id="wpscVariationGrouping" name="wpscVariationGrouping" value="'.$wpscVariationGroupName.'" type="text" /><br />
-                                    <br style="clear:both;" />';                                    
-
-                                }
+                                echo '<div id="wpsc-variation-controls" style="'.$display_var_options.'">';
+                                echo '<p>'.__('Only display the Add to Cart button for this product when the attributes &amp; variations are also displayed?', 'wpstorecart').'<br />&nbsp; &nbsp; &nbsp; &nbsp; <label for="enableproduct_display_add_to_cart_variations"><input type="radio" id="enableproduct_display_add_to_cart_variations_yes" name="enableproduct_display_add_to_cart_variations" value="yes" '; if ($display_add_to_cart_at_all_times == "yes") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableproduct_display_add_to_cart_variations_no"><input type="radio" id="enableproduct_display_add_to_cart_variations_no" name="enableproduct_display_add_to_cart_variations" value="no" '; if ($display_add_to_cart_at_all_times == "no") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No (always displays add to cart buttons)','wpstorecart').'</label> </p>';                               
+                                echo '</div>';
                             }
+                                
+                            
+
+                            
+
+                            
+                                echo '<div id="wpsc-advanced-attribute-div" style="'.$display_attributes.'">';
+                                
+                                echo '<h2>'.__('Attributes:','wpstorecart').'</h2>';
+                                echo '<a href="" onclick="wpscCreateNewAttribute();return false;" class="button-secondary" >'.__('Create a New Attribute','wpstorecart').'</a><br /><br />';
+
+                                $wpscAttributesResults = wpscProductGetAttributes($wpscVariationParent);
+                                $wpscAttributesGroup = wpscProductGetAttributeGroups($wpscAttributesResults);
+                                $wpscProductGetAttribute = wpscProductGetAttributeKeyArray($wpscAttributesGroup);
+
+                                $datasetCount = 0;
+                                foreach ($wpscProductGetAttribute as $wpscAttributesGroupKey) {
+                                    $wpscDatasets[$datasetCount] = array();
+                                    echo '<legend>'.$wpscAttributesGroupKey.'</legend>';
+                                    echo '<table class="widefat" id="wpsc-attribute-group-table-'.wpscSlug($wpscAttributesGroupKey).'">';
+                                    echo '<tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr>';
+                                    foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
+                                        echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td>'.$wpscFinalAttributeGroup['primkey'].'</td>';
+                                        echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['title'].'</div></td>';
+                                        echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['price'].'</div></td>';
+                                        echo '<td>'.$wpscFinalAttributeGroup['type'].'</td>';
+                                        echo '<td>';
+                                        if($wpscFinalAttributeGroup['useinventory']==0) {
+                                            _e('No','wpstorecart');
+                                        } else {
+                                            _e('Yes','wpstorecart');
+                                        }
+                                        echo '</td></tr>';
+                                        array_push($wpscDatasets[$datasetCount], $wpscFinalAttributeGroup['primkey'].'||'.$wpscFinalAttributeGroup['title'].'||'.$wpscFinalAttributeGroup['price']);
+                                    }
+                                    echo '</table><br /><br />';
+                                    $datasetCount++;
+                                }
+
+
+                                echo '<h2>'.__('Attribute SKU &amp; Inventory:','wpstorecart').'</h2>';
+
+
+                                echo '<table class="widefat">';
+                                echo '<thead><tr><th>'.__('#', 'wpstorecart').'</th>';
+                                for ($iterationA = 0; $iterationA < $datasetCount; $iterationA++) {
+                                    echo '<th>'.$wpscProductGetAttribute[$iterationA].'</th>';
+                                }
+                                echo '<th style="display:none;">'.__('wpStoreCart ID', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('SKU', 'wpstorecart').'</th><th>'.__('Inventory', 'wpstorecart').'</th><th>'.__('Saved &amp; Available for Purchase?', 'wpstorecart').'</th>';
+                                echo '</tr></thead><tbody>';
+                                $wpscAttributeComboNumber = 1;
+                                foreach(wpscPossibleCombinationArray($wpscDatasets) as $wpscAttributeSKUInventory) {
+                                    echo '<tr><td>#'.$wpscAttributeComboNumber.'</td>';
+                                    $wpscHoldUniqueKey = NULL;
+                                    $wpscHoldPriceDifference = 0;
+                                    $wpscHoldName = NULL;
+                                    foreach($wpscAttributeSKUInventory as $wpscAttributeSKUInventoryCurrent) {
+                                        $xpld = explode('||',$wpscAttributeSKUInventoryCurrent);
+                                        echo '<td><strong>'.$xpld[1] .'</strong></td>';
+                                        $wpscHoldUniqueKey .= $xpld[0].'A';
+                                        $wpscHoldPriceDifference = $wpscHoldPriceDifference + $xpld[2];
+                                        $wpscHoldName .= $xpld[1] .' - ';
+                                    }
+
+                                    // Load the saved attribute data if any
+                                    $wpscAttributeIsSaveToDatabase = false;
+                                    $wpscAttributesGetDatabase = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `postid`='{$wpscVariationParent}' AND `status`='{$wpscHoldUniqueKey}';", ARRAY_A);
+                                    if(isset($wpscAttributesGetDatabase[0]['primkey'])) {
+                                        $wpscAttributeIsSaveToDatabase = true;
+                                        $wpscCurrentAttributeSKU = $wpscAttributesGetDatabase[0]['options'];
+                                        $wpscCurrentAttributeQuantity = $wpscAttributesGetDatabase[0]['inventory'];
+                                    } else {
+                                        $wpscCurrentAttributeSKU = '';
+                                        $wpscCurrentAttributeQuantity = 0;                                    
+                                    }
+
+                                    echo '<td style="display:none;"><input name="wpsc_acc_combo_uk_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_uk_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldUniqueKey.'" readonly="true" style="border:none;" /></td><td><input name="wpsc_acc_combo_pricediff_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_pricediff_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldPriceDifference.'" readonly="true" style="border:none;" /></td><td><input name="wpsc_acc_combo_sku_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_sku_'.$wpscAttributeComboNumber.'" type="text" value="'.$wpscCurrentAttributeSKU.'" /></td><td> <input name="wpsc_acc_combo_quantity_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_quantity_'.$wpscAttributeComboNumber.'" type="text" value="'.$wpscCurrentAttributeQuantity.'" style="width:80px;" /><input type="hidden" name="wpsc_acc_combo_name_'.$wpscAttributeComboNumber.'" id="wpsc_acc_combo_name_'.$wpscAttributeComboNumber.'" value="'.$wpscHoldName.'" /></td>';
+                                    if($wpscAttributeIsSaveToDatabase) {
+                                        echo '<td class="wpsc_are_attributes_saved">'.__('Saved &amp; Available','wpstorecart').'</td>';
+                                    } else {
+                                        echo '<td class="wpsc_are_attributes_saved"><img src="'.plugins_url().'/wpstorecart/images/alert.png" alt=" " style="float:left;" />'.__('This particular combination has net yet been saved to the database, and so is unavailable to order until it is finalized and saved.','wpstorecart').'</td>';
+                                    }
+                                    echo '</tr>';
+                                    $xpld = NULL;
+                                    $wpscHoldName = NULL;
+                                    $wpscAttributeComboNumber++;
+                                }
+                                echo '</tbody></table><input type="hidden" value="'.$wpscAttributeComboNumber.'" name="wpsc_acc_max_items" id="wpsc_acc_max_items" /></form><br />';
+                                echo '
+                                    <script type="text/javascript">
+
+                                        function wpscDirectSaveAttributeGroups() {
+                                            jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/saveattributes.php", data:jQuery("#wpstorecartaddproductform").serialize(), success: function(response) {
+                                                jQuery( ".wpsc_are_attributes_saved" ).html("'.__('Saved &amp; Available','wpstorecart').'");
+                                                jQuery( "#wpscAttributesSavedDialog" ).dialog("open");
+                                                jQuery("#wpscAttributesSavedDialog").fadeTo(2700, 0.2, function() {
+                                                    jQuery("#wpscAttributesSavedDialog").dialog("close");
+                                                    jQuery("#wpscAttributesSavedDialog").css({ opacity: 1.0 });
+                                                });
+
+                                            }});                                     
+                                        }
+
+                                        function wpscSaveAttributeGroups() {
+                                            if (confirm("'.__('Wait! Are you sure want to save these attributes?  If you add or subtract any Attribute Group after saving, it will invalidate these attribute combinations.  That means you should finalize all possible Attribute Groups before saving.  If you are definitely ready to save, then please confirm.  However, if you will be adding additional Attribute Groups, then please cancel to abort saving now.  If this message sounds like gerberish or you just want some futher clarification, please watch the Video Tutorial for this section before proceeding.','wpstorecart').'")==true) {
+                                                    wpscDirectSaveAttributeGroups();
+                                                return false;
+                                            } else {
+                                                return false;
+                                            }                                    
+
+                                        }
+                                    </script>
+                                    ';
+
+                                if($wpscAttributeIsSaveToDatabase) {
+                                    echo __('When you are ready to update the above attribute combinations ','wpstorecart').' <button class="button-secondary" onclick="wpscDirectSaveAttributeGroups();return false;">'.__('click here to save.','wpstorecart').'</button><br /><br /><br /><br />';
+                                } else {
+                                    echo __('Wait until you\'ve added all the Attribute Groups you plan to add for this product, then ','wpstorecart').' <button class="button-secondary" onclick="wpscSaveAttributeGroups();return false;">'.__('click here to save &amp; update the attribute data.','wpstorecart').'</button><br /><br /><br /><br />';
+                                }
+                                echo '</div>';
+                            
+                            
+                            
+                                
+                                // VARIATIONS V3 ==========================================================================================================================================
+                                // ========================================================================================================================================================
+                                echo '<div id="wpsc-simple-variation-div" style="'.$display_variations.'">';
+                                
+                                    if($wpStoreCartproduct_producttype=='product') {
+
+                                        echo '<h2>'.__('Variations', 'wpstorecart').'</h2>';
+
+                                        echo '
+                                        <script type="text/javascript">
+
+
+                                            function wpscCreateNewVariationFromClone(parentPrimkey) {
+                                                jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/addnewvariation.php", data: { parentPrimkey: parentPrimkey, wpscVariationGrouping: jQuery(\'#wpscVariationGrouping\').val() }, success: function(response) {
+                                                    jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/products/loadvariation.php", data: { wpscVarKey: "'.$wpscVariationParent.'"}, success: function(XreturnedData) {
+                                                        wpscCurrentDescription = XreturnedData.description.substr(0,128);
+                                                        wpscCurrentIntroDescription = XreturnedData.introdescription.substr(0,128);
+                                                        if(XreturnedData.discountprice > 0) {wpscCurrentPrice = "<strike>"+XreturnedData.price+"</strike> " + XreturnedData.discountprice;} else {wpscCurrentPrice = XreturnedData.price;}                                                
+                                                        jQuery("#wpscVariationListTbody").append(\'<tr id="sort_\' + response + \'" style="height:62px;min-height:62px;max-height:62px;overflow:hidden;"><td style="vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;"><img class="handle" src="'.plugins_url() . '/wpstorecart/images/TransferDocument.png" alt="" style="float:left;cursor:move;display:none;" /><input type="checkbox" class="checkbox" name="wpscMultiCheckbox[]" value="\' + response + \'" style="display:none;" /><br />&nbsp;\'+ response +\'&nbsp;<a href="admin.php?page=wpstorecart-new-product&keytoedit=\' + response + \'"><img src="'.plugins_url() . '/wpstorecart/images/pencil.png" alt="'.__('Edit', 'wpstorecart').'" /></a>&nbsp;<a onclick="wpscDeleteVariation(\'+response+\');return false;" href="#"><img src="'.plugins_url() . '/wpstorecart/images/cross.png" alt="'.__('Delete', 'wpstorecart').'" /></a>&nbsp;<input type="hidden" name="required_info_key[]" value="\'+response+\'" /><br /></td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">'.__('Clone of', 'wpstorecart').' \'+XreturnedData.name+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentIntroDescription+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentDescription+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;"><img src="\'+XreturnedData.thumbnail+\'" alt="" style="max-width:50px;max-height:50px;" /></td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+wpscCurrentPrice+\'</td><td style="height:62px;min-height:62px;max-height:62px;overflow:hidden;">\'+XreturnedData.inventory+\'</td></tr>\');
+                                                    }});                                              
+                                                }});                             
+                                                return false;
+                                            }
+
+                                            function wpscDeleteVariation(variationKey) {
+                                                if(confirm("'.__('Are you sure you want to delete this variation?','wpstorecart').'")) {
+                                                    jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/delete.php", { "primkey": variationKey, "tablename": "wpstorecart_products" }, function(data) {
+                                                        jQuery("#sort_" + variationKey).hide();
+                                                    });                                            
+                                                }
+                                                return false;
+                                            }
+
+                                        </script>
+                                        ';
+
+                                        echo '<a href="" onclick="wpscCreateNewVariationFromClone('.$wpscVariationParent.');return false;" class="button-secondary" >'.__('Create a New Variation','wpstorecart').'</a><br /><br />';
+
+                                        $wpscVariationGroupName = __('Options','wpstorecart');
+
+                                        $wpscVariationResults = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='variation' AND `postid`='{$wpscVariationParent}';", ARRAY_A);
+                                        echo '<table class="widefat" id="requiredsort">
+                                        <thead><tr><th><input type="checkbox" style="display:none;" name="selectall" onclick="if (ischecked == false){ SetAllCheckBoxes(\'myForm\', \'wpscMultiCheckbox\', true);ischecked=true;} else {SetAllCheckBoxes(\'myForm\', \'wpscMultiCheckbox\', false);ischecked=false;}" /> '.__('Primkey/Actions', 'wpstorecart').'</th><th>'.__('Name', 'wpstorecart').'</th><th>'.__('Intro description', 'wpstorecart').'</th><th class="tableDescription">'.__('Description', 'wpstorecart').'</th><th>'.__('Thumbnail', 'wpstorecart').'</th><th>'.__('Price', 'wpstorecart').'</th><th>'.__('Inventory', 'wpstorecart').'</th></tr></thead><tbody id="wpscVariationListTbody">';                                    
+
+                                        if(@isset($wpscVariationResults[0]['primkey'])) {
+                                            
+                                            foreach($wpscVariationResults as $result) {
+                                                echo "<tr id=\"sort_{$result['primkey']}\" style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><td style=\"vertical-align:middle;height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img class=\"handle\" src=\"".plugins_url() . "/wpstorecart/images/TransferDocument.png\" alt=\"\" style=\"float:left;cursor:move;display:none;\" /><input type=\"checkbox\" class=\"checkbox\" name=\"wpscMultiCheckbox[]\" value=\"{$result['primkey']}\" style=\"display:none;\" /><br />&nbsp;{$result['primkey']}&nbsp;<a href=\"admin.php?page=wpstorecart-new-product&keytoedit={$result['primkey']}\"><img src=\"".plugins_url() . "/wpstorecart/images/pencil.png\" alt=\"".__('Edit', 'wpstorecart')."\" /></a>&nbsp;<a onclick=\"wpscDeleteVariation({$result['primkey']});return false;\" href=\"#\"><img src=\"".plugins_url() . "/wpstorecart/images/cross.png\" alt=\"".__('Delete', 'wpstorecart')."\" /></a>&nbsp;<input type=\"hidden\" name=\"required_info_key[]\" id=\"requiredinfo_{$num}\" value=\"{$result['primkey']}\" /><br /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(strip_tags($result['name']))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['introdescription']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes(substr(strip_tags($result['description']),0,128))."</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\"><img src=\"{$result['thumbnail']}\" alt=\"\" style=\"max-width:50px;max-height:50px;\" /></td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">"; if($result['discountprice'] > 0) {echo '<strike>'.$result['price'].'</strike> '. $result['discountprice'];} else {echo $result['price'];} echo "</td><td style=\"height:62px;min-height:62px;max-height:62px;overflow:hidden;\">".stripslashes($result['inventory'])."</td></tr>";
+                                                if($result['options']!='' && $result['options']!=NULL) {
+                                                    $wpscVariationGroupName = $result['options'];
+                                                }
+                                            }
+
+                                        }
+                                        
+                                        echo '
+                                        </tbody></table><br />
+                                        '.__('Name this product\'s variations group: ','wpstorecart').' <input id="wpscVariationGrouping" name="wpscVariationGrouping" value="'.$wpscVariationGroupName.'" type="text" /><br />
+                                        <br style="clear:both;" />';                                           
+                                        
+                                    }
+                                echo '</div>';
+                            
+                            
+                            
+
+                            
                             echo '</div></div>';
                                 
                             

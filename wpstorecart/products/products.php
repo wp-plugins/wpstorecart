@@ -56,29 +56,63 @@ if(!function_exists('wpscProductGetVariationsSelection')) {
         global $wpdb;
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
         
-        $output = NULL;
-        $results = $wpdb->get_results("SELECT COUNT( * ) AS `Rows` , `options` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `postid`='$primkey' AND `producttype`='variation' GROUP BY `options` ORDER BY `options`;", ARRAY_A);
-        $parentNameResults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='$primkey';", ARRAY_A);
-        foreach($results as $result) {
-            $nextResults = wpscProductGetVariations($primkey, $result['options']);
+        $wpscIsAttributes = wpscProductCheckForAttributes($primkey);
+        
+        if(!$wpscIsAttributes) {
+        
+            // Here's for variations
+            $output = NULL;
+            $results = $wpdb->get_results("SELECT COUNT( * ) AS `Rows` , `options` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `postid`='$primkey' AND `producttype`='variation' GROUP BY `options` ORDER BY `options`;", ARRAY_A);
+            $parentNameResults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='$primkey';", ARRAY_A);
+            foreach($results as $result) {
+                $nextResults = wpscProductGetVariations($primkey, $result['options']);
 
-            $typeIsDetermined=false;
-            foreach ($nextResults as $nextResult) {
-                if(!$typeIsDetermined && $nextResult['status']=='dropdown') {
-                     $output .= $result['options'].': <select onchange="wpscLoadProductVariation(jQuery(this).val(), \''.plugins_url().'\', '.$primkey.', \''.htmlentities($parentNameResults[0]['name']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'\' );"><option value="'.$primkey.'"></option>';
-                     $typeIsDetermined='dropdown';
+                $typeIsDetermined=false;
+                foreach ($nextResults as $nextResult) {
+                    if(!$typeIsDetermined && $nextResult['status']=='dropdown') {
+                        $output .= htmlentities($result['options']).': <select onchange="wpscLoadProductVariation(jQuery(this).val(), \''.plugins_url().'\', '.$primkey.', \''.htmlentities($parentNameResults[0]['name']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'\' );"><option value="'.$primkey.'"></option>';
+                        $typeIsDetermined='dropdown';
+                    }
+                    if($nextResult['status']=='dropdown') {
+                        $output.='<option value="'.$nextResult['primkey'].'">'.$nextResult['name'].'</option>';
+                    }
+
                 }
-                if($nextResult['status']=='dropdown') {
-                    $output.='<option value="'.$nextResult['primkey'].'">'.$nextResult['name'].'</option>';
-                }
-                
+
+                if($typeIsDetermined=='dropdown') {
+                        $output .= '</select><br />';
+                }             
+
             }
-            
-            if($typeIsDetermined=='dropdown') {
-                    $output .= '</select>';
-            }             
-            
+        
         }
+
+        if($wpscIsAttributes) {
+            
+            $wpscAttributesResults = wpscProductGetAttributes($primkey);
+            $wpscAttributesGroup = wpscProductGetAttributeGroups($wpscAttributesResults);
+            $wpscProductGetAttribute = wpscProductGetAttributeKeyArray($wpscAttributesGroup);        
+            $parentNameResults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='$primkey';", ARRAY_A);
+
+            echo '<script type="text/javascript"> jQuery(document).ready(function($) { wpscLoadProductAttribute(\''.plugins_url().'\', '.$primkey.', \''.htmlentities($parentNameResults[0]['name']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'\' ); });</script>';            
+            
+            // Here's for attributes
+            $datasetCount = 0;
+            foreach ($wpscProductGetAttribute as $wpscAttributesGroupKey) {
+                if($datasetCount == 0) {
+                    $output .= '<div class="wpsc-product-attributes">';
+                }
+                $output .= htmlentities($wpscAttributesGroupKey). ': <select name="wpsc_attribute_'.wpscSlug($wpscAttributesGroupKey).'" class="wpsc-product-attribute-options" onchange="wpscLoadProductAttribute(\''.plugins_url().'\', '.$primkey.', \''.htmlentities($parentNameResults[0]['name']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol']).'\', \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'\' );">';
+                foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
+                    $output.='<option  value="'.$wpscFinalAttributeGroup['primkey'].'A">'.$wpscFinalAttributeGroup['title'].'</option>';
+                }
+                $output .= '</select><br />';
+                $datasetCount++;
+            }
+            $output .= '</div>';
+       
+        }
+        
         
         return $output;
     }
@@ -464,6 +498,15 @@ if(!function_exists('wpscProductGetPrice')) {
 }
 
 if (!function_exists('wpscProductGetPage')) {
+    /**
+     *
+     *  Individual product
+     * 
+     * @global object $wpdb
+     * @global object $current_user
+     * @param type $primkey
+     * @return type 
+     */
     function wpscProductGetPage($primkey) {
         global $wpdb, $current_user;
 
@@ -668,8 +711,7 @@ if (!function_exists('wpscProductGetPage')) {
 
                 wp_get_current_user();
                 if ( 0 == $current_user->ID ) {
-                    // Not logged in.
-                    $theuser = 0;
+                    $theuser = 0; // Not logged in.
                 } else {
                     $theuser = $current_user->ID;
                 }
@@ -2041,6 +2083,49 @@ if(!function_exists('wpscProductGetAttributeGroups')) {
         return $wpscAttributesGroup;
     }
 }
+
+if(!function_exists('wpscProductCheckForAttributes')) {
+    /**
+     * Check to see if a product has attributes saved
+     * 
+     * @global object $wpdb
+     * @param type $product_id
+     * @return boolean 
+     */
+    function wpscProductCheckForAttributes($product_id) {
+        global $wpdb;
+        
+        $results = $wpdb->get_results("SELECT `primkey` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='attribute' AND `postid`='{$product_id}';", ARRAY_A);
+        if(isset($results[0]['primkey'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+if(!function_exists('wpscProductCheckForVariations')) {
+    /**
+     * Check to see if a product has attributes saved
+     * 
+     * @global object $wpdb
+     * @param type $product_id
+     * @return boolean 
+     */
+    function wpscProductCheckForVariations($product_id) {
+        global $wpdb;
+        
+        $results = $wpdb->get_results("SELECT `primkey` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='variation' AND `postid`='{$product_id}';", ARRAY_A);
+        if(isset($results[0]['primkey'])) {
+            return true;
+            
+        } else {
+            return false;
+        }
+        
+    }
+}
+
 
 if(!function_exists('wpscProductGetAttributeKeyArray')) {
     function wpscProductGetAttributeKeyArray($wpscAttributesGroup) {

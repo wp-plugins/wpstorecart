@@ -76,6 +76,78 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
     });
 }
 
-function wpscLoadProductAttributes() {
+
+
+
+
+function wpscLoadProductAttribute(wpscPluginsUrl, wpscParentKey, wpscParentName, wpscCurrencySymbol, wpscCurrencySymbolRight) {
     
+    var wpscAttributeKey = '';
+    jQuery('.wpsc-product-attribute-options :selected').each(function(i, selected){ 
+        wpscAttributeKey = wpscAttributeKey + jQuery(selected).val(); 
+    });    
+    
+    jQuery.ajax({        
+        type: "POST",
+        url: wpscPluginsUrl + "/wpstorecart/wpstorecart/products/loadattribute.php",
+        data: { wpscAttributeKey : wpscAttributeKey },
+        success: function(XreturnedData) {
+            var wpscStoreRegularPrice = 0;
+            var wpscStoreDiscountPrice = 0;
+            var wpscStoreInventory = 0;
+            var wpscStoreUseInventory = 0;
+            
+            //case "primkey":
+            jQuery(".wpstorecart-item-id").val(XreturnedData.primkey);
+            jQuery(".wpstorecart-item-primkey").val(XreturnedData.primkey);
+
+            //case "name":
+            if(XreturnedData.name != wpscParentName) {
+                jQuery(".wpsc-list-item-name").html(wpscParentName + ' - ' + XreturnedData.name);
+                jQuery(".wpstorecart-item-name").val(wpscParentName + ' - ' + XreturnedData.name);
+            } else {
+                jQuery(".wpsc-list-item-name").html(wpscParentName);
+                jQuery(".wpstorecart-item-name").val(wpscParentName);                
+            }
+            
+            //case "price":
+            wpscStoreRegularPrice = parseFloat(XreturnedData.price);
+
+            //case "inventory":
+            wpscStoreInventory = XreturnedData.inventory;
+
+            //case "discountprice":
+            wpscStoreDiscountPrice = parseFloat(XreturnedData.discountprice);
+
+
+            //case "useinventory":
+            wpscStoreUseInventory = XreturnedData.useinventory;
+
+            if(wpscStoreUseInventory==1) { // If using inventory
+                if(wpscStoreInventory<1) {
+                    jQuery('#wpsc-addtocart-primkey-' + wpscParentKey).hide();
+                } else {
+                    jQuery('#wpsc-addtocart-primkey-' + wpscParentKey).show();
+                }
+            } else {
+                jQuery('#wpsc-addtocart-primkey-' + wpscParentKey).show();
+            }
+            
+            if(wpscStoreDiscountPrice==0 || wpscStoreDiscountPrice=='0.00') {
+                jQuery(".wpstorecart-item-price").val(wpscStoreRegularPrice);
+                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice").hide();
+                
+                
+            } 
+            if (wpscStoreDiscountPrice > 0 && (wpscStoreDiscountPrice < wpscStoreRegularPrice)) {
+                jQuery(".wpsc-oldprice").show();
+                jQuery(".wpstorecart-item-price").val(wpscStoreDiscountPrice);
+                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice").html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight+'</strike>');
+            }
+            
+        }
+    });
 }
+
