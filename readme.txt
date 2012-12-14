@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.0.13 =
-* Added: a whole new set of product action hooks have been added.  Full details here: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
+* Added: A whole new set of product action hooks have been added.  Full details here: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
 
 = 3.0.12 =
 * Added: The variation system has received some TLC to make choosing between variation types more intuitive.  
