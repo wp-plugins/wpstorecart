@@ -97,6 +97,18 @@
     function wpsc_admin_menu_inside_help() { do_action('wpsc_admin_menu_inside_help'); }    
     
     
+    /** Action hook for the top of the Edit Specific Products admin panel */
+    function wpsc_admin_edit_product_top() { do_action('wpsc_admin_edit_product_top'); }
+    /** Action hook directly after the product has been loaded */
+    function wpsc_admin_edit_product_loading() { do_action('wpsc_admin_edit_product_loading'); }    
+    /** Action hook directly inside the javascript for the edit product page */
+    function wpsc_admin_edit_product_js() { do_action('wpsc_admin_edit_product_js'); }       
+    /** Action hook directly inside the <ul> tag that outputs tab headers */
+    function wpsc_admin_edit_product_tab_header() { do_action('wpsc_admin_edit_product_tab_header'); }      
+    /** Action hook to create new tab content */
+    function wpsc_admin_edit_product_tab_contents() { do_action('wpsc_admin_edit_product_tab_contents'); }      
+    
+    
     /**
      * Action hook for the admin bar file
      */    

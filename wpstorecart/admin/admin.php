@@ -2445,7 +2445,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                 $ups_checked = 'yes';
                 $fedex_checked = 'yes';
 
-                $_GET['keytoedit'] = intval($wpdb->escape($_GET['keytoedit']));
+                $_GET['keytoedit'] = intval($_GET['keytoedit']);
+                
+                wpsc_admin_edit_product_top();
                 
                 // To edit a previous product
                 $isanedit = false;
@@ -2517,6 +2519,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 echo __("There was a problem loading the product you wish to edit.  The query was:", 'wpstorecart')." {$grabrecord} ";
                                 echo '</strong></p></div>';					
                         }
+                        
+                        wpsc_admin_edit_product_loading(); // Action hook
+                        
                 }                
                 
                 echo'
@@ -2611,6 +2616,8 @@ if(!function_exists('wpscAdminPageCategories')) {
 
 
                 });
+                
+                '.wpsc_admin_edit_product_js().'
 
                 //]]>
                 </script>
@@ -2704,9 +2711,13 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     <li><a href="#tab5"><img src="'.plugins_url() . '/wpstorecart/images/cart_put.png" /> '.__('Accessories','wpstorecart').'</a></li>
                                     ';
                                 }
+                                wpsc_admin_edit_product_tab_header();
                             echo '
-                            </ul>
+                            </ul>';
 
+                            wpsc_admin_edit_product_tab_contents();
+                            
+                            echo '
                             <div id="tab1" class="tab_content">';
 
                             echo '<table class="widefat">
