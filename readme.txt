@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.0.14 =
-* Updated: Replaced NicEdit with CLEditor due to compatiblity issues with NicEdit
+* Updated: Replaced NicEdit with CLEditor due to compatiblity issues with NicEdit.
 * Updated: More action hooks added https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
 
 = 3.0.13 =
