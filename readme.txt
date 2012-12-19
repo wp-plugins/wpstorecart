@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
-Tested up to: 3.5
-Stable tag: 3.0.13
+Tested up to: 3.6
+Stable tag: 3.0.14
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,6 +83,10 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 3.0.14 =
+* Updated: Replaced NicEdit with CLEditor due to compatiblity issues with NicEdit
+* Updated: More action hooks added https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
 
 = 3.0.13 =
 * Added: A whole new set of product action hooks have been added.  Full details here: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/

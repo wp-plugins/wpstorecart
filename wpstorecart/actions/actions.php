@@ -107,7 +107,25 @@
     function wpsc_admin_edit_product_tab_header() { do_action('wpsc_admin_edit_product_tab_header'); }      
     /** Action hook to create new tab content */
     function wpsc_admin_edit_product_tab_contents() { do_action('wpsc_admin_edit_product_tab_contents'); }      
-    
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_name() { do_action('wpsc_admin_edit_product_table_before_product_name'); }       
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_intro() { do_action('wpsc_admin_edit_product_table_before_product_intro'); }      
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_description() { do_action('wpsc_admin_edit_product_table_before_product_description'); }       
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_price() { do_action('wpsc_admin_edit_product_table_before_product_price'); }     
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_inventory() { do_action('wpsc_admin_edit_product_table_before_product_inventory'); }      
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_category() { do_action('wpsc_admin_edit_product_table_before_product_category'); }     
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_downloads() { do_action('wpsc_admin_edit_product_table_before_product_downloads'); }    
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_before_product_thumbnail() { do_action('wpsc_admin_edit_product_table_before_product_thumbnail'); }    
+    /** Action hook to create new content in an existing tab */
+    function wpsc_admin_edit_product_table_after_product_thumbnail() { do_action('wpsc_admin_edit_product_table_after_product_thumbnail'); }     
+  
     
     /**
      * Action hook for the admin bar file

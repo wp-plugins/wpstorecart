@@ -2525,30 +2525,12 @@ if(!function_exists('wpscAdminPageCategories')) {
                 }                
                 
                 echo'
+
+
+
                 <script type="text/javascript">
                     //<![CDATA[
-
-
-                
                 var wpscNicArea1, wpscNicArea2;
-
-                function wpscToggleArea1() {
-                    if(!wpscNicArea1) {
-                        wpscNicArea1 = new nicEditor({buttonList : [\'fontFamily\',\'fontSize\',\'fontFormat\',\'bold\',\'italic\',\'underline\',\'strikethrough\',\'ul\',\'ol\',\'left\',\'center\',\'right\',\'justify\',\'forecolor\',\'bgcolor\',\'removeformat\',\'subscript\',\'superscript\',\'image\',\'link\',\'unlink\'], iconsPath:"'.plugins_url() . '/wpstorecart/js/nicedit/nicEditorIcons.gif"}).panelInstance("wpStoreCartproduct_description",{hasPanel : true});
-                    } else {
-                        wpscNicArea1.removeInstance("wpStoreCartproduct_description");
-                        wpscNicArea1 = null;
-                    }
-                }
-
-                function wpscToggleArea2() {
-                    if(!wpscNicArea2) {
-                        wpscNicArea2 = new nicEditor({buttonList : [\'fontFamily\',\'fontSize\',\'fontFormat\',\'bold\',\'italic\',\'underline\',\'strikethrough\',\'ul\',\'ol\',\'left\',\'center\',\'right\',\'justify\',\'forecolor\',\'bgcolor\',\'removeformat\',\'subscript\',\'superscript\',\'image\',\'link\',\'unlink\'], iconsPath:"'.plugins_url() . '/wpstorecart/js/nicedit/nicEditorIcons.gif"}).panelInstance("wpStoreCartproduct_introdescription",{hasPanel : true});
-                    } else {
-                        wpscNicArea2.removeInstance("wpStoreCartproduct_introdescription");
-                        wpscNicArea2 = null;
-                    }
-                }
 
                 function wpscShowHidden() {
                     jQuery("#wpsc-variations-li").show("slow");
@@ -2556,13 +2538,14 @@ if(!function_exists('wpscAdminPageCategories')) {
                 }
 
                 jQuery(document).ready(function($) {
-                        //When page loads...
-
-
-                        wpscToggleArea1();
-                        wpscToggleArea2();
-
-
+                    var wpsc_width = Math.round(jQuery("body").width() / 2);
+                    jQuery("#wpStoreCartproduct_description").cleditor({
+                        width: wpsc_width
+                    });
+                    
+                    jQuery("#wpStoreCartproduct_introdescription").cleditor({
+                        width: wpsc_width
+                    }); 
                 });
 
                 jQuery(function() {
@@ -2593,14 +2576,6 @@ if(!function_exists('wpscAdminPageCategories')) {
                         jQuery("#wpstorecartaddproductform").bind("submit",function() { wpscSubmitProduct(); return false; });
 
                         function wpscSubmitProduct() {
-                            var wpscArea1 = nicEditors.findEditor(\'wpStoreCartproduct_introdescription\');
-                            if(wpscArea1) {
-                                wpscArea1.saveContent();
-                            }
-                            var wpscArea2 = nicEditors.findEditor(\'wpStoreCartproduct_description\');
-                            if(wpscArea2) {
-                                wpscArea2.saveContent();
-                            }                            
                             jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/saveproduct.php", data:jQuery("#wpstorecartaddproductform").serialize(), success: function(response) {
                                 if(jQuery("#wpStoreCartSelectedPage").val()==0) {
                                     jQuery("#wpStoreCartSelectedPage").append(\'<option value="\'+ response +\'" selected="selected">\'+ jQuery("#wpStoreCartproduct_name").val() +\'</option>\');
@@ -2724,26 +2699,35 @@ if(!function_exists('wpscAdminPageCategories')) {
                             <thead><tr><th>'.__('Product Attribute', 'wpstorecart').'</th><th>'.__('Value', 'wpstorecart').'</th></tr></thead><tbody>
                             ';
 
+                            wpsc_admin_edit_product_table_before_product_name(); // Action hook
+                            
                             echo '
                             <tr>
                             <td><p>'.__('Product Name','wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1" /><div class="tooltip-content" id="example-content-1">'.__('The name of the product.  We do not recommend stuffing this with keywords, unless you don\'t mind those keywords being repeated everytime the product is mentioned.  Instead, simply keep this as the actual name of the product.', 'wpstorecart').'</div></p></td>
                             <td><input type="text" class="validate[required]" name="wpStoreCartproduct_name" id="wpStoreCartproduct_name" style="width: 80%;height:35px;font-size:22px;" value="'.@$wpStoreCartproduct_name.'" /></td>
-                            </tr>';			
+                            </tr>';	
+                            
+                            wpsc_admin_edit_product_table_before_product_intro(); // Action hook
 
                             echo '
                             <tr>
                             <td><p>'.__('Introduction Description','wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-3" /><div class="tooltip-content" id="example-content-3">'.__('Keep this short and concise, as this text will be used in several places as a quick description of the product.  For higher sales and conversions, sum up the main features and benefits and include a direct call to action.', 'wpstorecart').'</div></p></td>
-                            <td><div id="wpsc_nic_panel2" style="display:block;width:700px;"></div> <textarea class="wpStoreCartproduct_introdescription" id="wpStoreCartproduct_introdescription" name="wpStoreCartproduct_introdescription" style="display:inline;width:708px;margin:0 auto 0 auto;background:#FFF;height:50px;">'.@$wpStoreCartproduct_introdescription.'</textarea><p align="right">
-                            <br /><a class="button" onclick="wpscToggleArea2();return false;">'.__('Toggle Visual Editor', 'wpstorecart').'</a>
+                            <td id="wpsc-intro-desc-td">
+                            
+                            <textarea class="wpStoreCartproduct_introdescription" id="wpStoreCartproduct_introdescription" name="wpStoreCartproduct_introdescription" style="display:inline;width:708px;margin:0 auto 0 auto;background:#FFF;height:50px;">'.@$wpStoreCartproduct_introdescription.'</textarea><p align="right">
+                            
                             </p>  </td>
                             </tr>';	
 
+                            wpsc_admin_edit_product_table_before_product_description();  // Action hook
 
                             echo '
                             <tr>
                             <td><p>'.__('Full Description', 'wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4" /><div class="tooltip-content" id="example-content-4">'.__('Put your complete sales pitch here.  There are many techniques which can help make your product\'s sale page more effective.  At the very least, most sales pages include at least some of the features and benefits of the product, and include one or more calls to action.', 'wpstorecart').'</div></p></td>
-                            <td><div id="wpsc_nic_panel" style="display:block;width:700px;"></div> <textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="display:inline;width:708px;margin:0 auto 0 auto;background:#FFF;height:50px;" >'.@$wpStoreCartproduct_description.'</textarea><p align="right">
-                            <br /><a class="button" onclick="wpscToggleArea1();return false;">'.__('Toggle Visual Editor', 'wpstorecart').'</a>
+                            <td>
+                            
+                            <textarea class="wpStoreCartproduct_description" id="wpStoreCartproduct_description" name="wpStoreCartproduct_description" style="display:inline;width:708px;margin:0 auto 0 auto;background:#FFF;height:50px;" >'.@$wpStoreCartproduct_description.'</textarea><p align="right">
+                            
                             </p>
                             </td>
                             </tr>';			
@@ -2834,6 +2818,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 }
                             }
 
+                            wpsc_admin_edit_product_table_before_product_price();  // Action hook
+                            
                             echo '
                             <tr id="wpsc-price-tr"'; if($wpsc_price_type=='membership') {echo ' style="display:none;"';} echo'>
                             <td><p>'.__('Price', 'wpstorecart'); echo ': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">'.__('The price you wish to charge for the product before tax and shipping charges.', 'wpstorecart').'</div></p></td>
@@ -2959,6 +2945,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 </tr>';
                             }
 
+                            wpsc_admin_edit_product_table_before_product_inventory();  // Action hook
+                            
                             echo '
                             <tr';if($wpStoreCartOptions['storetype']=='Digital Goods Only') {echo ' style="display:none;"';}echo'><td><p>'.__('Use Inventory?', 'wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-333" /><div class="tooltip-content" id="example-content-333">'.__('Does this product have a limited number available?  If so, set this to yes to use the inventory to tell customers when your product is out of stock.', 'wpstorecart').'</div></p></td>
                             <td><br /><p><label for="wpStoreCartproduct_useinventory_yes"><input type="radio" id="wpStoreCartproduct_useinventory_yes" name="wpStoreCartproduct_useinventory" value="1" '; if ($wpStoreCartproduct_useinventory == 1) { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="wpStoreCartproduct_useinventory_no"><input type="radio" id="wpStoreCartproduct_useinventory_no" name="wpStoreCartproduct_useinventory" value="false" '; if ($wpStoreCartproduct_useinventory == 0) { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label>';
@@ -2977,6 +2965,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                             </td></tr>
                             ';
 
+                            wpsc_admin_edit_product_table_before_product_category();  // Action hook
+                            
                             echo '
                             <tr>
                             <td><p>'.__('Category', 'wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6" /><div class="tooltip-content" id="example-content-6">'.__('Categories allow you to keep products in logically seperated order so that they are easier to find.', 'wpstorecart').'</div></p>
@@ -3010,6 +3000,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                             </td>
                             </tr>';	
 
+                            wpsc_admin_edit_product_table_before_product_downloads();  // Action hook
+                            
                             echo '
                             <tr';if($wpStoreCartOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
                             <td><p>'.__('Downloadable Files', 'wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">'.__('If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at:', 'wpstorecart').' '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></p></td>
@@ -3039,10 +3031,13 @@ if(!function_exists('wpscAdminPageCategories')) {
                             if(@$wpStoreCartproduct_thumbnail==''||@!isset($wpStoreCartproduct_thumbnail)) {
                                 $wpStoreCartproduct_thumbnail = plugins_url().'/wpstorecart/images/default_product_img.jpg';
                             }
+                            
+                            wpsc_admin_edit_product_table_before_product_thumbnail();  // Action hook
+                            
                             echo '
                             <tr>
                             <td><p>'.__('Product Thumbnail', 'wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9" /><div class="tooltip-content" id="example-content-9">'.__('The main product image.  It will be used in multiple places.  It is recommend that the image have a 1:1 width and height ratio.  For example, 100px X 100px.  You can add an unlimited amount of additional pictures by clicking on the Pictures tab.', 'wpstorecart').'</div></p></td>
-                            <td><div style="float:left;"><input type="hidden" name="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.@$wpStoreCartproduct_thumbnail.'" /><input type="hidden" name="wpstorecart_download_hash" value="'.$wpStoreCartOptions['wpstorecart_download_hash'].'" /><br />
+                            <td><div style="float:left;"><input type="hidden" name="wpStoreCartproduct_thumbnail" id="wpStoreCartproduct_thumbnail" style="width: 250px;" value="'.@$wpStoreCartproduct_thumbnail.'" /><input type="hidden" name="wpstorecart_download_hash" value="'.$wpStoreCartOptions['wpstorecart_download_hash'].'" /><br />
                             '.__('Upload a file', 'wpstorecart').': <span id="spanSWFUploadButton2"></span>
                             <div id="upload-progressbar-container2">
                                 <div id="upload-progressbar2">
@@ -3057,6 +3052,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 @$codeForKeyToEditAjax = '&keytoedit='.$_GET['keytoedit'];
                             }
 
+                            wpsc_admin_edit_product_table_after_product_thumbnail();  // Action hook
+                            
                             echo '
                             </tbody></table>';
 
@@ -7579,7 +7576,9 @@ if(!function_exists('wpscAdminPageCategories')) {
             wpscAdminHead();
             wp_enqueue_script('jq-validation-engine-en', plugins_url() .'/wpstorecart/js/formValidator/js/languages/jquery.validationEngine-wpsc.js');
             wp_enqueue_script('jq-validation-engine', plugins_url() .'/wpstorecart/js/formValidator/js/jquery.validationEngine.js');
-            wp_enqueue_script('wpscniceditor', plugins_url() .'/wpstorecart/js/nicedit/nicEdit.js', array('jquery'),'1.4');		 
+            wp_register_style('wpsc-cleditor-css', plugins_url() . '/wpstorecart/js/cleditor/jquery.cleditor.css');
+            wp_enqueue_style('wpsc-cleditor-css');             
+            wp_enqueue_script('wpsc-cleditor', plugins_url() .'/wpstorecart/js/cleditor/jquery.cleditor.min.js', array('jquery'),'1.4');
             wp_enqueue_script('jeditable-wpsc', plugins_url() .'/wpstorecart/js/jquery.jeditable.mini.js',array('jquery'),'1.4');
             wp_enqueue_script('swfupload');            
         }
