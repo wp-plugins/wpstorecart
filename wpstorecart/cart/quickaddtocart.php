@@ -17,7 +17,7 @@ $results = $wpdb->get_results("SELECT `name`, `postid`, `producttype` FROM `{$wp
 if($results[0]['producttype']=='product') {
     $item_name = $results[0]['name'];
 }
-if($results[0]['producttype']=='variation') {
+if($results[0]['producttype']=='variation' || $results[0]['producttype']=='attribute') {
     $varresults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$results[0]['postid']}';", ARRAY_A);
     $item_name = $varresults[0]['name'] . ' - ' . $results[0]['name'];
 }
