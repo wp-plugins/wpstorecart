@@ -86,7 +86,7 @@ Or, if you want to install manually:
 
 = 3.0.15 =
 * Added: A whole new set of customer side product filters have been added.  Full details:  https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
-* Added: colorbox.js added
+* Added: colorbox.js added.
 
 = 3.0.14 =
 * Updated: Replaced NicEdit with CLEditor due to compatiblity issues with NicEdit.
