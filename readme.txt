@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.0.16 =
-* Fixed: Adding more items to the cart than are in stock has been patched.
+* Fixed: Adding more items to the cart than are in stock has been patched
 
 = 3.0.15 =
 * Added: A whole new set of customer side product filters have been added.  Full details:  https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
