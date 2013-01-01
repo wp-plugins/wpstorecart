@@ -806,12 +806,20 @@ if (!function_exists('wpscProductGetPage')) {
                                         $output .= '</li>';
                                     break;                                    
                                     case 4:
+                                        //check inventory amount:
+                                        $modified_js = null;
+                                        $modified_js_final = null;
+                                        if($wpsc_results[0]['useinventory']==1) {                                        
+                                            $modified_js = 'if (jQuery(this).val() > '.$wpsc_results[0]['inventory'] .') {alert(\''.__('You have attempted to purchase more items than we currently have in stock.  We have adjusted the quantity to maximum available.  Please try again.', 'wpstorecart').'\');jQuery(this).val('.$wpsc_results[0]['inventory'].');} else { ';
+                                            $modified_js_final = '}';
+                                        }
+                                        
                                         $output.= '
                                         <li id="wpsc-product-info-sort4" class="wpsc-list-item-qty">
                                             <label class="wpsc-individualqtylabel">
                                             '.$wpStoreCartOptions['qty'].'
                                             </label>   
-                                            <input class="wpsc-individualqty" type="text" size="3" value="1" name="wpstorecart-item-qty">
+                                            <input class="wpsc-individualqty" id="wpsc-individualqty-'.$wpsc_results[0]['primkey'].'" type="text" size="3" value="1" onchange="'.$modified_js.'jQuery(\'#wpstorecart-item-qty-'.$wpsc_results[0]['primkey'].'\').val(jQuery(this).val());'.$modified_js_final.'">
                                         </li>';
                                     break;
                                     case 5:                                
@@ -1804,20 +1812,27 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
                                     $output .= '
                                     <form method="post" action="" class="wpsc_add_to_cart_form">
 
-                                            <input type="hidden" class="wpstorecart-item-id" name="wpstorecart-item-id" value="'.$results[0]['primkey'].'" />
-                                            <input type="hidden" class="wpstorecart-item-primkey" name="wpstorecart-item-primkey" value="'.$results[0]['primkey'].'" />
-                                            <input type="hidden" class="wpstorecart-item-name" name="wpstorecart-item-name" value="'.stripslashes(str_replace('"', '',$results[0]['name'])).'" />
-                                            <input type="hidden" class="wpstorecart-item-price" name="wpstorecart-item-price" value="'.$theActualPrice.'" />
-                                            <input type="hidden" class="wpstorecart-item-shipping" name="wpstorecart-item-shipping" value="'.$results[0]['shipping'].'" />
-                                            <input type="hidden" class="wpstorecart-item-img" name="wpstorecart-item-img" value="'.$results[0]['thumbnail'].'" />
-                                            <input type="hidden" class="wpstorecart-item-url" name="wpstorecart-item-url" value="'.get_permalink($results[0]['postid']).'" />
-                                            <input type="hidden" class="wpstorecart-item-tax" name="wpstorecart-item-tax" value="0" />
-                                            <input type="hidden" class="wpstorecart-item-qty" name="wpstorecart-item-qty" value="1" />
-                                            <input type="hidden" class="wpstorecart-item-variation" name="wpstorecart-item-variation" value="0" />
+                                            <input type="hidden" class="wpstorecart-item-id" name="wpstorecart-item-id" id="wpstorecart-item-id-'.$results[0]['primkey'].'" value="'.$results[0]['primkey'].'" />
+                                            <input type="hidden" class="wpstorecart-item-primkey" name="wpstorecart-item-primkey" id="wpstorecart-item-primkey-'.$results[0]['primkey'].'" value="'.$results[0]['primkey'].'" />
+                                            <input type="hidden" class="wpstorecart-item-name" name="wpstorecart-item-name" id="wpstorecart-item-name-'.$results[0]['primkey'].'" value="'.stripslashes(str_replace('"', '',$results[0]['name'])).'" />
+                                            <input type="hidden" class="wpstorecart-item-price" name="wpstorecart-item-price" id="wpstorecart-item-price-'.$results[0]['primkey'].'" value="'.$theActualPrice.'" />
+                                            <input type="hidden" class="wpstorecart-item-shipping" name="wpstorecart-item-shipping" id="wpstorecart-item-shipping-'.$results[0]['primkey'].'" value="'.$results[0]['shipping'].'" />
+                                            <input type="hidden" class="wpstorecart-item-img" name="wpstorecart-item-img" id="wpstorecart-item-img-'.$results[0]['primkey'].'" value="'.$results[0]['thumbnail'].'" />
+                                            <input type="hidden" class="wpstorecart-item-url" name="wpstorecart-item-url" id="wpstorecart-item-url-'.$results[0]['primkey'].'" value="'.get_permalink($results[0]['postid']).'" />
+                                            <input type="hidden" class="wpstorecart-item-tax" name="wpstorecart-item-tax" id="wpstorecart-item-tax-'.$results[0]['primkey'].'" value="0" />
+                                            <input type="hidden" class="wpstorecart-item-qty" name="wpstorecart-item-qty" id="wpstorecart-item-qty-'.$results[0]['primkey'].'" value="1" />
+                                            <input type="hidden" class="wpstorecart-item-variation" name="wpstorecart-item-variation" id="wpstorecart-item-variation-'.$results[0]['primkey'].'" value="0" />
                                             ';
 
                                     if($results[0]['useinventory']==0 || ($results[0]['useinventory']==1 && $results[0]['inventory'] > 0) || $wpStoreCartOptions['storetype']=='Digital Goods Only' ) {
-                                        $output .= '<button name="wpstorecart-add-to-cart" id="wpsc-addtocart-primkey-'.$results[0]['primkey'].'" class="wpsc-button wpsc-addtocart '.$wpStoreCartOptions['button_classes_addtocart'].'">'.$wpStoreCartOptions['add_to_cart'].'</button>';
+                                        //check inventory amount:
+                                        $modified_js = null;
+                                        $modified_js_final = null;
+                                        if($results[0]['useinventory']==1) {                                        
+                                            $modified_js = 'if (jQuery(\'#wpsc-individualqty-'.$results[0]['primkey'].'\').val() > '.$results[0]['inventory'] .') {alert(\''.__('You have attempted to purchase more items than we currently have in stock.  We have adjusted the quantity to maximum available.  Please try again.', 'wpstorecart').'\');jQuery(\'#wpsc-individualqty-'.$results[0]['primkey'].'\').val('.$results[0]['inventory'].');return false;} else { ';
+                                            $modified_js_final = '}';
+                                        }                                        
+                                        $output .= '<button name="wpstorecart-add-to-cart" id="wpsc-addtocart-primkey-'.$results[0]['primkey'].'" class="wpsc-button wpsc-addtocart '.$wpStoreCartOptions['button_classes_addtocart'].'" onsubmit="'.$modified_js.' '.$modified_js_final.'">'.$wpStoreCartOptions['add_to_cart'].'</button>';
                                     } else {
                                         $output .= $wpStoreCartOptions['out_of_stock'];
                                     }
