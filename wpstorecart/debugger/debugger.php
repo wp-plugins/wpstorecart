@@ -14,4 +14,15 @@ if(!function_exists('wpscBacktrace')) {
     }
 }
 
+if(!function_exists('wpscJSConsoleLog')) {
+    function wpscJSConsoleLog($msg) {
+        global $wpsc_testing_mode;
+        if($wpsc_testing_mode) {
+            return "if(console) { console.log('{$msg}'); };";
+        } else {
+            return null;
+        }
+    }
+}
+
 ?>

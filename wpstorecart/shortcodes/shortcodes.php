@@ -483,12 +483,16 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
      * Enqueues the peroper CSS and JS in order to use the Store Front Designer or work with products in general, for both end users and admins
      */
     function wpscProductMainPageEnqueue() {
-        global $post;
+        global $post, $wpsc_testing_mode;
         
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
         
         wp_enqueue_script('jquery');
         wp_enqueue_script('wpsc-load-variation', plugins_url() . '/wpstorecart/js/wpstorecart/wpsc-load-variation-big.js');
+        
+        if($wpsc_testing_mode) {
+            wp_enqueue_script('wpsc-console-log', plugins_url() . '/wpstorecart/wpstorecart/debugger/console.log.js');
+        }        
         
         if(is_page() && ($post->ID == $wpStoreCartOptions['checkoutpage'])) { // If we're visiting the checkout page, load gritter
             wp_register_style('wpsc-checkout', plugins_url() . '/wpstorecart/css/wpsc-checkout.css');
