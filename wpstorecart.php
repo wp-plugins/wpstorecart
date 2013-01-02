@@ -43,7 +43,7 @@ global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $
 $wpstorecart_version = '3.0.17';
 $wpstorecart_version_int = 300017; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
-$wpsc_testing_mode = true; // Set to true if debugging.  Note, that this is for wpStoreCart core developers, and is not meant for addon developers
+$wpsc_testing_mode = false; // Set to true if debugging.  Note, that this is for wpStoreCart core developers, and is not meant for addon developers
 $wpsc_wordpress_upload_dir = wp_upload_dir();
 $wpstorecart_upload_dir = $wpsc_wordpress_upload_dir['basedir'].'/wpstorecart';
 @include_once($wpstorecart_upload_dir.'/customize.php'); // <-- In this file, end users can over ride virtually any wpStoreCart function
