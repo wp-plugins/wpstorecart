@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.0.17 =
-* Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background
+* Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background.
 * Added: New jQuery/JS console logging enabled when wpStoreCart is in testing mode.  http://happygiraffe.net/blog/2007/09/26/jquery-logging/
 * Added: Now includes the Spectrum.js color picker http://bgrins.github.com/spectrum/
 
