@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.0.17
+Stable tag: 3.0.18
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.0.18 =
+* Fixed: Patched an issue with Advanced Attributes not working as intended
+
 = 3.0.17 =
-* Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background.
+* Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background
 * Added: New jQuery/JS console logging enabled when wpStoreCart is in testing mode.  http://happygiraffe.net/blog/2007/09/26/jquery-logging/
 * Added: Now includes the Spectrum.js color picker http://bgrins.github.com/spectrum/
 

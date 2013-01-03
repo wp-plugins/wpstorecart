@@ -308,6 +308,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 
                 wpsc_process_payment_gateways(); // Action hook to process payments
                 
+                
                 $wpsc_shoppingcart->empty_cart();     // EMPTY THE CART
 
       

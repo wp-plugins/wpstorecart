@@ -2117,7 +2117,12 @@ if(!function_exists('wpscProductCheckForAttributes')) {
         if(isset($results[0]['primkey'])) {
             return true;
         } else {
-            return false;
+            $results2 = $wpdb->get_results("SELECT `primkey` FROM `{$wpdb->prefix}wpstorecart_quickvar` WHERE `productkey`='{$product_id}';", ARRAY_A);
+            if(isset($results2[0]['primkey'])) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

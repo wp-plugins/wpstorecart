@@ -32,7 +32,16 @@ if ( 0 == $current_user->ID ) {
     $wpdb->query($insert);
     $lastID = $wpdb->insert_id;
     
-    echo $lastID;    
+    echo '
+    {
+        "primkey": "'.$lastID.'",
+        "group": "'.$group.'",            
+        "useinventory": "'.$useinventory.'",  
+        "pricedifference": "'.$pricedifference.'",  
+        "productkey": "'.$productkey.'", 
+        "title": "'.$title.'"
+    }
+    ';
     
 }
 ?>

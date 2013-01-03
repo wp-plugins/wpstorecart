@@ -2536,6 +2536,10 @@ if(!function_exists('wpscAdminPageCategories')) {
                     jQuery("#wpsc-variations-li").show("slow");
                     jQuery("#wpsc-shipping-li").show("slow");                                         
                 }
+                
+                function wpscConvertToSlug(Text) {
+                    return Text.toLowerCase().replace(/ /g,\'_\').replace(/[^\w-]+/g,\'\');
+                }
 
                 jQuery(document).ready(function($) {
                     var wpsc_width = Math.round(jQuery("body").width() / 2);
@@ -2556,8 +2560,11 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 modal: true,
                                 buttons: {
                                         "'. __('Create Attribute', 'wpstorecart').'": function() {
-                                            jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewattribute.php", jQuery("#wpsc-add-new-attribute-dialog-actual-form").serialize(), function(data) {
+                                            jQuery.ajax({type: "POST", url: "'. plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewattribute.php", dataType:"json", data: {"wpsc-new-attribute-title" : jQuery("#wpsc-new-attribute-title").val(), "wpsc-new-attribute-price-difference" : jQuery("#wpsc-new-attribute-price-difference").val(), "wpsc-new-attribute-group" : jQuery("#wpsc-new-attribute-group").val(), "wpsc-new-attribute-parent-key" : jQuery("#wpsc-new-attribute-parent-key").val(), "wpsc-new-attribute-new-group" : jQuery("#wpsc-new-attribute-new-group").val(), "wpsc-new-attribute-inventory" : jQuery("#wpsc-new-attribute-inventory").val()}, success: function(data) {
+                                                var wpscTempVarGroup = wpscConvertToSlug(data.group);
+                                                jQuery("#wpsc-attribute-group-tbody-"+wpscTempVarGroup.toString()).append("<tr id=\'wpscid-wpstorecart_quickvar-"+data.primkey+"\'><td>"+data.primkey+"</td><td><div class=\'wpsc-edit-this\'>"+data.title+"</div></td><td><div class=\'wpsc-edit-this\'>"+data.pricedifference+"</div></td><td>dropdown</td><td> </td></tr>");
                                                 jQuery("#wpsc-add-new-attribute-dialog-form").dialog("close");
+                                            }
                                             });                                    
                                         },
                                         "'. __('Cancel', 'wpstorecart').'": function() {
@@ -3539,7 +3546,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     $wpscDatasets[$datasetCount] = array();
                                     echo '<legend>'.$wpscAttributesGroupKey.'</legend>';
                                     echo '<table class="widefat" id="wpsc-attribute-group-table-'.wpscSlug($wpscAttributesGroupKey).'">';
+                                    echo '<thead>';
                                     echo '<tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr>';
+                                    echo '</thead><tbody id="wpsc-attribute-group-tbody-'.wpscSlug($wpscAttributesGroupKey).'">';
                                     foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
                                         echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td>'.$wpscFinalAttributeGroup['primkey'].'</td>';
                                         echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['title'].'</div></td>';
@@ -3554,7 +3563,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         echo '</td></tr>';
                                         array_push($wpscDatasets[$datasetCount], $wpscFinalAttributeGroup['primkey'].'||'.$wpscFinalAttributeGroup['title'].'||'.$wpscFinalAttributeGroup['price']);
                                     }
-                                    echo '</table><br /><br />';
+                                    echo '</tbody></table><br /><br />';
                                     $datasetCount++;
                                 }
 
