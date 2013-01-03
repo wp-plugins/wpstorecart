@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.0.18 =
-* Fixed: Patched an issue with Advanced Attributes not working as intended
+* Fixed: Patched an issue with Advanced Attributes not working as intended.
 
 = 3.0.17 =
 * Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background
