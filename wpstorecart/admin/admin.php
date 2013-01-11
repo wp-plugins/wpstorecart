@@ -494,6 +494,13 @@ if(!function_exists('wpscAdminDataTable')) {
                                                             $results2 = $wpdb->get_results( $grabCats , ARRAY_A );
                                                             if(isset($results2)) {
                                                                     foreach ($results2 as $pagg) {
+                                                                            if($pagg['producttype']=='variation' || $pagg['producttype']=='attribute') {
+                                                                                $results3 = $wpdb->get_results(  "SELECT `name` FROM `{$table_name2}` WHERE `primkey`={$pagg['postid']};" , ARRAY_A );
+                                                                                if( @isset($results3[0]['name']) ) {
+                                                                                    $pagg['name'] = $results3[0]['name'] .' - '.$pagg['name'];
+                                                                                }
+                                                                            }                                                                         
+                                                                        
                                                                             echo  ",'{$pagg['primkey']}' : '".htmlentities($pagg['name'])."'";
                                                                     }
                                                             }                                 
@@ -1025,6 +1032,12 @@ if (!function_exists('wpscAdminPageCoupons')) {
                                 $option .= ' selected="selected"';
                         }
                         $option .='>';
+                        if($pagg['producttype']=='variation' || $pagg['producttype']=='attribute') {
+                            $results3 = $wpdb->get_results(  "SELECT `name` FROM `{$table_name2}` WHERE `primkey`={$pagg['postid']};" , ARRAY_A );
+                            if( @isset($results3[0]['name']) ) {
+                                $pagg['name'] = $results3[0]['name'] .' - '.$pagg['name'];
+                            }
+                        }
                         $option .= $pagg['name'];
                         $option .= '</option>';
                         echo $option;

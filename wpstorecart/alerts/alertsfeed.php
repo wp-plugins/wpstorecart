@@ -5,7 +5,7 @@ if (!function_exists('add_action')) {
 }
 
 if (!is_user_logged_in()) {
-    _e('You must be logged in to view alerts.', 'wpstorecart');
+    header('Location: '.wp_login_url( plugins_url().'/wpstorecart/wpstorecart/alerts/alertsfeed.php' ));
     die();
 }
 

@@ -194,6 +194,6 @@ jQuery(document).ready(function() {
         stayOnContent: true
     });
 
-    jQuery('#wpstorecart_admin_loader2').fadeOut(1000);
+    jQuery('#wpstorecart_admin_loader2').fadeOut(500);
                                     
 });

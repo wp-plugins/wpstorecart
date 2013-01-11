@@ -262,7 +262,17 @@ if ( 0 == $current_user->ID ) {
                     } else {
                         
                         $grabTheProduct = wpscProductGetProductById($aRow[$i]);
-                        $productname = $grabTheProduct['name'];
+                        
+                        if($grabTheProduct['producttype']=='variation' || $grabTheProduct['producttype']=='attribute') {
+                            $results3 = $wpdb->get_results(  "SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`={$grabTheProduct['postid']};" , ARRAY_A );
+                            if( @isset($results3[0]['name']) ) {
+                                $productname = $results3[0]['name'] .' - '.$grabTheProduct['name'];
+                            } else {
+                                $productname = $grabTheProduct['name'];
+                            }
+                        } else {
+                            $productname = $grabTheProduct['name'];
+                        }
                     }
                     $row[] = '<div class="'.$class.'">'.$productname.'</div>';
                 } else {

@@ -1,10 +1,10 @@
-=== wpStoreCart 3 ===
+=== wpStoreCart ===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.0.18
+Stable tag: 3.1.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,13 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.1.0 =
+* Updated: Improved compatibility with wpStoreCart Desktop Alert version 3
+* Fixed: Coupons for attributes and variations now correctly display the master products name before the variation or attributes name
+* Fixed: All data tables where products can be selected now correctly display the master products name before the variation or attributes name
+
 = 3.0.18 =
-* Fixed: Patched an issue with Advanced Attributes not working as intended.
+* Fixed: Patched an issue with Advanced Attributes not working as intended
 
 = 3.0.17 =
 * Fixed: Removed yellow background on Advanced Category widget and replaced with transparent background
