@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.0 =
-* Updated: Improved compatibility with wpStoreCart Desktop Alert version 3
+* Updated: Improved compatibility with wpStoreCart Desktop Alert version 3.
 * Fixed: Coupons for attributes and variations now correctly display the master products name before the variation or attributes name
 * Fixed: All data tables where products can be selected now correctly display the master products name before the variation or attributes name
 
