@@ -1613,6 +1613,25 @@ if (!function_exists('wpscAdminPageOrder')) {
         wpscAdminHeader(__('Orders','wpstorecart'));  
         echo '<div class="grid_16">';
         wpscAdminAddNewOrderButton(__('Add New Order','wpstorecart'));
+        echo '
+            <script type="text/javascript">
+            /* <![CDATA[ */
+            
+                function wpscClearAllPendingOrders() {
+                    if( confirm("'.__('Warning! This will DELETE all pending orders permanently! Are you sure you wish to delete all pending orders?', 'wpstorecart').'") ) {
+                        jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/clearpending.php", function(data) {
+                            uTable.fnDraw();
+                        });                      
+                    }
+                }
+
+                jQuery(document).ready(function() {
+                    jQuery( "#wpsc-clear-pending-order-button" ).button();  
+                });
+            /* ]]> */
+            </script>
+';
+        echo '<button id="wpsc-clear-pending-order-button" onclick="wpscClearAllPendingOrders();return false;">'.__('Delete All Pending Orders', 'wpstorecart').'</button>';
         echo '</div>';
         wpscAdminDataTable(__('Orders', 'wpstorecart'), 'wpstorecart_orders', NULL, NULL, 500, '16'); 
         wpscAdminFooter();
