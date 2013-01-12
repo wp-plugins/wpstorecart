@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.1 =
-* Added: There is now a Delete All Pending Orders button on the Orders page. Fulfilling a request.
+* Added: There is now a Delete All Pending Orders button on the Orders page. Fulfilling a request
 
 = 3.1.0 =
 * Updated: Improved compatibility with wpStoreCart Desktop Alert version 3
