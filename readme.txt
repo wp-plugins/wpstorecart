@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.2 =
-* Added: A whole new set of customer side catalog filters have been added. Full details: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
+* Added: A whole new set of customer side catalog filters have been added.  Full details: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
 
 = 3.1.1 =
 * Added: There is now a Delete All Pending Orders button on the Orders page. Fulfilling a request.
