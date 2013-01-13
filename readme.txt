@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.1.2 =
+* Added: A whole new set of customer side catalog filters have been added. Full details: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
+
 = 3.1.1 =
-* Added: There is now a Delete All Pending Orders button on the Orders page. Fulfilling a request
+* Added: There is now a Delete All Pending Orders button on the Orders page. Fulfilling a request.
 
 = 3.1.0 =
 * Updated: Improved compatibility with wpStoreCart Desktop Alert version 3
