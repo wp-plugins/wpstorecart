@@ -22,7 +22,14 @@ if ( 0 == $current_user->ID ) {
     if($group=='CREATENEWGROUP') {
         $group = $wpdb->escape($_POST['wpsc-new-attribute-new-group']);
     }
-    $useinventory = $wpdb->escape($_POST['wpsc-new-attribute-inventory']);
+    
+    // Attributes inventory toggle
+    if(@$_POST['wpscuseinventoryonattributes']=='true') {
+        $useinventory = 1;
+    } else {
+        $useinventory = 0;
+    }       
+    
     $pricedifference = $wpdb->escape($_POST['wpsc-new-attribute-price-difference']);
     $productkey = $wpdb->escape($_POST['wpsc-new-attribute-parent-key']);
     

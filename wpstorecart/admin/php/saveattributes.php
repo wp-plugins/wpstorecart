@@ -36,6 +36,12 @@ if ( 0 == $current_user->ID ) {
 
         if($wpscParentProductPrice!=NULL) {
 
+            
+            $getTheAttributes = wpscProductGetAttributes($wpscParentProductId);
+            if(@!isset($getTheAttributes[0]['useinventory'])) {
+                $getTheAttributes[0]['useinventory'] = 0;
+            }
+            
             // Do an update or an insert
             $wpscAttributesGetDatabase = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `postid`='{$wpscParentProductId}' AND `status`='{$wpscThisAttributeCombosUK}';", ARRAY_A);
             if(isset($wpscAttributesGetDatabase[0]['primkey'])) {
@@ -59,7 +65,7 @@ if ( 0 == $current_user->ID ) {
                 0,
                 0,
                 0,
-                0,
+                {$getTheAttributes[0]['useinventory']},
                 0,
                 0,
                 0,

@@ -2592,7 +2592,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 modal: true,
                                 buttons: {
                                         "'. __('Create Attribute', 'wpstorecart').'": function() {
-                                            jQuery.ajax({type: "POST", url: "'. plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewattribute.php", dataType:"json", data: {"wpsc-new-attribute-title" : jQuery("#wpsc-new-attribute-title").val(), "wpsc-new-attribute-price-difference" : jQuery("#wpsc-new-attribute-price-difference").val(), "wpsc-new-attribute-group" : jQuery("#wpsc-new-attribute-group").val(), "wpsc-new-attribute-parent-key" : jQuery("#wpsc-new-attribute-parent-key").val(), "wpsc-new-attribute-new-group" : jQuery("#wpsc-new-attribute-new-group").val(), "wpsc-new-attribute-inventory" : jQuery("#wpsc-new-attribute-inventory").val()}, success: function(data) {
+                                            jQuery.ajax({type: "POST", url: "'. plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewattribute.php", dataType:"json", data: {"wpscuseinventoryonattributes": jQuery("#wpscuseinventoryonattributes").prop("checked"), "wpsc-new-attribute-title" : jQuery("#wpsc-new-attribute-title").val(), "wpsc-new-attribute-price-difference" : jQuery("#wpsc-new-attribute-price-difference").val(), "wpsc-new-attribute-group" : jQuery("#wpsc-new-attribute-group").val(), "wpsc-new-attribute-parent-key" : jQuery("#wpsc-new-attribute-parent-key").val(), "wpsc-new-attribute-new-group" : jQuery("#wpsc-new-attribute-new-group").val(), "wpsc-new-attribute-inventory" : jQuery("#wpsc-new-attribute-inventory").val()}, success: function(data) {
                                                 var wpscTempVarGroup = wpscConvertToSlug(data.group);
                                                 jQuery("#wpsc-attribute-group-tbody-"+wpscTempVarGroup.toString()).append("<tr id=\'wpscid-wpstorecart_quickvar-"+data.primkey+"\'><td>"+data.primkey+"</td><td><div class=\'wpsc-edit-this\'>"+data.title+"</div></td><td><div class=\'wpsc-edit-this\'>"+data.pricedifference+"</div></td><td>dropdown</td><td> </td></tr>");
                                                 jQuery("#wpsc-add-new-attribute-dialog-form").dialog("close");
@@ -3489,11 +3489,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         echo '<input type="text" name="wpsc-new-attribute-new-group" value="'.__('New Group Name','wpstorecart').'" id="wpsc-new-attribute-new-group" class="text ui-widget-content ui-corner-all" style="width:100%;text-align:right;" /><br />';
                                                     
                                                 ?>   
-                                                <label for="wpsc-new-attribute-inventory" style="display:block;"><legend><?php _e('Use Inventory', 'wpstorecart'); ?></legend></label>
-                                                <select name="wpsc-new-attribute-inventory" id="wpsc-new-attribute-inventory" class="text ui-widget-content ui-corner-all"  style="width:100%;text-align:right;">
-                                                    <option value="1"><?php _e('Yes', 'wpstorecart'); ?></option>
-                                                    <option value="0"><?php _e('No', 'wpstorecart'); ?></option>
-                                                </select> 
+
                            
                                             </div>                    
                                     </fieldset>
@@ -3566,8 +3562,19 @@ if(!function_exists('wpscAdminPageCategories')) {
                             
                                 echo '<div id="wpsc-advanced-attribute-div" style="'.$display_attributes.'">';
                                 
+                                $getTheAttributes = wpscProductGetAttributes($wpscVariationParent);
+                                if(@!isset($getTheAttributes[0]['useinventory'])) {
+                                    $getTheAttributes[0]['useinventory'] = 0;
+                                } 
+                                if($getTheAttributes[0]['useinventory']==1) {
+                                    $checkedForAttributeInventory = ' checked="checked" ';
+                                } else {
+                                    $checkedForAttributeInventory = '';
+                                }
+                                                              
+                                
                                 echo '<h2>'.__('Attributes:','wpstorecart').'</h2>';
-                                echo '<a href="" onclick="wpscCreateNewAttribute();return false;" class="button-secondary" >'.__('Create a New Attribute','wpstorecart').'</a><br /><br />';
+                                echo '<a href="" onclick="wpscCreateNewAttribute();return false;" class="button-secondary" >'.__('Create a New Attribute','wpstorecart').'</a> <input type="checkbox" '.$checkedForAttributeInventory.' id="wpscuseinventoryonattributes" name="wpscuseinventoryonattributes" /> '.__('Use Inventory for attributes?','wpstorecart').'<br /><br />';
 
                                 $wpscAttributesResults = wpscProductGetAttributes($wpscVariationParent);
                                 $wpscAttributesGroup = wpscProductGetAttributeGroups($wpscAttributesResults);
@@ -3583,8 +3590,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     echo '</thead><tbody id="wpsc-attribute-group-tbody-'.wpscSlug($wpscAttributesGroupKey).'">';
                                     foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
                                         echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td>'.$wpscFinalAttributeGroup['primkey'].'</td>';
-                                        echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['title'].'</div></td>';
-                                        echo '<td><div class="wpsc-edit-this">'.$wpscFinalAttributeGroup['price'].'</div></td>';
+                                        echo '<td><div>'.$wpscFinalAttributeGroup['title'].'</div></td>';
+                                        echo '<td><div>'.$wpscFinalAttributeGroup['price'].'</div></td>';
                                         echo '<td>'.$wpscFinalAttributeGroup['type'].'</td>';
                                         echo '<td>';
                                         if($wpscFinalAttributeGroup['useinventory']==0) {

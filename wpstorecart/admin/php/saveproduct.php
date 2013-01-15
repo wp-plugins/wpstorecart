@@ -54,12 +54,22 @@ if ( 0 == $current_user->ID ) {
     } 
 
 
+    
+
     // To edit a previous product
     $isanedit = false;
     if ($_POST['wpsc-keytoedit']!=0 && is_numeric($_POST['wpsc-keytoedit'])) {
             $_POST['wpsc-keytoedit'] = intval($_POST['wpsc-keytoedit']);
             $isanedit = true;
 
+            // Attributes inventory toggle
+            if(@isset($_POST['wpscuseinventoryonattributes'])) {
+                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_quickvar` SET `useinventory`=1 WHERE `productkey`={$_POST['wpsc-keytoedit']};");
+                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `useinventory`=1 WHERE `postid`={$_POST['wpsc-keytoedit']} AND `producttype`='attribute';");
+            } else {
+                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_quickvar` SET `useinventory`=0 WHERE `productkey`={$_POST['wpsc-keytoedit']};");
+                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `useinventory`=0 WHERE `postid`={$_POST['wpsc-keytoedit']} AND `producttype`='attribute';");
+            }           
             
             // Saves Shipping Packages
             $sql = "SELECT * FROM `{$wpdb->prefix}wpstorecart_packages` WHERE `productkey`='{$_POST['wpsc-keytoedit']}';";
