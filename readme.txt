@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.3 =
-* Fixed: Patched an issue where the inventory was not working properly for attributes
+* Fixed: Patched an issue where the inventory was not working properly for attributes.
 
 = 3.1.2 =
 * Added: A whole new set of customer side catalog filters have been added. Full details: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
