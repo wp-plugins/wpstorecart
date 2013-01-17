@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.4 =
-* Added: The admin menu for Edit Products now expands with upto 15 products for you to edit
+* Added: The admin menu for Edit Products now expands with upto 15 products for you to edit.
 * Updated: Updated jQuery Sparkline from 1.5 to 2.1
 
 = 3.1.3 =
