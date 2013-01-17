@@ -59,6 +59,16 @@ if (!function_exists('wpscAdminMenu')) {
     function wpscAdminMenu() {
         wpscCheckAdminPermissions();
         ?>
+    <script type="text/javascript">
+        function wpscAjaxEditProductsList() {
+            if (jQuery('#wpscEditProductsSubmenuUL').length == 0) {
+                jQuery.post('<?php echo plugins_url();?>/wpstorecart/wpstorecart/admin/php/ajaxeditproductsmenu.php', function(data) {
+                    jQuery(data).appendTo("#wpscEditProductsMenuLI");
+                });                
+            }
+        }
+       
+    </script>
         <ul class="sf-menu" id="navigationTop">
             <li id="wpsc-logo-li"><img src="<?php echo plugins_url(); ?>/wpstorecart/images/logo-small.png" alt="" /></li>
             <?php wpsc_admin_menu_before_dashboard(); ?>
@@ -91,7 +101,7 @@ if (!function_exists('wpscAdminMenu')) {
                 <a href="admin.php?page=wpstorecart-add-new-product"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_products.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Products', 'wpstorecart');?></span></a>
                 <ul>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/basket_add.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-add-new-product"><?php _e('Add Product', 'wpstorecart');?></a></li>
-                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/basket_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-edit-product"><?php _e('Edit Product', 'wpstorecart');?></a></li>
+                    <li id="wpscEditProductsMenuLI" onmouseover="wpscAjaxEditProductsList();"><img src="<?php echo plugins_url() . '/wpstorecart/images/basket_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-edit-product"><?php _e('Edit Product', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/table.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-edit-categories"><?php _e('Categories', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/server_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="#"><?php _e('Import/Export', 'wpstorecart');?></a></li>
                     <?php wpsc_admin_menu_inside_products(); ?>

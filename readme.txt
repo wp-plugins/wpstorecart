@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.1.4 =
+* Added: The admin menu for Edit Products now expands with upto 15 products for you to edit
+* Updated: Updated jQuery Sparkline from 1.5 to 2.1
+
 = 3.1.3 =
-* Fixed: Patched an issue where the inventory was not working properly for attributes.
+* Fixed: Patched an issue where the inventory was not working properly for attributes
 
 = 3.1.2 =
 * Added: A whole new set of customer side catalog filters have been added. Full details: https://wpstorecart.com/documentation/wpstorecart-3/developers-api/extending-products/
