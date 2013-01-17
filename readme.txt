@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.5 =
-* Updated: Changed the ad slider so that it doesn't display products you already have. 
+* Updated: Changed the ad slider so that it doesn't display products you already have
 
 = 3.1.4 =
 * Added: The admin menu for Edit Products now expands with upto 15 products for you to edit
