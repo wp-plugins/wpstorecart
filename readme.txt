@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.1.6 =
-* Updated: Added all available addons to the slider.
+* Updated: Added all available addons to the slider
 
 = 3.1.5 =
 * Updated: Changed the ad slider so that it doesn't display products you already have. 
