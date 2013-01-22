@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use e-commerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 3.1.6
+Version: 3.2.0
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart 3
  *
  * @package wpstorecart
- * @version 3.1.6
+ * @version 3.2.0
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010-2012 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -40,8 +40,8 @@ Boston, MA 02111-1307 USA
 global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $wpstorecart_settings_obj, $wpstorecart_upload_dir, $wpsc_wordpress_upload_dir, $wpsc_testing_mode, $wp_roles;
 
 /* Global variables: */
-$wpstorecart_version = '3.1.6';
-$wpstorecart_version_int = 301006; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '3.2.0';
+$wpstorecart_version_int = 302000; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
 $wpsc_testing_mode = false; // Set to true if debugging.  Note, that this is for wpStoreCart core developers, and is not meant for addon developers
 $wpsc_wordpress_upload_dir = wp_upload_dir();

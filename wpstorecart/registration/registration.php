@@ -12,8 +12,8 @@ if(!function_exists('wpscGrabCustomRegistrationFields')) {
         global $wpdb;
         $table_name = $wpdb->prefix . "wpstorecart_meta";
         $sql = "SELECT * FROM `{$table_name}` WHERE `type`='requiredinfo' ORDER BY `foreignkey` ASC;";
-        $results = $wpdb->get_results( $sql , ARRAY_A );
-        $wpStoreCartRegistrationFields = $results;
+        $results = $wpdb->get_results( $sql , ARRAY_A ); 
+       $wpStoreCartRegistrationFields = $results;
         return $wpStoreCartRegistrationFields;
 
     }
@@ -28,7 +28,7 @@ if(!function_exists('wpscAddCustomContactMethod')) {
     * @param array $contactmethods
     * @return array
     */
-    function wpscAddCustomContactMethod( $contactmethods ) {
+    function wpscAddCustomContactMethod( $contactmethods=NULL ) {
         global $wpdb;
 
         $fields = wpscGrabCustomRegistrationFields();
@@ -44,6 +44,44 @@ if(!function_exists('wpscAddCustomContactMethod')) {
         return $contactmethods;
     }
 }
+
+
+if(!function_exists('wpscProfileCustomContactMethod')) {
+    /**
+    *
+    * Outputs an array of custom customer contact information
+    *
+    * @global object $wpdb
+    * @param array $contactmethods
+    * @return array
+    */
+    function wpscProfileCustomContactMethod( $contactmethods=NULL ) {
+        global $wpdb, $current_user;
+        $current_user = wp_get_current_user();
+        
+        if(@!isset($contactmethods)) {
+            $contactmethods = array();
+        }
+        
+        if ( 0 == $current_user->ID ) {
+            return null;
+        } else {
+
+            $fields = wpscGrabCustomRegistrationFields();
+            foreach ($fields as $field) {
+                $specific_items = explode("||", $field['value']);
+                    if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
+                        $slug = wpscSlug($specific_items[0]);
+                        $contactmethods[$slug] = $slug; // This makes something like this: $contactmethods['address'] = 'Address';
+                    }
+
+            }
+
+            return $contactmethods;
+        }
+    }
+}
+
 
 if(!function_exists('wpscLoadFields')) {
     function wpscLoadFields() {
@@ -948,7 +986,7 @@ if(!function_exists('wpscSaveFields')) {
                 }
                 //  Session data should be saved regardless of if logged in
                 $_SESSION['wpsc_'.wpscSlug($specific_items[0])] = $wpdb->escape($_POST[wpscSlug($specific_items[0])]);
-                echo 'SAVE: wpsc_'.wpscSlug($specific_items[0]) .' : '.$wpdb->escape($_POST[wpscSlug($specific_items[0])]) .'<br />';
+                //echo 'SAVE: wpsc_'.wpscSlug($specific_items[0]) .' : '.$wpdb->escape($_POST[wpscSlug($specific_items[0])]) .'<br />';
             } 
             
         }
@@ -988,7 +1026,7 @@ if(!function_exists('wpscCheckFields')) {
 /**
     * Adds the custom registration fields
     */
-add_filter('user_contactmethods', 'wpscGrabCustomRegistrationFields',10,1);
+add_filter('user_contactmethods', 'wpscProfileCustomContactMethod',10,1);
 add_action('register_form', 'wpscShowCustomRegistrationFields');
 add_action('user_register',  'wpscRegisterExtraFields');
 add_action('register_post', 'wpscCheckFields',10,3);

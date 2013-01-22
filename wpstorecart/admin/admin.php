@@ -103,7 +103,7 @@ if (!function_exists('wpscAdminMenu')) {
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/basket_add.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-add-new-product"><?php _e('Add Product', 'wpstorecart');?></a></li>
                     <li id="wpscEditProductsMenuLI" onmouseover="wpscAjaxEditProductsList();"><img src="<?php echo plugins_url() . '/wpstorecart/images/basket_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-edit-product"><?php _e('Edit Product', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/table.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-edit-categories"><?php _e('Categories', 'wpstorecart');?></a></li>
-                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/server_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="#"><?php _e('Import/Export', 'wpstorecart');?></a></li>
+                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/server_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-import"><?php _e('Import/Export', 'wpstorecart');?></a></li>
                     <?php wpsc_admin_menu_inside_products(); ?>
                 </ul>
             </li>    
@@ -7413,6 +7413,263 @@ if(!function_exists('wpscAdminPageCategories')) {
 
     }    
     
+    
+    /**
+        *
+        * wpStoreCart Admin Panel: Import/Export
+        * 
+        * @global object $wpdb
+        * @global  $user_level
+        * @global int $wpstorecart_version_int
+        * @global boolean $testing_mode 
+        */
+    function wpscAdminPageImport() {
+                    global $wpdb, $user_level;
+
+                    
+                    
+                    $table_name = $wpdb->prefix . "wpstorecart_products";
+                    wpscCheckAdminPermissions();
+                    wpscAdminHeader(__('Import/Export','wpstorecart'));
+                    
+                    $devOptions = get_option('wpStoreCartAdminOptions');    
+
+                    echo '<div class="grid_16">';                    
+
+                    if (session_id() == "") {@session_start();};
+
+                    echo '
+                        <style type="text/css">
+                            #upload-progressbar-container4 {
+                                min-width:200px;
+                                max-width:200px;
+                                min-height:20px;
+                                max-height:20px;
+                                background-color:#FFF;
+                                display:block;
+                            }
+                            #upload-progressbar4 {
+                                min-height:20px;
+                                max-height:20px;
+                                background-color:#6ba6ff;
+                                width:0px;
+                                display:none;
+                                border:1px solid #1156be;
+                            }
+                        </style>
+                        <script type="text/javascript">
+                        /* <![CDATA[ */
+
+
+                                var productUploadStartEventHandler = function (file) {
+                                        var continue_with_upload;
+
+                                        continue_with_upload = true;
+
+                                        return continue_with_upload;
+                                };
+
+                                var productUploadSuccessEventHandler = function (file, server_data, receivedResponse) {
+                                        document.theimportform.importthisfile.value = file.name;
+                                        jQuery("#upload-progressbar4").html("<center>'.__('Upload done. Import starting...', 'wpstorecart').'</center>")
+                                        window.open("'.plugins_url().'/wpstorecart/wpstorecart/admin/php/importcsv.php?file="+ file.name,"myimportwindow","menubar=1,resizable=1,width=350,height=250");
+
+                                };
+
+
+                                function uploadError(file, errorCode, message) {
+                                        try {
+
+                                                switch (errorCode) {
+                                                case SWFUpload.UPLOAD_ERROR.HTTP_ERROR:
+                                                        alert("Error Code: HTTP Error, File name. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.MISSING_UPLOAD_URL:
+                                                        alert("Error Code: No backend file. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.UPLOAD_FAILED:
+                                                        alert("Error Code: Upload Failed. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.IO_ERROR:
+                                                        alert("Error Code: IO Error. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.SECURITY_ERROR:
+                                                        alert("Error Code: Security Error. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+                                                        alert("Error Code: Upload Limit Exceeded. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.SPECIFIED_FILE_ID_NOT_FOUND:
+                                                        alert("Error Code: The file was not found. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED:
+                                                        alert("Error Code: File Validation Failed. Message: " + message);
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+                                                        break;
+                                                case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+                                                        break;
+                                                default:
+                                                        alert("Error Code: " + errorCode + ". Message: " + message);
+                                                        break;
+                                                }
+                                        } catch (ex) {
+                                                this.debug(ex);
+                                        }
+                                }
+
+                                function uploadProgress(file, bytesLoaded, bytesTotal) {
+                                    try {
+                                        var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                        jQuery("#upload-progressbar4").css("display", "block");
+                                        jQuery("#upload-progressbar4").css("width", percent+"%");
+                                        jQuery("#upload-progressbar4").html("<center>'.__('Upload progress:', 'wpstorecart').' "+ percent+"%</center>");
+                                    } catch (e) {
+                                    }
+                                }
+
+                                function beginTheUpload(selected, addtoqueue, inqueuealready) {
+                                        this.startUpload();
+                                }
+
+                                function debugSWFUpload (message) {
+                                        try {
+                                                if (window.console && typeof(window.console.error) === "function" && typeof(window.console.log) === "function") {
+                                                        if (typeof(message) === "object" && typeof(message.name) === "string" && typeof(message.message) === "string") {
+                                                                window.console.error(message);
+                                                        } else {
+                                                                window.console.log(message);
+                                                        }
+                                                }
+                                        } catch (ex) {
+                                        }
+                                        try {
+                                                if (this.settings.debug) {
+                                                        this.debugMessage(message);
+                                                }
+                                        } catch (ex1) {
+                                        }
+                                }
+
+                                var swfu;
+                                window.onload = function () {
+                                        var settings_object = {
+                                                upload_url : "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/upload.php",
+                                                post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$devOptions['wpstorecart_download_hash'].'"},
+                                                flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
+                                                file_size_limit : "2048 MB",
+                                                file_types : "*.*",
+                                                file_types_description : "Any file type",
+                                                file_upload_limit : "1",
+                                                file_post_name: "Filedata",
+                                                button_placeholder_id : "spanSWFUploadButton4",
+                                                button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
+                                                button_width: 61,
+                                                button_height: 22,
+                                                debug : false,
+                                                debug_handler : debugSWFUpload,
+                                                file_dialog_complete_handler: beginTheUpload,
+                                                upload_progress_handler: uploadProgress,
+                                                upload_start_handler : productUploadStartEventHandler,
+                                                upload_success_handler : productUploadSuccessEventHandler,
+                                                upload_error_handler : uploadError
+                                        };
+
+                                        swfu = new SWFUpload(settings_object); 
+                                    };
+
+                            jQuery(document).ready(function() {
+                                jQuery("#importformatx").toggle();
+
+                            });
+
+                                function theOperation(theOption) {
+                                    if(theOption=="import") {
+                                        jQuery("#importformatx").toggle();
+                                        jQuery("#exportformatx").toggle();
+                                    }
+                                    if(theOption=="export") {
+                                        jQuery("#importformatx").toggle();
+                                        jQuery("#exportformatx").toggle();
+                                    }
+                                    return true;
+                                }
+                        /* ]]> */
+                        </script>
+                        <br />';
+
+                    if(@$_POST['isreal']=='true') {
+                        echo '<h3>Attempting to '.$_POST['typeofoperation'] .' using '; if($_POST['typeofoperation']=='export') {echo $_POST['exportformat'];} else {echo $_POST['importformat'];} echo ' file...</h3>';
+
+                        // Export routines here:
+                        if($_POST['typeofoperation']=='export') {
+                            if($_POST['exportformat']=='csv') {
+                                echo '
+                                    <script type="text/javascript">
+                                    /* <![CDATA[ */
+                                    window.open("'.plugins_url().'/wpstorecart/wpstorecart/admin/php/exportcsv.php");
+
+                                    /* ]]> */
+                                    </script>
+                                    ';
+                            }
+
+                            if($_POST['exportformat']=='sql') {
+                                echo '
+                                    <script type="text/javascript">
+                                    /* <![CDATA[ */
+                                    window.open("'.plugins_url().'/wpstorecart/wpstorecart/admin/php/exportsql.php");
+                                    /* ]]> */
+                                    </script>
+                                    ';
+                            }
+
+                        }
+
+                        // Import routines here:
+                        if($_POST['typeofoperation']=='import') {
+
+                        }
+
+
+                    }
+
+                    echo '
+                        <form action="" name="theimportform" method="post">
+                            <div>Type of operation: <select name="typeofoperation"  onchange="theOperation(this.value);">
+                                <option value="export">'.__('Export', 'wpstorecart').'</option>
+                                <option value="import">'.__('Import', 'wpstorecart').'</option>
+                            </select>
+                            <div id="exportformatx">'.__('File format for export', 'wpstorecart').' <select name="exportformat">
+                                <!--<option value="sql">'.__('SQL file', 'wpstorecart').'</option>-->
+                                <option value="csv">'.__('CSV file', 'wpstorecart').'</option>
+                            </select>                                
+                            </div><br />
+
+                            <div id="importformatx">'.__('File format for input', 'wpstorecart').' <select name="importformat">
+                                <!--<option value="sql">'.__('SQL file', 'wpstorecart').'</option>-->
+                                <option value="csv">'.__('CSV file', 'wpstorecart').'</option>
+                            </select>
+                            <input type="text" id="importthisfile" name="importthisfile" style="width: 200px;" value="" />
+                            Upload a file: <span id="spanSWFUploadButton4"></span>
+                            <div id="upload-progressbar-container4">
+                                <div id="upload-progressbar4">
+                                </div>
+                            </div>
+                            </div><br />
+                            <input type="hidden" name="isreal" value="true" />
+                            <input type="submit" value="Begin >" />
+                            </form></div>
+                            ';
+                    
+                    echo '</div>';
+                    wpscAdminFooter();
+
+    }
+            //END Prints out the admin page 
+    
+    
+    
     if (!function_exists('wpscAdminPageSell')) {
 
         function wpscAdminPageSell() {
@@ -7685,10 +7942,12 @@ if(!function_exists('wpscAdminPageCategories')) {
             $affiliatesPage = add_submenu_page('wpstorecart-new-admin', __('Affiliates','wpstorecart').' - wpStoreCart ', __('Affiliates','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-affiliates', 'wpscAdminPageAffiliates');
             $statisticsPage = add_submenu_page('wpstorecart-new-admin', __('Statistics','wpstorecart').' - wpStoreCart ', __('Statistics','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-statistics', 'wpscAdminPageStatistics');
             $appStorePage = add_submenu_page('wpstorecart-new-admin', __('Addons','wpstorecart'), __('Addons','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-appstore', 'wpscAdminAppStore');
+            $importExportPage = add_submenu_page(NULL, __('Import/Export','wpstorecart'), __('Import/Export','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-import', 'wpscAdminPageImport');
             
             add_action('admin_head-' . $addProductPage, 'wpscAdminHeadProducts');
             add_action('admin_head-' . $addNewProductPage, 'wpscAdminHead');
             add_action('admin_head-' . $editProductPage, 'wpscAdminHeadProducts');
+            add_action('admin_head-' . $importExportPage, 'wpscAdminHeadProducts');
             add_action('admin_head-' . $categoryPage, 'wpscAdminHeadProducts');
             add_action('admin_head-' . $settingsPage, 'wpscAdminHeadSettings');
             add_action('admin_head-' . $wizardPage, 'wpscAdminHeadWizard');
