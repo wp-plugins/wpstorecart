@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.2.0 =
-* Fixed: Import/Export CSV functionality has been restored
-* Fixed: Fixed an issue with customer profile fields returning Array Array() instead of the profile fields
+* Fixed: Import/Export CSV functionality has been restored.
+* Fixed: Fixed an issue with customer profile fields returning Array Array() instead of the profile fields.
 
 = 3.1.6 =
 * Updated: Added all available addons to the slider.
