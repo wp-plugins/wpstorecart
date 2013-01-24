@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.3.0 =
-* Fixed: Patched an issue where add to cart did not work if you did not have a checkout widget in your sidebar/footer etc.
+* Fixed: Patched an issue where add to cart did not work if you did not have a checkout widget in your sidebar/footer etc
 * Fixed: Patched a small warning that appeared when saving products via Ajax on servers that forced warnings to be displayed
 
 = 3.2.0 =
