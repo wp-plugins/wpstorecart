@@ -341,9 +341,13 @@ if (class_exists("WP_Widget")) {
 
 	class wpStoreCartCheckoutWidget extends WP_Widget {
 		/** constructor */
-		function wpStoreCartCheckoutWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Cart Contents');
-		}
+                public function __construct() {
+                        parent::__construct(
+                                'wpstorecart_checkout_widget', // Base ID
+                                'wpStoreCart Cart Contents', // Name
+                                array( 'description' => __( 'wpStoreCart Cart Contents', 'wpStoreCart' ), ) // Args
+                        );
+                }                
 
 		/** @see WP_Widget::widget */
 		function widget($args, $instance) {
@@ -795,5 +799,19 @@ if (class_exists("WP_Widget")) {
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartAdvancedCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
+      
+        
+// If there is no checkout widget used, we need to create a hidden cart so that wpStoreCart still works        
+if ( is_active_widget( false, false, 'wpstorecart_checkout_widget', true )===false && !is_admin()) {
+    function wpscCartInFooter() {
+        $wpsc_shoppingcart = new wpsc_shoppingcart();
+        echo '<div style="display:none;">';
+        echo $wpsc_shoppingcart->display_cart();     
+        echo '</div>';
+    }
+    
+    add_action('wp_footer', 'wpscCartInFooter');  
+}        
+        
 
 ?>

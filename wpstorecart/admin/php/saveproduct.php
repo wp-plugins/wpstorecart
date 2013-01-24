@@ -116,7 +116,7 @@ if ( 0 == $current_user->ID ) {
                 }
 
                 if($preresults==false) {
-                        $insert = "INSERT INTO `{$table_name30}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".$finalSlideShowCode."', 'wpsc_product_gallery', '{$_GET['keytoedit']}');";
+                        $insert = "INSERT INTO `{$table_name30}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".$finalSlideShowCode."', 'wpsc_product_gallery', '{$_POST['wpsc-keytoedit']}');";
                 } else {
                         $insert = "UPDATE  `{$table_name30}` SET `value` = '".$finalSlideShowCode."' WHERE `type`='wpsc_product_gallery' AND `foreignkey`='{$_POST['wpsc-keytoedit']}';";
                 }
