@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.3.1 =
+* Updated: Added links to the admin invoice page for each order in orders db. 
+* Fixed: Patched multiple minor issues regarding orders, invoices, and admin user profile viewing
+
 = 3.3.0 =
-* Fixed: Patched an issue where add to cart did not work if you did not have a checkout widget in your sidebar/footer etc
+* Fixed: Patched an issue where add to cart did not work if you did not have a checkout widget in your sidebar/footer etc.
 * Fixed: Patched a small warning that appeared when saving products via Ajax on servers that forced warnings to be displayed
 
 = 3.2.0 =

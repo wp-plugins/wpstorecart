@@ -617,9 +617,20 @@ if(!function_exists('wpscAdminDataTable')) {
                         }                        
                 } );              
                 
-                <?php if(@$_GET['wpsc_order_type']=='Completed') {echo "uTable.fnFilter('Completed');";} ?>
-                <?php if(@$_GET['wpsc_order_type']=='Refunded') {echo "uTable.fnFilter('Refunded');";} ?>
-                <?php if(@$_GET['wpsc_order_type']=='Pending') {echo "uTable.fnFilter('Pending');";} ?>
+                <?php 
+                    if(@$_GET['wpsc_order_type']=='Completed') {
+                        echo "uTable.fnFilter('Completed');";
+                    } elseif(@$_GET['wpsc_order_type']=='Refunded') {
+                        echo "uTable.fnFilter('Refunded');";
+                    } elseif(@$_GET['wpsc_order_type']=='Pending') {
+                        echo "uTable.fnFilter('Pending');";
+                    } else {
+                        if ( intval(@$_GET['wpsc_order_type']) > 0 ) {
+                            echo "uTable.fnFilter('".intval(@$_GET['wpsc_order_type'])."');";
+                        }
+                    }
+                    
+                ?>
                 
                 jQuery('.dataTables_scrollBody').css('overflow-y', 'scroll');
             });
@@ -6624,7 +6635,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             
             echo '<div class="grid_16">';
             echo '<img style="float:left;" src="'.$grav_url.'" alt="" /><br style="clear:both;" />';
-            echo '<table class="widefat"><thead><tr><th><a href="user-edit.php?user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/user_suit.png" alt="" style="float:left;margin-right:4px;" /> '.__('Edit', 'wpstorecart').'</button></a>  <a href="admin.php?page=wpstorecart-email&email_address='.$user->user_email.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/email.png" alt="" style="float:left;margin-right:4px;" /> '.__('Email', 'wpstorecart').'</button></a>  <a href="admin.php?page=wpstorecart-orders&user_id='.$user->ID.'&show=all"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/basket_edit.png" alt="" style="float:left;margin-right:4px;" />'.__('View All Orders', 'wpstorecart').'</button></a></th></tr></thead></table><br />';
+            echo '<table class="widefat"><thead><tr><th><a href="user-edit.php?user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/user_suit.png" alt="" style="float:left;margin-right:4px;" /> '.__('Edit', 'wpstorecart').'</button></a>  <a href="admin.php?page=wpstorecart-email&email_address='.$user->user_email.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/email.png" alt="" style="float:left;margin-right:4px;" /> '.__('Email', 'wpstorecart').'</button></a>  </th></tr></thead></table><br />';
             echo '<h2>'.__('Completed Orders', 'wpstorecart').'</h2>';
             echo '<table class="widefat">
             <thead><tr><th></th><th>'.__('Date', 'wpstorecart').'<br />'.__('Order #', 'wpstorecart').'</th><th>'.__('Order Status', 'wpstorecart').'</th><th>'.__('Cart Contents', 'wpstorecart').'</th><th>'.__('Processor', 'wpstorecart').'</th><th>'.__('Price', 'wpstorecart').'<br /><i>('.__('Shipping', 'wpstorecart').')</i></th><th>'.__('User', 'wpstorecart').'<br /><i>'.__('Email', 'wpstorecart').'</i></th><th>'.__('Affiliate', 'wpstorecart').'</th></tr></thead><tbody>
@@ -6674,7 +6685,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             echo "
                             <tr>
                             <td style=\"width:85px;min-width:85px;max-width:85px;\"><a href=\"admin.php?page=wpstorecart-invoice&orderNumber={$result['primkey']}\"><button class=\"button-secondary\"><img src=\"".plugins_url()."/wpstorecart/images/Invoice.png\" alt=\"\" style=\"float:left;margin-right:5px;\" /> ".__('Details', 'wpstorecart')."</button></a></td>
-                            <td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&keytoedit={$result['primkey']}\"><img src=\"".plugins_url()."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('".__('Are you sure you want to delete this order?', 'wpstorecart')."?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url()."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
+                            <td style=\"min-width:80px;\"><strong>{$wpStoreCartdate}</strong><br />{$result['primkey']} <a href=\"admin.php?page=wpstorecart-orders&wpsc_order_type={$result['primkey']}\"><img src=\"".plugins_url()."/wpstorecart/images/pencil.png\" alt=\"\" /></a> <a onclick=\"if (! confirm('".__('Are you sure you want to delete this order?', 'wpstorecart')."?')) { return false;}\" href=\"admin.php?page=wpstorecart-orders&keytodelete={$result['primkey']}\"><img src=\"".plugins_url()."/wpstorecart/images/cross.png\" alt=\"\" /></a></td>
                             <td>{$wpStoreCartorderstatus}</td>
                             <td>";
                             //echo $this->splitOrderIntoProduct($result['primkey']);
@@ -7377,7 +7388,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                     $is_user = false;
                 }
 
-                echo '<a href="admin.php?page=wpstorecart-orders&keytoedit='.$the_order[0]['primkey'].'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/pencil.png" alt="" style="float:left;margin-right:5px;" />'.__('Edit Order','wpstorecart').'</button></a> '; if($is_user) {echo '<a href="admin.php?page=wpstorecart-profile&i_user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/application_form_edit.png" alt="" style="float:left;margin-right:4px;" /> '.__('Profile', 'wpstorecart').'</button></a>';} echo' <br /><br />';
+                echo '<a href="admin.php?page=wpstorecart-orders&wpsc_order_type='.$the_order[0]['primkey'].'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/pencil.png" alt="" style="float:left;margin-right:5px;" />'.__('Edit Order','wpstorecart').'</button></a> '; if($is_user) {echo '<a href="admin.php?page=wpstorecart-profile&i_user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/application_form_edit.png" alt="" style="float:left;margin-right:4px;" /> '.__('Profile', 'wpstorecart').'</button></a>';} echo' <br /><br />';
 
 
                 echo '<table class="widefat"><thead><tr><th style="width:120px;min-width:120px;max-width:120px;">'.__('Cart', 'wpstorecart').':</th><th></th></tr><tbody>';
