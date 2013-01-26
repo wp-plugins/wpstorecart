@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.3.1 =
-* Updated: Added links to the admin invoice page for each order in orders db. 
+* Updated: Added links to the admin invoice page for each order in orders db 
 * Fixed: Patched multiple minor issues regarding orders, invoices, and admin user profile viewing
 
 = 3.3.0 =
