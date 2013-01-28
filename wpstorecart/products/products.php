@@ -135,6 +135,8 @@ if(!function_exists('wpscProductGetCatalog')) {
     function wpscProductGetCatalog($quantity = 10, $category = null, $displayOrder = 'List all products in custom order', $displayThumb='true', $displayIntroDescription='true', $displayDescription='false', $displayThumbMaxWidth=100, $displayThumbMaxHeight=100, $orderby='') {
         global $wpdb, $current_user, $wpsc_result;
         
+        $listsubcategories = false;
+        
         wp_get_current_user();
         if ( 0 == $current_user->ID ) {
             // Not logged in.
@@ -156,11 +158,39 @@ if(!function_exists('wpscProductGetCatalog')) {
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');  
 
         if( !isset( $_GET['wpscPage'] ) || !is_numeric($_GET['wpscPage'])) {
-        $startat = 0;
+            $startat = 0;
         } else {
-        $startat = ($_GET['wpscPage'] - 1) * $quantity;
+            $startat = ($_GET['wpscPage'] - 1) * $quantity;
         }
 
+
+        if(@isset($_GET['wpsccat'])) {
+            $displayOrder = 'List all products in custom order';
+            $listsubcategories = true;
+        }
+        
+        if($displayOrder=='List all categories (Ascending)') {
+            if($orderby=='') {
+                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
+            } else {
+                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 {$orderby} LIMIT {$startat}, {$quantity};";
+            }
+            $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC;");
+            $secondcss = 'wpsc-categories';
+        } else {
+            $secondcss = 'wpsc-products';
+        }
+        if($displayOrder=='List all categories') {
+            if($orderby=='') {
+                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+            } else {
+                $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 {$orderby} LIMIT {$startat}, {$quantity};";
+            }
+            $total = $wpdb->get_var("SELECT COUNT(primkey) FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC;");
+            $secondcss = 'wpsc-categories';
+        }        
+        
+        
         if($displayOrder=='List all products in custom order') {
         $grabrecord = "SELECT * FROM `{$wpdb->prefix}wpstorecart_meta` WHERE `type`='custom_product_order';";
         $results = $wpdb->get_results( $grabrecord , ARRAY_A );
@@ -201,213 +231,331 @@ if(!function_exists('wpscProductGetCatalog')) {
         }
 
 
-        if(isset($results)) {
-                foreach ($results as $wpsc_result) {
-                    
+        // If we're dealing with categories, we have different fields to deal with than products.
+        if($displayOrder=='List all categories' || $displayOrder=='List all categories (Ascending)') {
+            if(isset($results)) {
+                    foreach ($results as $result) {
 
-                        // Group code
-                        $groupDiscount = wpscGroupDiscounts($wpsc_result['category'], $current_user->ID);
-                        if ($groupDiscount['can_see_this_category']==false && $wpStoreCartOptions['gd_enable']=='true') {
+                            // Group code
+                            $groupDiscount = wpscGroupDiscounts($result['primkey'], $current_user->ID);
+                            if ($groupDiscount['can_see_this_category']==false && $wpStoreCartOptions['gd_enable']=='true') {
 
-                        } else {
-                        // end Group Code
-                            // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
-                            $wpsc_price_type = 'charge';
-                            $membership_value = '';
-                            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
-                                $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
-                                $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$wpsc_result['primkey']};";
-                                $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
-                                if(isset($resultsMembership)) {
-                                    foreach ($resultsMembership as $pagg) {
-                                        $membership_primkey = $pagg['primkey'];
-                                        $membership_value = $pagg['value'];
+                            } else {
+
+                                if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                    if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                        $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                    } else {
+                                        $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
                                     }
-                                    if($membership_value!='') {
-                                        $theExploded = explode('||', $membership_value);
-                                        // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
-                                        $wpsc_price_type = $theExploded[0];
-                                        $wpsc_membership_trial1_allow = $theExploded[1];
-                                        $wpsc_membership_trial2_allow = $theExploded[2];
-                                        $wpsc_membership_trial1_amount = $theExploded[3];
-                                        $wpsc_membership_trial2_amount = $theExploded[4];
-                                        $wpsc_membership_regular_amount = $theExploded[5];
-                                        $wpsc_membership_trial1_numberof = $theExploded[6];
-                                        $wpsc_membership_trial2_numberof = $theExploded[7];
-                                        $wpsc_membership_regular_numberof = $theExploded[8];
-                                        $wpsc_membership_trial1_increment = $theExploded[9];
-                                        $wpsc_membership_trial2_increment = $theExploded[10];
-                                        $wpsc_membership_regular_increment = $theExploded[11];
-                                        if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['day'];}
-                                        if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['day'];}
-                                        if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['day'];}
-                                        if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['week'];}
-                                        if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['week'];}
-                                        if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['week'];}
-                                        if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['month'];}
-                                        if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['month'];}
-                                        if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['month'];}
-                                        if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['year'];}
-                                        if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['year'];}
-                                        if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['year'];}
-                                    }
+                                } else {
+                                    $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                }                                
+                                
+                                $productListingOrder = wpscProductReturnCurrentGridItemOrder();
+
+                                $output .= '<ul class="wpsc-products">';
+                                foreach($productListingOrder as $productListingOrderCurrent) {                    
+                                    switch($productListingOrderCurrent) {
+                                        case 1:
+                                            if(trim($result['thumbnail']=='')) {
+                                                $result['thumbnail'] = plugins_url() .'/wpstorecart/images/default_product_img.jpg';
+                                            }        
+                                            if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                    $output .= '<li class="wpsc-thumbnail-handle" id="wpscsort_1"><a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.wpscSlug($result['category']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a></li>';
+                                            }                                            
+                                        break;    
+                                        case 2:
+                                            if($usetext=='true' && $wpStoreCartOptions['displayTitle']=='true') {
+                                                    $output .= '<li class="wpsc-title" id="wpscsort_2"><a href="'.$permalink.'">'.stripslashes($result['category']).'</a></li>';
+                                            }                                    
+                                        break;
+                                        case 4:
+                                            if($wpStoreCartOptions['displayintroDesc']=='true'){
+                                                    $output .= '<li class="wpsc-description" id="wpscsort_4">'.stripslashes($result['description']).'</li>';
+                                            }                                   
+                                        break;                                        
+                                    }                                
                                 }
+                                $output .= '</ul>';
+                                
                             }
-
-                            $permalink = get_permalink( $wpsc_result['postid'] ); // Grab the permalink based on the post id associated with the product
-
-                            $output .= apply_filters('wpsc_display_catalog_start', '');
-                            
-                            $output .= '<ul class="wpsc-products">';
-
-                            $productListingOrder = wpscProductReturnCurrentGridItemOrder();
-
-                            
-                            foreach($productListingOrder as $productListingOrderCurrent) {                    
-                                switch($productListingOrderCurrent) {
-                                    case 1:
-                                        if($usepictures=='true') {
-                                            
-                                            $output .= '<li class="wpsc-thumbnail-handle" id="wpscsort_1">'; $output .= apply_filters('wpsc_display_catalog_before_thumbnail', ''); $output.= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$wpsc_result['thumbnail'].'" alt="'.wpscSlug(stripslashes($wpsc_result['name'])).'" /></a>';$output .= apply_filters('wpsc_display_catalog_after_thumbnail', '');$output .='</li>';
-                                            
-                                        }                                
-                                    break;
-                                    case 2:
-                                        if($usetext=='true' && $wpStoreCartOptions['displayTitle']=='true') {
-                                                $output .= '<li class="wpsc-title" id="wpscsort_2">'; $output .= apply_filters('wpsc_display_catalog_before_title', ''); $output.= '<a href="'.$permalink.'">'.stripslashes($wpsc_result['name']).'</a>'; $output .= apply_filters('wpsc_display_catalog_after_title', ''); $output.= '</li>';
-                                        }                                    
-                                    break;
-                                    case 3:                
-                                        if($displayIntroDescription=='true'){
-                                                $output .= '<li class="wpsc-intro" id="wpscsort_3">'; $output .= apply_filters('wpsc_display_catalog_before_intro', ''); $output.= stripslashes($wpsc_result['introdescription']); $output .= apply_filters('wpsc_display_catalog_after_intro', ''); $output.= '</li>';
-                                        }
-                                    break;
-                                    case 4:                
-                                        if($displayDescription=='true'){
-                                                $output .= '<li class="wpsc-description" id="wpscsort_4">'; $output .= apply_filters('wpsc_display_catalog_before_description', ''); $output.=stripslashes($wpsc_result['description']); $output .= apply_filters('wpsc_display_catalog_after_description', '').'</li>';
-                                        }                                         
-                                    break;
-                                    case 5:                        
-                                        if($wpStoreCartOptions['displaypriceonview']=='true'){
-                                            if($wpsc_price_type == 'membership') {
-                                                //$output .= '<li class="wpsc-product-price">';
-                                                if($wpsc_membership_trial1_allow=='yes') {
-                                                    $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_1']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</span></li>";
-                                                }
-                                                if($wpsc_membership_trial2_allow=='yes') {
-                                                    $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_2']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</span></li>";
-                                                }
-                                                $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['subscription_price']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</span></li>";
-                                            } else {
-                                                // Discount prices
-                                                if($wpsc_result['discountprice'] > 0) {
-                                                    $theActualPrice = $wpsc_result['discountprice'];
-                                                } else {
-                                                    $theActualPrice = $wpsc_result['price'];
-                                                }                                                                        
-
-                                                $wpscGroupDiscountPrices =  wpscGroupDiscountReturnPrice($wpsc_result['price'], $wpsc_result['discountprice'], $groupDiscount);
-                                                if(isset($wpscGroupDiscountPrices['discountprice'])) {
-                                                    $wpsc_result['discountprice'] = $wpscGroupDiscountPrices['discountprice'];
-                                                }
-                                                if(isset($wpscGroupDiscountPrices['price'])) {
-                                                    $wpsc_result['price'] = $wpscGroupDiscountPrices['price'];
-                                                } 
-
-                                                // Group discounts
-                                                if ($groupDiscount['can_have_discount']==true && $wpStoreCartOptions['gd_enable']=='true') {
-                                                    $percentDiscount = $groupDiscount['discount_amount'] / 100;
-                                                    $discountToSubtract = $theActualPrice * $percentDiscount;
-                                                    if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
-                                                        $wpsc_result['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
-                                                    }                                                                      
-                                                    $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
-                                                    if($wpsc_result['discountprice']==0) { 
-                                                        $wpsc_result['price'] = $theActualPrice;
-                                                    }
-                                                }   
-                                                // end group discount                                                                        
-
-                                                if($wpsc_result['discountprice']>0) {
-                                                    if($wpStoreCartOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
-                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\"><strike class=\"wpsc-strike\">{$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</strike> {$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
-                                                    } else {
-                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\"><strike class=\"wpsc-strike\">{$wpStoreCartOptions['currency_symbol']}{$wpsc_result['price']}{$wpStoreCartOptions['currency_symbol_right']}</strike> {$wpStoreCartOptions['currency_symbol']}{$wpsc_result['discountprice']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
-                                                    }
-                                                } else {
-                                                    if($wpStoreCartOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
-                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\">{$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
-                                                    } else {
-                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\">{$wpStoreCartOptions['currency_symbol']}{$wpsc_result['price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
-                                                    }
-                                                }
-                                            }
-                                        }                                    
-                                    break;
-                                    case 6:                        
-                                        if($wpStoreCartOptions['displayAddToCart']=='true'){
-                                            if($wpsc_price_type == 'charge') {
-
-                                                // Discount prices
-                                                if($wpsc_result['discountprice'] > 0) {
-                                                    $theActualPrice = $wpsc_result['discountprice'];
-                                                } else {
-                                                    $theActualPrice = $wpsc_result['price'];
-                                                }                                                                        
-
-                                                $wpscGroupDiscountPrices =  wpscGroupDiscountReturnPrice($wpsc_result['price'], $wpsc_result['discountprice'], $groupDiscount);
-                                                if(isset($wpscGroupDiscountPrices['discountprice'])) {
-                                                    $wpsc_result['discountprice'] = $wpscGroupDiscountPrices['discountprice'];
-                                                }
-                                                if(isset($wpscGroupDiscountPrices['price'])) {
-                                                    $wpsc_result['price'] = $wpscGroupDiscountPrices['price'];
-                                                }                                                                       
-
-                                                // Flat rate shipping implmented here:
-                                                if($wpStoreCartOptions['flatrateshipping']=='all_single') {
-                                                    $wpsc_result['shipping'] = $wpStoreCartOptions['flatrateamount'];
-                                                } elseif($wpStoreCartOptions['flatrateshipping']=='off' || $wpStoreCartOptions['flatrateshipping']=='all_global') {
-                                                    $wpsc_result['shipping'] = '0.00';
-                                                }
-
-                                                $output .= '<li class="wpsc-mock-buttons" id="wpscsort_6">'; $output .= apply_filters('wpsc_display_catalog_before_addtocart', ''); $output.= wpscProductGetAddToCartButton($wpsc_result['primkey'], $theActualPrice); $output .= apply_filters('wpsc_display_catalog_after_addtocart', '');  $output .= apply_filters('wpsc_display_catalog_before_moreinfo', ''); $output.='<button class="wpsc-button wpsc-moreinfo">'. __('More Info','wpstorecart').'</button>'; $output .= apply_filters('wpsc_display_catalog_after_moreinfo', ''); $output .='</li>';
-
-                                            } elseif ($wpsc_price_type == 'membership' ) {
-                                                    //$output .= $this->displaySubscriptionBuyNow($wpsc_result['primkey'], false);
-
-                                            }
-                                        }                                    
-                                    break;
-                                }
-                            }
-                            
-                        
-
-                            $output .= '</ul>';
-                            $output .= apply_filters('wpsc_display_catalog_end', '');
-                        }
-                    
-                    
+                    }
+                    $output .= '<div class="wpsc-clear"></div>';
+            }
+        } else {        
+            
+            if($listsubcategories) {
+                
+                if($orderby=='') {
+                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`='".intval($_GET['wpsccat'])."' ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
+                } else {
+                    $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`='".intval($_GET['wpsccat'])."' {$orderby} LIMIT {$startat}, {$quantity};";
                 }
+           
+                $scresults = $wpdb->get_results( $sql , ARRAY_A );
+                
+                if(isset($scresults)) {
+                        foreach ($scresults as $result) {
 
-                $output .= '<div class="wpsc-clear"></div>';
-                $output .= '<div class="wpsc-navigation">';
+                                // Group code
+                                $groupDiscount = wpscGroupDiscounts($result['primkey'], $current_user->ID);
+                                if ($groupDiscount['can_see_this_category']==false && $wpStoreCartOptions['gd_enable']=='true') {
 
-                $comments_per_page = $quantity;
-                $page = isset( $_GET['wpscPage'] ) ? abs( (int) $_GET['wpscPage'] ) : 1;
+                                } else {
 
-                $output .= paginate_links( array(
-                    'base' => add_query_arg( 'wpscPage', '%#%' ),
-                    'format' => '',
-                    'prev_text' => __('&laquo;'),
-                    'next_text' => __('&raquo;'),
-                    'total' => ceil($total / $comments_per_page),
-                    'current' => $page
-                ));
+                                    if($result['postid'] == 0 || $result['postid'] == '') { // If there's no dedicated category pages, use the default
+                                        if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                                            $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=lc&wpsccat='.$result['primkey'];
+                                        } else {
+                                            $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=lc&wpsccat='.$result['primkey'];
+                                        }
+                                    } else {
+                                        $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                    }                                
 
-                $output .= '</div>';
+                                    $productListingOrder = wpscProductReturnCurrentGridItemOrder();
 
-                $output .= '<div class="wpsc-clear"></div>';
+                                    $output .= '<ul class="wpsc-products">';
+                                    foreach($productListingOrder as $productListingOrderCurrent) {                    
+                                        switch($productListingOrderCurrent) {
+                                            case 1:
+                                                if(trim($result['thumbnail']=='')) {
+                                                    $result['thumbnail'] = plugins_url() .'/wpstorecart/images/default_product_img.jpg';
+                                                }        
+                                                if($usepictures=='true' || $result['thumbnail']!='' ) {
+                                                        $output .= '<li class="wpsc-thumbnail-handle" id="wpscsort_1"><a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$result['thumbnail'].'" alt="'.wpscSlug($result['category']).'"';if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a></li>';
+                                                }                                            
+                                            break;    
+                                            case 2:
+                                                if($usetext=='true' && $wpStoreCartOptions['displayTitle']=='true') {
+                                                        $output .= '<li class="wpsc-title" id="wpscsort_2"><a href="'.$permalink.'">'.stripslashes($result['category']).'</a></li>';
+                                                }                                    
+                                            break;
+                                            case 4:
+                                                if($wpStoreCartOptions['displayintroDesc']=='true'){
+                                                        $output .= '<li class="wpsc-description" id="wpscsort_4">'.stripslashes($result['description']).'</li>';
+                                                }                                   
+                                            break;                                        
+                                        }                                
+                                    }
+                                    $output .= '</ul>';
+
+                                }
+                        }
+                        $output .= '<div class="wpsc-clear"></div>';
+                }                
+            } 
+            
+            
+            if(isset($results)) {
+                    foreach ($results as $wpsc_result) {
+
+
+                            // Group code
+                            $groupDiscount = wpscGroupDiscounts($wpsc_result['category'], $current_user->ID);
+                            if ($groupDiscount['can_see_this_category']==false && $wpStoreCartOptions['gd_enable']=='true') {
+
+                            } else {
+                            // end Group Code
+                                // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                                $wpsc_price_type = 'charge';
+                                $membership_value = '';
+                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+                                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                                    $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$wpsc_result['primkey']};";
+                                    $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                                    if(isset($resultsMembership)) {
+                                        foreach ($resultsMembership as $pagg) {
+                                            $membership_primkey = $pagg['primkey'];
+                                            $membership_value = $pagg['value'];
+                                        }
+                                        if($membership_value!='') {
+                                            $theExploded = explode('||', $membership_value);
+                                            // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                                            $wpsc_price_type = $theExploded[0];
+                                            $wpsc_membership_trial1_allow = $theExploded[1];
+                                            $wpsc_membership_trial2_allow = $theExploded[2];
+                                            $wpsc_membership_trial1_amount = $theExploded[3];
+                                            $wpsc_membership_trial2_amount = $theExploded[4];
+                                            $wpsc_membership_regular_amount = $theExploded[5];
+                                            $wpsc_membership_trial1_numberof = $theExploded[6];
+                                            $wpsc_membership_trial2_numberof = $theExploded[7];
+                                            $wpsc_membership_regular_numberof = $theExploded[8];
+                                            $wpsc_membership_trial1_increment = $theExploded[9];
+                                            $wpsc_membership_trial2_increment = $theExploded[10];
+                                            $wpsc_membership_regular_increment = $theExploded[11];
+                                            if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['day'];}
+                                            if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['day'];}
+                                            if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['day'];}
+                                            if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['week'];}
+                                            if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['week'];}
+                                            if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['week'];}
+                                            if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['month'];}
+                                            if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['month'];}
+                                            if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['month'];}
+                                            if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['year'];}
+                                            if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['year'];}
+                                            if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['year'];}
+                                        }
+                                    }
+                                }
+
+                                $permalink = get_permalink( $wpsc_result['postid'] ); // Grab the permalink based on the post id associated with the product
+
+                                $output .= apply_filters('wpsc_display_catalog_start', '');
+
+                                $output .= '<ul class="wpsc-products">';
+
+                                $productListingOrder = wpscProductReturnCurrentGridItemOrder();
+
+
+                                foreach($productListingOrder as $productListingOrderCurrent) {                    
+                                    switch($productListingOrderCurrent) {
+                                        case 1:
+                                            if($usepictures=='true') {
+
+                                                $output .= '<li class="wpsc-thumbnail-handle" id="wpscsort_1">'; $output .= apply_filters('wpsc_display_catalog_before_thumbnail', ''); $output.= '<a href="'.$permalink.'"><img class="wpsc-thumbnail" src="'.$wpsc_result['thumbnail'].'" alt="'.wpscSlug(stripslashes($wpsc_result['name'])).'" /></a>';$output .= apply_filters('wpsc_display_catalog_after_thumbnail', '');$output .='</li>';
+
+                                            }                                
+                                        break;
+                                        case 2:
+                                            if($usetext=='true' && $wpStoreCartOptions['displayTitle']=='true') {
+                                                    $output .= '<li class="wpsc-title" id="wpscsort_2">'; $output .= apply_filters('wpsc_display_catalog_before_title', ''); $output.= '<a href="'.$permalink.'">'.stripslashes($wpsc_result['name']).'</a>'; $output .= apply_filters('wpsc_display_catalog_after_title', ''); $output.= '</li>';
+                                            }                                    
+                                        break;
+                                        case 3:                
+                                            if($displayIntroDescription=='true'){
+                                                    $output .= '<li class="wpsc-intro" id="wpscsort_3">'; $output .= apply_filters('wpsc_display_catalog_before_intro', ''); $output.= stripslashes($wpsc_result['introdescription']); $output .= apply_filters('wpsc_display_catalog_after_intro', ''); $output.= '</li>';
+                                            }
+                                        break;
+                                        case 4:                
+                                            if($displayDescription=='true'){
+                                                    $output .= '<li class="wpsc-description" id="wpscsort_4">'; $output .= apply_filters('wpsc_display_catalog_before_description', ''); $output.=stripslashes($wpsc_result['description']); $output .= apply_filters('wpsc_display_catalog_after_description', '').'</li>';
+                                            }                                         
+                                        break;
+                                        case 5:                        
+                                            if($wpStoreCartOptions['displaypriceonview']=='true'){
+                                                if($wpsc_price_type == 'membership') {
+                                                    //$output .= '<li class="wpsc-product-price">';
+                                                    if($wpsc_membership_trial1_allow=='yes') {
+                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_1']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</span></li>";
+                                                    }
+                                                    if($wpsc_membership_trial2_allow=='yes') {
+                                                        $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_2']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</span></li>";
+                                                    }
+                                                    $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['subscription_price']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</span></li>";
+                                                } else {
+                                                    // Discount prices
+                                                    if($wpsc_result['discountprice'] > 0) {
+                                                        $theActualPrice = $wpsc_result['discountprice'];
+                                                    } else {
+                                                        $theActualPrice = $wpsc_result['price'];
+                                                    }                                                                        
+
+                                                    $wpscGroupDiscountPrices =  wpscGroupDiscountReturnPrice($wpsc_result['price'], $wpsc_result['discountprice'], $groupDiscount);
+                                                    if(isset($wpscGroupDiscountPrices['discountprice'])) {
+                                                        $wpsc_result['discountprice'] = $wpscGroupDiscountPrices['discountprice'];
+                                                    }
+                                                    if(isset($wpscGroupDiscountPrices['price'])) {
+                                                        $wpsc_result['price'] = $wpscGroupDiscountPrices['price'];
+                                                    } 
+
+                                                    // Group discounts
+                                                    if ($groupDiscount['can_have_discount']==true && $wpStoreCartOptions['gd_enable']=='true') {
+                                                        $percentDiscount = $groupDiscount['discount_amount'] / 100;
+                                                        $discountToSubtract = $theActualPrice * $percentDiscount;
+                                                        if($groupDiscount['gd_saleprice']==true && $discountToSubtract > 0) {
+                                                            $wpsc_result['discountprice'] = number_format($theActualPrice - $discountToSubtract, 2);
+                                                        }                                                                      
+                                                        $theActualPrice = number_format($theActualPrice - $discountToSubtract, 2);
+                                                        if($wpsc_result['discountprice']==0) { 
+                                                            $wpsc_result['price'] = $theActualPrice;
+                                                        }
+                                                    }   
+                                                    // end group discount                                                                        
+
+                                                    if($wpsc_result['discountprice']>0) {
+                                                        if($wpStoreCartOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                            $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\"><strike class=\"wpsc-strike\">{$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</strike> {$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
+                                                        } else {
+                                                            $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\"><strike class=\"wpsc-strike\">{$wpStoreCartOptions['currency_symbol']}{$wpsc_result['price']}{$wpStoreCartOptions['currency_symbol_right']}</strike> {$wpStoreCartOptions['currency_symbol']}{$wpsc_result['discountprice']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
+                                                        }
+                                                    } else {
+                                                        if($wpStoreCartOptions['show_price_to_guests']=='false' && !is_user_logged_in()) {
+                                                            $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\">{$wpStoreCartOptions['currency_symbol']}{$wpStoreCartOptions['logged_out_price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
+                                                        } else {
+                                                            $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\">"; $output .= apply_filters('wpsc_display_catalog_before_price', ''); $output.= "<span class=\"wpsc-grid-price\">{$wpStoreCartOptions['currency_symbol']}{$wpsc_result['price']}{$wpStoreCartOptions['currency_symbol_right']}</span>"; $output .= apply_filters('wpsc_display_catalog_after_price', ''); $output.= "</li>";
+                                                        }
+                                                    }
+                                                }
+                                            }                                    
+                                        break;
+                                        case 6:                        
+                                            if($wpStoreCartOptions['displayAddToCart']=='true'){
+                                                if($wpsc_price_type == 'charge') {
+
+                                                    // Discount prices
+                                                    if($wpsc_result['discountprice'] > 0) {
+                                                        $theActualPrice = $wpsc_result['discountprice'];
+                                                    } else {
+                                                        $theActualPrice = $wpsc_result['price'];
+                                                    }                                                                        
+
+                                                    $wpscGroupDiscountPrices =  wpscGroupDiscountReturnPrice($wpsc_result['price'], $wpsc_result['discountprice'], $groupDiscount);
+                                                    if(isset($wpscGroupDiscountPrices['discountprice'])) {
+                                                        $wpsc_result['discountprice'] = $wpscGroupDiscountPrices['discountprice'];
+                                                    }
+                                                    if(isset($wpscGroupDiscountPrices['price'])) {
+                                                        $wpsc_result['price'] = $wpscGroupDiscountPrices['price'];
+                                                    }                                                                       
+
+                                                    // Flat rate shipping implmented here:
+                                                    if($wpStoreCartOptions['flatrateshipping']=='all_single') {
+                                                        $wpsc_result['shipping'] = $wpStoreCartOptions['flatrateamount'];
+                                                    } elseif($wpStoreCartOptions['flatrateshipping']=='off' || $wpStoreCartOptions['flatrateshipping']=='all_global') {
+                                                        $wpsc_result['shipping'] = '0.00';
+                                                    }
+
+                                                    $output .= '<li class="wpsc-mock-buttons" id="wpscsort_6">'; $output .= apply_filters('wpsc_display_catalog_before_addtocart', ''); $output.= wpscProductGetAddToCartButton($wpsc_result['primkey'], $theActualPrice); $output .= apply_filters('wpsc_display_catalog_after_addtocart', '');  $output .= apply_filters('wpsc_display_catalog_before_moreinfo', ''); $output.='<button class="wpsc-button wpsc-moreinfo">'. __('More Info','wpstorecart').'</button>'; $output .= apply_filters('wpsc_display_catalog_after_moreinfo', ''); $output .='</li>';
+
+                                                } elseif ($wpsc_price_type == 'membership' ) {
+                                                        //$output .= $this->displaySubscriptionBuyNow($wpsc_result['primkey'], false);
+
+                                                }
+                                            }                                    
+                                        break;
+                                    }
+                                }
+
+
+
+                                $output .= '</ul>';
+                                $output .= apply_filters('wpsc_display_catalog_end', '');
+                            }
+
+
+                    }
+
+                    $output .= '<div class="wpsc-clear" style="clear:both;"></div>';
+                    $output .= '<div class="wpsc-navigation">';
+
+                    $comments_per_page = $quantity;
+                    $page = isset( $_GET['wpscPage'] ) ? abs( (int) $_GET['wpscPage'] ) : 1;
+
+                    $output .= paginate_links( array(
+                        'base' => add_query_arg( 'wpscPage', '%#%' ),
+                        'format' => '',
+                        'prev_text' => __('&laquo;'),
+                        'next_text' => __('&raquo;'),
+                        'total' => ceil($total / $comments_per_page),
+                        'current' => $page
+                    ));
+
+                    $output .= '</div>';
+
+                    $output .= '<div class="wpsc-clear"></div>';
+            }
         }
 
         return $output;
@@ -926,7 +1074,7 @@ if (!function_exists('wpscProductMainPage')) {
         
         if(!isset($_GET['wpStoreCartDesigner'])){ // User viewing the page 
             
-            $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory));
+            $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, $wpStoreCartOptions['frontpageDisplays']));
         } else { // Admin editing the layout          
 
             wpscCheckAdminPermissions();

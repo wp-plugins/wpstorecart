@@ -72,7 +72,7 @@ if(!function_exists('wpscDisplayAlerts')) {
                             
                                 if($display==NULL) {$output.='<p>';}                            
                                 if($display=='ul' || $display=='ol') {$output.='<li>';}
-                                if($display=='table') {$output.='<tr><td>';}      
+                                if($display=='table') {$output.='<tr id="wpsc_alert_row_'.$curAlert['primkey'].'"><td>';}      
                                 if($display=='desktop') {$output.='<li style="clear:both;">';}
                                 if(trim($curAlert['url'])!='' && $display!='plain' && $display!='desktop' && $display!='table') {
                                     $output .= '<a href="'.$curAlert['url'].'">';
@@ -91,7 +91,7 @@ if(!function_exists('wpscDisplayAlerts')) {
                                 }                         
                                 
                                 if($display=='ul' || $display=='ol' || $display=='desktop') {$output.='</li>';}
-                                if($display=='table') {$output.='</td></tr>';} 
+                                if($display=='table') {$output.=' <img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="" style="cursor:pointer;" onclick="jQuery.ajax({type:\'POST\', url: \''.plugins_url().'/wpstorecart/wpstorecart/alerts/clearalerts.php\', data:{ alert_id: \''.$curAlert['primkey'].'\'}}); jQuery(\'#wpsc_alert_row_'.$curAlert['primkey'].'\').hide(); " /></td></tr>';} 
                                 if($display==NULL) {$output.='</p>';}   
                                 if($display=='plain') {$output.="
 ";}   
@@ -142,7 +142,7 @@ if(!function_exists('wpscAlertsDashboardWidget')) {
         wp_get_current_user();
         echo '
             <style type="text/css">
-                .wpsc_alerts img {max-width:96px;max-height:96px;}
+                .wpsc_alerts img {max-width:48px;max-height:48px;}
                 .wpsc_alerts {font-size:18px;}
             </style>
             ';

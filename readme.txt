@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.3.1
+Stable tag: 3.4.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,14 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.4.0 =
+* Updated: Due to popular demand, categories shortcode and frontpage settings now work the same as they used to in wpStoreCart 2.x
+* Fixed: Category thumbnail picture uploading has been restored
+* Updated: Alerts can now be cleared directly from the admin dashboard
+* Updated: Added a clear:both inline style so that product page navigation would remain consistant
+
 = 3.3.1 =
-* Updated: Added links to the admin invoice page for each order in orders db 
+* Updated: Added links to the admin invoice page for each order in orders db. 
 * Fixed: Patched multiple minor issues regarding orders, invoices, and admin user profile viewing
 
 = 3.3.0 =

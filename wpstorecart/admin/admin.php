@@ -2191,7 +2191,7 @@ if(!function_exists('wpscAdminPageCategories')) {
  * @global boolean $wpsc_testing_mode 
  */
     function wpscAdminPageCategories() {
-            global $wpdb, $wpsc_testing_mode, $wpstorecart_settings, $wpstorecart_settings_obj;
+            global $wpdb;
             wpscCheckAdminPermissions();
             
             wpscAdminHeader(__('Categories','wpstorecart'));
@@ -2261,6 +2261,132 @@ if(!function_exists('wpscAdminPageCategories')) {
                     }
             </style>
             <script type="text/javascript">
+            
+
+			var productUploadStartEventHandler = function (file) {
+				var continue_with_upload;
+
+				continue_with_upload = true;
+
+				return continue_with_upload;
+			};
+
+			var productUploadSuccessEventHandler2 = function (file, server_data, receivedResponse) {
+                                jQuery("#uploadimage2").attr("src","'.plugins_url().'/wpstorecart/images/white.gif");
+				document.wpstorecartaddproductform.wpStoreCartproduct_thumbnail.value = "'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name;
+                                jQuery(\'#show_thumbnail_img\').attr(\'src\',"'.WP_CONTENT_URL.'/uploads/wpstorecart/" + file.name);
+                                this.startUpload();
+			};
+
+			function uploadError(file, errorCode, message) {
+				try {
+
+					switch (errorCode) {
+					case SWFUpload.UPLOAD_ERROR.HTTP_ERROR:
+						alert("Error Code: HTTP Error, File name. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.MISSING_UPLOAD_URL:
+						alert("Error Code: No backend file. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.UPLOAD_FAILED:
+						alert("Error Code: Upload Failed. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.IO_ERROR:
+						alert("Error Code: IO Error. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.SECURITY_ERROR:
+						alert("Error Code: Security Error. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+						alert("Error Code: Upload Limit Exceeded. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.SPECIFIED_FILE_ID_NOT_FOUND:
+						alert("Error Code: The file was not found. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED:
+						alert("Error Code: File Validation Failed. Message: " + message);
+						break;
+					case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+						break;
+					case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+						break;
+					default:
+						alert("Error Code: " + errorCode + ". Message: " + message);
+						break;
+					}
+				} catch (ex) {
+					this.debug(ex);
+				}
+			}
+
+                        function uploadProgress2(file, bytesLoaded, bytesTotal) {
+                            try {
+                                var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+                                jQuery("#upload-progressbar2").css("display", "block");
+                                jQuery("#upload-progressbar2").css("width", percent+"%");
+                                jQuery("#upload-progressbar2").html("<center>"+ percent+"%</center>");
+                            } catch (e) {
+                            }
+                        }
+
+			function beginTheUpload(selected, addtoqueue, inqueuealready) {
+				this.startUpload();
+			}
+
+			function debugSWFUpload (message) {
+				try {
+					if (window.console && typeof(window.console.error) === "function" && typeof(window.console.log) === "function") {
+						if (typeof(message) === "object" && typeof(message.name) === "string" && typeof(message.message) === "string") {
+							window.console.error(message);
+						} else {
+							window.console.log(message);
+						}
+					}
+				} catch (ex) {
+				}
+				try {
+					if (this.settings.debug) {
+						this.debugMessage(message);
+					}
+				} catch (ex1) {
+				}
+			}
+
+
+			var swfu2;
+
+			window.onload = function () {
+				var settings_object2 = {
+					upload_url : "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/upload.php", 
+					post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$wpStoreCartOptions['wpstorecart_download_hash'].'"},
+					flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf",
+					file_size_limit : "9999 MB",
+					file_types : "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.tiff;",
+					file_types_description : "Image files",
+					file_upload_limit : "0",
+					file_post_name: "Filedata",
+					button_placeholder_id : "spanSWFUploadButton2",
+					button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
+					button_width: 61,
+					button_height: 22,
+					debug : false,
+					debug_handler : debugSWFUpload,
+					file_dialog_complete_handler: beginTheUpload,
+                                        upload_progress_handler: uploadProgress2,
+					upload_start_handler : productUploadStartEventHandler,
+					upload_success_handler : productUploadSuccessEventHandler2,
+					upload_error_handler : uploadError
+				};
+
+
+				
+				swfu2 = new SWFUpload(settings_object2);
+
+			};
+
+
+
+
                 jQuery(function() {
                     jQuery( "#wpscCategorySavedDialog" ).dialog({ autoOpen: false, width: 460 });
 
