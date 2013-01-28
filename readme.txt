@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.4.0 =
-* Updated: Due to popular demand, categories shortcode and frontpage settings now work the same as they used to in wpStoreCart 2.x
+* Updated: Due to popular demand, categories shortcode and frontpage settings now work the same as they used to in wpStoreCart 2.x.
 * Fixed: Category thumbnail picture uploading has been restored
 * Updated: Alerts can now be cleared directly from the admin dashboard
 * Updated: Added a clear:both inline style so that product page navigation would remain consistant
