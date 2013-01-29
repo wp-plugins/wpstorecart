@@ -2861,7 +2861,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             } else {
                                 echo '<li><a href="#tab1"><img src="'.plugins_url() . '/wpstorecart/images/table.png" /> '.__('Product','wpstorecart').'</a></li>';                               
                             }
-                                if($wpStoreCartOptions['storetype']!='Physical Goods Only'){
+                                if($wpStoreCartOptions['storetype']!='Digital Goods Only'){
                                     echo '<li id="wpsc-shipping-li" style="display:inline;"><a href="#tab6"><img src="'.plugins_url() . '/wpstorecart/images/package_go.png" /> '.__('Shipping','wpstorecart').'</a></li>';
                                 }                            
                             echo '<li><a href="#tab4"><img src="'.plugins_url() . '/wpstorecart/images/images.png" /> '.__('Pictures','wpstorecart').'</a></li>';

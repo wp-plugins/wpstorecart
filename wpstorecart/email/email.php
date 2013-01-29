@@ -85,7 +85,7 @@ if(!function_exists('wpscMakeEmailTxt')) {
 
 if(!function_exists('wpscSendSuccessfulPurchaseEmail')) {
     function wpscSendSuccessfulPurchaseEmail($wpscEmail=NULL) {
-        global $current_user, $wpdb;
+        global $current_user, $wpdb, $wpstorecart_version;
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
         
             // Let's send them an email telling them their purchase was successful
