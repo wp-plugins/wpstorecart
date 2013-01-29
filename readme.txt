@@ -86,7 +86,7 @@ Or, if you want to install manually:
 
 = 3.4.1 =
 * Fixed: Patched an issue that affected users who forced PHP notices to display that prevented from successful purchased emails from sending
-* Fixed: Patched an issue where the shipping tab on the Edit Products admin page was missing.
+* Fixed: Patched an issue where the shipping tab on the Edit Products admin page was missing
 
 = 3.4.0 =
 * Updated: Due to popular demand, categories shortcode and frontpage settings now work the same as they used to in wpStoreCart 2.x
