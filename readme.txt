@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.4.2 =
-* Fixed: Corrected an issue with [wpstorecart display="categories" thecategory="2"] displaying all categories instead
+* Fixed: Corrected an issue with [wpstorecart display="categories" thecategory="2"] displaying all categories instead.
 
 = 3.4.1 =
 * Fixed: Patched an issue that affected users who forced PHP notices to display that prevented from successful purchased emails from sending
