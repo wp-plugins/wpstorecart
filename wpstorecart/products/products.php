@@ -147,11 +147,7 @@ if(!function_exists('wpscProductGetCatalog')) {
         
         $output = NULL;
         
-        if($category!=null) {
-            $category_sql = " AND `category`='{$category}' ";
-        } else {
-            $category_sql = NULL;
-        }
+
         
         
         $table_name = $wpdb->prefix.'wpstorecart_products';
@@ -164,12 +160,21 @@ if(!function_exists('wpscProductGetCatalog')) {
         }
 
 
-        if(@isset($_GET['wpsccat'])) {
+        if(@isset($_GET['wpsccat']) || $category!=NULL ) {
             $displayOrder = 'List all products in custom order';
             $listsubcategories = true;
+            if(@$_GET['wpsccat']==NULL || @!isset($_GET['wpsccat'])) {
+                $_GET['wpsccat'] = $category;
+            }
         }
         
-        if($displayOrder=='List all categories (Ascending)') {
+        if($category!=null) {
+            $category_sql = " AND `category`='{$category}' ";
+        } else {
+            $category_sql = NULL;
+        }        
+        
+        if($displayOrder=='List all categories (Ascending)' && $category_sql == NULL) {
             if($orderby=='') {
                 $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` ASC LIMIT {$startat}, {$quantity};";
             } else {
@@ -180,7 +185,7 @@ if(!function_exists('wpscProductGetCatalog')) {
         } else {
             $secondcss = 'wpsc-products';
         }
-        if($displayOrder=='List all categories') {
+        if($displayOrder=='List all categories' && $category_sql == NULL) {
             if($orderby=='') {
                 $sql = "SELECT * FROM `". $wpdb->prefix ."wpstorecart_categories` WHERE `parent`=0 ORDER BY `primkey` DESC LIMIT {$startat}, {$quantity};";
             } else {
