@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.4.3 =
-* Fixed: Corrected an issue with the manual payment gateway not showing details after order.
+* Fixed: Corrected an issue with the manual payment gateway not showing details after order
 
 = 3.4.2 =
 * Fixed: Corrected an issue with [wpstorecart display="categories" thecategory="2"] displaying all categories instead
