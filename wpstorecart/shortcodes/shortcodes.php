@@ -9,7 +9,7 @@ if(!function_exists('wpStoreCartMainShortcode')) {
      * @return string 
      */
     function wpStoreCartMainShortcode($atts, $content = null) {
-        global $wpdb, $current_user;
+        global $wpdb, $current_user, $wpstorecart_version;
         
         
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');        
@@ -98,6 +98,62 @@ if(!function_exists('wpStoreCartMainShortcode')) {
         $output = '';
         switch ($display) {
                 default:
+                    
+                    if($_GET['wpsc']=='manual') {
+                        $output .= '<h2>'.__('Order total:', 'wpstorecart').' '.$wpStoreCartOptions['currency_symbol']. $_GET['price'] .$wpStoreCartOptions['currency_symbol_right'].'</h2>';
+                        $output .= $wpStoreCartOptions['checkmoneyordertext'];
+                        if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                            $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?wpsc=manualresponse&order='.$_GET['order'];
+                        } else {
+                            $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&wpsc=manualresponse&order='.$_GET['order'];
+                        }
+                        $output .= '<form action="'.$permalink.'" method="post"><textarea class="wpsc-textarea" name="manualresponsetext"></textarea><input type="submit" class="wpsc-button '.$wpStoreCartOptions['button_classes_meta'].'" value="Submit" /> </form>';
+                    }
+                    if($_GET['wpsc']=='manualresponse') {
+                        global $wpstorecart_version;
+                        if(is_numeric($_GET['order'])) {
+                            $orderNumber = intval($_GET['order']);
+                            @$orderText = $wpdb->prepare($_POST['manualresponsetext']);
+                            $table_name3 = $wpdb->prefix . "wpstorecart_orders";
+                            $sql = "SELECT * FROM `{$table_name3}` WHERE `wpuser`='{$current_user->ID}' AND `primkey`={$orderNumber};";
+                            $results = $wpdb->get_results( $sql , ARRAY_A );
+                            if(isset($results)) {
+                                $table_name3 = $wpdb->prefix . "wpstorecart_meta";
+                                $sql = "INSERT INTO `{$table_name3}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$orderText}', 'ordernote', '{$orderNumber}');";
+                                $wpdb->query( $sql );
+                            }
+                            $output .= wpscMakeEmailTxt($wpStoreCartOptions['success_text']);
+                                // Let's send them an email telling them their purchase was successful
+                                // In case any of our lines are larger than 70 characters, we should use wordwrap()
+                            $message = wordwrap(wpscMakeEmailTxt($wpStoreCartOptions['emailonapproval']) . wpscMakeEmailTxt($devOptions['emailsig']), 70);
+
+                            $headers = 'From: '.$wpStoreCartOptions['wpStoreCartEmail'] . "\r\n" .
+                                'Reply-To: ' .$wpStoreCartOptions['wpStoreCartEmail']. "\r\n" .
+                                'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                            // Send an email when purchase is submitted
+                            @ini_set("sendmail_from", $wpStoreCartOptions['wpStoreCartEmail']);
+                            if($current_user->ID != 0) {
+                                @wp_mail($current_user->user_email, __('Your order has been fulfilled!', 'wpstorecart'), $message, $headers);
+                            } else {
+                                if(@isset($_SESSION['wpsc_email'])) {
+                                    @wp_mail($_SESSION['wpsc_email'], __('Your order has been fulfilled!', 'wpstorecart'), $message, $headers);
+                                }
+                            }
+
+                            $message = wordwrap(__("A note was added to a recent order. Here is the contents:", 'wpstorecart')."<br /> {$orderText}", 70);
+
+                            $headers = 'From: '.$devOptions['wpStoreCartEmail'] . "\r\n" .
+                                'Reply-To: ' .$devOptions['wpStoreCartEmail']. "\r\n" .
+                                'X-Mailer: PHP/wpStoreCart v'.$wpstorecart_version;
+
+                            // Send an email when purchase is submitted
+                            @ini_set("sendmail_from", $wpStoreCartOptions['wpStoreCartEmail']);
+                            @wp_mail($wpStoreCartOptions['wpStoreCartEmail'], __('A note was added to a recent order!', 'wpstorecart'), $message, $headers);
+                        }
+                    }                    
+                    
+                    
                     if(@$_GET['wpsc']=='success') {
                         //$wpsc_piwik = intval(@$_GET['wpsc-piwik']);
                         //if($wpsc_piwik > 0 && $wpStoreCartOptions['piwik_enabled']=='true' && @isset($_GET['wpsc-piwik'])) { // Only execute this code if piwik is enabled
