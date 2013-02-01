@@ -161,6 +161,16 @@ if (!function_exists('wpscAdminPageWizard')) {
                 
                 case "all_done":
                     if(@isset($_POST['wpsc-wizard-paypal-accept'])) {
+                        if($_POST['wpsc-wizard-manual-accept']=='yes') {
+                            $wpStoreCartOptions['allowcheckmoneyorder'] = 'true';
+                            update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);                     
+                            $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); // Refresh the options                            
+                        }
+                        if($_POST['wpsc-wizard-manual-accept']=='no') {
+                            $wpStoreCartOptions['allowcheckmoneyorder'] = 'false';
+                            update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);                     
+                            $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); // Refresh the options                            
+                        }                        
                         if($_POST['wpsc-wizard-paypal-accept']=='yes') {
                             $wpStoreCartOptions['allowpaypal'] = 'true';
                             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);                     
