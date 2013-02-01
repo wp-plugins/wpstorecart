@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.4.4 =
-* Fixed: Corrected an issue with the wizard not enabling manual payment gateway
+* Fixed: Corrected an issue with the wizard not enabling manual payment gateway.
 
 = 3.4.3 =
 * Fixed: Corrected an issue with the manual payment gateway not showing details after order.
