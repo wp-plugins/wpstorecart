@@ -3973,7 +3973,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                                 newbrokenstring[0] = brokenstring[i];
                                                                 newbrokenstring[1] = "";
                                                         }
-                                                        theContentForOutput = theContentForOutput + \'<tr id="slideshowimagetr_\'+[i]+\'"><td><img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="delete" style="cursor:pointer;" onclick="jQuery(\\\'#slideshowimagetr_\'+[i]+\'\\\').hide(\\\'explode\\\', 1000);jQuery(\\\'#thelinkfor_\'+[i]+\'\\\').val(\\\'\\\');jQuery(\\\'#theimagefor_\'+[i]+\'\\\').val(\\\'\\\');" /> <input type="text" value="\'+newbrokenstring[1]+\'" name="thelinkfor_\'+i+\'" id="thelinkfor_\'+i+\'" style="display:none;" /><input type="hidden" value="\'+newbrokenstring[0]+\'" name="theimagefor_\'+i+\'" id="theimagefor_\'+i+\'" /></td><td><img src="'.get_bloginfo('url'). '/wp-content/uploads/wpstorecart/\'+newbrokenstring[0]+\'" alt="" style="height:250px;max-height:250px;" /></td></tr>\';
+                                                        theContentForOutput = theContentForOutput + \'<tr id="slideshowimagetr_\'+[i]+\'"><td><img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="delete" style="cursor:pointer;" onclick="jQuery(\\\'#slideshowimagetr_\'+[i]+\'\\\').hide();jQuery(\\\'#thelinkfor_\'+[i]+\'\\\').val(\\\'\\\');jQuery(\\\'#theimagefor_\'+[i]+\'\\\').val(\\\'\\\');" /> <input type="text" value="\'+newbrokenstring[1]+\'" name="thelinkfor_\'+i+\'" id="thelinkfor_\'+i+\'" style="display:none;" /><input type="hidden" value="\'+newbrokenstring[0]+\'" name="theimagefor_\'+i+\'" id="theimagefor_\'+i+\'" /></td><td><img src="'.get_bloginfo('url'). '/wp-content/uploads/wpstorecart/\'+newbrokenstring[0]+\'" alt="" style="height:250px;max-height:250px;" /></td></tr>\';
                                                 }
                                                 $(\'#linksforimages\').replaceWith(\'<tbody id="linksforimages">\'+theContentForOutput+\'</tbody>\');
                                                 numberofslideshowimages = i;
@@ -3999,13 +3999,13 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     /* <![CDATA[ */
                                     function delcombo(keytodel) {
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/delcombo.php", type:"POST", data:"delete="+keytodel'; if($wpsc_testing_mode){echo '+"&'.$wpStoreCartOptions['debug_parameter'].'"';}  echo', success: function(){
-                                            jQuery("#combo-"+keytodel).remove();
+                                            jQuery("#combo-"+keytodel).hide();
                                         }});
                                     }
 
                                     function delcombopack(keytodel) {
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/delcombo.php", type:"POST", data:"delete="+keytodel'; if($wpsc_testing_mode){echo '+"&'.$wpStoreCartOptions['debug_parameter'].'"';}  echo', success: function(){
-                                            jQuery("#combopack-"+keytodel).remove();
+                                            jQuery("#combopack-"+keytodel).hide();
                                         }});
                                     }
 
@@ -4013,16 +4013,17 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addcombo.php", type:"POST", data:"wpsc_combo_product_names="+jQuery("#wpsc_combo_product_names").val()+"&wpsc_combo_discount_price="+jQuery("#wpsc_combo_discount_price").val()+"&wpsc_combo_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
                                             var stringToSplit = jQuery("#wpsc_combo_product_names").val();
                                             var Exploder = stringToSplit.split("||");
-                                            jQuery("#wpsc_combo_tbody").append("<tr id=\'"+txt+"\'><td><img onclick=\'delcombo("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>'.$wpdb->escape($wpStoreCartOptions['currency_symbol']).'"+jQuery("#wpsc_combo_discount_price").val()+"'.$wpdb->escape($wpStoreCartOptions['currency_symbol_right']).'</p></td></tr>");
+                                            jQuery("#wpsc_combo_tbody").append("<tr id=\'combo-"+txt+"\'><td><img onclick=\'delcombo("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>'.$wpdb->escape($wpStoreCartOptions['currency_symbol']).'"+jQuery("#wpsc_combo_discount_price").val()+"'.$wpdb->escape($wpStoreCartOptions['currency_symbol_right']).'</p></td></tr>");
 
                                         }});
+                                        return false;
                                     }
 
                                     function addNewCombo() {
                                         var stringToSplit = jQuery("#wpsc_current_combo").val();
                                         var Exploder = stringToSplit.split("||");
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewcombo.php", type:"POST", data:"wpsc_combo_product_names="+Exploder[0]+"&wpsc_combo_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
-                                            jQuery("#wpsc_combopack_tbody").append("<tr id=\'combopack-"+txt+"\'><td><img onclick=\'delcombopack("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td></tr>");
+                                            jQuery("#wpsc_combopack_tbody").append("<tr id=\'combopack-"+txt+"\'><td><img onclick=\'delcombopack("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td></td></tr>");
                                         }});                                    
                                     }
 
@@ -4114,7 +4115,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             </table><br />
 
                             <table class="widefat">
-                                <thead><tr><th></th><th>'.__('Product', 'wpstorecart').'</th>'.__('Price if Bought With Main Item', 'wpstorecart').'</th></tr></thead>
+                                <thead><tr><th></th><th>'.__('Product', 'wpstorecart').'</th><th>'.__('Price if Bought With Main Item', 'wpstorecart').'</th></tr></thead>
                                 <tbody id="wpsc_combo_tbody">
 
 
@@ -6294,8 +6295,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         </center>                                                        
                                                     </a>
                                             </li>
-                                            <li>
-                                                    <a class="kwick three" href="#">
+                                            <li style="opacity:0.2;">
+                                                    <a class="kwick three" href="#"  style="cursor:default;">
                                                         <center><span><?php _e('User Pages','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/contact.png" alt=""/>
@@ -6307,8 +6308,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         </center>                                                        
                                                     </a>
                                             </li>
-                                            <li>
-                                                    <a class="kwick four" href="#">
+                                            <li  style="opacity:0.2;">
+                                                    <a class="kwick four" href="#"  style="cursor:default;">
                                                         <center><span><?php _e('Checkout','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/shopping_cart.png" alt=""/>
@@ -6320,6 +6321,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                     </a>
                                             </li>
                                     </ul>
+                                    <center><h1><?php _e('User Pages &amp; Checkout Designers coming soon.','wpstorecart'); ?></h1></center>
                             </div>
                     </div>
             </div>                
@@ -7150,7 +7152,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
                 // Here's the main form
                 echo '
-                    <table class="widefat">
+                    <table class="widefat" style="position:relative;z-index:281;">
                         <thead><tr><th></th><th>'.__('Combo Pack Name', 'wpstorecart').'</th><th>'.__('Products in Combo Pack', 'wpstorecart').'</th></tr></thead>
                         <tbody>';
 

@@ -865,7 +865,36 @@ if (!function_exists('wpscProductGetPage')) {
             }
             
             if(isset($wpsc_results)) {
+                
+          /**      
+            $output .= '
+            <script type="text/javascript">
+                //<![CDATA[
 
+                function wpscSaveProductDesigner(wpscProductDesignerCSSFilename) {
+                        var wpscProductDesignerCSS = "";
+                        wpscProductDesignerCSS += " #wpsc-grid {width:100%; margin: 0; padding: 0;} \n\ \n\ #wpsc-grid img {border:none;}  \n\ \n\ .wpsc-thumbnail {width:50px;} \n\ \n\ #wpsc-grid, #wpsc-grid li { list-style: none; list-style-type: none; margin: 0px; padding: 0; } \n\ \n\ .wpsc-products li {margin: 0; padding: 0;} \n\ \n\ .wpsc-products {overflow:hidden; border:1px solid #DEDEDE; background-color:#EEEEEE; list-style-type: none;  margin: 5px 5px 5px 5px; padding: 10px; float: left; width: 25%; height: 100px; font-size: 0.8em; text-align: center; } \n\ \n\ .wpsc-title {font-size:14px;} \n\ \n\ .wpsc-addtocart {font-size:12px; background-color:#FFFFFF; color: #000000; border-color:#000000; border-width: 1px;} \n\ \n\ .wpsc-moreinfo {font-size:12px; background-color:#FFFFFF; color: #000000; border-color:#000000; border-width: 1px;} \n\ \n\ .wpsc-product-price, .wpsc-strike {font-size:12px;}";
+                        wpscProductDesignerCSS += " \n\ \n\ ";
+                        wpscProductDesignerCSS += wpscListCSSAttributes("ul.wpsc-products");
+                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-products");
+                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-title");
+                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-addtocart");
+                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-moreinfo");  
+                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-thumbnail");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-intro");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-description");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-product-price");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-strike");
+                        var wpscProductDesignerElementOrder = jQuery(".wpsc-products").sortable("serialize");
+                        jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/saveproductdesigner.php", { "wpscProductDesignerCSSFilename": wpscProductDesignerCSSFilename, "wpscProductDesignerCSS": wpscProductDesignerCSS, "wpscProductDesignerElementOrder":wpscProductDesignerElementOrder }, function(data) {
+
+                        });
+                }
+
+                //]]>
+            </script>
+            ';                  
+            */
 
                 wp_get_current_user();
                 if ( 0 == $current_user->ID ) {
@@ -897,6 +926,49 @@ if (!function_exists('wpscProductGetPage')) {
                 $productListingOrder = wpscProductSingleReturnCurrentItemOrder();
                 $productListItemOrder = wpscProductSingleReturnCurrentListItemOrder();
 
+                // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
+                $wpsc_price_type = 'charge';
+                $membership_value = '';
+                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+                    $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                    $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$primkey};";
+                    $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
+                    if(isset($resultsMembership)) {
+                        foreach ($resultsMembership as $pagg) {
+                            $membership_primkey = $pagg['primkey'];
+                            $membership_value = $pagg['value'];
+                        }
+                        if($membership_value!='') {
+                            $theExploded = explode('||', $membership_value);
+                            // membership||yes||yes||0.00||0.00||0.00||1||1||1||D||D||D
+                            $wpsc_price_type = $theExploded[0];
+                            $wpsc_membership_trial1_allow = $theExploded[1];
+                            $wpsc_membership_trial2_allow = $theExploded[2];
+                            $wpsc_membership_trial1_amount = $theExploded[3];
+                            $wpsc_membership_trial2_amount = $theExploded[4];
+                            $wpsc_membership_regular_amount = $theExploded[5];
+                            $wpsc_membership_trial1_numberof = $theExploded[6];
+                            $wpsc_membership_trial2_numberof = $theExploded[7];
+                            $wpsc_membership_regular_numberof = $theExploded[8];
+                            $wpsc_membership_trial1_increment = $theExploded[9];
+                            $wpsc_membership_trial2_increment = $theExploded[10];
+                            $wpsc_membership_regular_increment = $theExploded[11];
+                            if($wpsc_membership_trial1_increment=='D'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['day'];}
+                            if($wpsc_membership_trial2_increment=='D'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['day'];}
+                            if($wpsc_membership_regular_increment=='D'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['day'];}
+                            if($wpsc_membership_trial1_increment=='W'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['week'];}
+                            if($wpsc_membership_trial2_increment=='W'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['week'];}
+                            if($wpsc_membership_regular_increment=='W'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['week'];}
+                            if($wpsc_membership_trial1_increment=='M'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['month'];}
+                            if($wpsc_membership_trial2_increment=='M'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['month'];}
+                            if($wpsc_membership_regular_increment=='M'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['month'];}
+                            if($wpsc_membership_trial1_increment=='Y'){$wpsc_membership_trial1_increment_display=$wpStoreCartOptions['year'];}
+                            if($wpsc_membership_trial2_increment=='Y'){$wpsc_membership_trial2_increment_display=$wpStoreCartOptions['year'];}
+                            if($wpsc_membership_regular_increment=='Y'){$wpsc_membership_regular_increment_display=$wpStoreCartOptions['year'];}
+                        }
+                    }
+                }                
+                
                 $output .= '<div class="wpsc-single-product">';
                 
                 $output .= apply_filters('wpsc_display_product_start', '');
@@ -928,6 +1000,7 @@ if (!function_exists('wpscProductGetPage')) {
                                             }
                                         } 
                                         
+                                        // Discount pricing
                                         if( ($wpsc_results[0]['discountprice'] > 0) && ($wpsc_results[0]['price'] > $wpsc_results[0]['discountprice'])  ) {
                                             $wpsDisplayPrice = $wpsc_results[0]['discountprice'];
                                         } else {
@@ -942,12 +1015,25 @@ if (!function_exists('wpscProductGetPage')) {
                                         
                                         $output.= '<li id="wpsc-product-info-sort2" class="wpsc-list-item-price">';
 
-                                        if($wpsDisplayPrice!=NULL) {
-                                            $output .= '
-                                            <div class="wpsc-oldprice"><strike>'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['price'].$wpStoreCartOptions['currency_symbol_right'].'</strike></div>
-                                            <div class="wpsc-price">'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['discountprice'].$wpStoreCartOptions['currency_symbol_right'].'</div>';                                        
+                                        if($wpsc_price_type == 'membership') {
+                                            //$output .= '<li class="wpsc-product-price">';
+                                            if($wpsc_membership_trial1_allow=='yes') {
+                                                $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_1']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial1_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial1_numberof} {$wpsc_membership_trial1_increment_display}</span></li>";
+                                            }
+                                            if($wpsc_membership_trial2_allow=='yes') {
+                                                $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['trial_period_2']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_trial2_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['for']} {$wpsc_membership_trial2_numberof} {$wpsc_membership_trial2_increment_display}</span></li>";
+                                            }
+                                            $output.="<li class=\"wpsc-product-price\" id=\"wpscsort_5\"><span class=\"wpsc-grid-price\">{$wpStoreCartOptions['subscription_price']} {$wpStoreCartOptions['currency_symbol']}{$wpsc_membership_regular_amount}{$wpStoreCartOptions['currency_symbol_right']} {$wpStoreCartOptions['every']} {$wpsc_membership_regular_numberof} {$wpsc_membership_regular_increment_display}</span></li>";
                                         } else {
-                                            $output .= '<div class="wpsc-price">'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['price'].$wpStoreCartOptions['currency_symbol_right'].'</div>';                                        
+                                        
+                                            if($wpsDisplayPrice!=NULL) {
+                                                $output .= '
+                                                <div class="wpsc-oldprice"><strike>'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['price'].$wpStoreCartOptions['currency_symbol_right'].'</strike></div>
+                                                <div class="wpsc-price">'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['discountprice'].$wpStoreCartOptions['currency_symbol_right'].'</div>';                                        
+                                            } else {
+                                                $output .= '<div class="wpsc-price">'.$wpStoreCartOptions['currency_symbol'].$wpsc_results[0]['price'].$wpStoreCartOptions['currency_symbol_right'].'</div>';                                        
+                                            }
+                                            
                                         }
 
                                         $output .= '</li>';
@@ -1774,7 +1860,7 @@ if(!function_exists('wpscProductIsMembership')) {
         // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
         $wpsc_price_type = 'charge';
         $membership_value = '';
-        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
             $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
             $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$primkey};";
             $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );

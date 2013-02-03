@@ -4,7 +4,8 @@ if (!function_exists('add_action'))
     require_once("../../../../../../wp-config.php");
 }
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
+error_reporting(0);
 
 global $wpdb, $current_user;
 
@@ -20,9 +21,13 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }		
 
-
     $table_name = $wpdb->prefix . "wpstorecart_products";
     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+    
+
+    
+
+
 
     // New products will also by default display the Add to Cart button, even if there are variations
     $display_add_to_cart_at_all_times = 'no';
@@ -62,6 +67,36 @@ if ( 0 == $current_user->ID ) {
             $_POST['wpsc-keytoedit'] = intval($_POST['wpsc-keytoedit']);
             $isanedit = true;
 
+            // Membership
+            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
+                if(@$_POST['wpsc-price-type2']=='membership' || @$_POST['wpsc-price-type']=='charge') {
+
+                    $wpsc_membership_trial1_allow = 'no';
+                    $wpsc_membership_trial2_allow = 'no';
+                    if(@$_POST['wpsc_membership_trial1_allow']=='yes') {
+                        $wpsc_membership_trial1_allow = 'yes';
+                    }
+                    if(@$_POST['wpsc_membership_trial2_allow']=='yes') {
+                        $wpsc_membership_trial2_allow = 'yes';
+                    }
+                    $membership_value = $_POST['wpsc-price-type'] . '||' . $wpsc_membership_trial1_allow . '||' . $wpsc_membership_trial2_allow .'||'. $_POST['wpsc_membership_trial1_amount'] .'||'. $_POST['wpsc_membership_trial2_amount'] . '||' . $_POST['wpsc_membership_regular_amount'] . '||' . $_POST['wpsc_membership_trial1_numberof']. '||' . $_POST['wpsc_membership_trial2_numberof']. '||' . $_POST['wpsc_membership_regular_numberof']. '||' . $_POST['wpsc_membership_trial1_increment']. '||' . $_POST['wpsc_membership_trial2_increment']. '||' . $_POST['wpsc_membership_regular_increment'];
+
+                    if(wpscProductIsMembership($_POST['wpsc-keytoedit'])) {
+                        // Must update the membership
+                        $insert = "UPDATE  `{$table_name_meta}` SET `value` = '".$membership_value."' WHERE `type`='membership' AND `foreignkey`='{$_POST['wpsc-keytoedit']}';";
+                        $memresults = $wpdb->query( $insert );
+                    } else {
+                        // Must insert new membership
+                        $insert = "INSERT INTO `{$table_name_meta}` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '".$membership_value."', 'membership', '{$_POST['wpsc-keytoedit']}');";
+                        $memresults = $wpdb->query( $insert );
+                    }
+
+                } elseif ($_POST['wpsc-price-type']=='charge') {
+                    //
+                }
+            }               
+            
+            
             // Attributes inventory toggle
             if(@isset($_POST['wpscuseinventoryonattributes'])) {
                 @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_quickvar` SET `useinventory`=1 WHERE `productkey`={$_POST['wpsc-keytoedit']};");
