@@ -393,7 +393,7 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                     }
                 break;
                 case 'categories':
-                    $output .= wpscProductMainPage($thecategory);
+                    $output .= wpscProductMainPage($thecategory, true);
                 break;
                 case 'addtocart': // Add to cart button shortcode, to place add to cart buttons anywhere for any product
                     $output .= wpscProductGetAddToCartButton($primkey);

@@ -4224,7 +4224,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
 
 
-                                    echo '<input class="button-primary" type="submit" name="addNewwpStoreCart_product" value="'; _e('Save product', 'wpStoreCart'); echo'" /></div>';
+                                    echo '<input class="button-primary" type="submit" name="addNewwpStoreCart_product" value="'; _e('Save product', 'wpStoreCart'); echo'" />'; if ($wpsc_check_draft_page->post_status == 'publish') { echo ' <a href="'.get_permalink($wpStoreCartproduct_postid).'" target="_blank" class="button-secondary">'.__('View Page','wpstorecart').'</a>'; }  echo' </div>';
                             } elseif($wpStoreCartproduct_producttype=='variation') {
                                 echo '<input name="wpStoreCartProductStatus" value="dropdown" type="hidden" /><input type="hidden" name="wpStoreCartSelectedPage" id="wpStoreCartSelectedPage" value="'.$wpStoreCartproduct_postid.'" /><div class="submit box">&nbsp;<a href="admin.php?page=wpstorecart-new-product&keytoedit='.$wpStoreCartproduct_postid.'" class="button-secondary">'.__('Back to product','wpstorecart').'</a>&nbsp;<input class="button-primary" type="submit" name="addNewwpStoreCart_product" value="'; _e('Save variation', 'wpStoreCart'); echo'" /></div>';
                             }

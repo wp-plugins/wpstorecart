@@ -1125,7 +1125,7 @@ if (!function_exists('wpscProductMainPage')) {
         * @global type $wpsc_wordpress_upload_dir
         * @return string 
         */
-    function wpscProductMainPage($thecategory=null) {
+    function wpscProductMainPage($thecategory=null, $onlycat=false) {
         global $wpstorecart_upload_dir;
 
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
@@ -1164,8 +1164,11 @@ if (!function_exists('wpscProductMainPage')) {
         ';          
         
         if(!isset($_GET['wpStoreCartDesigner'])){ // User viewing the page 
-            
-            $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, $wpStoreCartOptions['frontpageDisplays']));
+            if($onlycat==false) {
+                $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, $wpStoreCartOptions['frontpageDisplays']));
+            } else {
+                $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, 'List all categories'));
+            }
         } else { // Admin editing the layout          
 
             wpscCheckAdminPermissions();

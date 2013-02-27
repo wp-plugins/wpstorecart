@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.5.0
+Stable tag: 3.6.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.6.0 =
+* Added: View Page added to Edit Product
+* Fixed: Corrected an issue with [wpstorecart display="categories" thecategory="2"] not working under certain conditions
+
 = 3.5.0 =
-* Fixed: wpsc Membership PRO display and edit product issues resolved
+* Fixed: wpsc Membership PRO display and edit product issues resolved.
 * Fixed: Patched an issue where the z-index of the slider went over the Combo admin panel, causing some buttons to be unclickable
 * Fixed: Misc CSS and HTML formating fixes on the Edit Products - Accessories tab
 * Fixed: Patched an issue where picture gallery photos were not deleting correctly from Edit Products > Pictures tab.
