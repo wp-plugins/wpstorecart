@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.6.0 =
-* Added: View Page added to Edit Product
+* Added: View Page added to Edit Product.
 * Fixed: Corrected an issue with [wpstorecart display="categories" thecategory="2"] not working under certain conditions
 
 = 3.5.0 =
