@@ -607,9 +607,9 @@ if (!function_exists('wpscProductPage')) {
         ';          
         
         if(!isset($_GET['wpStoreCartDesigner'])){ // User viewing the page         
-            $output = wpscProductGetPage($primkey);
+            $output .= wpscProductGetPage($primkey);
         } else {
-            $output = wpscProductGetDummyPage();
+            $output .= wpscProductGetDummyPage();
         }
         
         return $output;
@@ -836,7 +836,7 @@ if (!function_exists('wpscProductGetPage')) {
                                             ';
 
                                 $output .= '<span style="width:80px;min-width:80px;max-width:80px;">'. __('Save as:','wpstorecart').' </span><input name="wpscProductDesignerFilename" id="wpscProductDesignerFilename" value="wpstorecart.custom.css" style="width:200px;min-width:200px;max-width:200px;" />
-                                <button onclick="wpscSaveProductDesigner(jQuery(\'#wpscProductDesignerFilename\').val());return false;">'.__('Save','wpstorecart').'</button> <br />
+                                <button onclick="wpscSaveProductDesigner2(jQuery(\'#wpscProductDesignerFilename\').val());return false;">'.__('Save','wpstorecart').'</button> <br />
                                 <span style="width:80px;min-width:80px;max-width:80px;">'.__('Load:','wpstorecart').' </span><select id="wpscProductDesignerLoadFile" style="width:200px;min-width:200px;max-width:200px;">';
 
                                 if ($wpscDirHandle = opendir($wpstorecart_upload_dir.'/themes/product/')) {
@@ -866,27 +866,31 @@ if (!function_exists('wpscProductGetPage')) {
             
             if(isset($wpsc_results)) {
                 
-          /**      
+                
             $output .= '
             <script type="text/javascript">
                 //<![CDATA[
 
-                function wpscSaveProductDesigner(wpscProductDesignerCSSFilename) {
+                function wpscSaveProductDesigner2(wpscProductDesignerCSSFilename) {
                         var wpscProductDesignerCSS = "";
-                        wpscProductDesignerCSS += " #wpsc-grid {width:100%; margin: 0; padding: 0;} \n\ \n\ #wpsc-grid img {border:none;}  \n\ \n\ .wpsc-thumbnail {width:50px;} \n\ \n\ #wpsc-grid, #wpsc-grid li { list-style: none; list-style-type: none; margin: 0px; padding: 0; } \n\ \n\ .wpsc-products li {margin: 0; padding: 0;} \n\ \n\ .wpsc-products {overflow:hidden; border:1px solid #DEDEDE; background-color:#EEEEEE; list-style-type: none;  margin: 5px 5px 5px 5px; padding: 10px; float: left; width: 25%; height: 100px; font-size: 0.8em; text-align: center; } \n\ \n\ .wpsc-title {font-size:14px;} \n\ \n\ .wpsc-addtocart {font-size:12px; background-color:#FFFFFF; color: #000000; border-color:#000000; border-width: 1px;} \n\ \n\ .wpsc-moreinfo {font-size:12px; background-color:#FFFFFF; color: #000000; border-color:#000000; border-width: 1px;} \n\ \n\ .wpsc-product-price, .wpsc-strike {font-size:12px;}";
+                        wpscProductDesignerCSS += " .wpsc-single-product {width:100%; margin: 0; padding: 0;} \n\ \n\ .wpsc-single-product img {border:none;}  \n\ \n\ .wpsc-thumbnail {width:50px;} \n\ \n\ #wpsc-product-info-sortable, #wpsc-product-info-sortable li { list-style: none; list-style-type: none; margin: 0px; padding: 0; } \n\ \n\ .wpsc-product-info-sortable li {margin: 0; padding: 0;} ";
                         wpscProductDesignerCSS += " \n\ \n\ ";
-                        wpscProductDesignerCSS += wpscListCSSAttributes("ul.wpsc-products");
-                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-products");
-                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-title");
-                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-addtocart");
-                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-moreinfo");  
-                        wpscProductDesignerCSS +=wpscListCSSAttributes(".wpsc-thumbnail");  
-                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-intro");  
-                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-description");  
+                        wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-product-img");
+                        wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-product-info-sortable");
+                        wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-addtocart"); 
+                        wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-gallery"); 
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-list-item-name");
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-list-item-price");
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-list-item-inventory");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-list-item-qty");  
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-list-item-variations");  
                         wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-product-price");  
-                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-strike");
-                        var wpscProductDesignerElementOrder = jQuery(".wpsc-products").sortable("serialize");
-                        jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/saveproductdesigner.php", { "wpscProductDesignerCSSFilename": wpscProductDesignerCSSFilename, "wpscProductDesignerCSS": wpscProductDesignerCSS, "wpscProductDesignerElementOrder":wpscProductDesignerElementOrder }, function(data) {
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-single-intro");
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-single-description");
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-oldprice");
+                        wpscProductDesignerCSS +=wpscListTextCSSAttributes(".wpsc-individualqtylabel");
+                        var wpscProductDesignerElementOrder = jQuery(".wpsc-single-product").sortable("serialize");
+                        jQuery.post("'. plugins_url().'/wpstorecart/wpstorecart/admin/php/saveindividualdesigner.php", { "wpscProductDesignerCSSFilename": wpscProductDesignerCSSFilename, "wpscProductDesignerCSS": wpscProductDesignerCSS, "wpscProductDesignerElementOrder":wpscProductDesignerElementOrder }, function(data) {
 
                         });
                 }
@@ -894,7 +898,7 @@ if (!function_exists('wpscProductGetPage')) {
                 //]]>
             </script>
             ';                  
-            */
+            
 
                 wp_get_current_user();
                 if ( 0 == $current_user->ID ) {
@@ -976,10 +980,10 @@ if (!function_exists('wpscProductGetPage')) {
                 foreach($productListingOrder as $productListingOrderCurrent) { // THE SORTABLE COMPONENTS OF THE PRODUCT PAGE.
                     switch($productListingOrderCurrent) {
                         case 1: // THUMBNAIL
-                            $output.='<div id="wpscsort_1">';$output .= apply_filters('wpsc_display_product_before_thumbnail', '');if($wpStoreCartOptions['useimagebox']=='thickbox'){$output .='<a href="'.$wpsc_results[0]['thumbnail'].'" class="thickbox" title="'. htmlentities($wpsc_results[0]['name']. ' - ' . $wpsc_results[0]['introdescription']).'">';} $output .= '<img class="wpsc-product-img" src="'.$wpsc_results[0]['thumbnail'].'" alt="'.$wpsc_results[0]['name'].'" />';if($wpStoreCartOptions['useimagebox']=='thickbox'){$output .='</a>';}$output .= apply_filters('wpsc_display_product_after_thumbnail', '');$output .= '</div>';
+                            $output.='<div id="wpscsort_1" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_thumbnail', '');if($wpStoreCartOptions['useimagebox']=='thickbox'){$output .='<a href="'.$wpsc_results[0]['thumbnail'].'" class="thickbox" title="'. htmlentities($wpsc_results[0]['name']. ' - ' . $wpsc_results[0]['introdescription']).'">';} $output .= '<img class="wpsc-product-img" src="'.$wpsc_results[0]['thumbnail'].'" alt="'.$wpsc_results[0]['name'].'" />';if($wpStoreCartOptions['useimagebox']=='thickbox'){$output .='</a>';}$output .= apply_filters('wpsc_display_product_after_thumbnail', '');$output .= '</div>';
                         break;
                         case 2: // PRODUCT INFO LIST (NAME, PRICE, ETC) 
-                            $output.='<div id="wpscsort_2" class="wpsc-product-info"><ul class="wpsc-product-info-sortable">';
+                            $output.='<div id="wpscsort_2" class="wpsc-product-info wpsc-product-element""><ul class="wpsc-product-info-sortable">';
                             
                             foreach($productListItemOrder as $productListItemOrderCurrent) { // THE PRODUCT INFO LIST ITSELF IS ALSO A SORTABLE LIST 
                                 switch($productListItemOrderCurrent) {
@@ -1077,19 +1081,19 @@ if (!function_exists('wpscProductGetPage')) {
                             $output .= ' </ul></div>';
                         break;
                         case 3:
-                            $output.='<div id="wpscsort_3">';$output .= apply_filters('wpsc_display_product_before_addtocart', '');$output.= wpscProductGetAddToCartButton($primkey);$output .= apply_filters('wpsc_display_product_after_addtocart', '');$output .= '</div>';
+                            $output.='<div id="wpscsort_3" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_addtocart', '');$output.= wpscProductGetAddToCartButton($primkey);$output .= apply_filters('wpsc_display_product_after_addtocart', '');$output .= '</div>';
                         break;
                         case 4:                
-                            $output.='<div id="wpscsort_4">';$output .= apply_filters('wpsc_display_product_before_picture_gallery', '');$output.= wpscProductGetPictureGallery($primkey);$output .= apply_filters('wpsc_display_product_after_picture_gallery', '');$output .= '</div>';
+                            $output.='<div id="wpscsort_4" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_picture_gallery', '');$output.= wpscProductGetPictureGallery($primkey);$output .= apply_filters('wpsc_display_product_after_picture_gallery', '');$output .= '</div>';
                         break;
                         case 5:                
-                            $output.='<div id="wpscsort_5">';$output .= apply_filters('wpsc_display_product_before_single_intro', '');$output .='<div class="wpsc-single-intro">';$output.= stripslashes($wpsc_results[0]['introdescription']);$output .= '</div>';$output .= apply_filters('wpsc_display_product_after_single_intro', '');$output .='</div>';
+                            $output.='<div id="wpscsort_5" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_single_intro', '');$output .='<div class="wpsc-single-intro">';$output.= stripslashes($wpsc_results[0]['introdescription']);$output .= '</div>';$output .= apply_filters('wpsc_display_product_after_single_intro', '');$output .='</div>';
                         break;
                         case 6:                        
-                            $output.='<div id="wpscsort_6">';$output .= apply_filters('wpsc_display_product_before_single_description', '');$output .='<div class="wpsc-single-description">';$output.= stripslashes($wpsc_results[0]['description']);$output .= '</div>';$output .= apply_filters('wpsc_display_product_after_single_description', '');$output .='</div>';
+                            $output.='<div id="wpscsort_6" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_single_description', '');$output .='<div class="wpsc-single-description">';$output.= stripslashes($wpsc_results[0]['description']);$output .= '</div>';$output .= apply_filters('wpsc_display_product_after_single_description', '');$output .='</div>';
                         break;
                         case 7:                        
-                            $output.='<div id="wpscsort_7">';$output .= apply_filters('wpsc_display_product_before_accessories', '');$output.= wpscProductGetProductAccessories($primkey);$output .= apply_filters('wpsc_display_product_after_accessories', '');$output .= '</div>';
+                            $output.='<div id="wpscsort_7" class="wpsc-product-element">';$output .= apply_filters('wpsc_display_product_before_accessories', '');$output.= wpscProductGetProductAccessories($primkey);$output .= apply_filters('wpsc_display_product_after_accessories', '');$output .= '</div>';
                         break;
                     }
                 }                
