@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.7.0 =
-* Fixed: Patched an issue with the Individual Product Page Designer not saving correctly
+* Fixed: Patched an issue with the Individual Product Page Designer not saving correctly.
 
 = 3.6.0 =
 * Added: View Page added to Edit Product
