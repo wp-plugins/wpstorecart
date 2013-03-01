@@ -49,9 +49,17 @@ if(!function_exists('wpscCompatibilitySettings')) {
             // Some default images should be copied
             if(!file_exists($wpstorecart_upload_dir.'/image01.jpg')) {
                 @copy(WP_PLUGIN_DIR.'/wpstorecart/wpstorecart/copy/image01.jpg', $wpstorecart_upload_dir.'/image01.jpg');
+            }
+            if(!file_exists($wpstorecart_upload_dir.'/image02.jpg')) {
                 @copy(WP_PLUGIN_DIR.'/wpstorecart/wpstorecart/copy/image02.jpg', $wpstorecart_upload_dir.'/image02.jpg');
+            }
+            if(!file_exists($wpstorecart_upload_dir.'/image03.jpg')) {
                 @copy(WP_PLUGIN_DIR.'/wpstorecart/wpstorecart/copy/image03.jpg', $wpstorecart_upload_dir.'/image03.jpg');
+            }
+            if(!file_exists($wpstorecart_upload_dir.'/image04.jpg')) {
                 @copy(WP_PLUGIN_DIR.'/wpstorecart/wpstorecart/copy/image04.jpg', $wpstorecart_upload_dir.'/image04.jpg');
+            }
+            if(!file_exists($wpstorecart_upload_dir.'/image05.jpg')) {
                 @copy(WP_PLUGIN_DIR.'/wpstorecart/wpstorecart/copy/image05.jpg', $wpstorecart_upload_dir.'/image05.jpg');
             }
 	
