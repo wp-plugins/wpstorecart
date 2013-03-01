@@ -5231,8 +5231,8 @@ if(!function_exists('wpscAdminPageCategories')) {
             </select>
             </td></tr>
 
-            <tr><td><p>Advanced Settings <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8222222222222222" /><div class="tooltip-content" id="example-content-8222222222222222">For advanced users only, here are a few settings most users shouldn\'t touch, even if you\'re experiencing issues.</div></p></td>
-            <td class="tableDescription"><p>Advanced settings.  Do not edit or use unless you know exactly what you\'re doing!</p></td>
+            <tr><td><p>'.__('Advanced Settings','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8222222222222222" /><div class="tooltip-content" id="example-content-8222222222222222">For advanced users only, here are a few settings most users shouldn\'t touch, even if you\'re experiencing issues.</div></p></td>
+            <td class="tableDescription"><p>'.__('Advanced settings.  Do not edit or use unless you know exactly what you\'re doing!','wpstorecart').'</p></td>
             <td>IPN URL: <input type="text" name="paypalipnurl" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['paypalipnurl']), 'wpStoreCart'); echo'" style="width:200px;" />
             </td></tr>
 
@@ -5244,12 +5244,12 @@ if(!function_exists('wpscAdminPageCategories')) {
             <p>'.__('Offline Payment Gateway','wpstorecart').'</p>
             <table class="widefat">
                                     <thead><tr><th>'.__('Option','wpstorecart').'</th><th>'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
-            <tr><td><p>Accept Payments via Mail? <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></p></td>
+            <tr><td><p>'.__('Accept Payments via Mail?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></p></td>
             <td class="tableDescription"><p>If set to Yes, customers can purchase using Check, Money Order or COD</p></td>
             <td><p><label for="allowcheckmoneyorder"><input type="radio" id="allowcheckmoneyorder_yes" name="allowcheckmoneyorder" value="true" '; if ($wpStoreCartOptions['allowcheckmoneyorder'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowcheckmoneyorder_no"><input type="radio" id="allowcheckmoneyorder_no" name="allowcheckmoneyorder" value="false" '; if ($wpStoreCartOptions['allowcheckmoneyorder'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
-            <tr><td><p>Text to Display <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></p></td>
+            <tr><td><p>'.__('Text to Display','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></p></td>
             <td class="tableDescription"><p>The text/html that is displayed to customers who choose to pay via check or money order.</p></td>
             <td><textarea name="checkmoneyordertext" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkmoneyordertext']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
