@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.7.1 =
-* Fixed: Patched minor issue with new installations and default images
+* Fixed: Patched minor issue with new installations and default images.
 
 = 3.7.0 =
 * Fixed: Patched an issue with the Individual Product Page Designer not saving correctly
