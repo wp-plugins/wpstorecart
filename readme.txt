@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.7.2 =
-* Updated: Some strings that weren't translatable now are ready for translation
+* Updated: Some strings that weren't translatable now are ready for translation.
 
 = 3.7.1 =
 * Fixed: Patched minor issue with new installations and default images
