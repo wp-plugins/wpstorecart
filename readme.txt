@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.7.2
+Stable tag: 3.8.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.8.0 =
+* Fixed: fixed an issue with affiliates
+* Added: added the wpscProductSelectDropdown() function
+
 = 3.7.2 =
-* Updated: Some strings that weren't translatable now are ready for translation.
+* Updated: Some strings that weren't translatable now are ready for translation
 
 = 3.7.1 =
 * Fixed: Patched minor issue with new installations and default images

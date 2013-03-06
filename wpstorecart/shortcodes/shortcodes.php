@@ -388,6 +388,52 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                         }
                     }                    
                     
+                    if($_GET['wpsc']=='affiliate') {
+
+                        global $affiliatemanager, $affiliatesettings, $affiliatepurchases;
+                        $affiliatemanager = true;
+                        $affiliatesettings['current_user'] = $current_user->ID;
+                        $affiliatesettings['available_products']  = NULL;
+                        $affiliatesettings['product_urls'] = NULL;
+                        $affiliatesettings['minimumAffiliatePayment'] = $wpStoreCartOptions['minimumAffiliatePayment'];
+                        $affiliatesettings['minimumDaysBeforePaymentEligable'] = $wpStoreCartOptions['minimumDaysBeforePaymentEligable'];
+                        $affiliatesettings['affiliateInstructions'] = $wpStoreCartOptions['affiliateInstructions'];
+
+                        $table_name_products = $wpdb->prefix . "wpstorecart_products";
+                        $sql = "SELECT `primkey`, `postid` FROM `{$table_name_products}` WHERE `status`='publish' ORDER BY `primkey` ASC;";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        $affiliatesettings['base_url'] = plugins_url();
+                        if(isset($results)) {
+                            foreach ($results as $result) {
+                                $affiliatesettings['available_products'] = $affiliatesettings['available_products'] . $result['primkey'] . ',';
+                                $affiliatesettings['product_urls'] = $affiliatesettings['product_urls']  . urlencode(get_permalink($result['postid'])) . '|Z|Z|Z|';
+                            }
+                            $affiliatesettings['available_products'] = substr($affiliatesettings['available_products'], 0, -1);
+                            $affiliatesettings['product_urls'] = substr($affiliatesettings['product_urls'], 0, -7);
+                        }
+                        $table_name = $wpdb->prefix . "wpstorecart_orders";
+                        $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
+                        $sql = "SELECT * FROM `{$table_name}`, `{$table_name_meta}` WHERE  `{$table_name}`.`affiliate`='{$affiliatesettings['current_user']}' AND  `{$table_name}`.`orderstatus`='Completed' AND `{$table_name}`.`primkey`=`{$table_name_meta}`.`foreignkey` ORDER BY  `{$table_name}`.`affiliate`,  `{$table_name}`.`date` DESC;";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        $icounter = 0;
+                        foreach ($results as $result) {
+                            global $userinfo2;
+                            $affiliatepurchases[$icounter]['cartcontents'] = wpscSplitOrderIntoProduct($result['primkey']);
+                            $affiliatepurchases[$icounter]['amountpaid'] = $result['value'];
+                            $affiliatepurchases[$icounter]['primkey'] = $result['primkey'];
+                            $affiliatepurchases[$icounter]['price'] = $result['price'];
+                            $affiliatepurchases[$icounter]['date'] = $result['date'];
+                            $affiliatepurchases[$icounter]['orderstatus'] = $result['orderstatus'];
+                            $userinfo2 = get_userdata($result['affiliate']);
+                            @$affiliatepurchases[$icounter]['affiliateusername'] = $userinfo2->user_login;
+                            $icounter++;
+                        }
+                        @include_once(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php');
+                        $output .= @wpscAffiliates();
+                        $affiliatemanager = false;
+                        
+                    }
+                    
                     if(@!isset($_GET['wpsc'])) {
                         $output .= wpscProductMainPage();
                     }

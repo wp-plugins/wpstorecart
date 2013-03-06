@@ -2489,7 +2489,37 @@ if(!function_exists('wpscProductConvertCentimetersToInches')) {
     }
 } 
 
-
+if(!function_exists('wpscProductSelectDropdown')) {
+    function wpscProductSelectDropdown($id='wpscProductSelectDropdown', $onselect=NULL, $includeVariations=true, $style=NULL) {
+        global $wpdb;
+        $output = NULL;
+        
+        if($includeVariations) {
+            $sql = "SELECT * FROM `{$wpdb->prefix}wpstorecart_products`;";
+        } else {
+            $sql = "SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='product';";
+        }
+        $results = $wpdb->get_results($sql,ARRAY_A);
+        if(@isset($results[0]['primkey'])) {
+            if($onselect==NULL) {
+                $output .= "<select id=\"$id\" style=\"$style\">";
+            } else {
+                $output .= "<select id=\"$id\" onselect=\"{$onselect}\" style=\"$style\">";
+            }
+            foreach($results as $result) {
+                if($result['producttype']=='variation' || $result['producttype']=='attribute') {
+                    $nameresults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$result['postid']}';",ARRAY_A);
+                    $output .= "<option value=\"{$result['primkey']}\">{$nameresults[0]['name']} - {$result['name']}</option>";
+                } else {
+                    $output .= "<option value=\"{$result['primkey']}\">{$result['name']}</option>";
+                }
+            }
+            $output .= '</select>';
+        }
+        
+        return $output;
+    }
+}
 
 
 ?>

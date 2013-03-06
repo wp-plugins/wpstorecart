@@ -231,6 +231,7 @@ if(!function_exists('wpscShippingAPIAvailbleServicesDropdown')) {
       
         if(isset($finalApprovedShippingServicesKeys[0])) {
             $output .= '
+            <!-- '.$finalApprovedShippingServicesKeys[0].' -->
             <script type="text/javascript">
             /* <![CDATA[ */                      
             
