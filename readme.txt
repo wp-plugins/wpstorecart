@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.8.0 =
-* Fixed: fixed an issue with affiliates
-* Added: added the wpscProductSelectDropdown() function
+* Fixed: fixed an issue with affiliates.
+* Added: added the wpscProductSelectDropdown() function.
 
 = 3.7.2 =
 * Updated: Some strings that weren't translatable now are ready for translation
