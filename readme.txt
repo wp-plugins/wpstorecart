@@ -1,10 +1,10 @@
-=== wpStoreCart ===
+=== wpStoreCart - Ajax Ecommerce===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,9 +84,13 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.8.1 =
+* Fixed: Patched an issue with shipping tab still bleeding information into edit products screen when store set to Digital Products Only
+* Updated: Updated prices inside the addon wheel
+
 = 3.8.0 =
-* Fixed: fixed an issue with affiliates.
-* Added: added the wpscProductSelectDropdown() function.
+* Fixed: fixed an issue with affiliates
+* Added: added the wpscProductSelectDropdown() function
 
 = 3.7.2 =
 * Updated: Some strings that weren't translatable now are ready for translation
