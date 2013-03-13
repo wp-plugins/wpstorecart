@@ -88,7 +88,7 @@ Or, if you want to install manually:
 * Updated: jQuery UI theme updated for jQuery UI 1.10.x in Wordpress 3.6 alpha and above
 * Added: Created the new wpscProductGetNameById($id) function to quickly grab a product's name from it's ID
 * Updated: Adjusted the coupon page in advance of Wordpress' upcoming admin redesign (MP6)
-* Updated: Minor admin UI updates
+* Updated: Minor admin UI updates.
 
 = 3.8.1 =
 * Fixed: Patched an issue with shipping tab still bleeding information into edit products screen when store set to Digital Products Only
