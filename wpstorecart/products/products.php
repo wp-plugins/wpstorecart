@@ -2502,9 +2502,9 @@ if(!function_exists('wpscProductSelectDropdown')) {
         $results = $wpdb->get_results($sql,ARRAY_A);
         if(@isset($results[0]['primkey'])) {
             if($onselect==NULL) {
-                $output .= "<select id=\"$id\" style=\"$style\">";
+                $output .= "<select id=\"$id\" name=\"$id\" style=\"$style\">";
             } else {
-                $output .= "<select id=\"$id\" onselect=\"{$onselect}\" style=\"$style\">";
+                $output .= "<select id=\"$id\" name=\"$id\" onselect=\"{$onselect}\" style=\"$style\">";
             }
             foreach($results as $result) {
                 if($result['producttype']=='variation' || $result['producttype']=='attribute') {
@@ -2521,5 +2521,24 @@ if(!function_exists('wpscProductSelectDropdown')) {
     }
 }
 
+if(!function_exists('wpscProductGetNameById')) {
+    function wpscProductGetNameById($id) {
+        global $wpdb;
+        $output = NULL;
+        $sql = "SELECT `name`, `producttype`, `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$id}';";
+        $results = $wpdb->get_results($sql,ARRAY_A);
+        if(@isset($results[0]['name'])) {
+            if($results[0]['producttype']=='variation' || $results[0]['producttype']=='attribute') {
+                $nameresults = $wpdb->get_results("SELECT `name` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$results[0]['postid']}';",ARRAY_A);
+                $output .= "{$nameresults[0]['name']} - {$results[0]['name']}";
+            } else {
+                $output .= "{$results[0]['name']}";
+            }
+        }   
+        
+        return $output;
+        
+    }
+}
 
 ?>

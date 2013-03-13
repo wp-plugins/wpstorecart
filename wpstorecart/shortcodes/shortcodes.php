@@ -613,7 +613,13 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
             wp_enqueue_script('jquery-ui-datepicker');
             wp_enqueue_script('jquery-ui-resizable');
             wp_enqueue_script('jquery-ui-dialog'); 
-            wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+            global $wp_version;
+            $wp_clean_version = substr($wp_version, 0, strpos($wp_version, "-"));
+            if ( version_compare( $wp_clean_version, '3.6', '>=' ) ) {
+                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.10.1.custom.css');
+            } else {
+                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+            }
             wp_enqueue_style('wpsc-custom');    
             wp_register_style('wpsc-designer', plugins_url() . '/wpstorecart/wpstorecart/admin/css/wpsc-designer.css');
             wp_enqueue_style('wpsc-designer');            

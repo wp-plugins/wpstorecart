@@ -1046,7 +1046,7 @@ if (!function_exists('wpscAdminPageCoupons')) {
         <td><textarea name="wpStoreCartdescription">'.@$wpStoreCartdescription.'</textarea></td>
         <td>
 
-        <select name="wpStoreCartproduct" id="wpsc-product-dropdown">
+        <select name="wpStoreCartproduct" id="wpsc-product-dropdown" style="width:120px;max-width:120px;">
             <option value="0">('.__('Any &amp; All Products', 'wpstorecart').')</option>';
 
         $table_name2 = $wpdb->prefix . "wpstorecart_products";
@@ -2756,8 +2756,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                         });
                         
                         jQuery( "#wpscProductTabs" ).tabs();
-                        jQuery( "#wpscProductSavedDialog" ).dialog({ autoOpen: false, width: 460 });
-                        jQuery( "#wpscAttributesSavedDialog" ).dialog({ autoOpen: false, width: 460 });
+                        jQuery( "#wpscProductSavedDialog" ).dialog({ autoOpen: false, width: 460, zIndex: 9999999, stack: false });
+                        jQuery( "#wpscAttributesSavedDialog" ).dialog({ autoOpen: false, width: 460, zIndex: 9999999, stack: false });
 
                         jQuery("#wpstorecartaddproductform").bind("submit",function() { wpscSubmitProduct(); return false; });
 
@@ -2785,21 +2785,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
 
 
-                <div id="wpscAttributesSavedDialog" title="'.__('Attributes Saved Successfully','wpstorecart').'" style="display:none;">
-                    <div class="ui-widget">
-                        <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">                
-                            <p style="height:36px;"><img src="'.plugins_url() . '/wpstorecart/images/success.png" style="float:left;" /> <span style="position:relative;top:7px;left:7px;">'.__('This notice will disappear in 3 seconds...','wpstorecart').'</span></p>
-                        </div>
-                    </div>
-                </div>
 
-                <div id="wpscProductSavedDialog" title="'.__('Product Saved Successfully','wpstorecart').'" style="display:none;">
-                    <div class="ui-widget">
-                        <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">                
-                            <p style="height:36px;"><img src="'.plugins_url() . '/wpstorecart/images/success.png" style="float:left;" /> <span style="position:relative;top:7px;left:7px;">'.__('This notice will disappear in 3 seconds...','wpstorecart').'</span></p>
-                        </div>
-                    </div>
-                </div>
                 ';       
                 
                 if($wpStoreCartproduct_producttype=='variation') {
@@ -2882,7 +2868,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             <div id="tab1" class="tab_content">';
 
                             echo '<table class="widefat">
-                            <thead><tr><th>'.__('Product Attribute', 'wpstorecart').'</th><th>'.__('Value', 'wpstorecart').'</th></tr></thead><tbody>
+                            <tbody>
                             ';
 
                             wpsc_admin_edit_product_table_before_product_name(); // Action hook
@@ -4232,6 +4218,23 @@ if(!function_exists('wpscAdminPageCategories')) {
                         </div>
                     </div>                
                 <?php
+                echo '
+                <div id="wpscAttributesSavedDialog" title="'.__('Attributes Saved Successfully','wpstorecart').'" style="display:none;">
+                    <div class="ui-widget">
+                        <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">                
+                            <p style="height:36px;"><img src="'.plugins_url() . '/wpstorecart/images/success.png" style="float:left;" /> <span style="position:relative;top:7px;left:7px;">'.__('This notice will disappear in 3 seconds...','wpstorecart').'</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="wpscProductSavedDialog" title="'.__('Product Saved Successfully','wpstorecart').'" style="display:none;">
+                    <div class="ui-widget">
+                        <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">                
+                            <p style="height:36px;"><img src="'.plugins_url() . '/wpstorecart/images/success.png" style="float:left;" /> <span style="position:relative;top:7px;left:7px;">'.__('This notice will disappear in 3 seconds...','wpstorecart').'</span></p>
+                        </div>
+                    </div>
+                </div>                    
+                    ';
                 wpscAdminFooter();
         }
     }
@@ -7943,7 +7946,13 @@ if(!function_exists('wpscAdminPageCategories')) {
             wp_enqueue_style('wpsc-table-jui');
             wp_register_style('wpsc-fluid', plugins_url() . '/wpstorecart/wpstorecart/admin/css/fluid.gs.css');
             wp_enqueue_style('wpsc-fluid');
-            wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+            global $wp_version;
+            $wp_clean_version = substr($wp_version, 0, strpos($wp_version, "-"));
+            if ( version_compare( $wp_clean_version, '3.6', '>=' ) ) {
+                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.10.1.custom.css');
+            } else {
+                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+            }
             wp_enqueue_style('wpsc-custom');
             wp_register_style('wpsc-taginput', plugins_url() . '/wpstorecart/wpstorecart/admin/css/jquery.tagsinput.css');
             wp_enqueue_style('wpsc-taginput');
