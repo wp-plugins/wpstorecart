@@ -35,15 +35,18 @@ if ( 0 == $current_user->ID ) {
     $wpdb->query($insert);
     $keyToLookup = $wpdb->insert_id;
     
-    if($_POST['wpsc-new-order-log']==1 || $wpscproductdecreaseinventoryneworder=='yes') {
+    if(@$_POST['wpsc-new-order-log']==1) {
         $productIds = wpscSplitOrderIntoProductKeys($keyToLookup);
         foreach($productIds as $productId) {
-            if($_POST['wpsc-new-order-log']==1) {
-                increaseProductPurchasedStatistic($productId);
-            }
-            if($wpscproductdecreaseinventoryneworder=='yes') {
-                wpscProductDecreaseProductInventory($productId);
-            }
+            increaseProductPurchasedStatistic($productId);
+        }
+        wpscSendSuccessfulPurchaseEmail($wpscneworderemail);
+    }
+    
+    if($wpscproductdecreaseinventoryneworder=='yes') {
+        $productIds = wpscSplitOrderIntoProductKeys($keyToLookup);
+        foreach($productIds as $productId) {
+            wpscProductDecreaseProductInventory($productId);
         }
     }
     

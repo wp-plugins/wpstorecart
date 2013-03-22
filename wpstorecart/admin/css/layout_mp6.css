@@ -18,7 +18,7 @@ Grey Box Method - Layout CSS
 h1, h2, h3, h4, h5, h6 {line-height:1.5em; margin-bottom:.3em;}
 h2 {margin-top:1em;}
 h5 {font-size:1.2em;}
-h6 {font-size:1em; text-transform:uppercase;}
+h6 {font-size:1em; }
 
 h1 {font-size:2.7em;}
 h2 {font-size:2.5em;}
@@ -101,17 +101,17 @@ h2#page-crumbs .here{
 .box h2 {
 	font-size:1.7em;
 	font-weight:normal;
-	text-transform:uppercase;
-	color:#000;
+	
+	color:#4d4d4f;
 	font-weight: bold;
 	background:#FCFCFC;
 	margin:-10px -10px 0 -10px;
 	padding:6px 12px;
-	border-top: 4px solid #86A3BD;
+
 }
 .box h2 a,
 .box h2 a.visible {
-	color:#000;
+	color:#4d4d4f;
 	font-weight: bold;
 	background:#FCFCFC url("../img/minus_g.png") 97% 50% no-repeat;
 	display:block;
@@ -187,7 +187,7 @@ div.menu .block {
 	background-image: url("../img/plus_g.png");
 }
 .boxSpecial h2 a:hover {
-	color:#000;
+	color:#4d4d4f;
 }
 
 
@@ -255,7 +255,7 @@ ul.section {
 	margin-bottom:0;
 }
 ul.section li {
-	text-transform:uppercase;
+	
 }
 ul.section li a {
 	background:#F1F1F1;
@@ -275,7 +275,7 @@ ul.section li li a:hover {
 	background:#ccc;
 }
 ul.section li li a:active {
-	color:#000;
+	color:#4d4d4f;
 	background:#fff;
 }
 ul.section ul li {
@@ -335,7 +335,7 @@ thead th {
 thead th.table-head {
 	font-size:1em;
 	font-weight:normal;
-	text-transform:uppercase;
+	
 	color:#fff;
 	background:#555;
 	border:1px solid #555;
@@ -360,7 +360,7 @@ tfoot tr.total td {
 	border-top:6px double #666;
 }
 tfoot tr.total th {
-	text-transform:uppercase;
+	
 }
 th.currency,
 td.currency {
@@ -462,7 +462,7 @@ input.search.button {
 }
 .article h4 {
 	font-size:1.2em;
-	text-transform:uppercase;
+	
 	margin-bottom:.5em;
 }
 .article a.image {
@@ -490,19 +490,16 @@ input.search.button {
 /* site information
 ----------------------------------------------- */
 #site_info .box {
-	color:#DDD;
-	background:#7592AC;
+	color:#FFF;
+	background:#0074a2;
 	margin-bottom:10px;
-        -webkit-border-radius: 10px 10px 10px 10px;
-        -moz-border-radius: 10px 10px 10px 10px;
-        border-radius: 10px 10px 10px 10px;
-        border: 1px solid #86A3BD;          
+      
 }
 #site_info a {
 	color:#fff;
 }
 #site_info a:hover {
-	color:#000;
+	color:#4d4d4f;
 }
 
 #site_info p {
@@ -587,7 +584,7 @@ input.search.button {
 	background: #fff;
 }
 #kwick .kwick span {
-	color:#000;
+	color:#4d4d4f;
         font-size:1.6em;
 }
 #kwick .one {
@@ -694,12 +691,7 @@ label.floatRight{
 	padding:20px!important;
 }
 
-a:hover img {
-  -webkit-border-radius: 10px 10px 10px 10px;
-     -moz-border-radius: 10px 10px 10px 10px;
-          border-radius: 10px 10px 10px 10px;
-          border: 1px solid #86A3BD;     
-}
+
 
 .wpscBigHelp, #page-heading {
     float:left;
@@ -752,8 +744,7 @@ a:hover img {
         border-radius: 5px;
         -moz-border-radius: 5px;
         -webkit-border-radius: 5px;
-        -moz-box-shadow:#bbb 1px 1px 2px;
-        -webkit-box-shadow:#bbb 1px 1px 2px;        
+    
 }
 
 .tab_content h2 {
@@ -761,10 +752,13 @@ a:hover img {
 }
 
 .tab_content .widefat input, .tab_content .widefat select, .tab_content .widefat textarea, .tab_content .widefat label {
-    font-size:18px;
+    font-size:16px;
     padding: 5px;
     width:auto;
-    
+}
+
+.tab_content .widefat input, .tab_content .widefat select, .tab_content .widefat label {
+    height:36px !important;
 }
 
 .tableDescription {

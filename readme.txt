@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.0
+Stable tag: 3.9.1
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,11 +84,17 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.1 =
+* Fixed: When manually adding a new order, email was not sending even when selecting to notify the customer. This is now resolved.
+* Fixed: Patched an issue with datatables displaying the view invoice icon on non-orders
+* Added: wpStoreCart 4 admin panel redesign beta included, but hidden. If you activate the mp6 plugin and then delete the /wpstorecart/images/ folder and then rename the /wpstorecart/images_new/ folder as /wpstorecart/images/ then you will activate the full hidden wpStoreCart 4 admin panel.
+* Fixed: Minor admin UI issues
+
 = 3.9.0 =
 * Updated: jQuery UI theme updated for jQuery UI 1.10.x in Wordpress 3.6 alpha and above
 * Added: Created the new wpscProductGetNameById($id) function to quickly grab a product's name from it's ID
 * Updated: Adjusted the coupon page in advance of Wordpress' upcoming admin redesign (MP6)
-* Updated: Minor admin UI updates.
+* Updated: Minor admin UI updates
 
 = 3.8.1 =
 * Fixed: Patched an issue with shipping tab still bleeding information into edit products screen when store set to Digital Products Only

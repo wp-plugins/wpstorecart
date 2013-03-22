@@ -217,7 +217,11 @@ if ( 0 == $current_user->ID ) {
 
                 
                 if($aColumns[$i] == 'primkey') {
-                    $row[] = '<div class="'.$class.'"><a href="admin.php?page=wpstorecart-invoice&orderNumber='.$aRow[$i].'"><img id="wpsc-view-record-'.$aRow[$i].'" src="'.plugins_url().'/wpstorecart/images/Invoice.png" style="cursor:pointer;float:left;" /></a><img id="wpsc-record-'.$aRow[$i].'" src="'.plugins_url().'/wpstorecart/images/delete.png" style="cursor:pointer;float:left;" onclick="wpscDeleteRecord('.$aRow[$i].', \''.$_POST['dbtable'].'\');" /> '.$aRow[$i].'</div>';
+                    if ($_POST['dbtable']=='wpstorecart_orders') {
+                        $row[] = '<div class="'.$class.'"><a href="admin.php?page=wpstorecart-invoice&orderNumber='.$aRow[$i].'"><img id="wpsc-view-record-'.$aRow[$i].'" src="'.plugins_url().'/wpstorecart/images/Invoice.png" style="cursor:pointer;float:left;" /></a><img id="wpsc-record-'.$aRow[$i].'" src="'.plugins_url().'/wpstorecart/images/delete.png" style="cursor:pointer;float:left;" onclick="wpscDeleteRecord('.$aRow[$i].', \''.$_POST['dbtable'].'\');" /> '.$aRow[$i].'</div>';
+                    } else {
+                        $row[] = '<div class="'.$class.'"><img id="wpsc-record-'.$aRow[$i].'" src="'.plugins_url().'/wpstorecart/images/delete.png" style="cursor:pointer;float:left;" onclick="wpscDeleteRecord('.$aRow[$i].', \''.$_POST['dbtable'].'\');" /> '.$aRow[$i].'</div>';
+                    }
                 } elseif($_POST['dbtable']=='wpstorecart_orders' && $aColumns[$i] == 'wpuser') { // A field of Wordpress guest or user
                     if($aRow[$i]==0) {
                         $row[] = '<div class="'.$class.'">'.__('Guest', 'wpstorecart').'</div>';

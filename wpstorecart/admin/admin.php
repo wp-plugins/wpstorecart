@@ -714,10 +714,11 @@ if (!function_exists('wpscAdminHeader')) {
         echo '<div id="wpstorecart_admin_loader2" style="margin:10px auto 0 auto;position:absolute;"><img src="' . plugins_url() . '/wpstorecart/images/loader2.gif" alt="'.__('Loading...', 'wpstorecart').'" /></div>';
         echo '<div style="z-index:0;display:none;" id="wpstorecart_admin_content">';    
         ?>
+        <?php if(@function_exists('mp6_force_admin_color')) { wpscAdminMenu(); } ?>
         <div class="container_16">
             <header>
                 <div class="grid_16">
-                    <?php wpscAdminMenu(); ?>
+                    <?php if(@!function_exists('mp6_force_admin_color')) { wpscAdminMenu(); }?>
                 </div>
                 <div class="clear" ></div>
                 <br />
@@ -728,7 +729,7 @@ if (!function_exists('wpscAdminHeader')) {
             </header>  
             
           
-            <?php if($displaycarousel) {  ?>
+            <?php if($displaycarousel && @!function_exists('mp6_force_admin_color')) {  ?>
             <div id="wpsc-addon-carousel" style="float:right;position:absolute;top:112px;height:150px;right:135px;z-index:0;">
             
             
@@ -815,7 +816,7 @@ if (!function_exists('wpscAdminFooter')) {
                     <div class="grid_16" id="site_info">
                         <div class="box">
                             <p><a href="http://wpstorecart.com">wpStoreCart</a> <?php _e('version', 'wpstorecart'); global $wpstorecart_version;
-                            echo $wpstorecart_version; ?> Copyright &copy; 2012 wpStoreCart, LLC.</p>
+                            echo $wpstorecart_version; ?> Copyright &copy; <?php echo date('Y'); ?> wpStoreCart, LLC.</p>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -1658,7 +1659,7 @@ if (!function_exists('wpscAdminPageOrder')) {
             /* ]]> */
             </script>
 ';
-        echo '<button id="wpsc-clear-pending-order-button" onclick="wpscClearAllPendingOrders();return false;">'.__('Delete All Pending Orders', 'wpstorecart').'</button>';
+        echo '<button id="wpsc-clear-pending-order-button" style="margin-bottom:10px;" onclick="wpscClearAllPendingOrders();return false;">'.__('Delete All Pending Orders', 'wpstorecart').'</button>';
         echo '</div>';
         wpscAdminDataTable(__('Orders', 'wpstorecart'), 'wpstorecart_orders', NULL, NULL, 500, '16'); 
         wpscAdminFooter();
@@ -2009,7 +2010,7 @@ if (!function_exists('wpscAdminPageAddToGroup')) {
     function wpscAdminPageAddToGroup() {
         wpscCheckAdminPermissions();
         
-        wpscAdminHeader(__('Orders','wpstorecart'));    
+        wpscAdminHeader(__('Add/Remove From Groups','wpstorecart'));    
         echo '<div class="grid_16">';
         echo '<div class="updated" style="margin-top:17px;padding:12px 12px 12px 12px;font-size:11px;border-color:#DDD;background-color:#EFEFEF;"><img src="'.plugins_url().'/wpstorecart/images/info.png" alt="info" style="float:left;top:-10px;position:relative;" /> Related Admin Pages: <a href="admin.php?page=wpstorecart-groupdiscounts">Group Discounts</a>, <a href="admin.php?page=wpstorecart-addtogroup">Users &amp; Groups</a>, <a href="admin.php?page=wpstorecart-categories">Categories</a></div><br />';                
 
@@ -7932,11 +7933,20 @@ if(!function_exists('wpscAdminPageCategories')) {
         function wpscAdminHead() {
             wp_register_style('wpsc-text', plugins_url() . '/wpstorecart/wpstorecart/admin/css/text.css');
             wp_enqueue_style('wpsc-text');
-            wp_register_style('wpsc-layout', plugins_url() . '/wpstorecart/wpstorecart/admin/css/layout.css');
+            wp_enqueue_script('wpsc-cufon', plugins_url() . '/wpstorecart/js/cufon-yui.js');
+            if(@function_exists('mp6_force_admin_color')) {
+                wp_register_style('wpsc-layout', plugins_url() . '/wpstorecart/wpstorecart/admin/css/layout_mp6.css'); // wpStoreCart 4.0 styles beta
+                wp_register_style('wpsc-superfish', plugins_url() . '/wpstorecart/wpstorecart/admin/css/superfish_mp6.css');
+                wp_enqueue_script('wpsc-font', plugins_url() . '/wpstorecart/fonts/ChunkFive_400.font.js');
+            } else {
+                wp_register_style('wpsc-layout', plugins_url() . '/wpstorecart/wpstorecart/admin/css/layout.css');
+                wp_register_style('wpsc-superfish', plugins_url() . '/wpstorecart/wpstorecart/admin/css/superfish.css');
+                wp_enqueue_script('wpsc-font', plugins_url() . '/wpstorecart/fonts/Jura_400.font.js');
+            }
             wp_enqueue_style('wpsc-layout');
             wp_register_style('wpsc-grid', plugins_url() . '/wpstorecart/wpstorecart/admin/css/grid.css');
             wp_enqueue_style('wpsc-grid');
-            wp_register_style('wpsc-superfish', plugins_url() . '/wpstorecart/wpstorecart/admin/css/superfish.css');
+            
             wp_enqueue_style('wpsc-superfish');
             wp_register_style('wpsc-tagsinput', plugins_url() . '/wpstorecart/wpstorecart/admin/css/jquery.tagsinput.css');
             wp_enqueue_style('wpsc-tagsinput');
@@ -7948,10 +7958,14 @@ if(!function_exists('wpscAdminPageCategories')) {
             wp_enqueue_style('wpsc-fluid');
             global $wp_version;
             $wp_clean_version = substr($wp_version, 0, strpos($wp_version, "-"));
-            if ( version_compare( $wp_clean_version, '3.6', '>=' ) ) {
-                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.10.1.custom.css');
+            if(@function_exists('mp6_force_admin_color')) {
+                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.10.2.custom.css');
             } else {
-                wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+                if ( version_compare( $wp_clean_version, '3.6', '>=' ) ) {
+                    wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.10.1.custom.css');
+                } else {
+                    wp_register_style('wpsc-custom', plugins_url() . '/wpstorecart/wpstorecart/admin/css/custom-theme/jquery-ui-1.8.13.custom.css');
+                }
             }
             wp_enqueue_style('wpsc-custom');
             wp_register_style('wpsc-taginput', plugins_url() . '/wpstorecart/wpstorecart/admin/css/jquery.tagsinput.css');
@@ -7981,8 +7995,6 @@ if(!function_exists('wpscAdminPageCategories')) {
             wp_enqueue_script('wpsc-jquery-treeview', plugins_url() . '/wpstorecart/wpstorecart/admin/js/jquery.treeview.js');
             wp_enqueue_script('wpsc-jquery-datatables', plugins_url() . '/wpstorecart/wpstorecart/admin/js/jquery.dataTables.min.js');
             wp_enqueue_script('ezpz_tooltip',plugins_url() . '/wpstorecart/js/jquery.ezpz_tooltip.js');            
-            wp_enqueue_script('wpsc-cufon', plugins_url() . '/wpstorecart/js/cufon-yui.js');
-            wp_enqueue_script('wpsc-font', plugins_url() . '/wpstorecart/fonts/Jura_400.font.js');
             wp_enqueue_script('wpsc-jeditable', plugins_url() . '/wpstorecart/wpstorecart/admin/js/jquery.jeditable.mini.js');
             wp_enqueue_script('wpsc-admin', plugins_url() . '/wpstorecart/wpstorecart/admin/js/wpstorecart-admin.js');
             wp_enqueue_script('wpsc-gritter', plugins_url() . '/wpstorecart/js/gritter/js/jquery.gritter.min.js');
