@@ -88,7 +88,7 @@ Or, if you want to install manually:
 * Fixed: When manually adding a new order, email was not sending even when selecting to notify the customer. This is now resolved.
 * Fixed: Patched an issue with datatables displaying the view invoice icon on non-orders
 * Added: wpStoreCart 4 admin panel redesign beta included, but hidden. If you activate the mp6 plugin and then delete the /wpstorecart/images/ folder and then rename the /wpstorecart/images_new/ folder as /wpstorecart/images/ then you will activate the full hidden wpStoreCart 4 admin panel.
-* Fixed: Minor admin UI issues
+* Fixed: Minor admin UI issues.
 
 = 3.9.0 =
 * Updated: jQuery UI theme updated for jQuery UI 1.10.x in Wordpress 3.6 alpha and above
