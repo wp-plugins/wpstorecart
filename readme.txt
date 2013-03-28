@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.2 =
-* Updated: Minor admin updates, including wpStoreCart 4 admin beta update
+* Updated: Minor admin updates, including wpStoreCart 4 admin beta update.
 
 = 3.9.1 =
 * Fixed: When manually adding a new order, email was not sending even when selecting to notify the customer. This is now resolved.
