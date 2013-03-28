@@ -2522,9 +2522,16 @@ if(!function_exists('wpscProductSelectDropdown')) {
 }
 
 if(!function_exists('wpscProductGetNameById')) {
+    /**
+     * Returns a product array for the product key specified by $id
+     * 
+     * @global object $wpdb
+     * @param integer $id
+     * @return array or false on failure
+     */
     function wpscProductGetNameById($id) {
         global $wpdb;
-        $output = NULL;
+        $output = false;
         $sql = "SELECT `name`, `producttype`, `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$id}';";
         $results = $wpdb->get_results($sql,ARRAY_A);
         if(@isset($results[0]['name'])) {
@@ -2538,6 +2545,14 @@ if(!function_exists('wpscProductGetNameById')) {
         
         return $output;
         
+    }
+}
+
+if(!function_exists('wpscProductGetAllRecordsWithAttribute')) {
+    function wpscProductGetAllRecordsWithAttribute($product_id, $attribute_id) {
+        global $wpdb;
+        $sql = "SELECT `name`, `producttype`, `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$id}';";
+        $results = $wpdb->get_results($sql,ARRAY_A);
     }
 }
 

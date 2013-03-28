@@ -3724,7 +3724,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     echo '<tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr>';
                                     echo '</thead><tbody id="wpsc-attribute-group-tbody-'.wpscSlug($wpscAttributesGroupKey).'">';
                                     foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
-                                        echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td>'.$wpscFinalAttributeGroup['primkey'].'</td>';
+                                        echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td><img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="" style="cursor:pointer;" onclick="" /> '.$wpscFinalAttributeGroup['primkey'].'</td>';
                                         echo '<td><div>'.$wpscFinalAttributeGroup['title'].'</div></td>';
                                         echo '<td><div>'.$wpscFinalAttributeGroup['price'].'</div></td>';
                                         echo '<td>'.$wpscFinalAttributeGroup['type'].'</td>';
@@ -7328,21 +7328,9 @@ if(!function_exists('wpscAdminPageCategories')) {
             if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
 
                 echo '
-                <center><img src="'.plugins_url().'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;cursor:pointer;" onclick="jQuery(\'#buypro\').submit();" /></center>
+                <center><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=9&wpsc_qty=1"><img src="'.plugins_url().'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;"  /></a></center>
                 <center><img src="'.plugins_url().'/wpstorecart/images/affiliates.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
-                <input type="hidden" name="on0" value="License">
-                <select name="os0" style="display:none;">
-                    <option value="Single Domain" selected="selected">Single Domain $29.99</option>
-                    <option value="2 Domains">2 Domains $49.99</option>
-                    <option value="10 Domains">10 Domains $209.99</option>
-                    <option value="Unlimited Domains">Unlimited Domains $389.99</option>
-                </select>
-                <input type="hidden" name="currency_code" value="USD">
-                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
+
                 ';
 
             } else {
@@ -7414,21 +7402,9 @@ if(!function_exists('wpscAdminPageCategories')) {
             if(!file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
 
                 echo '
-                <center><img src="'.plugins_url().'/wpstorecart/images/upgrade_statistics.png" alt="" style="position:relative;top:100px;z-index:999;cursor:pointer;" onclick="jQuery(\'#buypro\').submit();" /></center>
+                <center><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=9&wpsc_qty=1"><img src="'.plugins_url().'/wpstorecart/images/upgrade_statistics.png" alt="" style="position:relative;top:100px;z-index:999;" /></a></center>
                 <center><img src="'.plugins_url().'/wpstorecart/images/statistics.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="buypro" name="buypro">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="hosted_button_id" value="6PZ2X87LHLQV8">
-                <input type="hidden" name="on0" value="License">
-                <select name="os0" style="display:none;">
-                    <option value="Single Domain" selected="selected">Single Domain $29.99</option>
-                    <option value="2 Domains">2 Domains $49.99</option>
-                    <option value="10 Domains">10 Domains $209.99</option>
-                    <option value="Unlimited Domains">Unlimited Domains $389.99</option>
-                </select>
-                <input type="hidden" name="currency_code" value="USD">
-                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
+                
                 ';
             } else {
                 echo '                            <script type="text/javascript">
@@ -7789,14 +7765,14 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 <option value="csv">'.__('CSV file', 'wpstorecart').'</option>
                             </select>
                             <input type="text" id="importthisfile" name="importthisfile" style="width: 200px;" value="" />
-                            Upload a file: <span id="spanSWFUploadButton4"></span>
+                            '.__('Upload a file', 'wpstorecart').': <span id="spanSWFUploadButton4"></span>
                             <div id="upload-progressbar-container4">
                                 <div id="upload-progressbar4">
                                 </div>
                             </div>
                             </div><br />
                             <input type="hidden" name="isreal" value="true" />
-                            <input type="submit" value="Begin >" />
+                            <input type="submit" value="'.__('Begin', 'wpstorecart').' &gt;" />
                             </form></div>
                             ';
                     
