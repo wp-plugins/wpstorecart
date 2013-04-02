@@ -26,12 +26,14 @@ if(!function_exists('wpscProductIsPublishedPage')) {
 
 if(!function_exists('wpscProductGetGrid')) {
     /**
+     * @deprecated since 3.9.3
      * Returns the string that wraps the HTML in the grid div
      * @param string $input
      * @return string 
      */
     function wpscProductGetGrid($input=NULL) {
-        return '<div id="wpsc-grid">'.$input.'</div>';
+        //return '<div id="wpsc-grid">'.$input.'</div>';
+        return null;
     }
 }
 
@@ -118,6 +120,30 @@ if(!function_exists('wpscProductGetVariationsSelection')) {
     }
 }
 
+if(!function_exists('wpscProductGetToolbar')) {
+    function wpscProductGetToolbar($category=null) {
+            global $wpdb;
+            $output = "
+            <p id=\"wpsc-filter\">";
+
+            if($category==NULL) {$parent_category = 0;} else {$parent_category = $category;}
+
+            $wpsc_cat_results = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_categories` WHERE `parent`='$category';",ARRAY_A);
+            $output .= '    <a onclick="jQuery.get(\''.plugins_url().'/wpstorecart/wpstorecart/products/filter.php?wpsc_cat_key=0\', function(data) {jQuery(\'#wpsc-grid\').slideToggle(\'slow\', function(){ jQuery(\'#wpsc-grid\').html(data); jQuery(\'#wpsc-grid\').fadeIn(\'fast\'); }); }); jQuery.get(\''.plugins_url().'/wpstorecart/wpstorecart/products/toolbar.php?wpsc_cat_key=0\', function(data) { jQuery(\'#wpsc-filter\').slideToggle(\'slow\', function(){ jQuery(\'#wpsc-filter\').html(data); jQuery(\'#wpsc-filter\').fadeIn(\'fast\'); }); });return false;" class="wpscfilterbutton" href="#"><button>'.__('All', 'wpstorecart').'</button></a>';
+            if(@isset($wpsc_cat_results)) {
+                foreach($wpsc_cat_results as $wpsc_cat_result) {
+                    $output .= '    <a onclick="jQuery.get(\''.plugins_url().'/wpstorecart/wpstorecart/products/filter.php?wpsc_cat_key='.$wpsc_cat_result['primkey'].'\', function(data) {jQuery(\'#wpsc-grid\').slideToggle(\'slow\', function(){ jQuery(\'#wpsc-grid\').html(data); jQuery(\'#wpsc-grid\').fadeIn(\'fast\'); }); }); jQuery.get(\''.plugins_url().'/wpstorecart/wpstorecart/products/toolbar.php?wpsc_cat_key='.$wpsc_cat_result['primkey'].'\', function(data) { jQuery(\'#wpsc-filter\').slideToggle(\'slow\', function(){ jQuery(\'#wpsc-filter\').html(data); jQuery(\'#wpsc-filter\').fadeIn(\'fast\'); }); });return false;" class="wpscfilterbutton" href="#"><button>'.$wpsc_cat_result['category'].'</button></a>';
+                }
+            }
+            $output .= "
+            </p>
+
+            ";
+
+            return $output;
+    }
+}
+
 if(!function_exists('wpscProductGetCatalog')) {
     /**
      *
@@ -136,7 +162,7 @@ if(!function_exists('wpscProductGetCatalog')) {
         global $wpdb, $current_user, $wpsc_result;
         
         $listsubcategories = false;
-        
+        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
         wp_get_current_user();
         if ( 0 == $current_user->ID ) {
             // Not logged in.
@@ -147,11 +173,17 @@ if(!function_exists('wpscProductGetCatalog')) {
         
         $output = NULL;
         
+        if($wpStoreCartOptions['enable_product_filters']=='true' && !isset($_GET['wpsc_cat_key'])) {
 
+            $output .= wpscProductGetToolbar($category);
+
+        }         
+        
+        $output .= '<div id="wpsc-grid">';
         
         
         $table_name = $wpdb->prefix.'wpstorecart_products';
-        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');  
+         
 
         if( !isset( $_GET['wpscPage'] ) || !is_numeric($_GET['wpscPage'])) {
             $startat = 0;
@@ -354,6 +386,7 @@ if(!function_exists('wpscProductGetCatalog')) {
             
             
             if(isset($results)) {
+                    
                     foreach ($results as $wpsc_result) {
 
 
@@ -410,7 +443,9 @@ if(!function_exists('wpscProductGetCatalog')) {
 
                                 $output .= apply_filters('wpsc_display_catalog_start', '');
 
-                                $output .= '<ul class="wpsc-products">';
+
+                                
+                                $output .= '<ul class="wpsc-products wpsc-grid-product-'.$wpsc_result['primkey'].'">';
 
                                 $productListingOrder = wpscProductReturnCurrentGridItemOrder();
 
@@ -562,6 +597,8 @@ if(!function_exists('wpscProductGetCatalog')) {
                     $output .= '<div class="wpsc-clear"></div>';
             }
         }
+        
+        $output .= '</div>';
 
         return $output;
 
@@ -1169,9 +1206,9 @@ if (!function_exists('wpscProductMainPage')) {
         
         if(!isset($_GET['wpStoreCartDesigner'])){ // User viewing the page 
             if($onlycat==false) {
-                $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, $wpStoreCartOptions['frontpageDisplays']));
+                $output .= wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, $wpStoreCartOptions['frontpageDisplays']);
             } else {
-                $output .= wpscProductGetGrid(wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, 'List all categories'));
+                $output .= wpscProductGetCatalog($wpStoreCartOptions['itemsperpage'], $thecategory, 'List all categories');
             }
         } else { // Admin editing the layout          
 
@@ -1207,7 +1244,7 @@ if (!function_exists('wpscProductMainPage')) {
 
 
             $output .= '
-                '.wpscProductGetGrid(wpscProductGetDummyProducts()).'
+                '.wpscProductGetDummyProducts().'
 
                 <div id="wpsc-tabdlg" style="position:relative;top:1px;z-index:999999999;">
                         <ul id="wpsc-designer-tabbar">
@@ -1396,6 +1433,8 @@ if(!function_exists('wpscProductGetDummyProducts')) {
         $permalink = '#';
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
         
+        $output .= '<div id="wpsc-grid">';
+        
         while ($counter < $num) {
             $output.= '<ul class="wpsc-products">';
             foreach($productListingOrder as $productListingOrderCurrent) {
@@ -1428,6 +1467,7 @@ if(!function_exists('wpscProductGetDummyProducts')) {
 ';            
             $counter++;
         }
+        $output.= '</div>';
         return $output;
     }
 }

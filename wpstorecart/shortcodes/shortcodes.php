@@ -437,6 +437,7 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                     if(@!isset($_GET['wpsc'])) {
                         $output .= wpscProductMainPage();
                     }
+                    
                 break;
                 case 'categories':
                     $output .= wpscProductMainPage($thecategory, true);
@@ -599,7 +600,9 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
         if(is_page() && ($post->ID == $wpStoreCartOptions['checkoutpage'])) { // If we're visiting the checkout page, load gritter
             wp_register_style('wpsc-checkout', plugins_url() . '/wpstorecart/css/wpsc-checkout.css');
             wp_enqueue_style('wpsc-checkout');
-        }       
+        }   
+
+
         
         if(isset($_GET['wpStoreCartDesigner'])){
             wpscCheckAdminPermissions(); // Only users with manage_wpstorecart should have access

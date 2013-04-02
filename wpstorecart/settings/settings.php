@@ -225,7 +225,8 @@ if(!class_exists('wpscSettings')) {
                                                     'piwik_siteid' => '1',
                                                     'alert_clear_period' => '1 hour',
                                                     'wpstorecart_download_hash' => sha1(rand(-4096, 4096)),
-                                                    'wpsc3_first_run' => 'true'
+                                                    'wpsc3_first_run' => 'false',
+                                                    'enable_product_filters' => 'false'
 			);
 		
 		
@@ -257,7 +258,9 @@ if(!class_exists('wpscSettings')) {
                 function setAdminOptions() {
                     global $wpdb;
                             $wpStoreCartOptions = get_option($this->adminOptionsName);
-                      
+                            if (isset($_POST['enable_product_filters'])) {
+                                    $wpStoreCartOptions['enable_product_filters'] = $wpdb->escape($_POST['enable_product_filters']);
+                            }                       
                             if (isset($_POST['alert_clear_period'])) {
                                     $wpStoreCartOptions['alert_clear_period'] = $wpdb->escape($_POST['alert_clear_period']);
                             }                             

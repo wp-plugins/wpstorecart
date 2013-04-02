@@ -4718,13 +4718,18 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             echo '
 
+            <tr><td><p>'.__('Enable Product Filtering (BETA)?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554909090" /><div class="tooltip-content" id="example-content-5554909090">'.__('Enables an ajax based filtering system, so customers can sort and filter products by various criteria.','wpstorecart').'</div></p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, customers can sort &amp; filter products.','wpstorecart').'</p></td>
+            <td><p><label for="enable_product_filters"><input type="radio" id="enable_product_filters_yes" name="enable_product_filters" value="true" '; if ($wpStoreCartOptions['enable_product_filters'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enable_product_filters_no"><input type="radio" id="enable_product_filters_no" name="enable_product_filters" value="false" '; if ($wpStoreCartOptions['enable_product_filters'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
+            </td></tr>
+
             <tr><td><p>'.__('Content of the Main Page','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-6999" /><div class="tooltip-content" id="example-content-6999">'.__('The main page of your store can either list products, or the categories of the site.  It can also display the products either by newest first, or most popular first.','wpstorecart').'</div></p></td>
             <td class="tableDescription"><p>'.__('Changing this will effect what is displayed on the main page of your store.','wpstorecart').'</p></td>
             <td>
             <select name="frontpageDisplays">
 ';
 
-            // Not translatable yet
+            //** @todo Not translatable yet **//
             $theOptions[0] = 'List all products';
             $theOptions[1] = 'List all products in custom order';
             $theOptions[2] = 'List all categories';
@@ -4748,22 +4753,22 @@ if(!function_exists('wpscAdminPageCategories')) {
             </td></tr>
 
             <tr><td><p>'.__('Display thumbnails on Main Page?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554" /><div class="tooltip-content" id="example-content-5554">'.__('This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category thumbnails will be displayed on the Main Page/Category page.','wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>If set to Yes, the thumbnail for the products or categories will be displayed on the Main Page and Category pages.</p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, the thumbnail for the products or categories will be displayed on the Main Page and Category pages.','wpstorecart').'</p></td>
             <td><p><label for="displayThumb"><input type="radio" id="displayThumb_yes" name="displayThumb" value="true" '; if ($wpStoreCartOptions['displayThumb'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayThumb_no"><input type="radio" id="displayThumb_no" name="displayThumb" value="false" '; if ($wpStoreCartOptions['displayThumb'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
             <tr><td><p>'.__('Display titles on Main Page?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55544" /><div class="tooltip-content" id="example-content-55544">'.__('This effects the main wpStoreCart short tag (and thus, the default Main Page and Category pages as well.)  If set to yes, the product or category title will be displayed on the Main Page/Category page.','wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>If set to Yes, the title of the products or categories will be displayed on the Main Page and Category pages.</p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, the title of the products or categories will be displayed on the Main Page and Category pages.','wpstorecart').'</p></td>
             <td><p><label for="displayTitle"><input type="radio" id="displayTitle_yes" name="displayTitle" value="true" '; if ($wpStoreCartOptions['displayTitle'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayTitle_no"><input type="radio" id="displayTitle_no" name="displayTitle" value="false" '; if ($wpStoreCartOptions['displayTitle'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
             <tr><td><p>'.__('Display small descriptions on Main Page?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-55545" /><div class="tooltip-content" id="example-content-55545">'.__('This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to yes, the product or category introductory description will be displayed on the Main Page/Category page.','wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>If set to Yes, the introductory description of the products or categories will be displayed on the Main Page and Category pages.</p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, the introductory description of the products or categories will be displayed on the Main Page and Category pages.','wpstorecart').'</p></td>
             <td><p><label for="displayintroDesc"><input type="radio" id="displayintroDesc_yes" name="displayintroDesc" value="true" '; if ($wpStoreCartOptions['displayintroDesc'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displayintroDesc_no"><input type="radio" id="displayintroDesc_no" name="displayintroDesc" value="false" '; if ($wpStoreCartOptions['displayintroDesc'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
             <tr><td><p>'.__('Display the prices of products?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-555451234" /><div class="tooltip-content" id="example-content-555451234">'.__('This effects the main wpStoreCart short tag (and thus, the default Main Page and Categpoy pages as well.)  If set to yes, each products price will be displayed on the Main Page/Category page.','wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>If set to Yes, the prices of products will be displayed on the Main Page and Category pages.</p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, the prices of products will be displayed on the Main Page and Category pages.','wpstorecart').'</p></td>
             <td><p><label for="displaypriceonview"><input type="radio" id="displaypriceonview_yes" name="displaypriceonview" value="true" '; if ($wpStoreCartOptions['displaypriceonview'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="displaypriceonview_no"><input type="radio" id="displaypriceonview_no" name="displaypriceonview" value="false" '; if ($wpStoreCartOptions['displaypriceonview'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
@@ -4867,11 +4872,11 @@ if(!function_exists('wpscAdminPageCategories')) {
 ';
 
             $theOptionzarr = array();
-            $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
-            $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
-            $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
-            $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
-            $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+            $theOptionzarr[0] = '0';$theOptionzarrName[0] = __('qty','wpstorecart');
+            $theOptionzarr[1] = '1';$theOptionzarrName[1] = __('pic','wpstorecart');
+            $theOptionzarr[2] = '2';$theOptionzarrName[2] = __('name','wpstorecart');
+            $theOptionzarr[3] = '3';$theOptionzarrName[3] = __('price','wpstorecart');
+            $theOptionzarr[4] = '4';$theOptionzarrName[4] = __('remove','wpstorecart');
             $fcounter=0;
             foreach ($theOptionzarr as $theOption) {
 
@@ -4890,11 +4895,11 @@ if(!function_exists('wpscAdminPageCategories')) {
             <select name="field_order_1">
 ';
 
-            $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
-            $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
-            $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
-            $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
-            $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+            $theOptionzarr[0] = '0';$theOptionzarrName[0] = __('qty','wpstorecart');
+            $theOptionzarr[1] = '1';$theOptionzarrName[1] = __('pic','wpstorecart');
+            $theOptionzarr[2] = '2';$theOptionzarrName[2] = __('name','wpstorecart');
+            $theOptionzarr[3] = '3';$theOptionzarrName[3] = __('price','wpstorecart');
+            $theOptionzarr[4] = '4';$theOptionzarrName[4] = __('remove','wpstorecart');
             $fcounter=0;
             foreach ($theOptionzarr as $theOption) {
 
@@ -4913,11 +4918,11 @@ if(!function_exists('wpscAdminPageCategories')) {
             <select name="field_order_2">
 ';
 
-            $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
-            $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
-            $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
-            $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
-            $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+            $theOptionzarr[0] = '0';$theOptionzarrName[0] = __('qty','wpstorecart');
+            $theOptionzarr[1] = '1';$theOptionzarrName[1] = __('pic','wpstorecart');
+            $theOptionzarr[2] = '2';$theOptionzarrName[2] = __('name','wpstorecart');
+            $theOptionzarr[3] = '3';$theOptionzarrName[3] = __('price','wpstorecart');
+            $theOptionzarr[4] = '4';$theOptionzarrName[4] = __('remove','wpstorecart');
             $fcounter=0;
             foreach ($theOptionzarr as $theOption) {
 
@@ -4936,11 +4941,11 @@ if(!function_exists('wpscAdminPageCategories')) {
             <select name="field_order_3">
 ';
 
-            $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
-            $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
-            $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
-            $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
-            $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+            $theOptionzarr[0] = '0';$theOptionzarrName[0] = __('qty','wpstorecart');
+            $theOptionzarr[1] = '1';$theOptionzarrName[1] = __('pic','wpstorecart');
+            $theOptionzarr[2] = '2';$theOptionzarrName[2] = __('name','wpstorecart');
+            $theOptionzarr[3] = '3';$theOptionzarrName[3] = __('price','wpstorecart');
+            $theOptionzarr[4] = '4';$theOptionzarrName[4] = __('remove','wpstorecart');
             $fcounter=0;
             foreach ($theOptionzarr as $theOption) {
 
@@ -4959,11 +4964,11 @@ if(!function_exists('wpscAdminPageCategories')) {
             <select name="field_order_4">
 ';
 
-            $theOptionzarr[0] = '0';$theOptionzarrName[0] = 'qty';
-            $theOptionzarr[1] = '1';$theOptionzarrName[1] = 'pic';
-            $theOptionzarr[2] = '2';$theOptionzarrName[2] = 'name';
-            $theOptionzarr[3] = '3';$theOptionzarrName[3] = 'price';
-            $theOptionzarr[4] = '4';$theOptionzarrName[4] = 'remove';
+            $theOptionzarr[0] = '0';$theOptionzarrName[0] = __('qty','wpstorecart');
+            $theOptionzarr[1] = '1';$theOptionzarrName[1] = __('pic','wpstorecart');
+            $theOptionzarr[2] = '2';$theOptionzarrName[2] = __('name','wpstorecart');
+            $theOptionzarr[3] = '3';$theOptionzarrName[3] = __('price','wpstorecart');
+            $theOptionzarr[4] = '4';$theOptionzarrName[4] = __('remove','wpstorecart');
             $fcounter=0;
             foreach ($theOptionzarr as $theOption) {
 
@@ -5268,22 +5273,22 @@ if(!function_exists('wpscAdminPageCategories')) {
             echo '<table class="widefat">
             <thead><tr><th>'.__('Option','wpstorecart').'</th><th>'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
 
-            <tr><td><p>Successful Payment Text <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-400" /><div class="tooltip-content" id="example-content-400">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after successfully completing the payment.</div></p></td>
+            <tr><td><p>'.__('Successful Payment Text','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-400" /><div class="tooltip-content" id="example-content-400">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after successfully completing the payment.</div></p></td>
             <td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after successfully paying.</p></td>
             <td><textarea name="success_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['success_text']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
 
-            <tr><td><p>Failed Payment Text<img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-401" /><div class="tooltip-content" id="example-content-401">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after failing to complete the payment.</div></p></td>
+            <tr><td><p>'.__('Failed Payment Text','wpstorecart').'<img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-401" /><div class="tooltip-content" id="example-content-401">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after failing to complete the payment.</div></p></td>
             <td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after failing the payment process.</p></td>
             <td><textarea name="failed_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['failed_text']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
 
-            <tr><td><p>Cart Title</p></td>
+            <tr><td><p>'.__('Cart Title','wpstorecart').'</p></td>
             <td class="tableDescription"><p>Default: <i>Shopping Cart</i></p></td>
             <td><input type="text" name="cart_title" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cart_title']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Qty (Quantity)</p></td>
+            <tr><td><p>'.__('Qty (Quantity)','wpstorecart').'</p></td>
             <td class="tableDescription"><p>Default: <i>Qty:</i></p></td>
             <td><input type="text" name="qty" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['qty']), 'wpStoreCart'); echo'" />
             </td></tr>
