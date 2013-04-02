@@ -86,7 +86,7 @@ Or, if you want to install manually:
 
 = 3.9.3 =
 * Added: Ajax Product Filtering (BETA) option added to wp-admin > wpStoreCart > Settings > Display > Main Page >
-* Updated: wpscProductGetGrid() function has been depreciated
+* Updated: wpscProductGetGrid() function has been depreciated.
 
 = 3.9.2 =
 * Updated: Minor admin updates, including wpStoreCart 4 admin beta update
