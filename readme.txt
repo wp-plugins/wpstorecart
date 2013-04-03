@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.5 =
-* Updated: If you have no products published and try to use the Product Designer, it will now inform you to create a product first instead of taking you to a 404 page
+* Updated: If you have no products published and try to use the Product Designer, it will now inform you to create a product first instead of taking you to a 404 page.
 
 = 3.9.4 =
 * Fixed: Patched a bug with pagination when the new Ajax Product Filtering (BETA) was enabled
