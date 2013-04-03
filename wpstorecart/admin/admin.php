@@ -6256,15 +6256,18 @@ if(!function_exists('wpscAdminPageCategories')) {
                 $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&';
             }   
             
-            
+            $no_page_action_js = null;
             $results = $wpdb->get_results("SELECT `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='product' and `status`='publish';",ARRAY_A);
             if(@isset($results[0]['postid'])) {
                 //postid
                 if(strpos(get_permalink($results[0]['postid']),'?')===false) {
-                    $permalink2 = get_permalink($results[0]['postid']) .'?';
+                    $permalink2 = get_permalink($results[0]['postid']) .'?wpStoreCartDesigner=true';
                 } else {
-                    $permalink2 = get_permalink($results[0]['postid']) .'&';
+                    $permalink2 = get_permalink($results[0]['postid']) .'&wpStoreCartDesigner=true';
                 }     
+            } else {
+                $permalink2 = '#';
+                $no_page_action_js = ' onclick="alert(\''.__('You must first publish a product before you can use the Product Designer.', 'wpstorecart').'\'); return false;" ';
             }
             
             ?>
@@ -6288,7 +6291,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                     </a>
                                             </li>
                                             <li>
-                                                    <a class="kwick two" href="<?php echo $permalink2; ?>wpStoreCartDesigner=true" target="_blank">
+                                                    <a class="kwick two" href="<?php echo $permalink2; ?>" target="_blank" <?php echo $no_page_action_js; ?> >
                                                         <center><span><?php _e('Products','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/photo.png" alt=""/>
