@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.4 =
-* Fixed: Patched a bug with pagination when the new Ajax Product Filtering (BETA) was enabled
+* Fixed: Patched a bug with pagination when the new Ajax Product Filtering (BETA) was enabled.
 
 = 3.9.3 =
 * Added: Ajax Product Filtering (BETA) option added to wp-admin > wpStoreCart > Settings > Display > Main Page >
