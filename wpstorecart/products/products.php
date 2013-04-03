@@ -172,11 +172,10 @@ if(!function_exists('wpscProductGetCatalog')) {
         }           
         
         $output = NULL;
-        
+
+        // If product filter is on
         if($wpStoreCartOptions['enable_product_filters']=='true' && !isset($_GET['wpsc_cat_key'])) {
-
             $output .= wpscProductGetToolbar($category);
-
         }         
         
         $output .= '<div id="wpsc-grid">';
@@ -584,7 +583,7 @@ if(!function_exists('wpscProductGetCatalog')) {
                     $page = isset( $_GET['wpscPage'] ) ? abs( (int) $_GET['wpscPage'] ) : 1;
 
                     $output .= paginate_links( array(
-                        'base' => add_query_arg( 'wpscPage', '%#%' ),
+                        'base' =>  add_query_arg( 'wpscPage', '%#%', get_permalink( $wpStoreCartOptions['mainpage'] ) ),
                         'format' => '',
                         'prev_text' => __('&laquo;'),
                         'next_text' => __('&raquo;'),

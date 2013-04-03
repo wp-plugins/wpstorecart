@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.3
+Stable tag: 3.9.4
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,9 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.4 =
+* Fixed: Patched a bug with pagination when the new Ajax Product Filtering (BETA) was enabled
+
 = 3.9.3 =
 * Added: Ajax Product Filtering (BETA) option added to wp-admin > wpStoreCart > Settings > Display > Main Page >
-* Updated: wpscProductGetGrid() function has been depreciated.
+* Updated: wpscProductGetGrid() function has been depreciated
 
 = 3.9.2 =
 * Updated: Minor admin updates, including wpStoreCart 4 admin beta update
