@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.6 =
-* Updated: Did the same thing with the Main Page designer, prompting admin's to create and set the Main Page before attempting to use the Main Page designer.
+* Updated: Did the same thing with the Main Page designer, prompting admin's to create and set the Main Page before attempting to use the Main Page designer
 
 = 3.9.5 =
 * Updated: If you have no products published and try to use the Product Designer, it will now inform you to create a product first instead of taking you to a 404 page
