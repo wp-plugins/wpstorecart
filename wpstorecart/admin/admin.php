@@ -6250,11 +6250,17 @@ if(!function_exists('wpscAdminPageCategories')) {
             wpscAdminHeader(__('Design Your Store','wpstorecart'));
             $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
             
-            if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
-                $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?';
+            $no_main_action_js = null;
+            if(trim($wpStoreCartOptions['mainpage'])!='') {
+                if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
+                    $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'?wpStoreCartDesigner=true';
+                } else {
+                    $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&wpStoreCartDesigner=true';
+                }   
             } else {
-                $permalink = get_permalink($wpStoreCartOptions['mainpage']) .'&';
-            }   
+                $permalink = '#';
+                $no_main_action_js = ' onclick="alert(\''.__('You must first set a page as the Main Page and in that page, put the [wpstorecart] shortcode before you can use the Main Page Designer.', 'wpstorecart').'\'); return false;" ';
+            }
             
             $no_page_action_js = null;
             $results = $wpdb->get_results("SELECT `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='product' and `status`='publish';",ARRAY_A);
@@ -6277,7 +6283,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             <div id="kwick">
                                     <ul class="kwicks">
                                             <li>
-                                                    <a class="kwick one" href="<?php echo $permalink; ?>wpStoreCartDesigner=true" target="_blank">
+                                                    <a class="kwick one" href="<?php echo $permalink; ?>" target="_blank" <?php echo$no_main_action_js;?> >
                                                         <center><span><?php _e('Store Front','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/sitemap.png" alt=""/>

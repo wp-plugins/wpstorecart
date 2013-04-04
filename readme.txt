@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.5
+Stable tag: 3.9.6
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.6 =
+* Updated: Did the same thing with the Main Page designer, prompting admin's to create and set the Main Page before attempting to use the Main Page designer.
+
 = 3.9.5 =
-* Updated: If you have no products published and try to use the Product Designer, it will now inform you to create a product first instead of taking you to a 404 page.
+* Updated: If you have no products published and try to use the Product Designer, it will now inform you to create a product first instead of taking you to a 404 page
 
 = 3.9.4 =
 * Fixed: Patched a bug with pagination when the new Ajax Product Filtering (BETA) was enabled
