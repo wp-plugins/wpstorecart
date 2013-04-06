@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.9 =
-* Fixed: Alert settings admin window resized for correct display on lower resolutions
+* Fixed: Alert settings admin window resized for correct display on lower resolutions.
 
 = 3.9.8 =
 * Updated: Even more of the admin panel is translatable 
