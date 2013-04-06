@@ -967,7 +967,7 @@ class wpsc_shoppingcart {
                                 </ul>';
                             }
                             
-                            // @todo registration
+                            // registration
                             $output .= '
                             <div class="wpsc-checkout-registration-login">
                                 <form name="wpsc-loginform" id="wpsc-loginform" method="post" action="'. wp_login_url( get_permalink() ) .'">

@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.8
+Stable tag: 3.9.9
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.9 =
+* Fixed: Alert settings admin window resized for correct display on lower resolutions
+
 = 3.9.8 =
-* Updated: Even more of the admin panel is translatable.
+* Updated: Even more of the admin panel is translatable 
 
 = 3.9.7 =
 * Updated: More of the admin panel is translatable 

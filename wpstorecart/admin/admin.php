@@ -1464,8 +1464,8 @@ if(!function_exists('wpscAdminEditAlertSettingsButton')) {
 
             jQuery( "#wpsc-add-edit-alert-settings-dialog-form" ).dialog({
                     autoOpen: false,
-                    height: 600,
-                    width: 600,
+                    height: 250,
+                    width: 700,
                     modal: true,
                     buttons: {
                             "<?php _e('Edit My Alert Settings', 'wpstorecart'); ?>": function() {
