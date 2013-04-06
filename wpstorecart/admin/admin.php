@@ -5284,67 +5284,67 @@ if(!function_exists('wpscAdminPageCategories')) {
             </td></tr>
 
             <tr><td><p>'.__('Cart Title','wpstorecart').'</p></td>
-            <td class="tableDescription"><p>Default: <i>Shopping Cart</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Shopping Cart</i></p></td>
             <td><input type="text" name="cart_title" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cart_title']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>'.__('Qty (Quantity)','wpstorecart').'</p></td>
-            <td class="tableDescription"><p>Default: <i>Qty:</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Qty:</i></p></td>
             <td><input type="text" name="qty" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['qty']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Single Item</p></td>
-            <td class="tableDescription"><p>Default: <i>Item</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Item</i></p></td>
             <td><input type="text" name="single_item" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['single_item']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Multiple Items</p></td>
-            <td class="tableDescription"><p>Default: <i>Items</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Items</i></p></td>
             <td><input type="text" name="multiple_items" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['multiple_items']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Subtotal</p></td>
-            <td class="tableDescription"><p>Default: <i>Subtotal</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Subtotal</i></p></td>
             <td><input type="text" name="subtotal" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['subtotal']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Total</p></td>
-            <td class="tableDescription"><p>Default: <i>Total</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Total</i></p></td>
             <td><input type="text" name="total" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['total']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Tax</p></td>
-            <td class="tableDescription"><p>Default: <i>Tax</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Tax</i></p></td>
             <td><input type="text" name="tax" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['tax']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Shipping</p></td>
-            <td class="tableDescription"><p>Default: <i>Shipping</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Shipping</i></p></td>
             <td><input type="text" name="shipping" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['shipping']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Calculate Shipping</p></td>
-            <td class="tableDescription"><p>Default: <i>Calculate Shipping</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Calculate Shipping</i></p></td>
             <td><input type="text" name="calculateshipping" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['calculateshipping']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Update Button</p></td>
-            <td class="tableDescription"><p>Default: <i>update</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>update</i></p></td>
             <td><input type="text" name="update_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['update_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Checkout Button</p></td>
-            <td class="tableDescription"><p>Default: <i>checkout</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>checkout</i></p></td>
             <td><input type="text" name="checkout_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Checkout Check/Money Order Button</p></td>
-            <td class="tableDescription"><p>Default: <i>Checkout with Check/Money Order</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with Check/Money Order</i></p></td>
             <td><input type="text" name="checkout_checkmoneyorder_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_checkmoneyorder_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Checkout PayPal Button</p></td>
-            <td class="tableDescription"><p>Default: <i>Checkout with PayPal</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with PayPal</i></p></td>
             <td><input type="text" name="checkout_paypal_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_paypal_button']), 'wpStoreCart'); echo'" />
             </td></tr>
             ';
@@ -5352,84 +5352,84 @@ if(!function_exists('wpscAdminPageCategories')) {
             if(file_exists(WP_PLUGIN_DIR.'/wpsc-payments-pro/saStoreCartPro/payments.pro.php')) {
                 echo '
                 <tr><td><p>Checkout Authorize.NET Button</p></td>
-                <td class="tableDescription"><p>Default: <i>Checkout with Authorize.NET</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with Authorize.NET</i></p></td>
                 <td><input type="text" name="checkout_authorizenet_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_authorizenet_button']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Checkout 2checkout Button</p></td>
-                <td class="tableDescription"><p>Default: <i>Checkout with 2Checkout</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with 2Checkout</i></p></td>
                 <td><input type="text" name="checkout_2checkout_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_2checkout_button']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Checkout Liberty Reserve Button</p></td>
-                <td class="tableDescription"><p>Default: <i>Checkout with Liberty Reserve</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with Liberty Reserve</i></p></td>
                 <td><input type="text" name="checkout_libertyreserve_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_libertyreserve_button']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Checkout Skrill/Moneybookers Button</p></td>
-                <td class="tableDescription"><p>Default: <i>Checkout with Moneybookers</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with Moneybookers</i></p></td>
                 <td><input type="text" name="checkout_moneybookers_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_moneybookers_button']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Full name on card</p></td>
-                <td class="tableDescription"><p>Default: <i>Full name on card</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Full name on card</i></p></td>
                 <td><input type="text" name="cc_name" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_name']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Credit Card #</p></td>
-                <td class="tableDescription"><p>Default: <i>Credit Card #</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Credit Card #</i></p></td>
                 <td><input type="text" name="cc_number" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_number']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Expires</p></td>
-                <td class="tableDescription"><p>Default: <i>Expires</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Expires</i></p></td>
                 <td><input type="text" name="cc_expires" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_expires']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Month</p></td>
-                <td class="tableDescription"><p>Default: <i>Month</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Month</i></p></td>
                 <td><input type="text" name="cc_expires_month" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_expires_month']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Year</p></td>
-                <td class="tableDescription"><p>Default: <i>Year</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Year</i></p></td>
                 <td><input type="text" name="cc_expires_year" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_expires_year']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Address of Credit Card</p></td>
-                <td class="tableDescription"><p>Default: <i>Address of Credit Card</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Address of Credit Card</i></p></td>
                 <td><input type="text" name="cc_address" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_address']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>Zipcode of Credit Card</p></td>
-                <td class="tableDescription"><p>Default: <i>Zipcode of Credit Card</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Zipcode of Credit Card</i></p></td>
                 <td><input type="text" name="cc_postalcode" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_postalcode']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
 
                 echo '
                 <tr><td><p>CVV</p></td>
-                <td class="tableDescription"><p>Default: <i>CVV</i></p></td>
+                <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>CVV</i></p></td>
                 <td><input type="text" name="cc_cvv" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['cc_cvv']), 'wpStoreCart'); echo'" />
                 </td></tr>
                 ';
@@ -5438,102 +5438,102 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             echo '
             <tr><td><p>Remove Link</p></td>
-            <td class="tableDescription"><p>Default: <i>remove</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>remove</i></p></td>
             <td><input type="text" name="remove_link" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['remove_link']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Empty Button</p></td>
-            <td class="tableDescription"><p>Default: <i>empty</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>empty</i></p></td>
             <td><input type="text" name="empty_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['empty_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Empty Message</p></td>
-            <td class="tableDescription"><p>Default: <i>Your cart is empty!</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Your cart is empty!</i></p></td>
             <td><input type="text" name="empty_message" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['empty_message']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Item Added Message</p></td>
-            <td class="tableDescription"><p>Default: <i>Item added!</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Item added!</i></p></td>
             <td><input type="text" name="item_added_message" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['item_added_message']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Enter Coupon</p></td>
-            <td class="tableDescription"><p>Default: <i>Enter coupon:</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Enter coupon:</i></p></td>
             <td><input type="text" name="enter_coupon" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['enter_coupon']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Price Error</p></td>
-            <td class="tableDescription"><p>Default: <i>Invalid price format!</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Invalid price format!</i></p></td>
             <td><input type="text" name="price_error" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['price_error']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Quantity Error</p></td>
-            <td class="tableDescription"><p>Default: <i>Item quantities must be whole numbers!</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Item quantities must be whole numbers!</i></p></td>
             <td><input type="text" name="quantity_error" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['quantity_error']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Checkout Error</p></td>
-            <td class="tableDescription"><p>Default: <i>Your order could not be processed!</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Your order could not be processed!</i></p></td>
             <td><input type="text" name="checkout_error" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_error']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Add to Cart</p></td>
-            <td class="tableDescription"><p>Default: <i>Add to Cart</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Add to Cart</i></p></td>
             <td><input type="text" name="add_to_cart" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['add_to_cart']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Out of Stock</p></td>
-            <td class="tableDescription"><p>Default: <i>Out of Stock</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Out of Stock</i></p></td>
             <td><input type="text" name="out_of_stock" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['out_of_stock']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Login</p></td>
-            <td class="tableDescription"><p>Default: <i>Login</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Login</i></p></td>
             <td><input type="text" name="login" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['login']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Logout</p></td>
-            <td class="tableDescription"><p>Default: <i>Logout</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Logout</i></p></td>
             <td><input type="text" name="logout" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['logout']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Register</p></td>
-            <td class="tableDescription"><p>Default: <i>Register</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Register</i></p></td>
             <td><input type="text" name="register" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['register']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Username</p></td>
-            <td class="tableDescription"><p>Default: <i>Username</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Username</i></p></td>
             <td><input type="text" name="username" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['username']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Password</p></td>
-            <td class="tableDescription"><p>Default: <i>Password</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Password</i></p></td>
             <td><input type="text" name="password" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['password']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Email</p></td>
-            <td class="tableDescription"><p>Default: <i>Email</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Email</i></p></td>
             <td><input type="text" name="email" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['email']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>My Orders &amp; Purchases</p></td>
-            <td class="tableDescription"><p>Default: <i>My Orders &amp; Purchases</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>My Orders &amp; Purchases</i></p></td>
             <td><input type="text" name="myordersandpurchases" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['myordersandpurchases']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Required Symbol</p></td>
-            <td class="tableDescription"><p>Default: <i>*</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>*</i></p></td>
             <td><input type="text" name="required_symbol" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['required_symbol']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Required Symbol Description</p></td>
-            <td class="tableDescription"><p>Default: <i>* - Fields with an asterick are required.</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>* - Fields with an asterick are required.</i></p></td>
             <td><input type="text" name="required_help" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['required_help']), 'wpStoreCart'); echo'" />
             </td></tr>
 
             <tr><td><p>Guest Checkout</p></td>
-            <td class="tableDescription"><p>Default: <i>Guest Checkout</i></p></td>
+            <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Guest Checkout</i></p></td>
             <td><input type="text" name="guestcheckout" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['guestcheckout']), 'wpStoreCart'); echo'" />
             </td></tr>
 
@@ -5546,16 +5546,16 @@ if(!function_exists('wpscAdminPageCategories')) {
             echo '<table class="widefat">
             <thead><tr><th>'.__('Option','wpstorecart').'</th><th>'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
 
-            <tr><td><p>Require Registration? <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.  There are 2 "No" options, the first one leaves registration optional, the 2nd "No" removes the ability to register altogether.</div></p></td>
-            <td class="tableDescription"><p>Controls whether or not your site requires registration before checkout completes.</p></td>
+            <tr><td><p>'.__('Require Registration?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-4745996" /><div class="tooltip-content" id="example-content-4745996">Set to "Yes" if you require the customer to register on your site before a purchase can be completed, set it to "No" if you do not want customers to have to register.  There are 2 "No" options, the first one leaves registration optional, the 2nd "No" removes the ability to register altogether.</div></p></td>
+            <td class="tableDescription"><p>'.__('Controls whether or not your site requires registration before checkout completes.','wpstorecart').'</p></td>
             <td><p><label for="requireregistration"><input type="radio" id="requireregistration_yes" name="requireregistration" value="true" '; if ($wpStoreCartOptions['requireregistration'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes, only registered users can buy</label><br /><label for="requireregistration_no"><input type="radio" id="requireregistration_no" name="requireregistration" value="false" '; if ($wpStoreCartOptions['requireregistration'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No, but make it optional to register</label><br /><label for="requireregistration_disable"><input type="radio" id="requireregistration_disable" name="requireregistration" value="disable" '; if ($wpStoreCartOptions['requireregistration'] == "disable") { _e('checked="checked"', "wpstorecart"); }; echo '/> No, disable registration. Guest checkout only.</label></p>
             </td></tr>
-            <tr><td><p>Show Prices To Guests? <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9984745996" /><div class="tooltip-content" id="example-content-9984745996">Set to "Yes" if you want to show guests (non-logged in users) the full price of products.  Set to "No" if you want to hide prices from guests.</div></p></td>
-            <td class="tableDescription"><p>Display prices to guests.  Turn off to hide the prices from non-logged in users.</p></td>
+            <tr><td><p>'.__('Show Prices To Guests?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9984745996" /><div class="tooltip-content" id="example-content-9984745996">Set to "Yes" if you want to show guests (non-logged in users) the full price of products.  Set to "No" if you want to hide prices from guests.</div></p></td>
+            <td class="tableDescription"><p>'.__('Display prices to guests.  Turn off to hide the prices from non-logged in users.','wpstorecart').'</p></td>
             <td><p><label for="show_price_to_guests"><input type="radio" id="show_price_to_guests_yes" name="show_price_to_guests" value="true" '; if ($wpStoreCartOptions['show_price_to_guests'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes, display prices to everyone</label><br /><label for="show_price_to_guests_no"><input type="radio" id="show_price_to_guests_no" name="show_price_to_guests" value="false" '; if ($wpStoreCartOptions['show_price_to_guests'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No, only reveal prices to logged in users.</label></p>
             </td></tr>
-            <tr><td><p>Replacement Text for Hidden Prices? <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9984745997" /><div class="tooltip-content" id="example-content-9984745997">If you hide prices from guests, then this is what they\'ll see in place of the price.</div></p></td>
-            <td class="tableDescription"><p>When prices are hidden from non-logged in users, this is what\'s displayed in their place.</p></td>
+            <tr><td><p>'.__('Replacement Text for Hidden Prices?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-9984745997" /><div class="tooltip-content" id="example-content-9984745997">If you hide prices from guests, then this is what they\'ll see in place of the price.</div></p></td>
+            <td class="tableDescription"><p>'.__('When prices are hidden from non-logged in users, this is what\'s displayed in their place.','wpstorecart').'</p></td>
             <td><p><label for="logged_out_price"><input type="text" id="logged_out_price" name="logged_out_price" value="'.$wpStoreCartOptions['logged_out_price'].'" /> </label></p>
             </td></tr>
             </table>
