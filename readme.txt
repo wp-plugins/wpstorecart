@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.7 =
-* Updated: More of the admin panel is translatable 
+* Updated: More of the admin panel is translatable.
 
 = 3.9.6 =
 * Updated: Did the same thing with the Main Page designer, prompting admin's to create and set the Main Page before attempting to use the Main Page designer.
