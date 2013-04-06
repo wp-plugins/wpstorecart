@@ -5249,12 +5249,12 @@ if(!function_exists('wpscAdminPageCategories')) {
             <table class="widefat">
                                     <thead><tr><th>'.__('Option','wpstorecart').'</th><th>'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
             <tr><td><p>'.__('Accept Payments via Mail?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-78777" /><div class="tooltip-content" id="example-content-78777">Want to accept payments through the mail from check, money orders, or cash on delivery (COD)?  You can even use this to record your cash transactions in your brick and mortar store if you wish.  Remember, don\'t send anything until the payment clears!</div></p></td>
-            <td class="tableDescription"><p>If set to Yes, customers can purchase using Check, Money Order or COD</p></td>
+            <td class="tableDescription"><p>'.__('If set to Yes, customers can purchase using Check, Money Order or COD','wpstorecart').'</p></td>
             <td><p><label for="allowcheckmoneyorder"><input type="radio" id="allowcheckmoneyorder_yes" name="allowcheckmoneyorder" value="true" '; if ($wpStoreCartOptions['allowcheckmoneyorder'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="allowcheckmoneyorder_no"><input type="radio" id="allowcheckmoneyorder_no" name="allowcheckmoneyorder" value="false" '; if ($wpStoreCartOptions['allowcheckmoneyorder'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
 
             <tr><td><p>'.__('Text to Display','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-415555" /><div class="tooltip-content" id="example-content-415555">You should place instructions here as to what address the customer should send their check or money orders to.  Be complete and accurate, and be sure to tell them how long they should wait and who they can contact about their order.</div></p></td>
-            <td class="tableDescription"><p>The text/html that is displayed to customers who choose to pay via check or money order.</p></td>
+            <td class="tableDescription"><p>'.__('The text/html that is displayed to customers who choose to pay via check or money order.','wpstorecart').'</p></td>
             <td><textarea name="checkmoneyordertext" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkmoneyordertext']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
 
@@ -5274,12 +5274,12 @@ if(!function_exists('wpscAdminPageCategories')) {
             <thead><tr><th>'.__('Option','wpstorecart').'</th><th>'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
 
             <tr><td><p>'.__('Successful Payment Text','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-400" /><div class="tooltip-content" id="example-content-400">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after successfully completing the payment.</div></p></td>
-            <td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after successfully paying.</p></td>
+            <td class="tableDescription"><p>'.__('The text and HTML that is displayed when a customers returns from the payment gateway after successfully paying.','wpstorecart').'</p></td>
             <td><textarea name="success_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['success_text']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
 
             <tr><td><p>'.__('Failed Payment Text','wpstorecart').'<img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-401" /><div class="tooltip-content" id="example-content-401">After the customer is redirected to the payment gateway, such as PayPal, this is the text they will see after failing to complete the payment.</div></p></td>
-            <td class="tableDescription"><p>The text and HTML that is displayed when a customers returns from the payment gateway after failing the payment process.</p></td>
+            <td class="tableDescription"><p>'.__('The text and HTML that is displayed when a customers returns from the payment gateway after failing the payment process.','wpstorecart').'</p></td>
             <td><textarea name="failed_text" style="width:300px;height:250px;">'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['failed_text']), 'wpStoreCart'); echo'</textarea>
             </td></tr>
 
