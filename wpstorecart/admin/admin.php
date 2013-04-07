@@ -191,10 +191,10 @@ if (!function_exists('wpscAdminWidgetRecentSalesHelp')) {
             wpscBasicStatsWidgets();
             wpscAdminWidgetHelp(__('Get Help', 'wpstorecart'), '
                     <ul style="list-style:none;">
-                    <li> <img src="'. plugins_url().'/wpstorecart/images/help.png" /> <a href="http://wpstorecart.com/documentation/" target="_blank">'.__('Documentation', 'wpstorecart').'</a></li>
-                    <li> <img src="'. plugins_url().'/wpstorecart/images/table.png" /> <a href="http://wpstorecart.com/forums/" target="_blank">'.__('Support Forums', 'wpstorecart').'</a></li>
-                    <li> <img src="'. plugins_url().'/wpstorecart/images/bug.png" /> <a href="http://wpstorecart.com/bugtracker/thebuggenie/wpstorecart/issues/new/bugreport" target="_blank">'.__('Bug Report', 'wpstorecart').'</a></li>
-                    <li> <img src="'. plugins_url().'/wpstorecart/images/email.png" /> <a href="http://wpstorecart.com/support/contact-us/" target="_blank">'.__('Contact Us', 'wpstorecart').'</a></li>
+                    <li> <img src="'. plugins_url().'/wpstorecart/images/help.png" /> <a href="https://wpstorecart.com/documentation/" target="_blank">'.__('Documentation', 'wpstorecart').'</a></li>
+                    <li> <img src="'. plugins_url().'/wpstorecart/images/table.png" /> <a href="https://wpstorecart.com/forums/" target="_blank">'.__('Support Forums', 'wpstorecart').'</a></li>
+                    <li> <img src="'. plugins_url().'/wpstorecart/images/bug.png" /> <a href="https://wpstorecart.com/help-support/contact-us/" target="_blank">'.__('Bug Report', 'wpstorecart').'</a></li>
+                    <li> <img src="'. plugins_url().'/wpstorecart/images/email.png" /> <a href="https://wpstorecart.com/support/contact-us/" target="_blank">'.__('Contact Us', 'wpstorecart').'</a></li>
                     </ul>');
             ?>         
         </div><?php
