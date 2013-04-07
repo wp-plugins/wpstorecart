@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.10 =
-* Updated: Removed outdated links and replaced with new links
+* Updated: Removed outdated links and replaced with new links.
 
 = 3.9.9 =
 * Fixed: Alert settings admin window resized for correct display on lower resolutions
