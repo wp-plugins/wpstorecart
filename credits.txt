@@ -1,0 +1,4 @@
+
+
+* The color picker icon is based on an icon from the amazing Fugue icon set: http://p.yusukekamiyamane.com/
+* The gradient image, the hue image, and the math functions are courtesy of the eyecon.co jQuery color picker: http://www.eyecon.ro/colorpicker/
