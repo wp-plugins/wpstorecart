@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.11 =
-* Updated: upgraded jquery.dataTables.min.js to version 1.9.4
+* Updated: upgraded jquery.dataTables.min.js to version 1.9.4.
 * Fixed: Minor bug fixes to the shipping system
 * Fixed: Patched issue where total price would display incorrectly on some orders over $1000 with shipping enabled
 
