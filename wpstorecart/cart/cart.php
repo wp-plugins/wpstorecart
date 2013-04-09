@@ -1290,7 +1290,7 @@ class wpsc_shoppingcart {
                             } else {
                                 $output .= "<span id='wpsc-subtotal"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['subtotal'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total,2) . $text['currency_symbol_right'] ."</strong></span><br />";
                             }
-                            $output .= '<input type="hidden" name="wpsc_cart_temp_subtotal" id="wpsc_cart_temp_subtotal" value="'.number_format($this->total,2).'" />';
+                            $output .= '<input type="hidden" name="wpsc_cart_temp_subtotal" id="wpsc_cart_temp_subtotal" value="'.number_format($this->total,2,'.','').'" />';
                         }
 
                         // Shipping 
@@ -1329,8 +1329,8 @@ class wpsc_shoppingcart {
                             } else {
                                 $output .= "<span id='wpsc-total"; if(isset($wpscWidgetSettings)) {$output .= '-widget';} $output .="'>" . $text['total'] . ": <strong>" . $text['currency_symbol'] . number_format($this->total + $totalshipping + $taxamount,2) . $text['currency_symbol_right'] ."</strong></span><br />";
                             }
-                            $output .= '<input type="hidden" name="wpsc_cart_temp_total" id="wpsc_cart_temp_total" value="'.number_format($this->total + $totalshipping + $taxamount,2).'" />';
                         }
+                        $output .= '<input type="hidden" name="wpsc_cart_temp_total" id="wpsc_cart_temp_total" value="'.number_format($this->total + $totalshipping + $taxamount,2).'" />';
 
                         if(!$cart_is_empty) {
                             if ($button['update']) { $input_type = 'image'; $src = ' src="' . $button['update'] . '" alt="' . $text['update_button'] . '" title="" ';	}

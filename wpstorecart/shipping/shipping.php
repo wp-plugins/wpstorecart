@@ -238,7 +238,10 @@ if(!function_exists('wpscShippingAPIAvailbleServicesDropdown')) {
                 function wpscShippingChangeService() {
                     var wpscShippingValue = jQuery(\'#wpsc-shipping-dropdown option:selected\').text(); 
                     var wpscShippingAmount = wpscShippingValue.replace( /(^.*\[|\].*$)/g, \'\' ); 
-                    jQuery(\'#wpsc-shipping-amount\').html(\'<strong>'.htmlentities($wpStoreCartOptions['currency_symbol']).'\' + wpscShippingAmount + \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'</strong>\');jQuery(\'#wpsc_cart_temp_shipping\').val(wpscShippingAmount); jQuery(\'#wpsc_cart_temp_total\').val( parseFloat(jQuery(\'#wpsc_cart_temp_shipping\').val()) + parseFloat(jQuery(\'#wpsc_cart_temp_tax\').val()) + parseFloat(jQuery(\'#wpsc_cart_temp_subtotal\').val()) );  jQuery(\'#wpsc-total\').html(\''.$wpStoreCartOptions['total'].': <strong>'.htmlentities($wpStoreCartOptions['currency_symbol']).'\' + parseFloat(jQuery(\'#wpsc_cart_temp_total\').val()).toFixed(2) + \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'</strong>\');                 
+                    jQuery(\'#wpsc-shipping-amount\').html(\'<strong>'.htmlentities($wpStoreCartOptions['currency_symbol']).'\' + wpscShippingAmount + \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'</strong>\');
+                    jQuery(\'#wpsc_cart_temp_shipping\').val(wpscShippingAmount); 
+                    jQuery(\'#wpsc_cart_temp_total\').val( parseFloat(jQuery(\'#wpsc_cart_temp_shipping\').val()) + parseFloat(jQuery(\'#wpsc_cart_temp_tax\').val()) + parseFloat(jQuery(\'#wpsc_cart_temp_subtotal\').val()) );  
+                    jQuery(\'#wpsc-total\').html(\''.$wpStoreCartOptions['total'].': <strong>'.htmlentities($wpStoreCartOptions['currency_symbol']).'\' + parseFloat(jQuery(\'#wpsc_cart_temp_total\').val()).toFixed(2) + \''.htmlentities($wpStoreCartOptions['currency_symbol_right']).'</strong>\');                 
                 }
 
                 jQuery(document).ready(function() { // Scans for the lowest shipping price
