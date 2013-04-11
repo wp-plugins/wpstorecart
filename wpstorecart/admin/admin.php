@@ -75,6 +75,7 @@ if (!function_exists('wpscAdminMenu')) {
             <li id="wpsc-menu-dashboard" class="selected">
                 <a href="admin.php?page=wpstorecart-new-admin"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_dashboard.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Dashboard', 'wpstorecart');?></span></a>
                 <ul>
+                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/controller.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-wizard"><?php _e('Wizard', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/cart_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-appstore"><?php _e('Addons', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/lightbulb.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-alerts"><?php _e('Alerts', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/application_form_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-diagnostics"><?php _e('Diagnostics', 'wpstorecart');?></a></li>
@@ -3808,7 +3809,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
                                         function wpscSaveAttributeGroups() {
                                             if (confirm("'.__('Wait! Are you sure want to save these attributes?  If you add or subtract any Attribute Group after saving, it will invalidate these attribute combinations.  That means you should finalize all possible Attribute Groups before saving.  If you are definitely ready to save, then please confirm.  However, if you will be adding additional Attribute Groups, then please cancel to abort saving now.  If this message sounds like gerberish or you just want some futher clarification, please watch the Video Tutorial for this section before proceeding.','wpstorecart').'")==true) {
-                                                    wpscDirectSaveAttributeGroups();
+                                                wpscDirectSaveAttributeGroups();
                                                 return false;
                                             } else {
                                                 return false;
