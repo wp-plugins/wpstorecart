@@ -86,7 +86,7 @@ Or, if you want to install manually:
 
 = 3.9.12 =
 * Updated: /languages/wpstorecart.pot file added for i18n translations
-* Updated: Wizards was added to the Dashboard menu
+* Updated: Wizard was added to the Dashboard menu
 
 = 3.9.11 =
 * Updated: upgraded jquery.dataTables.min.js to version 1.9.4
