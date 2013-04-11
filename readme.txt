@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.13 =
-* Fixed: More Info button should now always direct to the product's page
+* Fixed: More Info button should now always direct to the product's page.
 
 = 3.9.12 =
 * Updated: /languages/wpstorecart.pot file added for i18n translations
