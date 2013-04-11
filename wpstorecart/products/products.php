@@ -556,7 +556,7 @@ if(!function_exists('wpscProductGetCatalog')) {
                                                         $wpsc_result['shipping'] = '0.00';
                                                     }
 
-                                                    $output .= '<li class="wpsc-mock-buttons" id="wpscsort_6">'; $output .= apply_filters('wpsc_display_catalog_before_addtocart', ''); $output.= wpscProductGetAddToCartButton($wpsc_result['primkey'], $theActualPrice); $output .= apply_filters('wpsc_display_catalog_after_addtocart', '');  $output .= apply_filters('wpsc_display_catalog_before_moreinfo', ''); $output.='<button class="wpsc-button wpsc-moreinfo">'. __('More Info','wpstorecart').'</button>'; $output .= apply_filters('wpsc_display_catalog_after_moreinfo', ''); $output .='</li>';
+                                                    $output .= '<li class="wpsc-mock-buttons" id="wpscsort_6">'; $output .= apply_filters('wpsc_display_catalog_before_addtocart', ''); $output.= wpscProductGetAddToCartButton($wpsc_result['primkey'], $theActualPrice); $output .= apply_filters('wpsc_display_catalog_after_addtocart', '');  $output .= apply_filters('wpsc_display_catalog_before_moreinfo', ''); $output.='<form action="'.get_permalink($wpsc_result['postid']).'" method="post"><button class="wpsc-button wpsc-moreinfo">'. __('More Info','wpstorecart').'</button></form>'; $output .= apply_filters('wpsc_display_catalog_after_moreinfo', ''); $output .='</li>';
 
                                                 } elseif ($wpsc_price_type == 'membership' ) {
                                                         //$output .= $this->displaySubscriptionBuyNow($wpsc_result['primkey'], false);
