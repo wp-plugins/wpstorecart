@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.15 =
-* Updated: Settings page updated to remove settings depreciated from 2.x
+* Updated: Settings page updated to remove settings depreciated from 2.x.
 
 = 3.9.14 =
 * Fixed: Corrected an incorrect URL 
