@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.14 =
-* Fixed: Corrected an incorrect URL 
+* Fixed: Corrected an incorrect URL.
 
 = 3.9.13 =
 * Fixed: More Info button should now always direct to the product's page
