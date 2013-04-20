@@ -14,6 +14,10 @@ $user_email=$_POST['email'];
 $user_pass = $_POST['user_pass'];
 $redirect_to = $_POST['redirect_to'];
 
+if(@!isset($_SESSION)) {
+        @session_start();
+}
+
 // Allows us to save this information in case we need to redisplay it later.
 $_SESSION['wpsc_email'] = $user_email;
 $_SESSION['wpsc_password'] = $user_pass;

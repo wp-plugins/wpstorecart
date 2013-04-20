@@ -158,7 +158,7 @@ if(!function_exists('wpscProductGetCatalog')) {
      * @param type $orderby
      * @return string 
      */
-    function wpscProductGetCatalog($quantity = 10, $category = null, $displayOrder = 'List all products in custom order', $displayThumb='true', $displayIntroDescription='true', $displayDescription='false', $displayThumbMaxWidth=100, $displayThumbMaxHeight=100, $orderby='') {
+    function wpscProductGetCatalog($quantity = 10, $category = null, $displayOrder = 'List all products in custom order', $displayThumb='true', $displayIntroDescription='true', $displayDescription='false', $displayThumbMaxWidth=NULL, $displayThumbMaxHeight=NULL, $orderby='') {
         global $wpdb, $current_user, $wpsc_result;
         
         $listsubcategories = false;
@@ -257,6 +257,9 @@ if(!function_exists('wpscProductGetCatalog')) {
 
         $results = $wpdb->get_results( $sql , ARRAY_A );
 
+        if( $displayThumbMaxWidth==NULL) {$displayThumbMaxWidth=$wpStoreCartOptions['wpStoreCartwidth'];} 
+        if( $displayThumbMaxHeight==NULL) {$displayThumbMaxHeight=$wpStoreCartOptions['wpStoreCartheight'];}
+        
         if($displayThumb=='true') {
         $usepictures='true';
         $maxImageWidth = $displayThumbMaxWidth;
