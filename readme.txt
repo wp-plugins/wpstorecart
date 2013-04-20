@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.16 =
-* Fixed: Patched a bug where the image size for categories was not adjusting correctly
-* Fixed: Registration now explicitly starts a session if one isn't detected as started
+* Fixed: Patched a bug where the image size for categories was not adjusting correctly.
+* Fixed: Registration now explicitly starts a session if one isn't detected as started.
 
 = 3.9.15 =
 * Updated: Settings page updated to remove settings depreciated from 2.x
