@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.18 =
-* Fixed: Patched issue with registration failing when collecting certain shipping information
+* Fixed: Patched issue with registration failing when collecting certain shipping information.
 
 = 3.9.17 =
 * Fixed: Patched an issue that prevented attributes from being deleted
