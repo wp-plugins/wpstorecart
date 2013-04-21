@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.17 =
-* Fixed: Patched an issue that prevented attributes from being deleted
-* Fixed: Patched a minor security flaw
+* Fixed: Patched an issue that prevented attributes from being deleted.
+* Fixed: Patched a minor security flaw.
 
 = 3.9.16 =
 * Fixed: Patched a bug where the image size for categories was not adjusting correctly
