@@ -7,12 +7,23 @@ if (!function_exists('add_action')) {
     require_once("../../../../../wp-config.php");
 }
 
-global $wpdb;
+global $wpdb, $current_user;
 
-$keytodelete = intval($_POST['keytodelete']);
+wp_get_current_user();
+if ( 0 == $current_user->ID ) {
+    // Not logged in.
+} else {
 
-$wpdb->query("DELETE FROM `{$wpdb->prefix}wpstorecart_packages` WHERE `primkey`={$keytodelete};");
+    error_reporting(E_ALL);
+    
+    if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) {
+            die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
+    }
+    
+    $keytodelete = intval($_POST['keytodelete']);
 
-return $wpdb->insert_id;
+    $wpdb->query("DELETE FROM `{$wpdb->prefix}wpstorecart_quickvar` WHERE `primkey`={$keytodelete};");
+
+}
 
 ?>

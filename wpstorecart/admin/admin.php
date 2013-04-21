@@ -3699,6 +3699,18 @@ if(!function_exists('wpscAdminPageCategories')) {
                             
                                 echo '<div id="wpsc-advanced-attribute-div" style="'.$display_attributes.'">';
                                 
+                                echo '
+                                <script type="text/javascript">
+                                    function wpscDeleteAttribute(keytodelete) {
+                                        if(confirm("'.__('WARNING! We enourage you to set inventory to ON and set the stock of this item to 0, instead of deleting it! If this is the last attribute in a group, you may invalidate all your attributes by deleting this. If any customers have ordered any product with this attribute, their orders will no longer correctly render this product.  Deleting all attributes of this type may possibly delete all of your attribute combinations.  Proceed with extreme caution, only if you fully understand this warning and implications.  You must refresh the page after deleting to see all changes.  Are you sure you want to delete this attribute?', 'wpstorecart').'")) {
+                                            jQuery.ajax({type:\'POST\', url: \''.plugins_url() . '/wpstorecart/wpstorecart/products/delattribute.php\', data:{\'keytodelete\': keytodelete}, success: function(response) { 
+                                                jQuery("#wpscid-wpstorecart_quickvar-"+keytodelete).remove();
+                                            }}); 
+                                        }                                        
+                                    }
+                                </script>
+                                ';
+                                
                                 $getTheAttributes = wpscProductGetAttributes($wpscVariationParent);
                                 if(@!isset($getTheAttributes[0]['useinventory'])) {
                                     $getTheAttributes[0]['useinventory'] = 0;
@@ -3726,7 +3738,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     echo '<tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr>';
                                     echo '</thead><tbody id="wpsc-attribute-group-tbody-'.wpscSlug($wpscAttributesGroupKey).'">';
                                     foreach($wpscAttributesGroup["{$wpscAttributesGroupKey}"] as $wpscFinalAttributeGroup) {
-                                        echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td><img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="" style="cursor:pointer;" onclick="" /> '.$wpscFinalAttributeGroup['primkey'].'</td>';
+                                        echo '<tr id="wpscid-wpstorecart_quickvar-'.$wpscFinalAttributeGroup['primkey'].'"><td><img src="'.plugins_url().'/wpstorecart/images/cross.png" alt="" style="cursor:pointer;" onclick="wpscDeleteAttribute('.$wpscFinalAttributeGroup['primkey'].');" /> '.$wpscFinalAttributeGroup['primkey'].'</td>';
                                         echo '<td><div>'.$wpscFinalAttributeGroup['title'].'</div></td>';
                                         echo '<td><div>'.$wpscFinalAttributeGroup['price'].'</div></td>';
                                         echo '<td>'.$wpscFinalAttributeGroup['type'].'</td>';

@@ -7,12 +7,25 @@ if (!function_exists('add_action')) {
     require_once("../../../../../wp-config.php");
 }
 
-global $wpdb;
+global $wpdb, $current_user;
 
-$productkey = intval($_POST['productkey']);
+wp_get_current_user();
+if ( 0 == $current_user->ID ) {
+    // Not logged in.
+} else {
 
-$wpdb->query("INSERT `{$wpdb->prefix}wpstorecart_packages` (`primkey`, `productkey`, `weight`, `length`, `width`, `depth`, `options`) VALUES (NULL, '{$productkey}', '0', '0', '0', '0', '');");
+    error_reporting(E_ALL);
+    
+    if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) {
+            die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
+    }
 
-echo $wpdb->insert_id;
+    $productkey = intval($_POST['productkey']);
+
+    $wpdb->query("INSERT `{$wpdb->prefix}wpstorecart_packages` (`primkey`, `productkey`, `weight`, `length`, `width`, `depth`, `options`) VALUES (NULL, '{$productkey}', '0', '0', '0', '0', '');");
+
+    echo $wpdb->insert_id;
+
+}
 
 ?>
