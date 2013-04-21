@@ -50,6 +50,25 @@ foreach ($fields as $field) {
     $specific_items = explode("||", $field['value']);
     if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
         $current_field = trim($_POST[wpscSlug($specific_items[0])]);
+        if($specific_items[2]=='zipcode') {
+            $current_field = trim($_POST['wpsc_shipping_zipcode']);
+        }
+        if($specific_items[2]=='lastname') {
+            $current_field = trim($_POST['wpsc_shipping_lastname']);
+        }   
+        if($specific_items[2]=='firstname') {
+            $current_field = trim($_POST['wpsc_shipping_firstname']);
+        }   
+        if($specific_items[2]=='shippingaddress') {
+            $current_field = trim($_POST['wpsc_shipping_address']);
+        }    
+        if($specific_items[2]=='taxstates') {
+            $current_field = trim($_POST['taxstate']);
+        }        
+        if($specific_items[2]=='taxcountries') {
+            $current_field = trim($_POST['taxcountries']);
+        }         
+        
         $_SESSION['wpsc_'.wpscSlug($specific_items[0])]=$_POST[wpscSlug($specific_items[0])]; // This allows us to save data in case the form needs to be refilled out due to it being incomplete
         if ($specific_items[1]=='required' && $current_field=='') {
             $invalid_detected = 6;
@@ -57,19 +76,16 @@ foreach ($fields as $field) {
     }
 }
 
+
+
+
+
 if($invalid_detected==false) {
     wp_new_user_notification($user_id, $user_pass);
     $credentials=array('remember'=>true,'user_login'=>$user_login,'user_password'=>$user_pass);
     wp_signon($credentials);
 
-    foreach ($fields as $field) {
-        $specific_items = explode("||", $field['value']);
-
-        if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
-            update_usermeta($user_id, wpscSlug($specific_items[0]), $_POST[wpscSlug($specific_items[0])] );
-        }
-        
-    }
+    wpscSaveFields($user_id);
 
     wp_safe_redirect($redirect_to);
     exit();
