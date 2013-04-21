@@ -1,0 +1,6900 @@
+# Copyright (C) 2013 wpStoreCart - Ajax Ecommerce
+# This file is distributed under the same license as the wpStoreCart - Ajax Ecommerce package.
+msgid ""
+msgstr ""
+"Project-Id-Version: wpStoreCart - Ajax Ecommerce 3.9.11\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wpstorecart\n"
+"POT-Creation-Date: 2013-04-11 05:57:11+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: wpstorecart/admin/admin.php:48
+msgid ""
+"wpStoreCart: You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:76 wpstorecart/admin/admin.php:2082
+msgid "Dashboard"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:78 wpstorecart/admin/admin.php:8090
+msgid "Addons"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:79 wpstorecart/admin/admin.php:8084
+msgid "Alerts"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:80 wpstorecart/admin/admin.php:1682
+#: wpstorecart/admin/admin.php:8083
+msgid "Diagnostics"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:86 wpstorecart/admin/admin.php:4255
+#: wpstorecart/admin/admin.php:7225 wpstorecart/admin/admin.php:7307
+#: wpstorecart/admin/admin.php:8070
+msgid "Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:88 wpstorecart/admin/admin.php:4311
+msgid "General"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:89
+msgid "E-mail"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:90 wpstorecart/admin/admin.php:4313
+msgid "Display"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:91 wpstorecart/admin/admin.php:306
+#: wpstorecart/admin/admin.php:1239 wpstorecart/admin/admin.php:2847
+#: wpstorecart/admin/admin.php:4316 wpstorecart/admin/admin.php:6783
+#: wpstorecart/admin/admin.php:7520 wpstorecart/settings/settings.php:119
+msgid "Shipping"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:92
+msgid "Payment"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:93 wpstorecart/admin/admin.php:4319
+msgid "Language"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:94 wpstorecart/admin/admin.php:112
+#: wpstorecart/admin/admin.php:4320 wpstorecart/admin/admin.php:7002
+#: wpstorecart/admin/admin.php:8078
+msgid "Customers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:95 wpstorecart/admin/admin.php:4321
+msgid "Taxes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:101 wpstorecart/admin/admin.php:156
+#: wpstorecart/admin/admin.php:6302
+msgid "Products"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:103 wpstorecart/admin/admin.php:8073
+#: wpstorecart/admin/admin.php:8074
+msgid "Add Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:104
+msgid "Edit Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:105 wpstorecart/admin/admin.php:2199
+#: wpstorecart/admin/admin.php:8076
+msgid "Categories"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:106 wpstorecart/admin/admin.php:7562
+#: wpstorecart/admin/admin.php:8091
+msgid "Import/Export"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:114
+msgid "Manage Customers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:115 wpstorecart/admin/admin.php:8081
+msgid "Add/Remove from Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:121 wpstorecart/admin/admin.php:1642
+#: wpstorecart/admin/admin.php:1665 wpstorecart/admin/admin.php:8072
+#: wpstorecart/wizard/wizard.php:95
+msgid "Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:123
+msgid "All Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:124 wpstorecart/admin/admin.php:6781
+msgid "Completed Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:125
+msgid "Pending Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:126
+msgid "Refunded Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:132
+msgid "Marketing"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:134 wpstorecart/admin/admin.php:158
+#: wpstorecart/admin/admin.php:837 wpstorecart/admin/admin.php:8085
+msgid "Coupons"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:135 wpstorecart/admin/admin.php:7250
+#: wpstorecart/admin/admin.php:8086
+msgid "Group Discounts"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:136 wpstorecart/admin/admin.php:8087
+msgid "Combos"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:142 wpstorecart/admin/admin.php:8088
+msgid "Affiliates"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:147 wpstorecart/admin/admin.php:8089
+msgid "Statistics"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:152 wpstorecart/admin/admin.php:738
+msgid "Help"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:154 wpstorecart/admin/admin.php:195
+msgid "Support Forums"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:155
+msgid "Initial Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:157
+msgid "Widgets"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:159
+msgid "Shortcodes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:160
+msgid "Error Messages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:161
+msgid "Styles &amp; Design"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:162
+msgid "FAQ"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:163
+msgid "More Help"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:189
+msgid "Recent Sales"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:192
+msgid "Get Help"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:194
+msgid "Documentation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:196
+msgid "Bug Report"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:197
+msgid "Contact Us"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:223
+msgid "Add Products to this Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:227
+msgid "Add this product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:231 wpstorecart/admin/admin.php:1190
+msgid "Select product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:276
+msgid "Quantity"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:280 wpstorecart/admin/admin.php:1273
+msgid "Decrease inventory?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:301 wpstorecart/admin/admin.php:316
+#: wpstorecart/admin/admin.php:337
+msgid "ID"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:302 wpstorecart/admin/admin.php:1184
+#: wpstorecart/admin/admin.php:6783 wpstorecart/shortcodes/shortcodes.php:256
+msgid "Order Status"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:303 wpstorecart/admin/admin.php:1186
+#: wpstorecart/admin/admin.php:6783 wpstorecart/admin/admin.php:7516
+msgid "Cart Contents"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:304 wpstorecart/admin/admin.php:1233
+msgid "Payment Processor"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:305 wpstorecart/admin/admin.php:1235
+#: wpstorecart/admin/admin.php:2999 wpstorecart/admin/admin.php:3873
+#: wpstorecart/admin/admin.php:6593 wpstorecart/admin/admin.php:6783
+#: wpstorecart/admin/admin.php:7519
+msgid "Price"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:307 wpstorecart/admin/admin.php:327
+#: wpstorecart/admin/admin.php:1241 wpstorecart/admin/admin.php:1543
+#: wpstorecart/admin/admin.php:6783 wpstorecart/admin/admin.php:7514
+msgid "User"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:308 wpstorecart/admin/admin.php:330
+#: wpstorecart/admin/admin.php:1253 wpstorecart/admin/admin.php:4312
+#: wpstorecart/admin/admin.php:6780 wpstorecart/admin/admin.php:6783
+#: wpstorecart/admin/admin.php:7042 wpstorecart/admin/admin.php:7052
+#: wpstorecart/admin/admin.php:7521 wpstorecart/admin/admin.php:8082
+#: wpstorecart/settings/settings.php:127
+#: wpstorecart/shortcodes/shortcodes.php:310
+msgid "Email"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:309 wpstorecart/admin/admin.php:1255
+#: wpstorecart/admin/admin.php:6783
+msgid "Affiliate"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:310 wpstorecart/admin/admin.php:1267
+#: wpstorecart/admin/admin.php:6783 wpstorecart/admin/admin.php:7522
+#: wpstorecart/shortcodes/shortcodes.php:256
+msgid "Date"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:317 wpstorecart/admin/admin.php:1512
+msgid "Title"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:318 wpstorecart/admin/admin.php:341
+#: wpstorecart/admin/admin.php:1039 wpstorecart/admin/admin.php:1514
+#: wpstorecart/admin/admin.php:2449 wpstorecart/admin/admin.php:3873
+#: wpstorecart/admin/admin.php:4331 wpstorecart/admin/admin.php:4446
+#: wpstorecart/admin/admin.php:4535 wpstorecart/admin/admin.php:4575
+#: wpstorecart/admin/admin.php:4594 wpstorecart/admin/admin.php:4718
+#: wpstorecart/admin/admin.php:4805 wpstorecart/admin/admin.php:4998
+#: wpstorecart/admin/admin.php:5035 wpstorecart/admin/admin.php:5086
+#: wpstorecart/admin/admin.php:5130 wpstorecart/admin/admin.php:5175
+#: wpstorecart/admin/admin.php:5251 wpstorecart/admin/admin.php:5275
+#: wpstorecart/admin/admin.php:5548 wpstorecart/admin/admin.php:6593
+msgid "Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:319 wpstorecart/admin/admin.php:1516
+msgid "Conditions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:320 wpstorecart/admin/admin.php:1518
+msgid "Severity"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:321 wpstorecart/admin/admin.php:1520
+msgid "Image"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:322 wpstorecart/admin/admin.php:1525
+msgid "URL"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:323
+msgid "QTY"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:324
+msgid "Groupable?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:325
+msgid "Clearable?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:326 wpstorecart/admin/admin.php:1541
+msgid "Status"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:328
+msgid "Wp-admin"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:329
+msgid "Txt msg"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:331
+msgid "Desktop"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:338
+msgid "Code"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:339
+msgid "Amount"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:340
+msgid "Percent"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:342 wpstorecart/admin/admin.php:1039
+#: wpstorecart/admin/admin.php:2844 wpstorecart/admin/admin.php:4066
+#: wpstorecart/admin/admin.php:4101 wpstorecart/admin/admin.php:4150
+msgid "Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:343 wpstorecart/admin/admin.php:1039
+msgid "Start Date"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:344
+msgid "End Date"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:370
+msgid "Are you sure you want to remove this record from the database?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:381
+msgid "Are you sure you want to remove this product from the order?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:404
+msgid "Add To Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:481 wpstorecart/admin/admin.php:519
+#: wpstorecart/admin/admin.php:537 wpstorecart/admin/admin.php:556
+#: wpstorecart/admin/admin.php:576 wpstorecart/admin/admin.php:604
+#: wpstorecart/products/products.php:875
+#: wpstorecart/products/products.php:1392 wpstorecart/wizard/wizard.php:273
+#: wpstorecart/wizard/wizard.php:336
+msgid "Save"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:482 wpstorecart/admin/admin.php:538
+#: wpstorecart/admin/admin.php:557 wpstorecart/admin/admin.php:577
+#: wpstorecart/admin/admin.php:2063 wpstorecart/admin/admin.php:2751
+msgid "Cancel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:499
+msgid "Any &amp; all products"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:535 wpstorecart/admin/admin.php:1030
+#: wpstorecart/admin/admin.php:1272 wpstorecart/admin/admin.php:1558
+#: wpstorecart/admin/admin.php:1563 wpstorecart/admin/admin.php:1568
+#: wpstorecart/admin/admin.php:1573 wpstorecart/admin/admin.php:3024
+#: wpstorecart/admin/admin.php:3126 wpstorecart/admin/admin.php:3734
+#: wpstorecart/admin/admin.php:4412 wpstorecart/admin/admin.php:4470
+#: wpstorecart/admin/admin.php:4519 wpstorecart/admin/admin.php:4524
+#: wpstorecart/admin/admin.php:4600 wpstorecart/admin/admin.php:4605
+#: wpstorecart/admin/admin.php:4724 wpstorecart/admin/admin.php:4758
+#: wpstorecart/admin/admin.php:4763 wpstorecart/admin/admin.php:4768
+#: wpstorecart/admin/admin.php:4773 wpstorecart/admin/admin.php:4811
+#: wpstorecart/admin/admin.php:4816 wpstorecart/admin/admin.php:4821
+#: wpstorecart/admin/admin.php:4826 wpstorecart/admin/admin.php:4831
+#: wpstorecart/admin/admin.php:4837 wpstorecart/admin/admin.php:4866
+#: wpstorecart/admin/admin.php:5039 wpstorecart/admin/admin.php:5139
+#: wpstorecart/admin/admin.php:5178 wpstorecart/admin/admin.php:5183
+#: wpstorecart/admin/admin.php:5254 wpstorecart/admin/admin.php:7229
+#: wpstorecart/admin/admin.php:7230 wpstorecart/admin/admin.php:7231
+#: wpstorecart/admin/admin.php:7232 wpstorecart/admin/admin.php:7295
+#: wpstorecart/admin/admin.php:7303 wpstorecart/admin/admin.php:7311
+#: wpstorecart/admin/admin.php:7312 wpstorecart/admin/admin.php:7313
+#: wpstorecart/admin/php/datatable.php:257
+msgid "No"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:535 wpstorecart/admin/admin.php:1030
+#: wpstorecart/admin/admin.php:1272 wpstorecart/admin/admin.php:1557
+#: wpstorecart/admin/admin.php:1562 wpstorecart/admin/admin.php:1567
+#: wpstorecart/admin/admin.php:1572 wpstorecart/admin/admin.php:3024
+#: wpstorecart/admin/admin.php:3126 wpstorecart/admin/admin.php:3690
+#: wpstorecart/admin/admin.php:3736 wpstorecart/admin/admin.php:4412
+#: wpstorecart/admin/admin.php:4470 wpstorecart/admin/admin.php:4519
+#: wpstorecart/admin/admin.php:4524 wpstorecart/admin/admin.php:4600
+#: wpstorecart/admin/admin.php:4605 wpstorecart/admin/admin.php:4724
+#: wpstorecart/admin/admin.php:4758 wpstorecart/admin/admin.php:4763
+#: wpstorecart/admin/admin.php:4768 wpstorecart/admin/admin.php:4773
+#: wpstorecart/admin/admin.php:4811 wpstorecart/admin/admin.php:4816
+#: wpstorecart/admin/admin.php:4821 wpstorecart/admin/admin.php:4826
+#: wpstorecart/admin/admin.php:4831 wpstorecart/admin/admin.php:4837
+#: wpstorecart/admin/admin.php:4866 wpstorecart/admin/admin.php:5039
+#: wpstorecart/admin/admin.php:5139 wpstorecart/admin/admin.php:5178
+#: wpstorecart/admin/admin.php:5183 wpstorecart/admin/admin.php:5254
+#: wpstorecart/admin/admin.php:7229 wpstorecart/admin/admin.php:7230
+#: wpstorecart/admin/admin.php:7231 wpstorecart/admin/admin.php:7232
+#: wpstorecart/admin/admin.php:7295 wpstorecart/admin/admin.php:7303
+#: wpstorecart/admin/admin.php:7311 wpstorecart/admin/admin.php:7312
+#: wpstorecart/admin/admin.php:7313 wpstorecart/admin/php/datatable.php:259
+msgid "Yes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:714
+msgid "Loading..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:738
+msgid "Need help?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:738
+msgid "Read the manual entry for this admin panel."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:739
+msgid "Orders over X get free shipping"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:739
+msgid "Free Shipping"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:739 wpstorecart/admin/admin.php:740
+#: wpstorecart/admin/admin.php:741 wpstorecart/admin/admin.php:742
+#: wpstorecart/admin/admin.php:743 wpstorecart/admin/admin.php:744
+#: wpstorecart/admin/admin.php:745 wpstorecart/admin/admin.php:746
+#: wpstorecart/admin/admin.php:747 wpstorecart/admin/admin.php:748
+#: wpstorecart/admin/admin.php:749 wpstorecart/settings/settings.php:195
+msgid "Buy Now"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:740
+msgid "wpStoreCart PRO"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:740
+msgid "wpStoreCart PRO - All PRO Addons!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:741 wpstorecart/admin/admin.php:742
+msgid "wpscFeeds"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:741
+msgid "Customer customized t-shirts, mugs, etc"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:742
+msgid "Sell recurring memberships &amp; subscriptions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:743 wpstorecart/admin/admin.php:7407
+msgid "wpsc Statistics PRO"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:743
+msgid "Add 72 in-depth charts &amp; statistics."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:744 wpstorecart/admin/admin.php:745
+#: wpstorecart/admin/admin.php:746 wpstorecart/admin/admin.php:747
+#: wpstorecart/admin/admin.php:748
+msgid "Add New Payment Gateways"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:744
+msgid "Accept Authorize.NET SIM Payments"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:745
+msgid "Accept 2Checkout Payments"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:746
+msgid "Accept Liberty Reserve Payments"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:747
+msgid "Accept Skrill / Moneybookers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:748
+msgid "Quickbooks Merchant Services"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:749
+msgid "Add New Shipping Provider"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:749
+msgid "UPS Shipping Quotes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:795
+msgid "What's new in wpStoreCart 3"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:819
+msgid "version"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:856
+msgid "Coupon was removed from the database."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:866
+msgid "Describe your coupon here"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:907 wpstorecart/admin/admin.php:971
+msgid ""
+"ERROR 2: There was a problem with your form!  The database query was "
+"invalid. "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:912
+msgid "Edit successful!  Your coupon details have been saved."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:936
+msgid ""
+"There was a problem loading the coupon you wish to edit.  The query was: "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:976
+msgid "Your coupon details have been saved."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:984
+msgid "There was a problem with your form!  Did not save data."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1023
+msgid "Add a Coupon"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1030
+msgid "Coupons are enabled?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1030 wpstorecart/admin/admin.php:3024
+#: wpstorecart/admin/admin.php:3126 wpstorecart/admin/admin.php:3690
+#: wpstorecart/admin/admin.php:4412 wpstorecart/admin/admin.php:4470
+#: wpstorecart/admin/admin.php:4519 wpstorecart/admin/admin.php:4524
+#: wpstorecart/admin/admin.php:4600 wpstorecart/admin/admin.php:4605
+#: wpstorecart/admin/admin.php:4724 wpstorecart/admin/admin.php:4758
+#: wpstorecart/admin/admin.php:4763 wpstorecart/admin/admin.php:4768
+#: wpstorecart/admin/admin.php:4773 wpstorecart/admin/admin.php:4811
+#: wpstorecart/admin/admin.php:4816 wpstorecart/admin/admin.php:4821
+#: wpstorecart/admin/admin.php:4826 wpstorecart/admin/admin.php:4831
+#: wpstorecart/admin/admin.php:4837 wpstorecart/admin/admin.php:4866
+#: wpstorecart/admin/admin.php:5039 wpstorecart/admin/admin.php:5139
+#: wpstorecart/admin/admin.php:5178 wpstorecart/admin/admin.php:5183
+#: wpstorecart/admin/admin.php:5254 wpstorecart/admin/admin.php:5552
+#: wpstorecart/admin/admin.php:5556 wpstorecart/admin/admin.php:5678
+#: wpstorecart/widgets/widgets.php:85 wpstorecart/widgets/widgets.php:408
+#: wpstorecart/widgets/widgets.php:409 wpstorecart/widgets/widgets.php:410
+#: wpstorecart/widgets/widgets.php:411 wpstorecart/widgets/widgets.php:412
+#: wpstorecart/widgets/widgets.php:594 wpstorecart/widgets/widgets.php:673
+#: wpstorecart/widgets/widgets.php:770 wpstorecart/widgets/widgets.php:771
+#: wpstorecart/widgets/widgets.php:772 wpstorecart/widgets/widgets.php:773
+#: wpstorecart/widgets/widgets.php:774 wpstorecart/widgets/widgets.php:775
+#: wpstorecart/widgets/widgets.php:776 wpstorecart/widgets/widgets.php:777
+#: wpstorecart/widgets/widgets.php:778
+msgid "checked=\"checked\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1030 wpstorecart/shortcodes/shortcodes.php:354
+msgid "Update"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "Coupon Code"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid ""
+"Don't use spaces! This is what people should type or paste into the coupon "
+"box during checkout in order to recieve a discount.  As such, this should be "
+"a short code, with no spaces, all alpha numeric characters, etc."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "Flat Discount"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid ""
+"A flat amount to deduct when the coupon code is used.  You can combine this "
+"with the Pecentage Discount, but for simplicities sake, we recommend "
+"choosing either a flat discount or a percentage, but not both."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "Percentage Discount"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "The percentage of the price to deduct from the purchase."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid ""
+"Take a note of what your coupon is meant to do by writing a description here."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "The product you want the coupon to apply to."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid ""
+"The day which the coupon starts working.  Before this date, the coupon is "
+"invalid."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid "Expiration Date"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1039
+msgid ""
+"The date which the coupon code stops working.  After this date, the coupon "
+"is invalid."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1052 wpstorecart/admin/php/datatable.php:265
+msgid "Any &amp; All Products"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1097
+msgid "Submit Coupon"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1105
+msgid "Edit Coupons"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1180
+msgid "Create a new Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1229
+msgid "Qty"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1234
+msgid "Manual Entry"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1245 wpstorecart/admin/admin.php:6905
+#: wpstorecart/admin/admin.php:7505 wpstorecart/admin/php/datatable.php:227
+#: wpstorecart/admin/php/datatable.php:249
+msgid "Guest"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1259 wpstorecart/admin/admin.php:6657
+#: wpstorecart/admin/admin.php:7534
+msgid "None"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1272
+msgid "Log as a new sale alert &amp; email the customer?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1283
+msgid "Awaiting Payment"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1284
+msgid "Authorized"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1285
+msgid "Cancelled"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1286
+msgid "Charged"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1288
+msgid "Chargeback"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1289
+msgid "Dropped"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1290
+msgid "Invoice Sent"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1291
+msgid "Partially Paid"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1292
+msgid "Pending"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1293
+msgid "Refunded"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1294
+msgid "Under Review"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1309
+msgid "Create Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1349 wpstorecart/admin/admin.php:1472
+#: wpstorecart/admin/admin.php:1842
+msgid "Edit My Alert Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1353
+msgid "Phone number for my text messages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1354
+msgid "Carrier"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1356 wpstorecart/admin/admin.php:3509
+#: wpstorecart/admin/admin.php:3553
+msgid "Custom"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1357
+msgid "(USA) Airfire Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1358
+msgid "(USA) Alaska Communications"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1359
+msgid "(USA) Alltel (Allied Wireless)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1360
+msgid "(USA) Ameritech"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1361
+msgid "(USA) AT&amp;T Enterprise Paging"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1362
+msgid "(USA) AT&amp;T Global Smart Messaging Suite"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1363
+msgid "(USA) AT&amp;T Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1364
+msgid "(USA) BellSouth"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1365
+msgid "(USA) Bluegrass Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1366
+msgid "(USA) Boost Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1367
+msgid "(USA) C Spire Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1368
+msgid "(USA) Cellcom"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1369
+msgid "(USA) Cellular South"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1370
+msgid "(USA) Chariton Valley Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1371
+msgid "(USA) Cleartalk"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1372
+msgid "(USA) Cricket"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1373
+msgid "(USA) Edge Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1374
+msgid "(USA) Element Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1375
+msgid "(USA) Esendex"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1376
+msgid "(USA) Kajeet"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1377
+msgid "(USA) LongLines"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1378
+msgid "(USA) MetroPCS"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1379
+msgid "(USA) Nextech"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1380
+msgid "(USA) Page Plus Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1381
+msgid "(USA) Pioneer Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1382
+msgid "(USA) Qwest Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1383
+msgid "(USA) Red Pocket Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1384
+msgid "(USA) Simple Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1385
+msgid "(USA) South Central Communications"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1386
+msgid "(USA) Southernlinc"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1387
+msgid "(USA) Sprint/Nextel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1388
+msgid "(USA) Syringa Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1389
+msgid "(USA) T-Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1390
+msgid "(USA) Teleflip"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1391
+msgid "(USA) Unicel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1392
+msgid "(USA) US Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1393
+msgid "(USA) USA Mobility"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1394
+msgid "(USA) Verizon Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1395
+msgid "(USA) Viaero"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1396
+msgid "(USA) Virgin Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1397
+msgid "(USA) Voyager Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1398
+msgid "(USA) West Central Wireless"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1399
+msgid "(UK) aql"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1400
+msgid "(UK) Connection Software (CSoft)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1401
+msgid "(UK) Esendex"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1402
+msgid "(UK) Hay Systems Ltd (HSL)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1403
+msgid "(UK) Mediaburst"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1404
+msgid "(UK) My-Cool-SMS"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1405
+msgid "(UK) Orange"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1406
+msgid "(UK) TextMagic"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1407
+msgid "(UK) Txtlocal"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1408
+msgid "(UK) UniMóvil Corporation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1409
+msgid "(UK) Virgin Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1410
+msgid "(India) Aircel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1411
+msgid "(India) Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1412
+msgid "(India) Andhra Pradesh AirTel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1413
+msgid "(India) Andhra Pradesh Idea Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1414
+msgid "(India) Chennai RPG Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1415
+msgid "(India) Chennai Skycell / Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1416
+msgid "(India) Delhi Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1417
+msgid "(India) Delhi Hutch"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1418
+msgid "(India) Goa Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1419
+msgid "(India) Goa BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1420
+msgid "(India) Goa Idea Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1421
+msgid "(India) Gujarat Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1422
+msgid "(India) Gujarat Celforce / Fascel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1423
+msgid "(India) Gujarat Idea Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1424
+msgid "(India) Haryana Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1425
+msgid "(India) Haryana Escotel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1426
+msgid "(India) Himachai Pradesh Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1427
+msgid "(India) Karnataka Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1428
+msgid "(India) Kerala Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1429
+msgid "(India) Kerala BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1430
+msgid "(India) Kerala Escotel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1431
+msgid "(India) Kolkata Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1432
+msgid "(India) Madhya Pradesh Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1433
+msgid "(India) Maharashtra Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1434
+msgid "(India) Maharashtra BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1435
+msgid "(India) Maharashtra Idea Cellular"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1436
+msgid "(India) Mumbai Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1437
+msgid "(India) Mumbai BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1438
+msgid "(India) Pondicherry BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1439
+msgid "(India) Punjab Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1440
+msgid "(India) Tamil Nadu Airtel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1441
+msgid "(India) Tamil Nadu Aircel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1442
+msgid "(India) Tamil Nadu BPL Mobile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1443
+msgid "(India) Uttar Pradesh West Escotel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1444
+msgid "(Australia) SMS Broadcast"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1445
+msgid "(Australia) SMS Central"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1446
+msgid "(Australia) SMSPUP"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1447
+msgid "(Australia) T-Mobile (Optus Zoo)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1448
+msgid "(Australia) UTBox"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1449 wpstorecart/admin/admin.php:1450
+#: wpstorecart/admin/admin.php:1451 wpstorecart/admin/admin.php:1452
+#: wpstorecart/admin/admin.php:1453
+msgid "(Australia) "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1455
+msgid "Text message email address:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1508
+msgid "Create a new Alert"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1513 wpstorecart/admin/admin.php:1542
+msgid "New Alert"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1527
+msgid "Qty Function"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1531
+msgid "Groupable"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1533 wpstorecart/admin/admin.php:1538
+msgid "False"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1534 wpstorecart/admin/admin.php:1539
+msgid "True"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1536
+msgid "Clearable"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1555
+msgid "Alert via wp-admin"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1560
+msgid "Alert via txt msg"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1565
+msgid "Alert via email"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1570
+msgid "Alert via desktop"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1609
+msgid "Create Alert"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1644
+msgid "Add New Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1650
+msgid ""
+"Warning! This will DELETE all pending orders permanently! Are you sure you "
+"wish to delete all pending orders?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1663
+msgid "Delete All Pending Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1688
+msgid "WARNING"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1688
+msgid ""
+"Do not post this code in a public place.  The code below contains sensitive "
+"information about your site.  Only share this information with parties you "
+"trust, such as wpStoreCart staff, your web developers, etc.  The information "
+"here may be useful for technicians to diagnose what may be causing an issue "
+"that you have.  To view this data, run it through the base64_decode() PHP "
+"function "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1688
+msgid " followed by the gzuncompress() PHP function"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1694
+msgid "Select All..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1839
+msgid "Alerts (BETA)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1841
+msgid "Add New Alert"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1843
+msgid "Add/Edit Alerts"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1877
+msgid "capability was added to the user:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1900
+msgid "Add ALL Users to Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:1934
+msgid "The capability was added to the user:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2014
+msgid "Add/Remove From Groups"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2018
+msgid "Add an Individual User by Role to a Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2021
+msgid "Add All Users by a Role to a Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2024
+msgid "Delete Users from Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2046
+msgid "The email was sent."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2050
+msgid "Send an Email"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2060
+msgid "EMail Address"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2061
+msgid "Subject"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2062
+msgid "Message"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2063
+msgid "Send"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2090
+msgid "Recent Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2098
+msgid "Latest News"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2114
+msgid "Error"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2120
+msgid "No items"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2140
+msgid "wpStoreCart Upgrades"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2245
+msgid ""
+"There was a problem loading the category you wish to edit.  The query was:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2405 wpstorecart/admin/admin.php:2594
+#: wpstorecart/admin/admin.php:3849 wpstorecart/admin/admin.php:3878
+#: wpstorecart/admin/admin.php:6674 wpstorecart/admin/admin.php:6780
+#: wpstorecart/admin/admin.php:7195
+msgid "Edit"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2405 wpstorecart/admin/admin.php:2594
+#: wpstorecart/admin/admin.php:3849 wpstorecart/admin/admin.php:3878
+#: wpstorecart/admin/admin.php:6584 wpstorecart/admin/admin.php:6674
+#: wpstorecart/admin/admin.php:7177 wpstorecart/admin/admin.php:7295
+msgid "Delete"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2421
+msgid "Are you sure you wish to delete this category?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2429
+msgid "Category Saved Successfully"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2432 wpstorecart/admin/admin.php:4227
+#: wpstorecart/admin/admin.php:4235 wpstorecart/admin/admin.php:4294
+#: wpstorecart/admin/admin.php:4302
+msgid "This notice will disappear in 3 seconds..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446
+msgid "Category &amp; Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446
+msgid ""
+"The name of the category.  Essentially, if you're selling a bunch of hats, "
+"make a category called hats.  It's that easy!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446 wpstorecart/admin/admin.php:2569
+msgid "Parent"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446
+msgid ""
+"If you select a parent category, then the category you are creating is a "
+"child category.  For example, if you sold red and blue hats, you would "
+"select hats as the parent."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446
+msgid "Thumb"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2446
+msgid "Permissions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2449 wpstorecart/admin/admin.php:3873
+#: wpstorecart/admin/admin.php:6593
+msgid "Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2476 wpstorecart/admin/admin.php:3215
+#: wpstorecart/admin/admin.php:7783
+msgid "Upload a file"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2481 wpstorecart/admin/admin.php:3221
+msgid "Current Thumb"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2485
+msgid "Visibility"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2490
+msgid "Show this category to all visitors"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2495
+msgid "Hide this category except for these Groups"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2520
+msgid "Apply Group Discounts to"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2525
+msgid "All groups"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2530
+msgid "Only these Groups"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2561
+msgid "Submit Category"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2566
+msgid "Edit Categories"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2569
+msgid "Action"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2569 wpstorecart/admin/admin.php:3146
+#: wpstorecart/admin/admin.php:6593
+msgid "Category"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2700
+msgid ""
+"There was a problem loading the product you wish to edit.  The query was:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2743
+msgid "Create Attribute"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2794
+msgid "Edit a Variation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2796
+msgid "Manage a Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2842
+msgid "Variation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2849
+msgid "Pictures"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2851 wpstorecart/admin/admin.php:3837
+msgid "Variations"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2855
+msgid "Downloads &amp; Serial #"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2860
+msgid "Accessories"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2880
+msgid "Product Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2880
+msgid ""
+"The name of the product.  We do not recommend stuffing this with keywords, "
+"unless you don't mind those keywords being repeated everytime the product is "
+"mentioned.  Instead, simply keep this as the actual name of the product."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2888 wpstorecart/products/products.php:1448
+msgid "Introduction Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2888
+msgid ""
+"Keep this short and concise, as this text will be used in several places as "
+"a quick description of the product.  For higher sales and conversions, sum "
+"up the main features and benefits and include a direct call to action."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2900
+msgid "Full Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2900
+msgid ""
+"Put your complete sales pitch here.  There are many techniques which can "
+"help make your product's sale page more effective.  At the very least, most "
+"sales pages include at least some of the features and benefits of the "
+"product, and include one or more calls to action."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:2999
+msgid ""
+"The price you wish to charge for the product before tax and shipping charges."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3015 wpstorecart/admin/admin.php:3036
+msgid "Regular product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3016 wpstorecart/admin/admin.php:3037
+msgid "Charge for this product on a recurring basis"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3020
+msgid "Full Price"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3020
+msgid "Sale Price"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3024
+msgid "Accept Donations?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3024
+msgid ""
+"Note that this feature is only supported in the PayPal payment module "
+"currently.  If \"Yes\" is selected, this product is only given away when "
+"donations are made.  Note that the price you set above now becomes the "
+"minimum suggested donation amount."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3031
+msgid "Subscription"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3031
+msgid "Allows you to sell a subscription or membership on a reoccuring basis."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3040
+msgid "Allow a trial period?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3041
+msgid "Allow a 2nd trial period?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3043
+msgid "1st trial period, charge"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3043 wpstorecart/admin/admin.php:3068
+#: wpstorecart/settings/settings.php:187
+msgid "for"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3047 wpstorecart/admin/admin.php:3072
+#: wpstorecart/admin/admin.php:3097
+msgid "Day(s)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3048 wpstorecart/admin/admin.php:3073
+#: wpstorecart/admin/admin.php:3098
+msgid "Week(s)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3049 wpstorecart/admin/admin.php:3074
+#: wpstorecart/admin/admin.php:3099
+msgid "Month(s)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3050 wpstorecart/admin/admin.php:3075
+#: wpstorecart/admin/admin.php:3100
+msgid "Year(s)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3067 wpstorecart/admin/admin.php:3092
+msgid "and then:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3068
+msgid "2nd trial period, charge"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3093
+msgid "Regularly charge"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3093 wpstorecart/settings/settings.php:189
+msgid "every"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3117
+msgid "indefinitely."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3125 wpstorecart/admin/admin.php:3725
+msgid "Use Inventory?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3125
+msgid ""
+"Does this product have a limited number available?  If so, set this to yes "
+"to use the inventory to tell customers when your product is out of stock."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3132
+msgid "Inventory quantity"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3132
+msgid ""
+"If you're selling a limited number of a product (for example, a tangible "
+"item with a limited stock, or a digital product that you are only selling a "
+"limited number of copies.)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3146
+msgid ""
+"Categories allow you to keep products in logically seperated order so that "
+"they are easier to find."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3147 wpstorecart/admin/admin.php:3173
+msgid "Tags"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3181
+msgid "Downloadable Files"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3181
+msgid ""
+"If your product is digital in nature, then you can distribute it as a "
+"digital download.  If you need to upload more than one file, just select "
+"them all in the file selection dialog.  All uploads are stored at:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3186
+msgid "Please enter the filename of the already uploaded file you wish to add"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3196
+msgid "Add a pre-Uploaded file to this product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3196
+msgid "Show/Hide Advanced Edit"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3197
+msgid "Upload File(s)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3213
+msgid "Product Thumbnail"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3213
+msgid ""
+"The main product image.  It will be used in multiple places.  It is "
+"recommend that the image have a 1:1 width and height ratio.  For example, "
+"100px X 100px.  You can add an unlimited amount of additional pictures by "
+"clicking on the Pictures tab."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3297
+msgid "Error Code: HTTP Error, File name. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3300
+msgid "Error Code: No backend file. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3303
+msgid "Error Code: Upload Failed. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3306
+msgid "Error Code: IO Error. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3309
+msgid "Error Code: Security Error. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3312
+msgid "Error Code: Upload Limit Exceeded. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3315
+msgid "Error Code: The file was not found. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3318
+msgid "Error Code: File Validation Failed. Message:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3477
+msgid "Saving..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3478
+msgid "Click to edit..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3498
+msgid "Are you sure you wish to delete this package?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "New Package"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3547
+msgid "Weight"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3548
+msgid "Pounds (lbs)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3548
+msgid "Kilogram (kg)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3551
+msgid "Select a PRESET box size:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3554
+msgid "USPS Priority Mail Small Flat Rate Box"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3555
+msgid "USPS Priority Mail Medium Flat Rate Box-O-FRB1"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3556
+msgid "USPS Priority Mail Medium Flat Rate Box-O-FRB2"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3557
+msgid "USPS Priority Mail Large Flat Rate Box"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3558
+msgid "UPS Small Flat Rate Box"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3559
+msgid "UPS Medium Flat Rate Box A"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3560
+msgid "UPS Medium Flat Rate Box B"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3561
+msgid "UPS Large Flat Rate Box"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "4\\\" x 4\\\" x 4\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "4\\\" x 4\\\" x 6\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "4\\\" x 4\\\" x 8\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "5\\\" x 5\\\" x 5\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "7\\\" x 5\\\" x 5\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "7\\\" x 7\\\" x 4\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "7\\\" x 7\\\" x 7\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "8\\\" x 4\\\" x 4\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "8\\\" x 6\\\" x 4\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "8\\\" x 8\\\" x 4\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "8\\\" x 8\\\" x 6\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "8\\\" x 8\\\" x 8\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "12\\\" x 12\\\" x 6\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "12\\\" x 12\\\" x 12\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "14\\\" x 6\\\" x 6\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "14\\\" x 14\\\" x 18\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "16\\\" x 12\\\" x 10\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509
+msgid "24\\\" x 24\\\" x 18\\\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3582
+msgid "1. Length"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3582
+msgid "2. Width"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3582
+msgid "3. Depth"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3582
+msgid "Inches"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3509 wpstorecart/admin/admin.php:3582
+msgid "Centimeters"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3522
+msgid "Toggle Available Services For This Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3524
+msgid "Enable/disable shipping services for this product:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3530
+msgid "Add a package to this product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3541
+msgid "Package"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3562
+msgid "4\" x 4\" x 4\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3563
+msgid "4\" x 4\" x 6\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3564
+msgid "4\" x 4\" x 8\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3565
+msgid "5\" x 5\" x 5\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3566
+msgid "7\" x 5\" x 5\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3567
+msgid "7\" x 7\" x 4\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3568
+msgid "7\" x 7\" x 7\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3569
+msgid "8\" x 4\" x 4\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3570
+msgid "8\" x 6\" x 4\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3571
+msgid "8\" x 8\" x 4\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3572
+msgid "8\" x 8\" x 6\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3573
+msgid "8\" x 8\" x 8\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3574
+msgid "12\" x 12\" x 6\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3575
+msgid "12\" x 12\" x 12\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3576
+msgid "14\" x 6\" x 6\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3577
+msgid "14\" x 14\" x 18\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3578
+msgid "16\" x 12\" x 10\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3579
+msgid "24\" x 24\" x 18\""
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3602
+msgid "Create a new Attribute"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3606
+msgid "Attribute's Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3607
+msgid "New Attribute"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3608 wpstorecart/admin/admin.php:3725
+#: wpstorecart/admin/admin.php:3754
+msgid "Price Difference"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3609
+msgid "0.00"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3611
+msgid "Parent Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3615
+msgid "Create a new group:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3625
+msgid "New Group Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3666
+msgid "Choose a variation type"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3670
+msgid "Simple Variations"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3671
+msgid ""
+"Choose Simple Variations if you have a product that has only one main "
+"difference between your variations.  Simple Variations are initially exact "
+"clones of the main product, however you can fully edit them with their own "
+"images, galleries, downloads, prices, inventory, and other standard product "
+"options.  A good example of when to use Simple Variations, is if you sold "
+"the same software, but sold a version for Windows, a version for Mac OS, and "
+"a version for Linux.  However, if the same software had a Lite, PRO, and "
+"Enterprise version for all 3 platforms, then you would want to use the "
+"Advanced Attributes variation instead, to deal with all the possible "
+"variations combinations."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3673
+msgid "Choose Simple Variations"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3678
+msgid "Advanced Attributes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3679
+msgid ""
+"Choose Advanced Attributes if you have a product that has multiple "
+"differences between variations.  Advanced Attributes each have their own "
+"price and optionally inventory.  A good example of when to use Advanced "
+"Attributes, is if you sold a tshirt in 3 colors, and 3 sizes.  In this way, "
+"you could have separate prices and inventory controls for all 9 different "
+"shirts.  wpStoreCart will generate all the product attribute combinations "
+"based on the the number of attributes you create for a product.  We suggest "
+"you watch the video tutorial before using Advanced Attributes to fully "
+"understand how to utilize the advanced capabilities and to prevent data lose "
+"through misconfiguration."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3681
+msgid "Choose Advanced Attributes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3690
+msgid ""
+"Only display the Add to Cart button for this product when the attributes "
+"&amp; variations are also displayed?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3690
+msgid "No (always displays add to cart buttons)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3712
+msgid "Attributes:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3713
+msgid "Create a New Attribute"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3713
+msgid "Use Inventory for attributes?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3725
+msgid "Key"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3725
+msgid "Attribute Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3725
+msgid "Type"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3746
+msgid "Attribute SKU &amp; Inventory:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3750
+msgid "#"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3754
+msgid "wpStoreCart ID"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3754
+msgid "SKU"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3754 wpstorecart/admin/admin.php:3873
+#: wpstorecart/admin/admin.php:6593
+msgid "Inventory"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3754
+msgid "Saved &amp; Available for Purchase?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3784 wpstorecart/admin/admin.php:3799
+msgid "Saved &amp; Available"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3786
+msgid ""
+"This particular combination has net yet been saved to the database, and so "
+"is unavailable to order until it is finalized and saved."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3810
+msgid ""
+"Wait! Are you sure want to save these attributes?  If you add or subtract "
+"any Attribute Group after saving, it will invalidate these attribute "
+"combinations.  That means you should finalize all possible Attribute Groups "
+"before saving.  If you are definitely ready to save, then please confirm.  "
+"However, if you will be adding additional Attribute Groups, then please "
+"cancel to abort saving now.  If this message sounds like gerberish or you "
+"just want some futher clarification, please watch the Video Tutorial for "
+"this section before proceeding."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3822
+msgid "When you are ready to update the above attribute combinations "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3822
+msgid "click here to save."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3824
+msgid ""
+"Wait until you've added all the Attribute Groups you plan to add for this "
+"product, then "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3824
+msgid "click here to save &amp; update the attribute data."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3849 wpstorecart/products/products.php:2270
+msgid "Clone of"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3856
+msgid "Are you sure you want to delete this variation?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3867
+msgid "Create a New Variation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3869
+msgid "Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3873 wpstorecart/admin/admin.php:6593
+msgid "Primkey/Actions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3873 wpstorecart/admin/admin.php:6593
+msgid "Intro description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3873 wpstorecart/admin/admin.php:6593
+msgid "Thumbnail"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3888
+msgid "Name this product's variations group: "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3908
+msgid "Downloads"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3914
+msgid "Serial Numbers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3915
+msgid ""
+"Leave blank if you do not need to issue serial numbers for each purchase, "
+"otherwise, place each serial number on it's own line, then each time a "
+"customer buys this product, they will be issued that serial number and it "
+"will be made unavailable"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3917
+msgid "Unused serial numbers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3918
+msgid "Previously issued serial numbers"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3925
+msgid "Picture Gallery"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3932
+msgid "Upload New Images"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3933
+msgid "Upload a File"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3977
+msgid "Accessories, Related Products, &amp; Combo Deals"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:3978
+msgid ""
+"The related products &amp; accessories you select here, will be displayed on "
+"the product's sales page, and can easily added to the cart.  You can also "
+"create Combos that reduce the price of the entire package if several items "
+"are purchased together."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4064
+msgid "Related Products &amp; Accessories"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4066 wpstorecart/admin/admin.php:4101
+msgid "Price if Bought With Main Item"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4125
+msgid "Combo Packs"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4127
+msgid "Combo Pack"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4127
+msgid "Items in Combo Packs"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4150
+msgid "Items in Combo Pack"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4180
+msgid "Save product and make it"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4182
+msgid "a Draft"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4183 wpstorecart/admin/admin.php:6669
+msgid "Published"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4185
+msgid "on this page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4189
+msgid "Create a new page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4210
+msgid "Save product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4210
+msgid "View Page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4212
+msgid "Back to product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4212
+msgid "Save variation"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4224
+msgid "Attributes Saved Successfully"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4232
+msgid "Product Saved Successfully"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4291
+msgid "Settings Saved Successfully"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4299
+msgid "Variation Upgrade Complete"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4318
+msgid "Payments"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4322 wpstorecart/admin/admin.php:6233
+#: wpstorecart/admin/admin.php:7234
+msgid "Update Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4327
+msgid "wpStoreCart General Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4331 wpstorecart/admin/admin.php:4446
+#: wpstorecart/admin/admin.php:4535 wpstorecart/admin/admin.php:4575
+#: wpstorecart/admin/admin.php:4594 wpstorecart/admin/admin.php:4718
+#: wpstorecart/admin/admin.php:4805 wpstorecart/admin/admin.php:4998
+#: wpstorecart/admin/admin.php:5035 wpstorecart/admin/admin.php:5086
+#: wpstorecart/admin/admin.php:5130 wpstorecart/admin/admin.php:5175
+#: wpstorecart/admin/admin.php:5251 wpstorecart/admin/admin.php:5275
+#: wpstorecart/admin/admin.php:5548
+msgid "Option"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4331 wpstorecart/admin/admin.php:4446
+#: wpstorecart/admin/admin.php:4535 wpstorecart/admin/admin.php:4575
+#: wpstorecart/admin/admin.php:4594 wpstorecart/admin/admin.php:4718
+#: wpstorecart/admin/admin.php:4805 wpstorecart/admin/admin.php:4998
+#: wpstorecart/admin/admin.php:5035 wpstorecart/admin/admin.php:5086
+#: wpstorecart/admin/admin.php:5130 wpstorecart/admin/admin.php:5175
+#: wpstorecart/admin/admin.php:5251 wpstorecart/admin/admin.php:5275
+#: wpstorecart/admin/admin.php:5548 wpstorecart/admin/admin.php:6964
+#: wpstorecart/payment/PaymentGateway.php:154
+msgid "Value"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4337
+msgid "wpStoreCart Main Page:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4337
+msgid ""
+"wpStoreCart uses pages, and needs a single pre-existing page to act as the "
+"main page from which most other wpStoreCart pages descend from.  For "
+"example, all product pages will be subpages of this page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4338
+msgid ""
+"The main page that wpStoreCart will use to display products and other "
+"wpStoreCart related pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4342 wpstorecart/admin/admin.php:4366
+#: wpstorecart/admin/admin.php:4391
+msgid "Select page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4361
+msgid "Checkout Page:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4361
+msgid ""
+"The checkout page can be any page you specify.  This is the page customers "
+"will visit to pay for the products they have added to their cart."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4362
+msgid ""
+"The page that customers will use during checkout.  The page must have this "
+"shortcode in it: "
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4386
+msgid "Orders Page:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4386
+msgid "optional"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4386
+msgid ""
+"The Orders &amp; Downloads page, which is optional.  However, if you wish to "
+"use the [downloadurl] code in emails, to tell your customers the URL they "
+"need to visit in order to download their orders, then this setting must be "
+"set."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4387
+msgid ""
+"The page where customers can view their orders, must have this shortcode in "
+"it:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4410
+msgid "Turn wpStoreCart on?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4410
+msgid ""
+"If you want to disable wpStoreCart without deactivating the plugin, then set "
+"this to No.  This is useful if you want to disable products and purchasing, "
+"but not remove the records or uninstall anything."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4411
+msgid "Selecting \"No\" will turn off wpStoreCart, but will not deactivate it."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4415
+msgid "Store Type"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4415
+msgid ""
+"Setting this to mixed will allow products to be either physical or digital.  "
+"Setting this to Physical only will hide the product downloads.  Setting this "
+"to Digital Only will hide the shipping options, as well as weight, height, "
+"length, etc."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4416
+msgid "What type of goods do you sell, digital, phyiscal, or both?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4444
+msgid "Advanced Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4449
+msgid "Restore Ophaned wpStoreCart 2.x Variations:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4449
+msgid ""
+"If you're upgrading from wpStoreCart 2.x, and your products had variations, "
+"you will notice that your variations disappeared.  Use this to recover your "
+"wpStoreCart 2.x variations and convert them into wpStoreCart 3.x format."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4450
+msgid "If you upgraded from wpStoreCart 2.x, you may need to run this once."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4451
+msgid "Convert Variations"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4456
+msgid "Debug Parameter:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4456
+msgid ""
+"The wpStoreCart developers use Xdebug for debugging purposes.  While in "
+"testing mode, you can additionally use additional parameters here."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4457
+msgid "Customize the Xdebug parameter."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4463
+msgid "Delay before Alerts are redisplayed"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4463
+msgid ""
+"Whenever you clear an alert, this is the amount of time wpStoreCart waits "
+"before alerting of you of the same alert that you cleared."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4464
+msgid ""
+"The period of time that wpStoreCart will ignore alerts that you previously "
+"cleared"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4468
+msgid "Enable Piwiks tracking?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4468
+msgid ""
+"If you set this to Yes, then wpStoreCart will insert Piwiks tracking code in "
+"the footer of all pages, and will also keep track of ecommerce add to carts "
+"and order purchases. Make sure to set the proper URL below:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4469
+msgid ""
+"Selecting \"Yes\" will insert the Piwiks tracking code into each page of "
+"your site, and also record ecommerce statistics."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4469 wpstorecart/admin/admin.php:4523
+msgid "Must refresh after you update this setting"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4473
+msgid "Piwiks URL:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4473 wpstorecart/admin/admin.php:4474
+msgid ""
+"Insert the URL to your Piwiks installation.  Do not use http:// or https://"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4478
+msgid "Piwiks Site ID:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4478
+msgid ""
+"The Site ID # of this site in Piwiks.  If you're using Piwiks to only track "
+"this site, then you can probably leave this on 1."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4479
+msgid "The Piwiks Site ID # of this site"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4483
+msgid "Google Analytics UA:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4483
+msgid ""
+"Insert your Google Analytics UA code in order to track ecommerce conversions "
+"using Google Analytics.  Leave this blank if you're not using Google "
+"Analytics.  Note, this does not insert tracking code anywhere except when a "
+"customer purchases something."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4484
+msgid ""
+"Insert your Google Analytics UA-XXXXX-XX code here to keep track of sales "
+"using Google Analytics.  Leave blank if you don't use Google Analytics."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4489
+msgid "Admin Access"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4489
+msgid ""
+"This allows you to choose who has access to the wpStoreCart administration "
+"page.  Be careful, changing this can allow more people access to your store!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4490
+msgid "Minimum role required to access the wpStoreCart admin pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4495
+msgid "Administrator"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4496
+msgid "Editor &amp; above"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4497
+msgid "Author &amp; above"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4498
+msgid "Contributor &amp; above"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4517
+msgid "Uninstall wpStoreCart?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4517
+msgid ""
+"If you set this to Yes, and then deactivate wpStoreCart anytime afterwords, "
+"it will DELETE all products, orders, coupons, categories, and all other "
+"wpStoreCart data."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4518
+msgid ""
+"Selecting \"No\" will retain all data, even if wpStoreCart is deleted or "
+"deactivated.  Better safe than sorry, leave this on No!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4522
+msgid "Completely Disable ShareYourCart?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4522
+msgid "If you set this to Yes, then ShareYourCart will be removed."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4523
+msgid "Selecting \"Yes\" will remove ShareYourCart and completely disable it."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4532
+msgid "EMail Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4537 wpstorecart/admin/admin.php:5621
+msgid "Email Address"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4537
+msgid ""
+"wpStoreCart attempts to send emails when a customer purchasing something.  "
+"Whatever email address you enter here will be used as the FROM address.  Set "
+"this to an email address where you will expect to receive customer replies."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4538
+msgid ""
+"The email address that you wish to send and recieve all customer emails."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4542
+msgid "Email Sent On Purchase"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4542
+msgid ""
+"wpStoreCart attempts to send an email directly after a purchase is made.  "
+"This gives the customer feedback that their purchase was successful, and "
+"should also inform them that there will be a delay pending the approval of "
+"the purchase from a store admin."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4543
+msgid "The email to send when a customer purchases something."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4547
+msgid "Email Sent On Approval"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4547
+msgid ""
+"wpStoreCart attempts to send an email once the order has been approved by an "
+"admin.  This lets the customer know that their order is fulfilled, and for "
+"digital downloads, it means they now have immediate access to their order.  "
+"Physical products are not yet shipped at this stage."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4548
+msgid "The email to send when an admin approves an order."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4552
+msgid "Email Sent When Shipped"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4552
+msgid ""
+"wpStoreCart attempts to send an email after you've marked an order shipped.  "
+"This let's customers know the status of their order.  You will need to "
+"manually send or update tracking information at this time."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4553
+msgid "The email to send when you've shipped a product."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4557
+msgid "Email Sent When Issuing Serial Number"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4557
+msgid ""
+"wpStoreCart attempts to send an email when a serial number is issued for a "
+"product. Each serial number issued has a separate email."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4558
+msgid "The email to send when issuing a serial number"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4562
+msgid "Email Signature"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4562
+msgid ""
+"The bottom of your emails sent will always contain the same footer or "
+"signiture.  Fill that out here."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4563
+msgid "This is always included at the bottom of each email sent out."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4571
+msgid "Display Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4578
+msgid "Number of products/categories per page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4578
+msgid ""
+"The number of items and/or categories you want to be displayed per page.  "
+"Default is 10."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4579
+msgid "The number of items to display on each page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4583
+msgid "Max Thumb Width &amp; Height"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4584
+msgid "Determine the max width and height of product images on product pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4585
+msgid ">Width"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4585
+msgid "Height"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4590
+msgid "Product Page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4598
+msgid "Display thumbnail under product?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4598
+msgid ""
+"This effects the product short tag (and thus, the default product pages as "
+"well.)  If set to yes, the products thumbnail will be displayed underneath "
+"the product."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4599
+msgid ""
+"If set to Yes, the thumbnail for the product will be displayed underneath "
+"the product itself"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4603
+msgid "Display description under product?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4603
+msgid ""
+"This also effects the product short tag (including the default product "
+"pages.)  If set to yes, the products description will be written underneath "
+"the product thumbnail (if its enabled.)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4604
+msgid ""
+"If set to Yes, the description for the product is written underneath the "
+"product, after the thumbnail."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4608
+msgid "Use a thickbox image viewer?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4608
+msgid ""
+"Makes the thumbnail clickable but instead of redirecting to a new page, it "
+"creates the image in a pop up using Thickbox or another alternative."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4609
+msgid ""
+"Set to \"thickbox\" to make your product's thumbnail show a bigger version "
+"when clicked (if it exists)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4632
+msgid "Display product's picture gallery?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4632
+msgid ""
+"Displays an image gallery of all the images associated with the product."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4633
+msgid "Shows a product's images."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4656
+msgid "Where to display the gallery?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4656
+msgid ""
+"You can either display the picture gallery after the product's thumbnail, "
+"add to cart button, intro description, or description."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4657
+msgid "Where on the product page you wish to display the image gallery."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4662
+msgid "Directly after the Thumbnail"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4663
+msgid "Directly after the Add to Cart"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4664
+msgid "Directly after the Intro Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4665
+msgid "Directly after the Description"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4684
+msgid "Where to display product accessories &amp; combos?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4684
+msgid ""
+"You can either display the accessories &amp; combos after the product's "
+"thumbnail, add to cart button, intro description, description, or at the "
+"very end of the product page (default.) <u>NOTE: If you set this to the same "
+"value as the picture gallery, the gallery will display first!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4685
+msgid "Where on the product page you wish to display accessories &amp; combos."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4722
+msgid "Enable Product Filtering (BETA)?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4722
+msgid ""
+"Enables an ajax based filtering system, so customers can sort and filter "
+"products by various criteria."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4723
+msgid "If set to Yes, customers can sort &amp; filter products."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4727
+msgid "Content of the Main Page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4727
+msgid ""
+"The main page of your store can either list products, or the categories of "
+"the site.  It can also display the products either by newest first, or most "
+"popular first."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4728
+msgid ""
+"Changing this will effect what is displayed on the main page of your store."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4756
+msgid "Display thumbnails on Main Page?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4756
+msgid ""
+"This effects the main wpStoreCart short tag (and thus, the default Main Page "
+"and Category pages as well.)  If set to yes, the product or category "
+"thumbnails will be displayed on the Main Page/Category page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4757
+msgid ""
+"If set to Yes, the thumbnail for the products or categories will be "
+"displayed on the Main Page and Category pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4761
+msgid "Display titles on Main Page?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4761
+msgid ""
+"This effects the main wpStoreCart short tag (and thus, the default Main Page "
+"and Category pages as well.)  If set to yes, the product or category title "
+"will be displayed on the Main Page/Category page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4762
+msgid ""
+"If set to Yes, the title of the products or categories will be displayed on "
+"the Main Page and Category pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4766
+msgid "Display small descriptions on Main Page?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4766
+msgid ""
+"This effects the main wpStoreCart short tag (and thus, the default Main Page "
+"and Categpoy pages as well.)  If set to yes, the product or category "
+"introductory description will be displayed on the Main Page/Category page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4767
+msgid ""
+"If set to Yes, the introductory description of the products or categories "
+"will be displayed on the Main Page and Category pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4771
+msgid "Display the prices of products?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4771
+msgid ""
+"This effects the main wpStoreCart short tag (and thus, the default Main Page "
+"and Categpoy pages as well.)  If set to yes, each products price will be "
+"displayed on the Main Page/Category page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4772
+msgid ""
+"If set to Yes, the prices of products will be displayed on the Main Page and "
+"Category pages."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4776
+msgid "Display Type"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4776
+msgid ""
+"This effects the main wpStoreCart short tag (and thus, the default Main Page "
+"and Categpoy pages as well.)  If set to grid, the product or category will "
+"be displayed within a grid format, or if it's set to list, they will be "
+"presented in a top down, one at a time list view on the Main Page/Category "
+"page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4777
+msgid ""
+"If set to grid, will display products or categories in a grid format, if set "
+"to list, will display them in an ordered list."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4801
+msgid "Checkout Page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4809
+msgid "Display shipping total?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4809
+msgid ""
+"Displays shipping cost on the checkout page.  This will automatically be "
+"disabled for Digital Only stores, regardless of the setting here."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4810
+msgid "If set to Yes, shipping will be displayed in shopping carts."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4814
+msgid "Display taxes?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4815
+msgid "If set to Yes, the tax will be displayed in shopping carts."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4819
+msgid "Display subtotal?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4820
+msgid "If set to Yes, the subtotal will be displayed in shopping carts."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4824
+msgid "Display final total?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4825
+msgid "If set to Yes, the final total will be displayed in shopping carts."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4829
+msgid "Display product thumbnails?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4830
+msgid "If set to Yes, each product will display it's thumbnail."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4835
+msgid "Enable Coupons &amp; display form?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4836
+msgid "Yes to enable or No to disable coupons."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4840
+msgid "Checkout XHTML Type"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4841
+msgid ""
+"Do you want the default DIV based markup, or a TABLE based checkout page?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4864
+msgid "Disable Inline Styles?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4864
+msgid ""
+"Disables a few inline CSS styles, such as floating the astericks to the left "
+"of the registration fields."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4865
+msgid ""
+"Yes to disable the inline CSS. Only set to Yes if you are having CSS "
+"rendering problems."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4869
+msgid "Field Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4869
+msgid ""
+"Determine the order in which the quantity, pic, name, price, & remove are "
+"displayed on the checkout page & widget."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4870
+msgid ""
+"The order in which the quantity, pic, name, price, & remove are displayed on "
+"the checkout page & widget"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4876 wpstorecart/admin/admin.php:4899
+#: wpstorecart/admin/admin.php:4922 wpstorecart/admin/admin.php:4945
+#: wpstorecart/admin/admin.php:4968
+msgid "qty"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4877 wpstorecart/admin/admin.php:4900
+#: wpstorecart/admin/admin.php:4923 wpstorecart/admin/admin.php:4946
+#: wpstorecart/admin/admin.php:4969
+msgid "pic"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4878 wpstorecart/admin/admin.php:4901
+#: wpstorecart/admin/admin.php:4924 wpstorecart/admin/admin.php:4947
+#: wpstorecart/admin/admin.php:4970
+msgid "name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4879 wpstorecart/admin/admin.php:4902
+#: wpstorecart/admin/admin.php:4925 wpstorecart/admin/admin.php:4948
+#: wpstorecart/admin/admin.php:4971 wpstorecart/products/products.php:773
+#: wpstorecart/products/products.php:1290
+msgid "price"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4880 wpstorecart/admin/admin.php:4903
+#: wpstorecart/admin/admin.php:4926 wpstorecart/admin/admin.php:4949
+#: wpstorecart/admin/admin.php:4972 wpstorecart/settings/settings.php:89
+msgid "remove"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:4994
+msgid "My Orders &amp; Downloads Page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5003
+msgid "Profile Editable?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5003
+msgid ""
+"This allows you to choose who whether or not the profile is editable, "
+"static, or shows both the static information as well as an editable version."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5004
+msgid "How to display profile information"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5009
+msgid "Show editable profile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5010
+msgid "Show profile information"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5011
+msgid "Show both"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5032
+msgid "Buttons"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5037
+msgid "Clicking on Add to Cart redirects to checkout?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5037
+msgid ""
+"If you set this to Yes, then when a person adds an item to the cart, they "
+"will also be redirected to the checkout page."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5038
+msgid ""
+"Select \"Yes\" to send customers to checkout immediately aftering adding to "
+"cart, or select \"No\" to keep them on the same page"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5042
+msgid "Add to Cart button classes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5043
+msgid ""
+"Additional Classes for Add to Cart buttons.  Enter classes without periods, "
+"space separated."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5047
+msgid "Checkout button classes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5048
+msgid ""
+"Additional Classes for Checkout buttons.  Enter classes without periods, "
+"space separated."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5052
+msgid "Other button classes"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5053
+msgid ""
+"Additional Classes for update, clear, & other buttons.  Enter classes "
+"without periods, space separated."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5082
+msgid "Shipping Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5084
+msgid "Flat Rate Shipping"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5088
+msgid "Flat Rate Type:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5088
+msgid ""
+"When each product \"has it's own flat rate amount\", it means that when you "
+"add or edit a product, the flat rate amount you specify there is what will "
+"be charged each time the product is added to the cart.  <br /><br />  If you "
+"select \"There is one flat rate, but each item in cart adds the flat rate to "
+"the shipping cost\", that means all items in your store have the exact same "
+"flat rate shipping charge, and that each item in the cart adds that charge "
+"to the total shipping. <br /> <br /> If you select \"There is one flat rate "
+"that is charged, regardless of the number of items in the cart\" then no "
+"matter how little or how much is added to the cart, there will only be one "
+"shipping charge."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5089
+msgid ""
+"Allows you to use several different types of flat rate shipping or to "
+"disable it."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5094
+msgid "Each product has it's own flat rate amount"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5095
+msgid ""
+"There is one flat rate, but each item in cart adds the flat rate to the "
+"shipping cost"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5096
+msgid ""
+"There is one flat rate that is charged, regardless of the number of items in "
+"the cart"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5097
+msgid "Off.  Flat rate shipping is completely disabled"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5117
+msgid "Flat Rate Amount"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5117
+msgid "The flat rate that is charged based on the setting above."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5118
+msgid "The global flat rate shipping cost."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5125
+msgid ""
+"CURL is either not installed or not enabled.  Contact a system administrator "
+"and have them enable CURL for your server.  Until then, the \"Shipping "
+"Services\" shipping options on this page cannot be used and have been "
+"disabled."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5132
+msgid "Zip code you ship FROM"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5132
+msgid ""
+"The 5 digit zip code where you ship your packages from.  This is used in "
+"shipping calculation to determine price."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5133
+msgid "The 5 digit zip code where you ship your products FROM."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5137 wpstorecart/shipping/shipping.php:365
+msgid "Enable USPS Shipping?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5137
+msgid ""
+"If your business is based out of the United States, this allows you to ship "
+"via USPS and allows the customer to calculate the shipping rates before "
+"purchase."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5138
+msgid ""
+"If set to Yes, will allow customers to select USPS as a shipping option and "
+"will give shipping price quotes for USPS."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5159
+msgid "Payment Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5164
+msgid "Currency Symbol"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5165
+msgid "Left Symbol Default:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5165
+msgid "Right Symbol Default:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5166
+msgid "Left symbol:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5167
+msgid "Right symbol:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5173
+msgid "PayPal Payment Gateway"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5176
+msgid "Accept PayPal Payments?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5176
+msgid "Want to accept PayPal payments?  Then set this to yes!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5177
+msgid "If set to Yes, customers can purchase during checkout using PayPal."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5181
+msgid "Turn on PayPal Test Mode?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5181
+msgid ""
+"If you need to do tests with the PayPal Sandbox then set this to yes.  "
+"Warning!  These payments are not real, so any purchases made under the "
+"Sandbox will result in live sales with no money!  You can delete test orders "
+"in the Orders tab above."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5182
+msgid "If set to Yes, all transactions are done using the PayPal sandbox."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5186
+msgid "PayPal Email Address"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5186
+msgid ""
+"The PayPal email address you wish to recieve payments to.  Make sure you "
+"have already registered this email address with PayPal."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5187
+msgid "The email address you wish to receive PayPal payments."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5191
+msgid "Currency"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5191
+msgid ""
+"Change this to whatever currency your shop is in.  Note that this is "
+"currently only supported in PayPal payments."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5192
+msgid "The type of currency that your store uses."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5197
+msgid "U.S. Dollars ($)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5198
+msgid "Australian Dollars (A $)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5199
+msgid "Canadian Dollars (C $)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5200
+msgid "Euros (&#8364)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5201
+msgid "Pounds Sterling (&#163)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5202
+msgid "Yen (&#165)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5203
+msgid "New Zealand Dollar ($)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5204
+msgid "Swiss Franc"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5205
+msgid "Hong Kong Dollar ($)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5206
+msgid "Singapore Dollar ($)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5207
+msgid "Swedish Krona"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5208
+msgid "Danish Krone"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5209
+msgid "Polish Zloty"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5210
+msgid "Norwegian Krone"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5211
+msgid "Hungarian Forint"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5212
+msgid "Czech Koruna"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5213
+msgid "Israeli Shekel"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5214
+msgid "Mexican Peso"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5215
+msgid "Brazilian Real (only for Brazilian users)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5216
+msgid "Malaysian Ringgits (only for Malaysian users)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5217
+msgid "Philippine Pesos"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5218
+msgid "Taiwan New Dollars"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5219
+msgid "Thai Baht"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5239
+msgid "Advanced Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5240
+msgid ""
+"Advanced settings.  Do not edit or use unless you know exactly what you're "
+"doing!"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5249
+msgid "Offline Payment Gateway"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5252
+msgid "Accept Payments via Mail?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5253
+msgid "If set to Yes, customers can purchase using Check, Money Order or COD"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5257
+msgid "Text to Display"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5258
+msgid ""
+"The text/html that is displayed to customers who choose to pay via check or "
+"money order."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5271
+msgid "Text and Language Options"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5277
+msgid "Successful Payment Text"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5278
+msgid ""
+"The text and HTML that is displayed when a customers returns from the "
+"payment gateway after successfully paying."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5282
+msgid "Failed Payment Text"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5283
+msgid ""
+"The text and HTML that is displayed when a customers returns from the "
+"payment gateway after failing the payment process."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5287
+msgid "Cart Title"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5288 wpstorecart/admin/admin.php:5293
+#: wpstorecart/admin/admin.php:5298 wpstorecart/admin/admin.php:5303
+#: wpstorecart/admin/admin.php:5308 wpstorecart/admin/admin.php:5313
+#: wpstorecart/admin/admin.php:5318 wpstorecart/admin/admin.php:5323
+#: wpstorecart/admin/admin.php:5328 wpstorecart/admin/admin.php:5333
+#: wpstorecart/admin/admin.php:5338 wpstorecart/admin/admin.php:5343
+#: wpstorecart/admin/admin.php:5348 wpstorecart/admin/admin.php:5356
+#: wpstorecart/admin/admin.php:5363 wpstorecart/admin/admin.php:5370
+#: wpstorecart/admin/admin.php:5377 wpstorecart/admin/admin.php:5384
+#: wpstorecart/admin/admin.php:5391 wpstorecart/admin/admin.php:5398
+#: wpstorecart/admin/admin.php:5405 wpstorecart/admin/admin.php:5412
+#: wpstorecart/admin/admin.php:5419 wpstorecart/admin/admin.php:5426
+#: wpstorecart/admin/admin.php:5433 wpstorecart/admin/admin.php:5442
+#: wpstorecart/admin/admin.php:5447 wpstorecart/admin/admin.php:5452
+#: wpstorecart/admin/admin.php:5457 wpstorecart/admin/admin.php:5462
+#: wpstorecart/admin/admin.php:5467 wpstorecart/admin/admin.php:5472
+#: wpstorecart/admin/admin.php:5477 wpstorecart/admin/admin.php:5482
+#: wpstorecart/admin/admin.php:5487 wpstorecart/admin/admin.php:5492
+#: wpstorecart/admin/admin.php:5497 wpstorecart/admin/admin.php:5502
+#: wpstorecart/admin/admin.php:5507 wpstorecart/admin/admin.php:5512
+#: wpstorecart/admin/admin.php:5517 wpstorecart/admin/admin.php:5522
+#: wpstorecart/admin/admin.php:5527 wpstorecart/admin/admin.php:5532
+#: wpstorecart/admin/admin.php:5537
+msgid "Default"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5292
+msgid "Qty (Quantity)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5550
+msgid "Require Registration?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5551
+msgid ""
+"Controls whether or not your site requires registration before checkout "
+"completes."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5554
+msgid "Show Prices To Guests?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5555
+msgid ""
+"Display prices to guests.  Turn off to hide the prices from non-logged in "
+"users."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5558
+msgid "Replacement Text for Hidden Prices?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5559
+msgid ""
+"When prices are hidden from non-logged in users, this is what's displayed in "
+"their place."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5614
+msgid "First name (shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5615
+msgid "Last name (shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5616
+msgid "Shipping Address (shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5617
+msgid "City (shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5618
+msgid "US States (tax/shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5619
+msgid "Countries (tax/shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5620
+msgid "Zipcode (shipping)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5622
+msgid "Input (text)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5623
+msgid "Input (numeric)"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5624
+msgid "Input Textarea"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5625
+msgid "US States"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5626
+msgid "Countries"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5627
+msgid "--- Separator ---"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5628
+msgid "Header &lt;h2&gt;&lt;/h2&gt;"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5629
+msgid "Text &lt;p&gt;&lt;/p&gt;"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:5648
+msgid "Save New Field"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6251 wpstorecart/admin/admin.php:8071
+msgid "Design Your Store"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6263
+msgid ""
+"You must first set a page as the Main Page and in that page, put the "
+"[wpstorecart] shortcode before you can use the Main Page Designer."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6277
+msgid ""
+"You must first publish a product before you can use the Product Designer."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6283
+msgid "Choose to design your"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6288
+msgid "Store Front"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6293
+msgid "Your main store design,"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6294
+msgid "category &amp; product browsing"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6307
+msgid "Individual product pages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6314
+msgid "User Pages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6319
+msgid "Order history, registration"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6320
+msgid "&amp; other end user pages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6327 wpstorecart/wizard/wizard.php:67
+msgid "Checkout"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6332
+msgid "The checkout page &amp; process"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6338
+msgid "User Pages &amp; Checkout Designers coming soon."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6359
+msgid "New Product"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6417 wpstorecart/admin/admin.php:8075
+msgid "Edit Products"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6531
+msgid "Product was removed from the database."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6583
+msgid "Bulk actions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6585
+msgid "Publish"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6586 wpstorecart/admin/admin.php:6671
+msgid "Draft"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6587
+msgid "Change Category"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6588
+msgid "Change Price"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6589
+msgid "Change Shipping"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6591
+msgid "Are you sure you want to do this permanent bulk action?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6620
+msgid ""
+"You are in Page Mode, which displays 10 products per page. In Page Mode, you "
+"cannot reorder products for custom product sorting.  You can toggle between "
+"Sorting Mode &amp; Paged Mode by"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6620 wpstorecart/admin/admin.php:6636
+msgid "clicking here"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6636
+msgid ""
+"You are in Sorting Mode, which displays all products so you can sort them "
+"into your own custom order. If you have a lot of products, this can really "
+"slow down this screen.  You can toggle between Sorting Mode &amp; Paged Mode "
+"by"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6674
+msgid "Are you sure you want to delete this product?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6783
+msgid "Order #"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6783
+msgid "Processor"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6829
+msgid "Details"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6830
+msgid "Are you sure you want to delete this order?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6932
+msgid "Users Current Cart"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6933 wpstorecart/settings/settings.php:118
+msgid "Total"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6933
+msgid "# of Items"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6933 wpstorecart/settings/settings.php:76
+#: wpstorecart/shortcodes/shortcodes.php:256
+msgid "Items"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6933
+msgid "Prices"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6933
+msgid "Qtys"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6963
+msgid "Full User Information"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:6964 wpstorecart/payment/PaymentGateway.php:154
+msgid "Field"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7009
+msgid "Search by email or username"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7009
+msgid "Show results from paid customers only."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7009
+msgid "Show results for all possible users."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7034
+msgid "Actions"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7034
+msgid "Display Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7034
+msgid "# of Orders"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7034
+msgid "Total Purchases"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7042 wpstorecart/admin/admin.php:7052
+#: wpstorecart/admin/admin.php:7509 wpstorecart/admin/admin.php:8079
+msgid "Profile"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7071
+msgid "Combo Packages"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7170
+msgid "Combo Pack Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7170
+msgid "Products in Combo Pack"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7177
+msgid "Are you sure you want to delete this combo pack?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7195
+msgid "New"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7219
+msgid "Include this product in combo"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7221
+msgid "Submit Edits for this Combo"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7221
+msgid "Create this Combo"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7221
+msgid "Start a new combo"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7229
+msgid "Enable Combos &amp; Accessories?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7230
+msgid "Display the Prices?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7231
+msgid "Display item names as links?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7232
+msgid "Display the item's thumbnail?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7286
+msgid "Add &amp; Edit Groups"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7288
+msgid "Group Name"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7288
+msgid "Discount %"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7288
+msgid "Enabled?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7295
+msgid "Are you sure you want to delete this group?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7295
+msgid "Submit This Edit"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7300
+msgid "New:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7303
+msgid "Add Group"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7311
+msgid "Enable discounts module?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7312
+msgid "Display group name &amp; discount amount?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7313
+msgid "Cross out original price &amp; display as a sale?"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7331
+msgid "wpsc Affiliates PRO"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7467 wpstorecart/admin/admin.php:8080
+msgid "Invoice"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7509
+msgid "Edit Order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7512
+msgid "Cart"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7513
+msgid "Order Number"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7515
+msgid "Status of the order"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7530
+msgid "Customer's Note"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7603
+msgid "Upload done. Import starting..."
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7655
+msgid "Upload progress:"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7769
+msgid "Export"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7770
+msgid "Import"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7772
+msgid "File format for export"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7773 wpstorecart/admin/admin.php:7779
+msgid "SQL file"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7774 wpstorecart/admin/admin.php:7780
+msgid "CSV file"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7778
+msgid "File format for input"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7790
+msgid "Begin"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7899
+msgid "Last 30 days"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7899
+msgid "average per day"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7900
+msgid "All time"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7901
+msgid "Completed Orders / Total"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7902
+msgid "Sales in last 30 days"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7912
+msgid "wpStoreCart Overview"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:7913
+msgid "wpStoreCart Alerts"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:8068
+msgid "Open Source WP Shopping Cart &amp; eCommerce Plugin"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:8069
+msgid "Wizard"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:8070
+msgid "Configure Settings"
+msgstr ""
+
+#: wpstorecart/admin/admin.php:8077
+msgid "Sell Your Products"
+msgstr ""
+
+#: wpstorecart/admin/php/addcat.php:17 wpstorecart/admin/php/addcombo.php:17
+#: wpstorecart/admin/php/addfield.php:17
+#: wpstorecart/admin/php/addnewalert.php:17
+#: wpstorecart/admin/php/addnewattribute.php:17
+#: wpstorecart/admin/php/addnewcombo.php:17
+#: wpstorecart/admin/php/addneworder.php:17
+#: wpstorecart/admin/php/addnewvariation.php:17
+#: wpstorecart/admin/php/addproductorder.php:15
+#: wpstorecart/admin/php/addtax.php:15
+#: wpstorecart/admin/php/clearpending.php:15
+#: wpstorecart/admin/php/datatable.php:26
+#: wpstorecart/admin/php/delattributes.php:19
+#: wpstorecart/admin/php/delcat.php:17 wpstorecart/admin/php/delcombo.php:17
+#: wpstorecart/admin/php/delete.php:15 wpstorecart/admin/php/delfield.php:17
+#: wpstorecart/admin/php/delproductorder.php:18
+#: wpstorecart/admin/php/deltax.php:15 wpstorecart/admin/php/edit.php:24
+#: wpstorecart/admin/php/exportcsv.php:16
+#: wpstorecart/admin/php/exportsql.php:15
+#: wpstorecart/admin/php/importcsv.php:17
+#: wpstorecart/admin/php/loadproductdesigner.php:15
+#: wpstorecart/admin/php/savealertsettings.php:17
+#: wpstorecart/admin/php/saveattributes.php:19
+#: wpstorecart/admin/php/saveindividualdesigner.php:15
+#: wpstorecart/admin/php/saveproduct.php:21
+#: wpstorecart/admin/php/saveproductdesigner.php:15
+#: wpstorecart/admin/php/savesettings.php:15
+#: wpstorecart/admin/php/sortfields.php:15
+#: wpstorecart/admin/php/sortproducts.php:16
+#: wpstorecart/admin/php/upgradevariations.php:15
+msgid "Unauthorized Access - wpStoreCart"
+msgstr ""
+
+#: wpstorecart/admin/php/createnewcombo.php:20
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: wpstorecart/admin/php/edit.php:49
+msgid "ERROR: Malformed row ID.  Could not complete ajax edit."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:20
+msgid "STEP 1: Beginning import process."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:25
+msgid "STEP 2: Successfully located the import file."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:27
+msgid "Import failed!  The uploaded file was not found at this location: "
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:27
+msgid ""
+"To resolve this, make sure that this directory is writable by the server:"
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:27
+msgid ""
+"You may also want to check if you have any special characters in the file "
+"name. If so, try renaming your file to something like: import.csv and try "
+"again."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:31
+msgid "STEP 3: Parsing the CSV file for import."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:53
+msgid ""
+"ERROR 4: wpStoreCart didn't like your data and failed to create a page for "
+"it! Make sure you create a product with at least a title."
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:91
+msgid "ERROR: Problem importing"
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:114
+msgid "STEP 4: Success!  Import has finished. "
+msgstr ""
+
+#: wpstorecart/admin/php/importcsv.php:114
+msgid " records."
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:40
+msgid "POST exceeded maximum allowed size."
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:55
+msgid "There is no error, the file uploaded with success"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:56
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:57
+msgid ""
+"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
+"the HTML form"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:58
+msgid "The uploaded file was only partially uploaded"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:59
+msgid "No file was uploaded"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:60
+msgid "Missing a temporary folder"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:66
+msgid "No upload found in"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:72
+msgid "Upload failed is_uploaded_file test."
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:75
+msgid "File has no name."
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:82
+msgid "File exceeds the maximum allowed size"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:87
+msgid "File size outside allowed lower bound"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:95
+msgid "Invalid file name"
+msgstr ""
+
+#: wpstorecart/admin/php/upload.php:147
+msgid "File could not be saved."
+msgstr ""
+
+#: wpstorecart/alerts/alerts.php:120
+msgid "No alerts to report at this time."
+msgstr ""
+
+#: wpstorecart/alerts/clearalerts.php:20
+msgid "Unauthorized Access"
+msgstr ""
+
+#: wpstorecart/alerts/clearalerts.php:24
+msgid "User validated"
+msgstr ""
+
+#: wpstorecart/benchmarks/benchmarks.php:17
+msgid "Benchmark"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:878 wpstorecart/cart/cart.php:956
+#: wpstorecart/cart/cart.php:1020 wpstorecart/cart/cart.php:1059
+#: wpstorecart/cart/cart.php:1094
+msgid "Step 1"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:879 wpstorecart/cart/cart.php:957
+#: wpstorecart/cart/cart.php:1021 wpstorecart/cart/cart.php:1060
+#: wpstorecart/cart/cart.php:1095
+msgid "Your Info"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:882 wpstorecart/cart/cart.php:960
+#: wpstorecart/cart/cart.php:1024 wpstorecart/cart/cart.php:1063
+#: wpstorecart/cart/cart.php:1098
+msgid "Step 2"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:883 wpstorecart/cart/cart.php:961
+#: wpstorecart/cart/cart.php:1025 wpstorecart/cart/cart.php:1064
+#: wpstorecart/cart/cart.php:1099
+msgid "Review Your Order"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:886 wpstorecart/cart/cart.php:964
+#: wpstorecart/cart/cart.php:1028 wpstorecart/cart/cart.php:1067
+#: wpstorecart/cart/cart.php:1102
+msgid "Step 3"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:887 wpstorecart/cart/cart.php:965
+#: wpstorecart/cart/cart.php:1029 wpstorecart/cart/cart.php:1068
+#: wpstorecart/cart/cart.php:1103
+msgid "Pay"
+msgstr ""
+
+#: wpstorecart/cart/cart.php:894 wpstorecart/cart/cart.php:897
+#: wpstorecart/cart/cart.php:982
+msgid "Invalid email address.  Please try again."
+msgstr ""
+
+#: wpstorecart/cart/cart.php:939
+msgid "Email is already registered."
+msgstr ""
+
+#: wpstorecart/cart/cart.php:944
+msgid ""
+"Wordpress could not create the account, alert the admin to enable "
+"registrations."
+msgstr ""
+
+#: wpstorecart/cart/cart.php:949
+msgid ""
+"Not all of the required fields were filled out.  Please fill out all the "
+"required information and try again."
+msgstr ""
+
+#: wpstorecart/cart/cart.php:1035 wpstorecart/cart/cart.php:1074
+msgid "You are missing required information"
+msgstr ""
+
+#: wpstorecart/cart/wpsc-gateway.php:416
+msgid ""
+"PayPal integration requires a secure merchant ID.  Please add your email "
+"address to the wpStoreCart options page."
+msgstr ""
+
+#: wpstorecart/download/download.php:109
+msgid "Unauthorized access - No order found."
+msgstr ""
+
+#: wpstorecart/download/download.php:161
+msgid "Unathorized Access.  File does not exist."
+msgstr ""
+
+#: wpstorecart/email/email.php:103 wpstorecart/email/email.php:110
+#: wpstorecart/email/email.php:112 wpstorecart/shortcodes/shortcodes.php:137
+#: wpstorecart/shortcodes/shortcodes.php:140
+msgid "Your order has been fulfilled!"
+msgstr ""
+
+#: wpstorecart/error/error.php:47
+msgid "wpStoreCart is almost ready! Configuration required."
+msgstr ""
+
+#: wpstorecart/error/error.php:47
+msgid ""
+"The easiest and best way to configure wpStoreCart is to <a href=\"admin.php?"
+"page=wpstorecart-wizard\">click here</a> to run the <a href=\"admin.php?"
+"page=wpstorecart-wizard\">Setup Wizard</a>.  You can also automatically "
+"create a \"main page\" and a \"checkout page\" for your store by <a href="
+"\"admin.php?page=wpstorecart-wizard&wpsc-wizard=auto_create_pages\">clicking "
+"here</a>, or you can create your own pages first &amp; then visit <a href="
+"\"admin.php?page=wpstorecart-settings\">the settings page</a> to specify "
+"which pre-existing pages to use.  See <a href=\"http://wpstorecart.com/"
+"documentation/error-messages/\" target=\"_blank\">this help entry</a> for "
+"more details."
+msgstr ""
+
+#: wpstorecart/error/error.php:50
+msgid "wpStoreCart has detected that register_globals is set to ON."
+msgstr ""
+
+#: wpstorecart/error/error.php:50
+msgid ""
+"This is a major security risk that can make it much easier for a hacker to "
+"gain full access to your website and it's data.  Please disable "
+"register_globals by following <a href=\"https://wpstorecart.com/"
+"documentation/error-messages/disable-register-globals/\" target=\"_blank"
+"\">the directions here</a> before using wpStoreCart. Your shopping cart, "
+"checkout, and add to cart functionality will not work while register_globals "
+"is set to On. See <a href=\"http://wpstorecart.com/documentation/error-"
+"messages/\" target=\"_blank\">this help entry</a> for more details."
+msgstr ""
+
+#: wpstorecart/error/error.php:53
+msgid ""
+"wpStoreCart has detected that a required folder is missing and we could not "
+"automatically create it."
+msgstr ""
+
+#: wpstorecart/error/error.php:53
+msgid "Please manually create this folder and give it 0777 permissions: "
+msgstr ""
+
+#: wpstorecart/error/error.php:56
+msgid ""
+"wpStoreCart \"<a href=\"http://wpstorecart.com/documentation/advanced-"
+"technical-topics/testing-mode/\" target=\"_blank\">Testing Mode</a>\" "
+"enabled. DO NOT USE TESTING MODE ON A SERVER THAT IS CONNECTED TO THE "
+"INTERNET. DO NOT USE IT ON A LIVE WEBSITE. DO NOT USE IT WITH ACTUAL "
+"CUSTOMERS OR EVEN ACTUAL CUSTOMER DATA. ONLY USE TESTING MODE ON A TEST "
+"SERVER, WITH TEST DATA.</strong>  Visit <a href=\"http://wpstorecart.com/"
+"documentation/advanced-technical-topics/testing-mode/\" target=\"_blank"
+"\">this topic</a> for information on how to disable Testing Mode and this "
+"message.  "
+msgstr ""
+
+#: wpstorecart/error/error.php:59
+msgid "wpStoreCart has detected that CURL is not enabled."
+msgstr ""
+
+#: wpstorecart/error/error.php:59
+msgid ""
+"CURL is required if you wish to allow customers to calculate shipping costs "
+"with USPS, FedEx, and UPS.  Please have a system administrator install and/"
+"or configure CURL so that you can use those features.  Until that happens, "
+"you must use either flat rate shipping or have PayPal or your payment "
+"processor calculate shipping for you.  <a href=\"?page=wpstorecart-"
+"admin&wpscaction=removecurl\">Click here to remove this message</a>"
+msgstr ""
+
+#: wpstorecart/error/error.php:62
+msgid "wpStoreCart has noticed a serious problem!"
+msgstr ""
+
+#: wpstorecart/error/error.php:62
+msgid ""
+"You've selected to offer shipping through the United States Postal Service "
+"(USPS) but did not enter a USPS API key.  If you already have a USPS API "
+"key, please visit the <a href=\"?page=wpstorecart-"
+"settings&theCurrentTab=tab6\">wpStoreCart > Settings > Shipping admin page</"
+"a>, enter the API name in the form, and click the \"Update Settings\" "
+"button.  If you do not have a USPS API key, visit this URL now: <a href="
+"\"https://secure.shippingapis.com/registration/\" target=\"_blank\">https://"
+"secure.shippingapis.com/registration/</a>, complete the registration process "
+"by filling out the form and click the \"Submit\" button, then visit the <a "
+"href=\"?page=wpstorecart-settings&theCurrentTab=tab6\">wpStoreCart > "
+"Settings > Shipping admin page</a> enter the API name in the form, and click "
+"the \"Update Settings\" button. If you only want to use flat rate shipping "
+"for all products (regardless of shipping provider) then simply disable USPS "
+"as a shipping service to dismiss this message, and use the flat rate "
+"shipping option instead."
+msgstr ""
+
+#: wpstorecart/installer/installer.php:213
+msgid "New sale!"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:213
+msgid "Triggered anytime there is a sale"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:213
+msgid "You got new sale(s)"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:214
+msgid "3 Days"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:214
+msgid "No sales in 3 days"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:215
+msgid "1 Month"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:215
+msgid "No sales in 1 month"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:216
+msgid "No AddToCarts!"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:216
+msgid "No Add To Carts in the last day"
+msgstr ""
+
+#: wpstorecart/installer/installer.php:216
+msgid "No AddToCarts in last day"
+msgstr ""
+
+#: wpstorecart/menubar/menubar.php:19
+msgid "Design Your Store Front"
+msgstr ""
+
+#: wpstorecart/menubar/menubar.php:27 wpstorecart/menubar/menubar.php:46
+msgid "wpStoreCart"
+msgstr ""
+
+#: wpstorecart/menubar/menubar.php:38
+msgid "Design Your Product Page"
+msgstr ""
+
+#: wpstorecart/orders/orders.php:193
+msgid "The serial number for your recent purchase"
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:117
+msgid "Processing Payment..."
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:123
+msgid ""
+"Please wait, your order is being processed and you will be redirected to the "
+"payment website."
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:138
+msgid ""
+"If you are not automatically redirected to the payment website within 5 "
+"seconds..."
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:142
+msgid "Click Here"
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:204
+msgid "SUCCESS!"
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:204
+msgid "FAIL: "
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:207
+msgid "IPN POST Vars from gateway:"
+msgstr ""
+
+#: wpstorecart/payment/PaymentGateway.php:214
+msgid "IPN Response from gateway Server:"
+msgstr ""
+
+#: wpstorecart/products/products.php:132
+msgid "All"
+msgstr ""
+
+#: wpstorecart/products/products.php:559
+#: wpstorecart/products/products.php:1461
+msgid "More Info"
+msgstr ""
+
+#: wpstorecart/products/products.php:588
+msgid "&laquo;"
+msgstr ""
+
+#: wpstorecart/products/products.php:589
+msgid "&raquo;"
+msgstr ""
+
+#: wpstorecart/products/products.php:716
+msgid "Dummy Product Title"
+msgstr ""
+
+#: wpstorecart/products/products.php:717
+msgid ""
+"Here's the \"Intro Description\" for the Dummy Product, which is intended to "
+"give a brief overview of the product, and is displayed in many places."
+msgstr ""
+
+#: wpstorecart/products/products.php:718
+msgid ""
+"This is the long \"Description\" for the Dummy Product, which is meant to "
+"describe and sell your product.  Here's some markup:"
+msgstr ""
+
+#: wpstorecart/products/products.php:719
+msgid "Header H1"
+msgstr ""
+
+#: wpstorecart/products/products.php:720
+msgid "Ordered list item 1"
+msgstr ""
+
+#: wpstorecart/products/products.php:720
+msgid "Ordered list item 2"
+msgstr ""
+
+#: wpstorecart/products/products.php:720
+msgid "Ordered list item 3"
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "Here's some strong text."
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "and now some."
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "italic text"
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "and even."
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "underlined text."
+msgstr ""
+
+#: wpstorecart/products/products.php:721
+msgid "We also should checkout a link like"
+msgstr ""
+
+#: wpstorecart/products/products.php:738
+#: wpstorecart/products/products.php:1250
+msgid "Design"
+msgstr ""
+
+#: wpstorecart/products/products.php:739
+#: wpstorecart/products/products.php:1251
+msgid "Colors &amp; FX"
+msgstr ""
+
+#: wpstorecart/products/products.php:740
+#: wpstorecart/products/products.php:1252
+msgid "Save &amp; Load"
+msgstr ""
+
+#: wpstorecart/products/products.php:747
+#: wpstorecart/products/products.php:1259
+msgid "Show or hide?"
+msgstr ""
+
+#: wpstorecart/products/products.php:749
+#: wpstorecart/products/products.php:1261
+msgid "Image?"
+msgstr ""
+
+#: wpstorecart/products/products.php:750
+#: wpstorecart/products/products.php:1262
+msgid "Title?"
+msgstr ""
+
+#: wpstorecart/products/products.php:751
+#: wpstorecart/products/products.php:1263
+msgid "Intro?"
+msgstr ""
+
+#: wpstorecart/products/products.php:752
+#: wpstorecart/products/products.php:1264
+msgid "Description?"
+msgstr ""
+
+#: wpstorecart/products/products.php:753
+#: wpstorecart/products/products.php:1265
+msgid "Crossed Out Price?"
+msgstr ""
+
+#: wpstorecart/products/products.php:754
+#: wpstorecart/products/products.php:1266
+msgid "Price?"
+msgstr ""
+
+#: wpstorecart/products/products.php:755 wpstorecart/products/products.php:861
+#: wpstorecart/products/products.php:1267
+#: wpstorecart/products/products.php:1378
+msgid "Add to Cart button?"
+msgstr ""
+
+#: wpstorecart/products/products.php:756
+msgid "Gallery?"
+msgstr ""
+
+#: wpstorecart/products/products.php:757
+msgid "Qty Label?"
+msgstr ""
+
+#: wpstorecart/products/products.php:758
+msgid "Quantity?"
+msgstr ""
+
+#: wpstorecart/products/products.php:759
+msgid "Inventory?"
+msgstr ""
+
+#: wpstorecart/products/products.php:763
+msgid "Main Image Size?"
+msgstr ""
+
+#: wpstorecart/products/products.php:767
+#: wpstorecart/products/products.php:1284
+msgid "Font Sizes?"
+msgstr ""
+
+#: wpstorecart/products/products.php:768
+#: wpstorecart/products/products.php:1285
+msgid "Edit the font size of the"
+msgstr ""
+
+#: wpstorecart/products/products.php:769 wpstorecart/products/products.php:835
+#: wpstorecart/products/products.php:1286
+#: wpstorecart/products/products.php:1352
+msgid "title"
+msgstr ""
+
+#: wpstorecart/products/products.php:770
+#: wpstorecart/products/products.php:1287
+msgid "intro description"
+msgstr ""
+
+#: wpstorecart/products/products.php:771
+#: wpstorecart/products/products.php:1288
+msgid "full description"
+msgstr ""
+
+#: wpstorecart/products/products.php:772
+#: wpstorecart/products/products.php:1289
+msgid "crossed out price"
+msgstr ""
+
+#: wpstorecart/products/products.php:774
+#: wpstorecart/products/products.php:1291
+msgid "add to cart button"
+msgstr ""
+
+#: wpstorecart/products/products.php:775 wpstorecart/products/products.php:840
+msgid "meta box"
+msgstr ""
+
+#: wpstorecart/products/products.php:780
+#: wpstorecart/products/products.php:1297
+msgid "Border Sizes?"
+msgstr ""
+
+#: wpstorecart/products/products.php:781
+#: wpstorecart/products/products.php:1298
+msgid "Edit the size of the "
+msgstr ""
+
+#: wpstorecart/products/products.php:782
+msgid "product"
+msgstr ""
+
+#: wpstorecart/products/products.php:783
+#: wpstorecart/products/products.php:1300
+msgid "add to cart border"
+msgstr ""
+
+#: wpstorecart/products/products.php:784
+msgid "meta list"
+msgstr ""
+
+#: wpstorecart/products/products.php:789
+#: wpstorecart/products/products.php:1306
+msgid "Margin Sizes?"
+msgstr ""
+
+#: wpstorecart/products/products.php:790 wpstorecart/products/products.php:808
+#: wpstorecart/products/products.php:1307
+#: wpstorecart/products/products.php:1325
+msgid "Edit the "
+msgstr ""
+
+#: wpstorecart/products/products.php:791
+#: wpstorecart/products/products.php:1308
+msgid "product margin top"
+msgstr ""
+
+#: wpstorecart/products/products.php:792
+#: wpstorecart/products/products.php:1309
+msgid "product margin bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:793
+#: wpstorecart/products/products.php:1310
+msgid "product margin left"
+msgstr ""
+
+#: wpstorecart/products/products.php:794
+#: wpstorecart/products/products.php:1311
+msgid "product margin right"
+msgstr ""
+
+#: wpstorecart/products/products.php:795
+#: wpstorecart/products/products.php:1312
+msgid "add to cart margin top"
+msgstr ""
+
+#: wpstorecart/products/products.php:796
+#: wpstorecart/products/products.php:1313
+msgid "add to cart margin bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:797
+#: wpstorecart/products/products.php:1314
+msgid "add to cart margin left"
+msgstr ""
+
+#: wpstorecart/products/products.php:798
+#: wpstorecart/products/products.php:1315
+msgid "add to cart margin right"
+msgstr ""
+
+#: wpstorecart/products/products.php:799
+#: wpstorecart/products/products.php:1316
+msgid "more info margin top"
+msgstr ""
+
+#: wpstorecart/products/products.php:800
+#: wpstorecart/products/products.php:1317
+msgid "more info margin bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:801
+#: wpstorecart/products/products.php:1318
+msgid "more info margin left"
+msgstr ""
+
+#: wpstorecart/products/products.php:802
+#: wpstorecart/products/products.php:1319
+msgid "more info margin right"
+msgstr ""
+
+#: wpstorecart/products/products.php:807
+#: wpstorecart/products/products.php:1324
+msgid "Padding Sizes?"
+msgstr ""
+
+#: wpstorecart/products/products.php:809
+#: wpstorecart/products/products.php:1326
+msgid "product padding top"
+msgstr ""
+
+#: wpstorecart/products/products.php:810
+#: wpstorecart/products/products.php:1327
+msgid "product padding bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:811
+#: wpstorecart/products/products.php:1328
+msgid "product padding left"
+msgstr ""
+
+#: wpstorecart/products/products.php:812
+#: wpstorecart/products/products.php:1329
+msgid "product padding right"
+msgstr ""
+
+#: wpstorecart/products/products.php:813
+#: wpstorecart/products/products.php:1330
+msgid "add to cart padding top"
+msgstr ""
+
+#: wpstorecart/products/products.php:814
+#: wpstorecart/products/products.php:1331
+msgid "add to cart padding bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:815
+#: wpstorecart/products/products.php:1332
+msgid "add to cart padding left"
+msgstr ""
+
+#: wpstorecart/products/products.php:816
+#: wpstorecart/products/products.php:1333
+msgid "add to cart padding right"
+msgstr ""
+
+#: wpstorecart/products/products.php:817
+#: wpstorecart/products/products.php:1334
+msgid "more info padding top"
+msgstr ""
+
+#: wpstorecart/products/products.php:818
+#: wpstorecart/products/products.php:1335
+msgid "more info padding bottom"
+msgstr ""
+
+#: wpstorecart/products/products.php:819
+#: wpstorecart/products/products.php:1336
+msgid "more info padding left"
+msgstr ""
+
+#: wpstorecart/products/products.php:820
+#: wpstorecart/products/products.php:1337
+msgid "more info padding right"
+msgstr ""
+
+#: wpstorecart/products/products.php:831
+#: wpstorecart/products/products.php:1348
+msgid "Colors"
+msgstr ""
+
+#: wpstorecart/products/products.php:833
+#: wpstorecart/products/products.php:1350
+msgid "Edit the color of the"
+msgstr ""
+
+#: wpstorecart/products/products.php:834
+#: wpstorecart/products/products.php:1351
+msgid "product background"
+msgstr ""
+
+#: wpstorecart/products/products.php:836
+#: wpstorecart/products/products.php:1299
+#: wpstorecart/products/products.php:1353
+msgid "product border"
+msgstr ""
+
+#: wpstorecart/products/products.php:837
+#: wpstorecart/products/products.php:1354
+msgid "Add to Cart button"
+msgstr ""
+
+#: wpstorecart/products/products.php:838
+#: wpstorecart/products/products.php:1355
+msgid "Add to Cart border"
+msgstr ""
+
+#: wpstorecart/products/products.php:839
+#: wpstorecart/products/products.php:1356
+msgid "Add to Cart text"
+msgstr ""
+
+#: wpstorecart/products/products.php:841
+msgid "meta box border"
+msgstr ""
+
+#: wpstorecart/products/products.php:842
+msgid "meta box text"
+msgstr ""
+
+#: wpstorecart/products/products.php:857
+#: wpstorecart/products/products.php:1374
+msgid "Rounded Borders?"
+msgstr ""
+
+#: wpstorecart/products/products.php:859
+#: wpstorecart/products/products.php:1376
+msgid "Round Size:"
+msgstr ""
+
+#: wpstorecart/products/products.php:860
+#: wpstorecart/products/products.php:1377
+msgid "Product?"
+msgstr ""
+
+#: wpstorecart/products/products.php:862
+#: wpstorecart/products/products.php:1268
+#: wpstorecart/products/products.php:1379
+msgid "More Info button?"
+msgstr ""
+
+#: wpstorecart/products/products.php:874
+#: wpstorecart/products/products.php:1391
+msgid "Save as:"
+msgstr ""
+
+#: wpstorecart/products/products.php:876
+#: wpstorecart/products/products.php:1393
+msgid "Load:"
+msgstr ""
+
+#: wpstorecart/products/products.php:887
+#: wpstorecart/products/products.php:1404
+msgid "Load >"
+msgstr ""
+
+#: wpstorecart/products/products.php:888
+#: wpstorecart/products/products.php:1405
+msgid "Raw CSS:"
+msgstr ""
+
+#: wpstorecart/products/products.php:888
+#: wpstorecart/products/products.php:1405
+msgid "Dump Current CSS Below:"
+msgstr ""
+
+#: wpstorecart/products/products.php:1097
+#: wpstorecart/products/products.php:2122
+msgid ""
+"You have attempted to purchase more items than we currently have in stock.  "
+"We have adjusted the quantity to maximum available.  Please try again."
+msgstr ""
+
+#: wpstorecart/products/products.php:1141
+msgid "This product has been removed, or does not exist."
+msgstr ""
+
+#: wpstorecart/products/products.php:1145
+msgid ""
+"wpStoreCart did not like the product primkey!  The primkey field contained "
+"non-numeric data. Please fix your page or consult the wpStoreCart "
+"documentation for help."
+msgstr ""
+
+#: wpstorecart/products/products.php:1272
+msgid "Product/Category Width?"
+msgstr ""
+
+#: wpstorecart/products/products.php:1276
+msgid "Product/Category Height?"
+msgstr ""
+
+#: wpstorecart/products/products.php:1280
+msgid "Thumbnail Size?"
+msgstr ""
+
+#: wpstorecart/products/products.php:1292
+msgid "more info button"
+msgstr ""
+
+#: wpstorecart/products/products.php:1301
+msgid "more info border"
+msgstr ""
+
+#: wpstorecart/products/products.php:1357
+msgid "More Info button"
+msgstr ""
+
+#: wpstorecart/products/products.php:1358
+msgid "More Info border"
+msgstr ""
+
+#: wpstorecart/products/products.php:1359
+msgid "More Info text"
+msgstr ""
+
+#: wpstorecart/products/products.php:1445
+msgid "Product Title"
+msgstr ""
+
+#: wpstorecart/products/products.php:1451
+msgid ""
+"Full description goes here. Lorem ipsum dolor sit amet, consectetur "
+"adipiscing elit. Nullam semper augue vel neque cursus mattis. Cum sociis "
+"natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. "
+"Nullam scelerisque commodo vulputate. Proin odio augue, facilisis at "
+"pulvinar et, commodo vitae odio. Vivamus commodo sem quis mauris consequat "
+"at consequat ante varius. Lorem ipsum dolor sit amet, consectetur adipiscing "
+"elit. Proin suscipit vulputate pretium. Morbi venenatis ligula in dolor "
+"pharetra varius. Nunc gravida ornare imperdiet. Aliquam consectetur sodales "
+"aliquet. Phasellus tellus turpis, pharetra eu sodales sit amet, elementum "
+"nec quam. Cras lectus nisl, commodo a molestie quis, fermentum ac ipsum. "
+"Quisque sed sem velit.\r\n"
+"                        <br /><br />\r\n"
+"                        Aliquam erat volutpat. Etiam varius volutpat "
+"consectetur. Donec sagittis, lectus eget cursus tristique, diam enim "
+"sollicitudin odio, eu ornare quam augue quis libero. Pellentesque sit amet "
+"ipsum eros, et dapibus velit. Cras sed orci eget risus viverra porttitor. "
+"Nullam luctus ullamcorper enim vel tincidunt. Donec ipsum odio, pulvinar "
+"interdum imperdiet eu, iaculis eget erat. Nullam id convallis arcu. Duis "
+"metus nibh, fringilla sed pretium vel, dapibus id mauris. Suspendisse luctus "
+"leo nec nisl faucibus convallis. Sed pretium ultricies dui ac suscipit. "
+"Proin aliquam sagittis neque, eu condimentum ipsum egestas sit amet.\r\n"
+"                        <br /><br />\r\n"
+"                        Quisque vitae imperdiet mi. Etiam vel nisi a nisl "
+"porttitor lobortis. Class aptent taciti sociosqu ad litora torquent per "
+"conubia nostra, per inceptos himenaeos. Suspendisse elementum, metus et "
+"pharetra semper, nisi dui volutpat quam, at tempor sem mauris faucibus "
+"libero. Aenean odio lacus, mattis non fringilla nec, commodo id risus. Sed "
+"laoreet tellus vitae lectus convallis a varius turpis adipiscing. Curabitur "
+"at adipiscing ante. Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+"Maecenas augue arcu, eleifend eget commodo eu, condimentum dapibus justo. "
+"Phasellus placerat felis sit amet lectus pretium eget accumsan elit varius. "
+"Praesent eget eros eget nisi sagittis scelerisque. Ut condimentum, turpis "
+"sit amet porttitor rutrum, purus urna ultricies lacus, ac accumsan enim nunc "
+"vel ante. Nulla facilisi. Cras ultricies suscipit risus, eget luctus arcu "
+"venenatis at. Pellentesque vel quam lorem, nec volutpat libero. "
+msgstr ""
+
+#: wpstorecart/products/products.php:1461 wpstorecart/settings/settings.php:99
+msgid "Add to Cart"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:424
+msgid "Other (Non-US)"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:425
+msgid "Alabama"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:426
+msgid "Alaska"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:427
+msgid "Arizona"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:428
+msgid "Arkansas"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:429
+msgid "California"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:430
+msgid "Colorado"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:431
+msgid "Connecticut"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:432
+msgid "Delaware"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:433
+msgid "District Of Columbia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:434
+msgid "Florida"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:435
+#: wpstorecart/registration/registration.php:570
+msgid "Georgia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:436
+msgid "Hawaii"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:437
+msgid "Idaho"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:438
+msgid "Illinois"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:439
+msgid "Indiana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:440
+msgid "Iowa"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:441
+msgid "Kansas"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:442
+msgid "Kentucky"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:443
+msgid "Louisiana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:444
+msgid "Maine"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:445
+msgid "Maryland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:446
+msgid "Massachusetts"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:447
+msgid "Michigan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:448
+msgid "Minnesota"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:449
+msgid "Mississippi"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:450
+msgid "Missouri"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:451
+msgid "Montana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:452
+msgid "Nebraska"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:453
+msgid "Nevada"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:454
+msgid "New Hampshire"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:455
+msgid "New Jersey"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:456
+msgid "New Mexico"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:457
+msgid "New York"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:458
+msgid "North Carolina"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:459
+msgid "North Dakota"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:460
+msgid "Ohio"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:461
+msgid "Oklahoma"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:462
+msgid "Oregon"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:463
+msgid "Pennsylvania"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:464
+msgid "Rhode Island"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:465
+msgid "South Carolina"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:466
+msgid "South Dakota"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:467
+msgid "Tennessee"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:468
+msgid "Texas"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:469
+msgid "Utah"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:470
+msgid "Vermont"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:471
+msgid "Virginia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:472
+msgid "Washington"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:473
+msgid "West Virginia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:474
+msgid "Wisconsin"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:475
+msgid "Wyoming"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:486
+msgid "United States"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:487
+#: wpstorecart/registration/registration.php:529
+msgid "Canada"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:488
+msgid "United Kingdom"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:489
+#: wpstorecart/registration/registration.php:594
+msgid "Ireland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:490
+#: wpstorecart/registration/registration.php:504
+msgid "Australia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:491
+#: wpstorecart/registration/registration.php:644
+msgid "New Zealand"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:492
+msgid "Afghanistan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:493
+msgid "Albania"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:494
+msgid "Algeria"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:495
+msgid "American Samoa"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:496
+msgid "Andorra"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:497
+msgid "Angola"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:498
+msgid "Anguilla"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:499
+msgid "Antarctica"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:500
+msgid "Antigua and Barbuda"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:501
+msgid "Argentina"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:502
+msgid "Armenia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:503
+msgid "Aruba"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:505
+msgid "Austria"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:506
+msgid "Azerbaijan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:507
+msgid "Bahamas"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:508
+msgid "Bahrain"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:509
+msgid "Bangladesh"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:510
+msgid "Barbados"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:511
+msgid "Belarus"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:512
+msgid "Belgium"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:513
+msgid "Belize"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:514
+msgid "Benin"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:515
+msgid "Bermuda"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:516
+msgid "Bhutan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:517
+msgid "Bolivia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:518
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:519
+msgid "Botswana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:520
+msgid "Bouvet Island"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:521
+msgid "Brazil"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:522
+msgid "British Indian Ocean Territory"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:523
+msgid "Brunei Darussalam"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:524
+msgid "Bulgaria"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:525
+msgid "Burkina Faso"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:526
+msgid "Burundi"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:527
+msgid "Cambodia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:528
+msgid "Cameroon"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:530
+msgid "Cape Verde"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:531
+msgid "Cayman Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:532
+msgid "Central African Republic"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:533
+msgid "Chad"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:534
+msgid "Chile"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:535
+msgid "China"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:536
+msgid "Christmas Island"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:537
+msgid "Cocos (Keeling) Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:538
+msgid "Colombia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:539
+msgid "Comoros"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:540
+msgid "Congo"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:541
+msgid "Congo, The Democratic Republic of The"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:542
+msgid "Cook Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:543
+msgid "Costa Rica"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:544
+msgid "Cote D'ivoire"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:545
+msgid "Croatia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:546
+msgid "Cuba"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:547
+msgid "Cyprus"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:548
+msgid "Czech Republic"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:549
+msgid "Denmark"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:550
+msgid "Djibouti"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:551
+msgid "Dominica"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:552
+msgid "Dominican Republic"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:553
+msgid "Ecuador"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:554
+msgid "Egypt"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:555
+msgid "El Salvador"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:556
+msgid "Equatorial Guinea"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:557
+msgid "Eritrea"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:558
+msgid "Estonia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:559
+msgid "Ethiopia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:560
+msgid "Falkland Islands (Malvinas)"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:561
+msgid "Faroe Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:562
+msgid "Fiji"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:563
+msgid "Finland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:564
+msgid "France"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:565
+msgid "French Guiana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:566
+msgid "French Polynesia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:567
+msgid "French Southern Territories"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:568
+msgid "Gabon"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:569
+msgid "Gambia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:571
+msgid "Germany"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:572
+msgid "Ghana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:573
+msgid "Gibraltar"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:574
+msgid "Greece"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:575
+msgid "Greenland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:576
+msgid "Grenada"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:577
+msgid "Guadeloupe"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:578
+msgid "Guam"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:579
+msgid "Guatemala"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:580
+msgid "Guinea"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:581
+msgid "Guinea-bissau"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:582
+msgid "Guyana"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:583
+msgid "Haiti"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:584
+msgid "Heard Island and Mcdonald Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:585
+msgid "Holy See (Vatican City State)"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:586
+msgid "Honduras"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:587
+msgid "Hong Kong"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:588
+msgid "Hungary"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:589
+msgid "Iceland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:590
+msgid "India"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:591
+msgid "Indonesia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:592
+msgid "Iran, Islamic Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:593
+msgid "Iraq"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:595
+msgid "Israel"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:596
+msgid "Italy"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:597
+msgid "Jamaica"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:598
+msgid "Japan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:599
+msgid "Jordan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:600
+msgid "Kazakhstan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:601
+msgid "Kenya"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:602
+msgid "Kiribati"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:603
+msgid "Korea, Democratic People's Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:604
+msgid "Korea, Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:605
+msgid "Kuwait"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:606
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:607
+msgid "Lao People's Democratic Republic"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:608
+msgid "Latvia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:609
+msgid "Lebanon"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:610
+msgid "Lesotho"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:611
+msgid "Liberia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:612
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:613
+msgid "Liechtenstein"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:614
+msgid "Lithuania"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:615
+msgid "Luxembourg"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:616
+msgid "Macao"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:617
+msgid "Macedonia, The Former Yugoslav Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:618
+msgid "Madagascar"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:619
+msgid "Malawi"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:620
+msgid "Malaysia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:621
+msgid "Maldives"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:622
+msgid "Mali"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:623
+msgid "Malta"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:624
+msgid "Marshall Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:625
+msgid "Martinique"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:626
+msgid "Mauritania"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:627
+msgid "Mauritius"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:628
+msgid "Mayotte"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:629
+msgid "Mexico"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:630
+msgid "Micronesia, Federated States of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:631
+msgid "Moldova, Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:632
+msgid "Monaco"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:633
+msgid "Mongolia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:634
+msgid "Montserrat"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:635
+msgid "Morocco"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:636
+msgid "Mozambique"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:637
+msgid "Myanmar"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:638
+msgid "Namibia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:639
+msgid "Nauru"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:640
+msgid "Nepal"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:641
+msgid "Netherlands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:642
+msgid "Netherlands Antilles"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:643
+msgid "New Caledonia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:645
+msgid "Nicaragua"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:646
+msgid "Niger"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:647
+msgid "Nigeria"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:648
+msgid "Niue"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:649
+msgid "Norfolk Island"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:650
+msgid "Northern Mariana Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:651
+msgid "Norway"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:652
+msgid "Oman"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:653
+msgid "Pakistan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:654
+msgid "Palau"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:655
+msgid "Palestinian Territory, Occupied"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:656
+msgid "Panama"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:657
+msgid "Papua New Guinea"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:658
+msgid "Paraguay"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:659
+msgid "Peru"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:660
+msgid "Philippines"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:661
+msgid "Pitcairn"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:662
+msgid "Poland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:663
+msgid "Portugal"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:664
+msgid "Puerto Rico"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:665
+msgid "Qatar"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:666
+msgid "Reunion"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:667
+msgid "Romania"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:668
+msgid "Russian Federation"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:669
+msgid "Rwanda"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:670
+msgid "Saint Helena"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:671
+msgid "Saint Kitts and Nevis"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:672
+msgid "Saint Lucia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:673
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:674
+msgid "Saint Vincent and The Grenadines"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:675
+msgid "Samoa"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:676
+msgid "San Marino"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:677
+msgid "Sao Tome and Principe"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:678
+msgid "Saudi Arabia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:679
+msgid "Senegal"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:680
+msgid "Serbia and Montenegro"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:681
+msgid "Seychelles"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:682
+msgid "Sierra Leone"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:683
+msgid "Singapore"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:684
+msgid "Slovakia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:685
+msgid "Slovenia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:686
+msgid "Solomon Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:687
+msgid "Somalia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:688
+msgid "South Africa"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:689
+msgid "South Georgia and The South Sandwich Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:690
+msgid "Spain"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:691
+msgid "Sri Lanka"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:692
+msgid "Sudan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:693
+msgid "Suriname"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:694
+msgid "Svalbard and Jan Mayen"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:695
+msgid "Swaziland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:696
+msgid "Sweden"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:697
+msgid "Switzerland"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:698
+msgid "Syrian Arab Republic"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:699
+msgid "Taiwan, Province of China"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:700
+msgid "Tajikistan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:701
+msgid "Tanzania, United Republic of"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:702
+msgid "Thailand"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:703
+msgid "Timor-leste"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:704
+msgid "Togo"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:705
+msgid "Tokelau"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:706
+msgid "Tonga"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:707
+msgid "Trinidad and Tobago"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:708
+msgid "Tunisia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:709
+msgid "Turkey"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:710
+msgid "Turkmenistan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:711
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:712
+msgid "Tuvalu"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:713
+msgid "Uganda"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:714
+msgid "Ukraine"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:715
+msgid "United Arab Emirates"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:716
+msgid "United States Minor Outlying Islands"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:717
+msgid "Uruguay"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:718
+msgid "Uzbekistan"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:719
+msgid "Vanuatu"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:720
+msgid "Venezuela"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:721
+msgid "Viet Nam"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:722
+msgid "Virgin Islands, British"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:723
+msgid "Virgin Islands, U.S."
+msgstr ""
+
+#: wpstorecart/registration/registration.php:724
+msgid "Wallis and Futuna"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:725
+msgid "Western Sahara"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:726
+msgid "Yemen"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:727
+msgid "Zambia"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:728
+msgid "Zimbabwe"
+msgstr ""
+
+#: wpstorecart/registration/registration.php:1017
+msgid "ERROR: Please Enter in"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:55
+msgid ""
+"Please send a check or money order for the above amount to:<br /><br /"
+"><strong>My Business Name<br />1234 My Address, Suite ABC<br />New York, NY "
+"24317, USA</strong><br /><br />Please allow 4 to 6 weeks for delivery."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:69
+msgid ""
+"Dear [customername], thanks for your recent order from [sitename].  Your "
+"order has been submitted to our staff for approval.  This process can take "
+"as little as an hour to as long as a few weeks depending on how quickly your "
+"payment clears, and whether there are other issues which may cause a delay.  "
+"You can view your order status here: [downloadurl] "
+msgstr ""
+
+#: wpstorecart/settings/settings.php:70
+msgid ""
+"Dear [customername], thanks again for your recent order from [sitename].  "
+"This email is to inform you that your order has been approved.  For physical "
+"products, this does not mean that they have been shipped yet; as you will "
+"get another email when the order is shipped.  If you ordered a digital "
+"download, your download is now available.  You can view your order status "
+"here: [downloadurl] "
+msgstr ""
+
+#: wpstorecart/settings/settings.php:71
+msgid ""
+"Dear [customername], thanks again for your recent order from [sitename].  "
+"This email is to inform you that your order has been shipped."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:72
+msgid "Thanks again, [sitename] Management"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:73
+msgid ""
+"Dear [customername], thanks for your recent order from [sitename].  You can "
+"view your order status here: [downloadurl]   A serial number for "
+"[productname] has been issued to you.  Please keep this email for future "
+"reference.  Your serial number is [serialnumber] "
+msgstr ""
+
+#: wpstorecart/settings/settings.php:74
+msgid "Shopping Cart"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:75
+msgid "Item"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:77
+msgid "$"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:78
+msgid " USD"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:79
+msgid "Subtotal"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:80
+msgid "update"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:81
+msgid "checkout"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:83
+msgid "Checkout with Check/Money Order"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:84
+msgid "Checkout with PayPal"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:85
+msgid "Checkout with Authorize.NET"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:86
+msgid "Checkout with 2CheckOut"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:87
+msgid "Checkout with Liberty Reserve"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:88
+msgid "Checkout with Moneybookers"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:90
+msgid "empty"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:91
+msgid "Your cart is empty!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:92
+msgid "Item added!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:93
+msgid "Enter coupon:"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:94
+msgid "Invalid price format!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:95
+msgid "Item quantities must be whole numbers!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:96
+msgid "Your order could not be processed!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:97
+msgid ""
+"Dear [customername], thanks for your recent order from [sitename].  Your "
+"order has been submitted to our staff for approval.  This process can take "
+"as little as an hour to as long as a few weeks depending on how quickly your "
+"payment clears, and whether there are other issues which may cause a delay."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:98
+msgid ""
+"Dear [customername], thanks for your recent order from [sitename].  However, "
+"we encountered problems with your order and are unable to fulfill it at this "
+"time.  Please contact us for more information."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:100
+msgid "Out of Stock!"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:105
+msgid ""
+"Welcome to our affiliate program.  Here, you can review successful affiliate "
+"sales as well as grab links to all the products in our store that include "
+"your affiliate code."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:122
+msgid "Login"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:123
+msgid "Register"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:124
+msgid "Logout"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:125
+#: wpstorecart/shortcodes/shortcodes.php:309
+msgid "Username"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:126
+msgid "Password"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:128
+msgid "My Orders &amp; Purchases"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:130
+msgid "* - Fields with an asterick are required."
+msgstr ""
+
+#: wpstorecart/settings/settings.php:133
+msgid "Calculate Shipping"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:136
+msgid "Guest Checkout"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:164
+msgid "Full name on card"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:165
+msgid "Credit Card #"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:166
+msgid "Expires"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:167
+msgid "Month"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:168
+msgid "Year"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:169
+msgid "Address of Credit Card"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:170
+msgid "Zipcode of Credit Card"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:171
+msgid "CVV"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:184
+msgid "Trial Period:"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:185
+msgid "2nd Trial Period:"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:186
+msgid "Subscription Price:"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:188
+msgid "afterwards"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:190
+msgid "FREE"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:191
+msgid "day(s)"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:192
+msgid "week(s)"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:193
+msgid "month(s)"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:194
+msgid "year(s)"
+msgstr ""
+
+#: wpstorecart/settings/settings.php:214
+msgid "# available in stock:"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:103
+msgid "Order total:"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:144
+msgid "A note was added to a recent order. Here is the contents:"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:152
+msgid "A note was added to a recent order!"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:184
+#: wpstorecart/shortcodes/shortcodes.php:207
+msgid "CAPTCHA failed!"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:220
+#: wpstorecart/shortcodes/shortcodes.php:369
+msgid "CAPTCHA Image"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:221
+#: wpstorecart/shortcodes/shortcodes.php:370
+msgid "Different Image"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:256
+msgid "Total Price"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:285
+msgid "The passwords you entered do not match.  Your password was not updated."
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:311
+msgid "First name"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:312
+msgid "Last name"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:313
+msgid "Display name"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:314
+msgid "User ID"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:322
+msgid "First Name"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:326
+msgid "Last Name"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:330
+msgid "E-mail *"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:334
+msgid "Website"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:338
+msgid "Password *"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:342
+msgid "Repeat Password *"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:346
+msgid "Biographical Information"
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:484
+msgid ""
+"wpStoreCart did not like your recentproducts shortcode!  The quantity field "
+"contained non-numeric data. Please fix your page or consult the wpStoreCart "
+"documentation for help."
+msgstr ""
+
+#: wpstorecart/shortcodes/shortcodes.php:513
+msgid ""
+"wpStoreCart did not like your topproducts shortcode!  The quantity field "
+"contained non-numeric data. Please fix your page or consult the wpStoreCart "
+"documentation for help."
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:82 wpstorecart/widgets/widgets.php:333
+#: wpstorecart/widgets/widgets.php:407 wpstorecart/widgets/widgets.php:516
+#: wpstorecart/widgets/widgets.php:591 wpstorecart/widgets/widgets.php:670
+#: wpstorecart/widgets/widgets.php:769
+msgid "Title:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:83
+msgid "Number of categories to display:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:85 wpstorecart/widgets/widgets.php:594
+#: wpstorecart/widgets/widgets.php:673
+msgid "Show images:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:86 wpstorecart/widgets/widgets.php:595
+#: wpstorecart/widgets/widgets.php:674 wpstorecart/widgets/widgets.php:780
+msgid "Max thumb width:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:87 wpstorecart/widgets/widgets.php:596
+#: wpstorecart/widgets/widgets.php:675 wpstorecart/widgets/widgets.php:781
+msgid "Max thumb height:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:348
+msgid "wpStoreCart Cart Contents"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:408
+msgid "Use as the final checkout:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:409
+msgid "Show shipping costs:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:410
+msgid "Show tax:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:411
+msgid "Show subtotal without shipping:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:412
+msgid "Show total, including any shipping:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:491
+msgid "Signed in as a guest:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:492
+msgid "Log out of guest account"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:592 wpstorecart/widgets/widgets.php:671
+msgid "Number of products to display:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:770
+msgid "VISA:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:771
+msgid "MasterCard:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:772
+msgid "American Express:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:773
+msgid "Discover:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:774
+msgid "Diners Club:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:775
+msgid "JCB:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:776
+msgid "PayPal:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:777
+msgid "Authorize.Net:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:778
+msgid "2Checkout:"
+msgstr ""
+
+#: wpstorecart/widgets/widgets.php:779
+msgid "Inline CSS:"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:40
+msgid "Store"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:50
+msgid ""
+"ERROR 4a: wpStoreCart didn't like your data and failed to create a page for "
+"it!"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:77
+msgid ""
+"ERROR 4b: wpStoreCart didn't like your data and failed to create a page for "
+"it!"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:105
+msgid ""
+"ERROR 4c: wpStoreCart didn't like your data and failed to create a page for "
+"it!"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:190
+msgid "All Done"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:194 wpstorecart/wizard/wizard.php:200
+msgid "Thank you"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:195 wpstorecart/wizard/wizard.php:201
+msgid "You have finished all available wizards."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:237 wpstorecart/wizard/wizard.php:357
+msgid "Payment Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:243
+msgid "PayPal"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:244
+msgid ""
+"wpStoreCart is designed to work PayPal, although other payment gateways are "
+"also available.  Do you wish to accept PayPal payments on your website?  Is "
+"so, please enter your PayPal email address below:"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:245
+msgid "PayPal email address: "
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:246
+msgid "Yes, accept PayPal payments to the above email address."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:247
+msgid "No, I do not use PayPal at this time."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:252
+msgid "Manual Payments"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:253
+msgid ""
+"wpStoreCart can also be configured to accept payments offline, using "
+"whatever manual methods you devise.  Examples include Checks, Money Orders, "
+"Cash on Delivery (COD).  First, choose whether or not you want to accept "
+"payments using the manual payment gateway, and then please provide "
+"instructions to your customers on what information they should enter into "
+"the comments"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:254
+msgid "Yes, I accept payments manually."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:255
+msgid "No, I do not accept manual payments."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:256
+msgid "Instructions:"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:263
+msgid "wpsc Payments Pro"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:264
+msgid ""
+"Upgrade wpStoreCart now to enable payment gateways for Authorize.NET, "
+"2CheckOut, Liberty Reserve, Moneybookers/Skrill, and Quickbooks Merchant "
+"Services."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:265
+msgid "Yes, upgrade my store so I can accept payment through these providers."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:266
+msgid "No, I will not upgrade at this time."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:274
+msgid ""
+"You have just finished the PAYMENT WIZARD.  If you are satisified with your "
+"choices, it is time to save and move onto the PRODUCT WIZARD.  Just click "
+"the \"Save Your Settings\" button below to finalize these settings and "
+"continue to the PRODUCT WIZARD.    "
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:284
+msgid "Pages Automatically Created"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:287
+msgid "Done"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:288
+msgid ""
+"wpStoreCart has automatically created your MAIN PAGE, CHECKOUT PAGE, and "
+"ORDER PAGE.  We recommend you continue now by running the SETUP WIZARD.  "
+"Click \"Save Your Settings\" to continue to the SETUP WIZARD."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:299 wpstorecart/wizard/wizard.php:356
+msgid "Setup Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:302
+msgid "Welcome"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:303
+msgid "Welcome to wpStoreCart!"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:303
+msgid ""
+"This is the SETUP WIZARD, which will ask you some questions about your "
+"website, and configure wpStoreCart to work best for your needs."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:303
+msgid ""
+"This wizard is optional, but recommended.  You can rerun this SETUP WIZARD "
+"at anytime.  To begin, press the NEXT button.  Note that you must complete "
+"the wizard and press the \"Save Your Settings\" button for any changes to "
+"take affect."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:311
+msgid "Auto Create Pages"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:312
+msgid ""
+"wpStoreCart requires a few pages to be created, namely a MAIN PAGE, a "
+"CHECKOUT PAGE, and an ORDERS PAGE.  wpStoreCart can automatically create "
+"these pages for you and assign them correctly.  Would you like wpStoreCart "
+"to create these pages at the end of the Wizard?"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:314
+msgid "Yes, automatically create these pages for me"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:315
+msgid ""
+"No, I will create these pages, manually insert the shortcodes, and change "
+"the settings myself"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:324
+msgid "Physical and/or Digital Products"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:325
+msgid ""
+"Will your store sell physical goods that are shipped, digital goods that are "
+"downloaded, or a combination of both physical and digital products?"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:327
+msgid "Both Digital &amp; Physical Products"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:327
+msgid "* Recommend, as it keeps all product options available"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:328
+msgid ""
+"Physical products only  (disables product downloads and other non-physical "
+"options)"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:329
+msgid "Digital products only (disables shipping and other non-digital options)"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:337
+msgid ""
+"You have just finished the SETUP WIZARD.  If you are satisified with your "
+"choices, it is time to save and move onto the PAYMENT WIZARD.  Just click "
+"the \"Save Your Settings\" button below to finalize these settings and "
+"continue to the PAYMENT WIZARD.    "
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:351
+msgid "Available Wizards"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:354
+msgid ""
+"We provide several wizards to simplify many aspects of running your online "
+"shop."
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:364
+msgid "Coming Soon"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:368
+msgid "Product Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:369
+msgid "Design Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:370
+msgid "Customer Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:371
+msgid "Marketing Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:372
+msgid "Alert Wizard"
+msgstr ""
+
+#: wpstorecart/wizard/wizard.php:390
+msgid "Save Your Settings"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "wpStoreCart - Ajax Ecommerce"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (wpStoreCart - Ajax Ecommerce 3.9.11)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  plugin.pot (wpStoreCart - Ajax Ecommerce 3.9.11)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://wpstorecart.com/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"<a href=\"http://wpstorecart.com/\" target=\"blank\">wpStoreCart</a> is a "
+"powerful, yet simple to use ecommerce Wordpress plugin that accepts PayPal & "
+"more out of the box. It includes multiple widgets, dashboard widgets, "
+"shortcodes, and works using Wordpress pages to keep everything nice and "
+"simple."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "wpStoreCart, LLC"
+msgstr ""
