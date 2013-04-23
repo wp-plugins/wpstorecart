@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.20 =
-* Fixed: Combo Add to Cart button now displays correctly
+* Fixed: Combo Add to Cart button now displays correctly.
 
 = 3.9.19 =
 * Fixed: Patched an issue with shipping city not saving correctly in some server environments
