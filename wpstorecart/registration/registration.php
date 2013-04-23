@@ -969,6 +969,13 @@ if(!function_exists('wpscSaveFields')) {
             $_SESSION['wpsc_taxstates'] = $wpdb->escape($_POST['taxstate']);
         } 
 
+        // city shipping
+        if(@isset($_POST['wpsc_shipping_city'])) {
+            if($user_id > 0) { // If we're dealing with a logged in user:
+                update_usermeta( $user_id, 'wpsc_shipping_city', $wpdb->escape($_POST['wpsc_shipping_city']) );
+            }   
+            $_SESSION['wpsc_shipping_city'] = $wpdb->escape($_POST['wpsc_shipping_city']);
+        }         
 
         // countries shipping
         if(@isset($_POST['taxcountries'])) {

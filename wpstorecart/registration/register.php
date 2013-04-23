@@ -67,7 +67,10 @@ foreach ($fields as $field) {
         }        
         if($specific_items[2]=='taxcountries') {
             $current_field = trim($_POST['taxcountries']);
-        }         
+        }    
+        if($specific_items[2]=='shippingcity') {
+            $current_field = trim($_POST['wpsc_shipping_city']);
+        }
         
         $_SESSION['wpsc_'.wpscSlug($specific_items[0])]=$_POST[wpscSlug($specific_items[0])]; // This allows us to save data in case the form needs to be refilled out due to it being incomplete
         if ($specific_items[1]=='required' && $current_field=='') {
