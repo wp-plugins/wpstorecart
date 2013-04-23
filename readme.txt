@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.19 =
-* Fixed: Patched an issue with shipping city not saving correctly in some server environments
+* Fixed: Patched an issue with shipping city not saving correctly in some server environments.
 
 = 3.9.18 =
 * Fixed: Patched issue with registration failing when collecting certain shipping information.
