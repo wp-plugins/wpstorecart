@@ -1758,6 +1758,7 @@ if(!function_exists('wpscProductGetProductAccessories')) {
                                             }                                                        
                                             $checkBoxes .= '<input type="checkbox" name="wpsc-add-product-combo" class="wpsc-add-product-combo-pack-'.$theAccessory['value'].'" value="'.$newComboToWorkWith.'"  style="display:none;" />';
                                             $the_new_results = NULL;
+                                            $atLeast1Product = true;
                                         }
                                     }
                                 }
