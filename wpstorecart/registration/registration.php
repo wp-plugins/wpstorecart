@@ -67,11 +67,49 @@ if(!function_exists('wpscProfileCustomContactMethod')) {
             return null;
         } else {
 
+            $user_id = $current_user->ID;
+            
             $fields = wpscGrabCustomRegistrationFields();
             foreach ($fields as $field) {
                 $specific_items = explode("||", $field['value']);
                     if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
                         $slug = wpscSlug($specific_items[0]);
+                        
+                        // city shipping
+                        if($specific_items[2]=='shippingcity') {
+                            $slug = 'wpsc_shipping_city';
+                        }                    
+
+                        // Firstname shipping
+                        if($specific_items[2]=='firstname') {
+                            $slug = 'wpsc_shipping_firstname';
+                        }
+
+                        // lastname shipping
+                        if($specific_items[2]=='lastname') {
+                            $slug =  'wpsc_shipping_lastname';
+                        }                
+
+                        // address shipping
+                        if($specific_items[2]=='shippingaddress') {
+                            $slug =  'wpsc_shipping_address';
+                        } 
+
+                        // zipcode shipping
+                        if($specific_items[2]=='zipcode') {
+                            $slug =  'wpsc_shipping_zipcode';
+                        }    
+
+                        // state shipping
+                        if($specific_items[2]=='taxstates') {
+                            $slug =  'wpsc_taxstates';
+                        }     
+
+                        // country shipping
+                        if($specific_items[2]=='taxcountries') {
+                            $slug =  'wpsc_taxcountries';
+                        }                         
+                        
                         $contactmethods[$slug] = $slug; // This makes something like this: $contactmethods['address'] = 'Address';
                     }
 
@@ -775,7 +813,7 @@ if(!function_exists('wpscVerifyNeedToShowRequiredCustomRegistrationFields')) {
                         $_SESSION['wpsc_'.wpscSlug($specific_items[0])] = $value;
                     }    
                     
-                    // Firstname shipping
+                    // city shipping
                     if($specific_items[2]=='shippingcity') {
                         $value = get_user_meta( $user_id, 'wpsc_shipping_city', true );
                         if(@trim($value)=='') {
@@ -833,6 +871,12 @@ if(!function_exists('wpscVerifyNeedToShowRequiredCustomRegistrationFields')) {
                 }
                 if($user_id == 0) {
                     $value = $_SESSION['wpsc_'.wpscSlug($specific_items[0])];
+                    
+                    // city shipping
+                    if($specific_items[2]=='shippingcity') {
+                        $value = $_SESSION['wpsc_shipping_city'];
+                    }                      
+                    
                     // Firstname shipping
                     if($specific_items[2]=='firstname') {
                         $value = $_SESSION['wpsc_shipping_firstname'];
