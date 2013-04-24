@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.21 =
-* Fixed: Patched an issue with custom registration fields not always loading correctly on user profile screens
+* Fixed: Patched an issue with custom registration fields not always loading correctly on user profile screens.
 
 = 3.9.20 =
 * Fixed: Combo Add to Cart button now displays correctly
