@@ -317,7 +317,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 
                 // Manual Payment gateway start
                 if($wpscPaymentGateway['payment_gateway'] == 'checkmoneyorder') {
-                   
+
                     @header ('HTTP/1.1 301 Moved Permanently');
                     if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
                         @header ('Location: '.get_permalink($wpStoreCartOptions['mainpage']).'?wpsc=manual&order='.$wpscPaymentGateway['order_id'].'&price='.$wpscPaymentGateway['final_price']);

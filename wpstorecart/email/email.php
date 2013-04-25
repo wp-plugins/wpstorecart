@@ -56,12 +56,16 @@ if(!function_exists('wpscMakeEmailTxt')) {
         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
 
         if($theEmailAddressOrderID == 0) {
-            $theEmail = str_replace("[customername]", $current_user->display_name, $theEmail);
+            if ( 0 == $current_user->ID ) { // Guest
+                $theEmail = str_replace("[customername]", __('valued customer', 'wpstorecart'), $theEmail);
+            } else {
+                $theEmail = str_replace("[customername]", $current_user->display_name, $theEmail);
+            }
         } else {
             $table_name = $wpdb->prefix . "wpstorecart_orders";
             $sql = "SELECT `email` FROM `{$table_name}` WHERE `primkey`={$theEmailAddressOrderID};";
             $results = $wpdb->get_results( $sql , ARRAY_A );
-            $theEmailAddress = 'Customer';
+            $theEmailAddress = __('valued customer', 'wpstorecart');
             if(isset($results)) {
                 $theEmailAddress = $results[0]['email'];
             }

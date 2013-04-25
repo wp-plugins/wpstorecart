@@ -100,6 +100,7 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                 default:
                     
                     if($_GET['wpsc']=='manual') {
+                        
                         $output .= '<h2>'.__('Order total:', 'wpstorecart').' '.$wpStoreCartOptions['currency_symbol']. $_GET['price'] .$wpStoreCartOptions['currency_symbol_right'].'</h2>';
                         $output .= $wpStoreCartOptions['checkmoneyordertext'];
                         if(strpos(get_permalink($wpStoreCartOptions['mainpage']),'?')===false) {
@@ -122,6 +123,17 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                                 $sql = "INSERT INTO `{$table_name3}` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$orderText}', 'ordernote', '{$orderNumber}');";
                                 $wpdb->query( $sql );
                             }
+                            
+                            $manual_order_message = '<strong>'.__('Order ID','wpstorecart') .':</strong> '. $results[0]['primkey'] . "<br />";
+                            $manual_order_message .= '<strong>'.__('Customer Email','wpstorecart') .':</strong> '. $results[0]['email'] . "<br />";                                 
+                            $manual_order_message .= '<strong>'.__('Total Price','wpstorecart') .':</strong> '.$results[0]['price']. "<br />";
+                            $manual_order_message .= '<strong>'.__('Products Ordered','wpstorecart') .':</strong> '.wpscSplitOrderIntoProduct($results[0]['primkey']). "<br />";                                                    
+                            $manual_order_message .= '<strong>'.__('Customer notes','wpstorecart') .':</strong> '.$orderText . "<br />";
+                            
+                            // Mail the admin about the manual purchase
+                            wpscEmail($wpStoreCartOptions['wpStoreCartEmail'], __('A new manual order was placed.', 'wpstorecart'), $manual_order_message);
+
+                            
                             $output .= wpscMakeEmailTxt($wpStoreCartOptions['success_text']);
                                 // Let's send them an email telling them their purchase was successful
                                 // In case any of our lines are larger than 70 characters, we should use wordwrap()
