@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.22 =
-* Added: Manual payments now send an email summary of the order to the admin
-* Updated: Some minor tlc was done to the email system in regards to guest purchases and emails
+* Added: Manual payments now send an email summary of the order to the admin.
+* Updated: Some minor tlc was done to the email system in regards to guest purchases and emails.
 
 = 3.9.21 =
 * Fixed: Patched an issue with custom registration fields not always loading correctly on user profile screens
