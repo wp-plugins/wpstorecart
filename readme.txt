@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.25 =
-* Fixed: Some minor javascript fixes for variation loading
+* Fixed: Some minor javascript fixes for variation loading.
 
 = 3.9.24 =
 * Fixed: Reverted the changes from 3.9.23
