@@ -36,7 +36,7 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
             jQuery(".wpsc-product-img").attr("src", XreturnedData.thumbnail);
 
             //case "price":
-            wpscStoreRegularPrice = XreturnedData.price;
+            wpscStoreRegularPrice = parseFloat(XreturnedData.price, 10);
 
             //case "shipping":
             jQuery(".wpstorecart-item-shipping").val(XreturnedData.shipping);
@@ -45,7 +45,7 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
             wpscStoreInventory = XreturnedData.inventory;
 
             //case "discountprice":
-            wpscStoreDiscountPrice = XreturnedData.discountprice;
+            wpscStoreDiscountPrice = parseFloat(XreturnedData.discountprice, 10);
 
             //case "useinventory":
             wpscStoreUseInventory = XreturnedData.useinventory;
@@ -62,14 +62,14 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
             
             if(wpscStoreDiscountPrice==0 || wpscStoreDiscountPrice=='0.00') {
                 jQuery(".wpstorecart-item-price").val(wpscStoreRegularPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + wpscStoreRegularPrice + wpscCurrencySymbolRight);
+                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight);
                 jQuery(".wpsc-oldprice").hide();
                 
             } else if (wpscStoreDiscountPrice > 0 && (wpscStoreDiscountPrice < wpscStoreRegularPrice)) {
                 jQuery(".wpsc-oldprice").show();
                 jQuery(".wpstorecart-item-price").val(wpscStoreDiscountPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + wpscStoreDiscountPrice + wpscCurrencySymbolRight);
-                jQuery(".wpsc-oldprice").html('<strike>'+wpscCurrencySymbol + wpscStoreRegularPrice + wpscCurrencySymbolRight+'</strike>');
+                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice").html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight+'</strike>');
             }
             
         }
@@ -111,13 +111,13 @@ function wpscLoadProductAttribute(wpscPluginsUrl, wpscParentKey, wpscParentName,
             }
             
             //case "price":
-            wpscStoreRegularPrice = parseFloat(XreturnedData.price);
+            wpscStoreRegularPrice = parseFloat(XreturnedData.price, 10);
 
             //case "inventory":
             wpscStoreInventory = XreturnedData.inventory;
 
             //case "discountprice":
-            wpscStoreDiscountPrice = parseFloat(XreturnedData.discountprice);
+            wpscStoreDiscountPrice = parseFloat(XreturnedData.discountprice, 10);
 
 
             //case "useinventory":
