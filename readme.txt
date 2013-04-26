@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.24 =
-* Fixed: Reverted the changes from 3.9.23
+* Fixed: Reverted the changes from 3.9.23.
  
 = 3.9.23 =
 * Updated: Tax calculator updated
