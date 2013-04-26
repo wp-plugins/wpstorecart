@@ -92,8 +92,8 @@ function wpscCalculateTaxes($theTotal) {
 
 
         if($mastertax > 0) {
-            //$taxamount = $theTotal * ($mastertax /100);
-            $taxamount = $theTotal * ((100-$mastertax) / 100);
+            $taxamount = $theTotal * ($mastertax /100);
+
         }
         return number_format($taxamount,2);
 
