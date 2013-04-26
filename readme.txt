@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.23 =
-* Updated: Tax calculator updated
+* Updated: Tax calculator updated.
 
 = 3.9.22 =
 * Added: Manual payments now send an email summary of the order to the admin
