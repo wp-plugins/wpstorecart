@@ -144,6 +144,32 @@ if(!function_exists('wpscProductGetToolbar')) {
     }
 }
 
+if(!function_exists('wpscProductGetFieldsArray')) {
+    function wpscProductGetFieldsArray($productkey) {
+        global $wpdb;
+        $results = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_field_def` WHERE `productkey`='{$productkey}';", ARRAY_A);
+        return $results;
+    }
+}
+
+
+if(!function_exists('wpscProductGetFields')) {
+    function wpscProductGetFields($productkey) {
+        $output = null;
+        $results = wpscProductGetFieldsArray($productkey);
+        if(isset($results[0]['primkey'])) {
+            foreach ($results as $result) {
+                if($result['type']=='information') {
+                    $output .= "{$result['desc']} : {$result['defaultvalue']}<br />";
+                }
+            }
+        }
+        return $output;
+    }
+}
+
+
+
 if(!function_exists('wpscProductGetCatalog')) {
     /**
      *
@@ -1113,6 +1139,7 @@ if (!function_exists('wpscProductGetPage')) {
                                         $output.= '
                                         <li id="wpsc-product-info-sort5" class="wpsc-list-item-variation" >
                                             '.wpscProductGetVariationsSelection($primkey).'
+                                            '.wpscProductGetFields($primkey).'
                                         </li>';
                                     break;
                                 }
@@ -2039,7 +2066,7 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
                                             if(@isset($_SESSION['wpsc_email'])) {
                                                 $purchaser_user_id = 0;
                                                 $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
-                                                $purchasing_display_name = 'Guest ('.$_SERVER['REMOTE_ADDR'].')';
+                                                $purchasing_display_name = 'Guest ('.$wpdb->escape($_SERVER['REMOTE_ADDR']).')';
                                             } else {
                                                 $purchaser_user_id = $current_user->ID;
                                                 $purchaser_email = $current_user->user_email;
@@ -2105,7 +2132,18 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
 
                                     $output .= '
                                     <form method="post" action="" class="wpsc_add_to_cart_form">
-
+                                    ';
+                                    
+                                    $fieldresults = wpscProductGetFieldsArray($primkey);
+                                    if(isset($fieldresults[0]['primkey'])) {
+                                        foreach($fieldresults as $fieldresult) {
+                                            if($fieldresult['type']=='prompt') {
+                                                $output .= "{$fieldresult['desc']} : <input type=\"text\" class=\"wpstorecart_product_options wpsc_field_required\" id=\"wpstorecart_product_options_id_{$fieldresult['primkey']}\" name=\"wpstorecart_product_options[]\" value=\"\" /><br />";
+                                            }
+                                        }
+                                    }
+                                    
+                                    $output .= '
                                             <input type="hidden" class="wpstorecart-item-id" name="wpstorecart-item-id" id="wpstorecart-item-id-'.$results[0]['primkey'].'" value="'.$results[0]['primkey'].'" />
                                             <input type="hidden" class="wpstorecart-item-primkey" name="wpstorecart-item-primkey" id="wpstorecart-item-primkey-'.$results[0]['primkey'].'" value="'.$results[0]['primkey'].'" />
                                             <input type="hidden" class="wpstorecart-item-name" name="wpstorecart-item-name" id="wpstorecart-item-name-'.$results[0]['primkey'].'" value="'.stripslashes(str_replace('"', '',$results[0]['name'])).'" />
@@ -2125,8 +2163,9 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
                                         if($results[0]['useinventory']==1) {                                        
                                             $modified_js = 'if (jQuery(\'#wpsc-individualqty-'.$results[0]['primkey'].'\').val() > '.$results[0]['inventory'] .') {alert(\''.__('You have attempted to purchase more items than we currently have in stock.  We have adjusted the quantity to maximum available.  Please try again.', 'wpstorecart').'\');jQuery(\'#wpsc-individualqty-'.$results[0]['primkey'].'\').val('.$results[0]['inventory'].');return false;} else { ';
                                             $modified_js_final = '}';
-                                        }                                        
-                                        $output .= '<button name="wpstorecart-add-to-cart" id="wpsc-addtocart-primkey-'.$results[0]['primkey'].'" class="wpsc-button wpsc-addtocart '.$wpStoreCartOptions['button_classes_addtocart'].'" onsubmit="'.$modified_js.' '.$modified_js_final.'">'.$wpStoreCartOptions['add_to_cart'].'</button>';
+                                        }
+                                        
+                                        $output .= '<button name="wpstorecart-add-to-cart" id="wpsc-addtocart-primkey-'.$results[0]['primkey'].'" class="wpsc-button wpsc-addtocart '.$wpStoreCartOptions['button_classes_addtocart'].'" onsubmit="'.$modified_js.' '.$modified_js_final.';jQuery( \'.wpstorecart_product_options\' ).each(function() { jQuery(this).val(this.id + \'::\' + jQuery(this).val() + \'||\'); });if(jQuery(\'.wpsc_field_required\').val()==\'\') {alert(\''.__('You must fill out all information before adding this product to your order.', 'wpstorecart').'\');return false;} " onclick="'.$modified_js.' '.$modified_js_final.';jQuery( \'.wpstorecart_product_options\' ).each(function() { jQuery(this).val(this.id + \'::\' + jQuery(this).val() + \'||\'); });if(jQuery(\'.wpsc_field_required\').val()==\'\') {alert(\''.__('You must fill out all information before adding this product to your order.', 'wpstorecart').'\');return false;}">'.$wpStoreCartOptions['add_to_cart'].'</button>';
                                     } else {
                                         $output .= $wpStoreCartOptions['out_of_stock'];
                                     }
@@ -2596,6 +2635,111 @@ if(!function_exists('wpscProductGetAllRecordsWithAttribute')) {
         global $wpdb;
         $sql = "SELECT `name`, `producttype`, `postid` FROM `{$wpdb->prefix}wpstorecart_products` WHERE `primkey`='{$id}';";
         $results = $wpdb->get_results($sql,ARRAY_A);
+    }
+}
+
+if(!function_exists('wpscProductListProductDownloads')) {
+    /**
+        * 
+        * Returns a string that lists all downloads associated with a product.  Use the $type parameter to return different styles of list.
+        *
+        * @global object $wpdb
+        * @param integer $primkey
+        * @param string $type  If $type = 'download' then it will allow a person to download the file (if they have purchased it)  If $type='edit' then it will allow admins to administrate
+        * @return string 
+        */
+    function wpscProductListProductDownloads($primkey, $type="download") {
+        global $wpdb;
+        $table_name2 = $wpdb->prefix . "wpstorecart_products";
+        $thevariationdetail[0] = NULL;
+        $thevariationdetail[1] = NULL;
+        $moutput = "
+                    <script type=\"text/javascript\">
+                        /* <![CDATA[ */
+                        function str_replace(search, replace, subject, count) {
+                            // Replaces all occurrences of search in haystack with replace
+                            // MIT License
+
+                                temp = '',
+                                repl = '',
+                                sl = 0,        fl = 0,
+                                f = [].concat(search),
+                                r = [].concat(replace),
+                                s = subject,
+                                ra = Object.prototype.toString.call(r) === '[object Array]',        sa = Object.prototype.toString.call(s) === '[object Array]';
+                            s = [].concat(s);
+                            if (count) {
+                                this.window[count] = 0;
+                            }
+                            for (i = 0, sl = s.length; i < sl; i++) {
+                                if (s[i] === '') {
+                                    continue;
+                                }        for (j = 0, fl = f.length; j < fl; j++) {
+                                    temp = s[i] + '';
+                                    repl = ra ? (r[j] !== undefined ? r[j] : '') : r[0];
+                                    s[i] = (temp).split(f[j]).join(repl);
+                                    if (count && s[i] !== temp) {                this.window[count] += (temp.length - s[i].length) / f[j].length;
+                                    }
+                                }
+                            }
+                            return sa ? s : s[0];
+                        }
+                        /* ]]> */
+                    </script>
+";
+
+        $sql2 = "SELECT `primkey`, `name`, `download`, `postid` FROM `{$table_name2}` WHERE `primkey`={$primkey};";
+        $moreresults = $wpdb->get_results( $sql2 , ARRAY_A );
+
+        if($type=="download" && isset($moreresults[0])) {
+                $output .= ', <br />';
+                if($output==', <br />') {$output = '';}
+                if($moreresults[0]['download']=='') { // Non-downloads products below:
+                        $output .= $moreresults[0]['download'].' '.$thevariationdetail[0].' '.$thevariationdetail[1];
+                } else { // Download products below:
+
+                        $multidownloads = explode('||', $moreresults[0]['download']);
+                        if(@isset($multidownloads[0]) && @isset($multidownloads[1])) {
+                                $downloadcount = 0;
+                                foreach($multidownloads as $multidownload) {
+                                        if($multidownload!='') {
+                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
+                                        }
+                                                $downloadcount++;
+                                }
+                        } else {
+                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
+                        }
+                }
+
+        }
+
+        // EDITING DOWNLOADS
+        if($type=="edit" && isset($moreresults[0])) {
+                $output .= ', <br />';
+                if($output==', <br />') {$output = '';}
+                if($moreresults[0]['download']=='') { // Non-downloads products below:
+                        $output .= '';
+                } else { // Download products below:
+
+                        $multidownloads = explode('||', $moreresults[0]['download']);
+                        if(@isset($multidownloads[0]) && @isset($multidownloads[1])) {
+                                $downloadcount = 0;
+                                foreach($multidownloads as $multidownload) {
+                                        if($multidownload!='') {
+                                                $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div><br />';
+                                        }
+                                                $downloadcount++;
+                                }
+                        } else {
+                                $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div>';
+                        }
+                }
+
+        }
+
+        return $moutput . $output;
+
     }
 }
 

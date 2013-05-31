@@ -2853,7 +2853,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 }
                              
                                 if($wpStoreCartOptions['storetype']!='Physical Goods Only'){
-                                    echo '<li style="display:inline;"><a href="#tab3"><img src="'.plugins_url() . '/wpstorecart/images/server_go.png" /> '.__('Downloads &amp; Serial #','wpstorecart').'</a></li>';
+                                    echo '<li style="display:inline;"><a href="#tab3"><img src="'.plugins_url() . '/wpstorecart/images/server_go.png" /> '.__('Downloads','wpstorecart').'</a></li>';
                                 }
                                 
                                 if($wpStoreCartproduct_producttype=='product') {
@@ -2861,6 +2861,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     <li><a href="#tab5"><img src="'.plugins_url() . '/wpstorecart/images/cart_put.png" /> '.__('Accessories','wpstorecart').'</a></li>
                                     ';
                                 }
+                                //echo '<li><a href="#tab7"><img src="'.plugins_url() . '/wpstorecart/images/text_padding_top.png" /> '.__('Fields','wpstorecart').'</a></li>';                                
                                 wpsc_admin_edit_product_tab_header();
                             echo '
                             </ul>';
@@ -3174,34 +3175,6 @@ if(!function_exists('wpscAdminPageCategories')) {
                             </select> &nbsp; &nbsp; &nbsp; '.__('Tags', 'wpstorecart').': <input type="text" name="wpStoreCartproduct_tags" style="width: 200px;" value="'.$wpStoreCartproduct_tags.'" />
                             </td>
                             </tr>';	
-
-                            wpsc_admin_edit_product_table_before_product_downloads();  // Action hook
-                            
-                            echo '
-                            <tr';if($wpStoreCartOptions['storetype']=='Physical Goods Only') {echo ' style="display:none;"';}echo'>
-                            <td><p>'.__('Downloadable Files', 'wpstorecart').': <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-8" /><div class="tooltip-content" id="example-content-8">'.__('If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at:', 'wpstorecart').' '.WP_CONTENT_DIR . '/uploads/wpstorecart/</div></p></td>
-                            <td>
-                                <script type="text/javascript">
-                                    /* <![CDATA[ */
-                                        function wpscPrompter() {
-                                            var reply = prompt("'.__('Please enter the filename of the already uploaded file you wish to add', 'wpstorecart').'", "")
-                                            if(reply!=null) {
-                                                jQuery("#wpStoreCartproduct_download").val(jQuery("#wpStoreCartproduct_download").val() + reply + "||");
-                                            }
-                                            return false;
-                                        }
-                                    /* ]]> */
-                                </script>                        
-
-
-                            <a href="" onclick="wpscPrompter();return false;" style="float:right;"><button onclick="return false;" class="button-secondary">'.__('Add a pre-Uploaded file to this product', 'wpstorecart').'</button></a><br style="clear:both;" /><a href="" onclick="jQuery(\'#wpStoreCartproduct_download\').toggle();return false;" style="float:right;margin-top:2px;"><button onclick="return false;" class="button-secondary">'.__('Show/Hide Advanced Edit', 'wpstorecart').'</button></a><br style="clear:both;" /><input type="text" name="wpStoreCartproduct_download" id="wpStoreCartproduct_download" style="width: 200px;display:none;float:right;" value="'.@$wpStoreCartproduct_download.'" /><br />
-                            '.__('Upload File(s)', 'wpstorecart').': <span id="spanSWFUploadButton"></span>
-                            <div id="upload-progressbar-container">
-                                <div id="upload-progressbar">
-                                </div>
-                            </div>
-                            </td>
-                            </tr>';
 
                             if(@$wpStoreCartproduct_thumbnail==''||@!isset($wpStoreCartproduct_thumbnail)) {
                                 $wpStoreCartproduct_thumbnail = plugins_url().'/wpstorecart/images/default_product_img.jpg';
@@ -3921,7 +3894,37 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 <h2>'.__('Downloads', 'wpstorecart').'</h2>
                                 ';
 
-                                //echo $this->listProductDownloads($_GET['keytoedit'], 'edit');
+                                wpsc_admin_edit_product_table_before_product_downloads();  // Action hook
+
+                                echo '
+                                
+
+                                <p>'.__('If your product is digital in nature, then you can distribute it as a digital download.  If you need to upload more than one file, just select them all in the file selection dialog.  All uploads are stored at:', 'wpstorecart').' '.WP_CONTENT_DIR . '/uploads/wpstorecart/</p>
+                                <table class="wide-fat">
+                                <td>
+                                    <script type="text/javascript">
+                                        /* <![CDATA[ */
+                                            function wpscPrompter() {
+                                                var reply = prompt("'.__('Please enter the filename of the already uploaded file you wish to add', 'wpstorecart').'", "")
+                                                if(reply!=null) {
+                                                    jQuery("#wpStoreCartproduct_download").val(jQuery("#wpStoreCartproduct_download").val() + reply + "||");
+                                                }
+                                                return false;
+                                            }
+                                        /* ]]> */
+                                    </script>                        
+
+
+                                <a href="" onclick="wpscPrompter();return false;" style="float:right;"><button onclick="return false;" class="button-secondary">'.__('Add a pre-Uploaded file to this product', 'wpstorecart').'</button></a><br style="clear:both;" /><a href="" onclick="jQuery(\'#wpStoreCartproduct_download\').toggle();return false;" style="float:right;margin-top:2px;"><button onclick="return false;" class="button-secondary">'.__('Show/Hide Advanced Edit', 'wpstorecart').'</button></a><br style="clear:both;" /><input type="text" name="wpStoreCartproduct_download" id="wpStoreCartproduct_download" style="width: 200px;display:none;float:right;" value="'.@$wpStoreCartproduct_download.'" /><br />
+                                '.__('Upload File(s)', 'wpstorecart').': <span id="spanSWFUploadButton"></span>
+                                <div id="upload-progressbar-container">
+                                    <div id="upload-progressbar">
+                                    </div>
+                                </div>
+                                </td>
+                                </tr>
+                                </table>';                                
+                                echo wpscProductListProductDownloads($_GET['keytoedit'], 'edit');
 
                                 echo '<br style="clear:both;" />
                                 <strong>'.__('Serial Numbers', 'wpstorecart').'</strong>
@@ -4187,6 +4190,190 @@ if(!function_exists('wpscAdminPageCategories')) {
 
                             </div></div>     ';
                             }
+                            
+
+                            echo '
+                            <div id="tab7" class="tab_content">
+                            <div class="box">';
+                            
+                            echo '<h2>'.__('Custom Product Fields', 'wpstorcart').'</h2>';
+                            
+                            echo '
+
+                                <script type="text/javascript">
+                                    /* <![CDATA[ */
+                                    
+                                    function wpsc_del_field(keytodel) {
+                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/delproductfield.php", type:"POST", data:"delete="+keytodel'; if($wpsc_testing_mode){echo '+"&'.$wpStoreCartOptions['debug_parameter'].'"';}  echo', success: function(){
+                                            jQuery("#wpsc-field-"+keytodel).hide();
+                                        }});
+                                    }
+
+                                    function wpsc_add_field() {
+                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addproductfield.php", type:"POST", data:"wpsc_fields_type="+jQuery("#wpsc_fields_type").val()+"&wpsc_fields_information_type="+jQuery("#wpsc_fields_information_type").val()+"&wpsc_fields_required="+jQuery("#wpsc_fields_required").val()+"&wpsc_fields_default_value="+jQuery("#wpsc_fields_default_value").val()+"&wpsc_fields_desc="+jQuery("#wpsc_fields_desc").val()+"&wpsc_fields_name="+jQuery("#wpsc_fields_name").val()+"&wpsc_fields_isactive="+jQuery("#wpsc_fields_isactive").val()+"&wpsc_fields_product_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
+                                            jQuery("#wpsc-fields-edit").append("");
+
+                                        }});
+                                        return false;
+                                    }
+                                    
+                                    function wpsc_fields_type_change() {
+                                        if ( jQuery("#wpsc_fields_type").val() == "information" ) {
+                                            jQuery("#wpsc_fields_information_type_download").show();
+                                            jQuery("#wpsc_fields_information_type_upload").hide();
+                                            jQuery("#wpsc_fields_required_div").hide();
+                                            if ( jQuery("#wpsc_fields_information_type").val() == "upload" ) {
+                                                jQuery("#wpsc_fields_information_type").val("download");
+                                            }                                            
+                                        }
+                                        if ( jQuery("#wpsc_fields_type").val() == "prompt" ) {
+                                            jQuery("#wpsc_fields_information_type_upload").show();
+                                            jQuery("#wpsc_fields_information_type_download").hide();
+                                            jQuery("#wpsc_fields_required_div").show();
+                                            if ( jQuery("#wpsc_fields_information_type").val() == "download" ) {
+                                                jQuery("#wpsc_fields_information_type").val("upload");
+                                            }
+                                        }                                        
+                                    }
+                                    
+                                    function wpsc_fields_required_change() {
+                                        if ( jQuery("#wpsc_fields_type").val() == "prompt" ) {
+                                        
+                                            jQuery("#wpsc_fields_default_value_information_div").hide();
+                                            jQuery("#wpsc_fields_default_value_prompt_div").show();
+                                            
+                                            if ( jQuery("#wpsc_fields_required").val() == "optional" || jQuery("#wpsc_fields_required").val() == "required" ) {
+                                                jQuery("#wpsc_fields_default_value_div").hide();
+                                            }
+                                            if ( jQuery("#wpsc_fields_required").val() == "defaultvalue" ) {
+                                                jQuery("#wpsc_fields_default_value_div").show();
+                                            }
+                                        }
+                                        if ( jQuery("#wpsc_fields_type").val() == "information" ) {
+                                            jQuery("#wpsc_fields_default_value_information_div").show();
+                                            jQuery("#wpsc_fields_default_value_prompt_div").hide();    
+                                            jQuery("#wpsc_fields_default_value_div").show();
+                                        }
+                                    }
+
+                                    jQuery(document).ready(function() {
+                                        wpsc_fields_type_change();
+                                        wpsc_fields_required_change();
+                                        //jQuery( "#wpsc-fields-dialog-button" ).button();
+                                        jQuery( "#wpsc-fields-dialog-form" ).dialog({
+                                                autoOpen: false,
+                                                height: 700,
+                                                width: 550,
+                                                modal: true,
+                                                buttons: {
+                                                        "'. __('Save Field','wpstorecart').'": function() {
+                                                            wpsc_add_field();
+                                                            jQuery( this ).dialog( "close" );
+                                                                                               
+                                                        },
+                                                        Cancel: function() {
+                                                                jQuery( this ).dialog( "close" );
+                                                        }
+                                                }
+                                        });    
+
+                                    });
+
+                                    /* ]]> */
+                                </script>
+
+                            <div id="wpsc-fields-dialog-form" title="'.__('Fields', 'wpstorecart').'" ">
+                                    <form id="wpsc-fields-dialog-form-actual-form">
+                                    <fieldset>
+                                            <div>
+                                                <table class="widefat">
+                                                    <tbody>                                            
+                                                        <tr>
+                                                            <td>
+                                                                '.__('Does the field provide information or ask for it?', 'wpstorecart').': 
+                                                                <select name="wpsc_fields_type" id="wpsc_fields_type"  style="width:100%;" onclick="wpsc_fields_type_change();wpsc_fields_required_change();" onchange="wpsc_fields_type_change();wpsc_fields_required_change();" >
+                                                                    <option value="information">'.__('Provides information', 'wpstorecart').'</option>
+                                                                    <option value="prompt">'.__('Asks for information', 'wpstorecart').'</option>
+                                                                </select><br /><br />
+
+                                                                '.__('What type of information is in the field?', 'wpstorecart').': 
+                                                                <select name="wpsc_fields_information_type"  id="wpsc_fields_information_type" style="width:100%;" >
+                                                                    <option value="text">'.__('Text (any characters)', 'wpstorecart').'</option>
+                                                                    <option value="numbers">'.__('Numbers only', 'wpstorecart').'</option>
+                                                                    <!--<option value="upload" id="wpsc_fields_information_type_upload">'.__('File upload', 'wpstorecart').'</option>
+                                                                    <option value="download" id="wpsc_fields_information_type_download">'.__('File download', 'wpstorecart').'</option>
+                                                                    <option value="color">'.__('Color (select a color)', 'wpstorecart').'</option>-->                                                
+                                                                </select><br /><br />
+
+                                                                <div id="wpsc_fields_required_div">
+                                                                    '.__('Are customers required to fill this out, or can it be optional or left to a default value?', 'wpstorecart').': 
+                                                                    <select name="wpsc_fields_required" id="wpsc_fields_required" style="width:100%;" onchange="wpsc_fields_required_change();" onclick="wpsc_fields_required_change();" >
+                                                                        <option value="optional">'.__('Not required, no default value', 'wpstorecart').'</option>
+                                                                        <option value="required">'.__('Is required, customer must provide information, no default value', 'wpstorecart').'</option>                                                    
+                                                                        <option value="defaultvalue">'.__('Is required, has the default I define below', 'wpstorecart').'</option>
+                                                                    </select><br /><br />
+                                                                </div>
+
+                                                                <div id="wpsc_fields_default_value_div">
+                                                                    <div id="wpsc_fields_default_value_prompt_div">'.__('The default value of the field', 'wpstorecart').': </div>
+                                                                    <div id="wpsc_fields_default_value_information_div">'.__('The value of the field', 'wpstorecart').': </div>
+                                                                    <input type="text" value="" name="wpsc_fields_default_value" id="wpsc_fields_default_value" style="width:100%;" />  
+                                                                    <br /><br />
+                                                                </div>
+
+                                                                '.__('Write a description or directions to be displayed for your customers regarding this field', 'wpstorecart').': 
+                                                                <input type="text" value="" name="wpsc_fields_desc" id="wpsc_fields_desc" style="width:100%;" />
+                                                                <br /><br />
+
+                                                                '.__('What will you name this field (the customer never sees this name)', 'wpstorecart').': 
+                                                                <input type="text" value="" name="wpsc_fields_name" id="wpsc_fields_name" style="width:100%;"  />
+                                                                <br /><br />
+
+                                                                '.__('Is this field active &amp; displayed to customers?', 'wpstorecart').': 
+                                                                <select name="wpsc_fields_isactive" id="wpsc_fields_isactive"  style="width:100%;" >
+                                                                    <option value="1">'.__('Yes, field is active &amp; displayed.', 'wpstorecart').'</option>
+                                                                    <option value="0">'.__('No, field is inactive &amp; not displayed.', 'wpstorecart').'</option>
+                                                                </select><br /><br />
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                    </fieldset>
+                                    </form>
+                            </div>
+
+                            <table class="widefat">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        '.__('Custom Product Fields allow you to give or receive information regarding this specific product.  This means that you can use these fields to provide vital product information, or to collect information regarding this product before the customer can add it their cart. ', 'wpstorecart').'
+                                            <br />
+                                            <button id="wpsc-fields-dialog-button" style="margin:10px;" class="button-secondary" onclick="jQuery(\'#wpsc-fields-dialog-form\' ).dialog( \'open\' );return false">'.__('Add New Field', 'wpstorecart').'</button>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <h4>'.__('Edit Fields', 'wpstorecart').'</h4>
+                                        <table id="wpsc-fields-edit">';
+                            $fieldresults = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_field_def` WHERE `productkey`='".intval($_GET['keytoedit'])."';", ARRAY_A);
+                            if(@isset($fieldresults[0]['primkey'])) {
+                                echo '<thead><tr><th>&nbsp;</th><th>'.__('Name', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Required', 'wpstorecart').'</th><th>'.__('Value/Default', 'wpstorecart').'</th><th>'.__('Description', 'wpstorecart').'</th><th>'.__('Activated', 'wpstorecart').'</th></tr></thead><tbody>';
+                                foreach( $fieldresults as $fieldresult ) {
+                                    echo "<tr><td>{$fieldresult['primkey']}</td><td>{$fieldresult['name']}</td><td>{$fieldresult['type']}</td><td>{$fieldresult['required']}</td><td>{$fieldresult['defaultvalue']}</td><td>{$fieldresult['desc']}</td><td>{$fieldresult['isactive']}</td></tr>";
+                                }
+                                echo '</tbody>';
+                            }
+                            echo '
+                                        </table>
+                                    </td>
+                                </tr>
+                            ';           
+                            
+                            echo '</tbody></table>';
+                            echo '</div></div>';
+                            
                             
                             if($wpStoreCartproduct_producttype=='product') {
                                 echo '

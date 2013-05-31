@@ -216,7 +216,26 @@ function wpscUpdate() {
                     (null, '".$wpdb->escape(__('No AddToCarts!', 'wpstorecart'))."', '".$wpdb->escape(__('No Add To Carts in the last day', 'wpstorecart'))."', 'noaddtocart() @ days(1);', '', 'Help.png', '', '', 0, 1, '".$wpdb->escape(__('No AddToCarts in last day', 'wpstorecart'))."', 1, 1, 0, 0, 0);
                     ");                    
                     
-    }   
+    }
+    
+    
+    $table_name = $wpdb->prefix . "wpstorecart_field_def";
+    if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+        $sql = "
+                CREATE TABLE IF NOT EXISTS `{$table_name}` (
+                `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+                `productkey` INT NOT NULL, `type` VARCHAR(32) NOT NULL, 
+                `information` VARCHAR(255) NOT NULL, 
+                `required` VARCHAR(32) NOT NULL, 
+                `defaultvalue` TEXT NOT NULL, 
+                `desc` TEXT NOT NULL, `name` VARCHAR(255) NOT NULL, 
+                `availableoptions` TEXT NOT NULL, 
+                `isactive` BOOLEAN NOT NULL
+                );
+                ";
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }       
    
 
     // This little block of code insures that we don't run this update routine again until the next time wpStoreCart is updated.
@@ -486,6 +505,24 @@ if(!function_exists('wpscInstallWpms')) {
                     dbDelta($sql);
                 }                
 		
+                $table_name = $wpdb->prefix . "wpstorecart_field_def";
+                if(@$wpdb->get_var("show tables like '$table_name'") != $table_name) {
+                    $sql = "
+                            CREATE TABLE IF NOT EXISTS `{$table_name}` (
+                            `primkey` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+                            `productkey` INT NOT NULL, `type` VARCHAR(32) NOT NULL, 
+                            `information` VARCHAR(255) NOT NULL, 
+                            `required` VARCHAR(32) NOT NULL, 
+                            `defaultvalue` TEXT NOT NULL, 
+                            `desc` TEXT NOT NULL, `name` VARCHAR(255) NOT NULL, 
+                            `availableoptions` TEXT NOT NULL, 
+                            `isactive` BOOLEAN NOT NULL
+                            );
+                            ";
+                    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+                    dbDelta($sql);
+                }                    
+                
 	
 	}
 }

@@ -88,6 +88,7 @@ class wpsc_shoppingcart {
         var $itemtax = array(); // Added in wpStoreCart 2.3.2
         var $itemurl = array(); // Added in wpStoreCart 2.3.2
         var $itemimg = array(); // Added in wpStoreCart 2.3.2
+        var $options = array(); // Added in wpStoreCart 3.9.26
 
 	// CONSTRUCTOR FUNCTION
         function __construct() {
@@ -125,6 +126,7 @@ class wpsc_shoppingcart {
                     $this->itemtax = unserialize(base64_decode($results[0]['itemtax']));
                     $this->itemurl = unserialize(base64_decode($results[0]['itemurl']));
                     $this->itemimg = unserialize(base64_decode($results[0]['itemimg']));
+                    $this->options = unserialize(base64_decode($results[0]['options']));
                 }
 
 
@@ -170,6 +172,7 @@ class wpsc_shoppingcart {
                         $item['tax'] = $this->itemtax[$tmp_item]; // Added in wpStoreCart 2.3.2
                         $item['url'] = $this->itemurl[$tmp_item]; // Added in wpStoreCart 2.3.2
                         $item['img'] = $this->itemimg[$tmp_item]; // Added in wpStoreCart 2.3.2
+                        $item['options'] = $this->options[$tmp_item]; // Added in wpStoreCart 2.3.2
                         $item['subtotal'] = $item['qty'] * $item['price'];
                         
 			$items[] = $item;
@@ -271,9 +274,10 @@ class wpsc_shoppingcart {
          * @param string $item_img
          * @param mixed $item_subscriptionprice
          * @param bool $is_multi_add
+         * @param string $options
          * @return mixed
          */
-	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00', $is_multi_add = false) {
+	function add_item($item_id, $item_qty=1, $item_price=0, $item_name='', $item_shipping=0, $item_tax=0, $item_url='', $item_img='', $item_subscriptionprice='0.00', $is_multi_add = false, $options=null) {
                 
                 $qtyStart = 0;
                 while($qtyStart < $item_qty) {
@@ -300,14 +304,10 @@ class wpsc_shoppingcart {
 		if ($valid_item_qty !== false && $valid_item_price !== false)
 			{
 			// IF THE ITEM IS ALREADY IN THE CART, INCREASE THE QTY
-			if(@$this->itemqtys[$item_id] > 0)
-				{
+			if(@$this->itemqtys[$item_id] > 0) {
 				$this->itemqtys[$item_id] = $item_qty + $this->itemqtys[$item_id];
 				$this->_update_total();
-				}
-			// THIS IS A NEW ITEM
-			else
-				{
+			} else { // THIS IS A NEW ITEM
 				$this->items[] = $item_id;
 				$this->itemqtys[$item_id] = $item_qty;
 				$this->itemprices[$item_id] = $item_price;
@@ -316,8 +316,8 @@ class wpsc_shoppingcart {
                                 $this->itemtax[$item_id] = $item_tax;
                                 $this->itemurl[$item_id] = $item_url;
                                 $this->itemimg[$item_id] = $item_img;
-				
-				}
+				$this->options[$item_id] = $options;
+			}
 			$this->_update_total();
                         
                         if(!$is_multi_add && $wpStoreCartOptions['redirect_to_checkout']=='true' && $wpStoreCartOptions['checkoutpageurl']!='' ) {
@@ -470,9 +470,6 @@ class wpsc_shoppingcart {
 
 
 	// UPDATE THE ENTIRE CART
-	// VISITOR MAY CHANGE MULTIPLE FIELDS BEFORE CLICKING UPDATE
-	// ONLY USED WHEN JAVASCRIPT IS DISABLED
-	// WHEN JAVASCRIPT IS ENABLED, THE CART IS UPDATED ONKEYUP
 	function update_cart()
 		{
 		// POST VALUE IS AN ARRAY OF ALL ITEM IDs IN THE CART
@@ -559,6 +556,7 @@ class wpsc_shoppingcart {
                 unset($this->itemtax[$item_id]);
                 unset($this->itemurl[$item_id]);
                 unset($this->itemimg[$item_id]);
+                unset($this->options[$item_id]);
 		foreach($this->items as $item)
 			{
 			if($item != $item_id)
@@ -593,6 +591,7 @@ class wpsc_shoppingcart {
                     $this->itemtax = array();
                     $this->itemurl = array();
                     $this->itemimg = array();
+                    $this->options = array();
                     $this->_update_total();
 
                 }
@@ -605,8 +604,7 @@ class wpsc_shoppingcart {
 		if(sizeof($this->items > 0))
                     {
                         $couponUsed = false;
-			foreach($this->items as $item)
-				{
+			foreach($this->items as $item) {
 				if($couponUsed == true) {
                                     $this->total = $this->total + ($this->itemprices[$item] * $this->itemqtys[$item]);
                                 } else {
@@ -647,7 +645,8 @@ class wpsc_shoppingcart {
                             `itemshipping` = "'.base64_encode(serialize($this->itemshipping)).'",
                             `itemtax` = "'.base64_encode(serialize($this->itemtax)).'",
                             `itemurl` = "'.base64_encode(serialize($this->itemurl)).'",
-                            `itemimg` = "'.base64_encode(serialize($this->itemimg)).'"
+                            `itemimg` = "'.base64_encode(serialize($this->itemimg)).'",
+                            `options` = "'.base64_encode(serialize($this->options)).'"
                             WHERE `ipaddress`="'.$this->get_ip_address().'";';
                             $results = $wpdb->query( $sql );
                         
@@ -668,7 +667,7 @@ class wpsc_shoppingcart {
                             \''.base64_encode(serialize($this->itemurl)).'\',
                             \''.base64_encode(serialize($this->itemimg)).'\',
                             \''.$theuser.'\',
-                            \'\',
+                            \''.base64_encode(serialize($this->options)).'\',
                             \''.$this->get_ip_address().'\');';
                             $results = $wpdb->query( $sql );
 
@@ -715,25 +714,29 @@ class wpsc_shoppingcart {
                 @$item_tax = $_POST[$item_tax];
                 @$item_url = $_POST[$item_url];
                 @$item_img = $_POST[$item_img];
+                //@$options = $_POST['wpstorecart_product_options'];
+                foreach(@$_POST['wpstorecart_product_options'] as $value) {
+                    @$options .= $value;
+                }
 
+
+                
 		// ADD AN ITEM
 		if (isset($_POST[$item_add])) {
-                    $item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping, $item_tax, $item_url, $item_img);
+                $item_added = $this->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping, $item_tax, $item_url, $item_img, $options);
                     // IF NOT TRUE THE ADD ITEM FUNCTION RETURNS THE ERROR TYPE
-                    if ($item_added !== true)
-                            {
-                            $error_type = $item_added;
-                            switch($error_type)
-                                    {
-                                    case 'qty':
-                                            $error_message = $text['quantity_error'];
-                                            break;
-                                    case 'price':
-                                            $error_message = $text['price_error'];
-                                            break;
-                                    }
-                            }
+                    if ($item_added !== true) {
+                        $error_type = $item_added;
+                        switch($error_type) {
+                            case 'qty':
+                                    $error_message = $text['quantity_error'];
+                                    break;
+                            case 'price':
+                                    $error_message = $text['price_error'];
+                                    break;
+                        }
                     }
+                }
 
 		// UPDATE A SINGLE ITEM
 		// CHECKING POST VALUE AGAINST $text ARRAY FAILS?? HAVE TO CHECK AGAINST $wpsc ARRAY
