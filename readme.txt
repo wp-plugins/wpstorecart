@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.26 =
-* Updated: Downloads moved to the Downloads tab when editing products
-* Added: Most of the code is in there for the new product fields feature, but is currently hidden
+* Updated: Downloads moved to the Downloads tab when editing products.
+* Added: Most of the code is in there for the new product fields feature, but is currently hidden.
 
 = 3.9.25 =
 * Fixed: Some minor javascript fixes for variation loading
