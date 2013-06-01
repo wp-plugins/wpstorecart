@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.27 =
-* Removed: Liberty Reserve has been removed
+* Removed: Liberty Reserve has been removed.
 
 = 3.9.26 =
 * Updated: Downloads moved to the Downloads tab when editing products
