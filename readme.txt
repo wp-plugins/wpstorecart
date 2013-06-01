@@ -1,10 +1,10 @@
 === wpStoreCart - Ajax Ecommerce===
 Contributors: jquindlen
 Donate link: http://wpstorecart.com/
-Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,liberty reserve,libertyreserve,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
+Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.26
+Stable tag: 3.9.27
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -37,7 +37,7 @@ See whats new:
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
 * Advanced group settings, including groups discounts, group only products, unlimited groups
-* PayPal payments (Authorize.NET, 2CheckOut, Liberty Reserve, Quickbooks, Skrill/Moneybookers also available)
+* PayPal payments (Authorize.NET, 2CheckOut, Quickbooks, Skrill/Moneybookers also available)
 * Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
 * **and much, much MORE!**
 
@@ -84,9 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.27 =
+* Removed: Liberty Reserve has been removed
+
 = 3.9.26 =
-* Updated: Downloads moved to the Downloads tab when editing products.
-* Added: Most of the code is in there for the new product fields feature, but is currently hidden.
+* Updated: Downloads moved to the Downloads tab when editing products
+* Added: Most of the code is in there for the new product fields feature, but is currently hidden
 
 = 3.9.25 =
 * Fixed: Some minor javascript fixes for variation loading
