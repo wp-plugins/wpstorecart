@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.27
+Stable tag: 3.9.28
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 3.9.28 =
+* Added: Custom product fields added
+
 = 3.9.27 =
-* Removed: Liberty Reserve has been removed.
+* Removed: Liberty Reserve has been removed
 
 = 3.9.26 =
 * Updated: Downloads moved to the Downloads tab when editing products
