@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.28 =
-* Added: Custom product fields added
+* Added: Custom product fields added.
 
 = 3.9.27 =
 * Removed: Liberty Reserve has been removed
