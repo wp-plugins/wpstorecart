@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.29 =
-* Updated: .pot language definition file updated
+* Updated: .pot language definition file updated.
 
 = 3.9.28 =
 * Added: Custom product fields added
