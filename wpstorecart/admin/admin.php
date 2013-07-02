@@ -672,7 +672,6 @@ if (!function_exists('wpscAdminHeader')) {
                 -webkit-border-radius: 5px;
                 padding:0.4em;
                 overflow:hidden;
-               
             }
             
             .roundabout-in-focus {
@@ -732,9 +731,7 @@ if (!function_exists('wpscAdminHeader')) {
           
             <?php if($displaycarousel && @!function_exists('mp6_force_admin_color')) {  ?>
             <div id="wpsc-addon-carousel" style="float:right;position:absolute;top:112px;height:150px;right:135px;z-index:0;">
-            
-            
-                 
+  
                 <ul id="wpsc-carousel" style="width:700px; height:150px;background:transparent;overflow:visible;list-style:none;position:relative;top:-110px;">
                     <li class="wpsc-li-carousel"><img class="cloudcarousel" src="<?php echo plugins_url(); ?>/wpstorecart/images/products/help.png"  alt="" title="<?php _e('Help', 'wpstorecart'); ?>" /> <div class="cloudcarousel-text"> <div class="cloudcarousel-title"><center><?php _e('Need help?', 'wpstorecart'); ?></center></div><div class="cloudcarousel-desc"><a href="<?php echo $helpUrl;?>" target="_blank"><?php _e('Read the manual entry for this admin panel.', 'wpstorecart'); ?></a></div></div></li>
                     <?php if( @!file_exists(WP_PLUGIN_DIR.'/wpsc-free-shipping/wpsc-free-shipping.php')) { ?><li class="wpsc-li-carousel"><img class="cloudcarousel" src="<?php echo plugins_url(); ?>/wpstorecart/images/products/box_address.png"  alt="" title="<?php _e('Orders over X get free shipping', 'wpstorecart'); ?>" /> <div class="cloudcarousel-text"><div class="cloudcarousel-desc"><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=53&wpsc_qty=1"><?php _e('Free Shipping', 'wpstorecart'); ?></a> $4.99 <center><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=53&wpsc_qty=1" target="_blank"><button class="wpsc-admin-buynow"><?php _e('Buy Now', 'wpstorecart');?></button></a></center></div></div></li><?php } ?>
@@ -756,14 +753,14 @@ if (!function_exists('wpscAdminHeader')) {
 
                     jQuery('#wpsc-carousel').roundabout({
                         tilt:0,
-                        minScale: 0.3,
+                        minScale: 0.2,
                         maxScale: 1.0,
                         enableDrag: true,
                         reflect: true,
                         autoplay: true,
-                        autoplayDuration: 7500,
+                        autoplayDuration: 7600,
                         autoplayPauseOnHover: true,
-                        duration: 1600                        
+                        duration: 1700                        
                     });
                 });
             </script>
