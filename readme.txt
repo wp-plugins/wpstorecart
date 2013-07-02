@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 3.9.31 =
-* Updated: Minor adjustments to make the addon wheel less intrusive
+* Updated: Minor adjustments to make the addon wheel less intrusive.
 
 = 3.9.30 =
 * Updated: Hiding the Custom product fields until they are ready
