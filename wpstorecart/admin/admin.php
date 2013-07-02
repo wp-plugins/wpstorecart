@@ -4192,7 +4192,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             
 
                             echo '
-                            <div id="tab7" class="tab_content">
+                            <div id="tab7" class="tab_content" style="display:none;">
                             <div class="box">';
                             
                             echo '<h2>'.__('Custom Product Fields', 'wpstorcart').'</h2>';
