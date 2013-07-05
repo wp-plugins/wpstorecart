@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.0.1 =
-* Updated: Minor admin CSS adjustments
+* Updated: Minor admin CSS adjustments.
 
 = 4.0.0 =
 * Updated: mp6 admin UI is now in place and the new default
