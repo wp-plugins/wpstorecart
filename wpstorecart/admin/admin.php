@@ -2217,94 +2217,13 @@ if (!function_exists('wpscAdminPageMain')) {
      */
     function wpscAdminPageMain() {
         wpscCheckAdminPermissions();
-        wpscAdminHeader(__('Dashboard','wpstorecart'), 'https://wpstorecart.com/documentation/admin-panel/dashboard/');
-        ?>
-
-            <div id="main" role="main">
-                <div id="content">
-                    <div>
-                        <?php wpscAdminWidgetRecentSalesHelp(); ?>
-
-                        <?php wpscAdminDataTable(__('Recent Orders', 'wpstorecart'), 'wpstorecart_orders'); ?>
-                    </div>
-                    <br style="clear:both;" />
-
-                    <div>
-                        <div class="grid_4">
-                            <div class="box">
-                                <h2>
-                                    <?php _e('Latest News', 'wpstorecart'); ?>
-                                </h2>                            
-                                <div class="block" id="list-items">
-                                    <h3></h3>
-                                        <?php
-                                        $maxitems = 0;
-                                        @include_once(ABSPATH . WPINC . '/feed.php');
-                                        @$rss = fetch_feed('https://wpstorecart.com/category/blog/feed/');
-                                        if (!is_wp_error( $rss ) ) { // Checks that the object is created correctly
-                                            // Figure out how many total items there are, but limit it to 2.
-                                            $maxitems = $rss->get_item_quantity(3);
-
-                                            // Build an array of all the items, starting with element 0 (first element).
-                                            $rss_items = $rss->get_items(0, $maxitems);
-                                        } else {
-                                            $error_string = $rss->get_error_message();
-                                            echo '<div id="message" class="error"><p>'.__('Error','wpstorecart') . ' '. $error_string . '</p></div>';
-                                        }
-
-
-                                        echo '<ul>';
-                                            if (@$maxitems === 0) {
-                                                echo '<li>'.__('No items', 'wpstorecart').'</li>';
-                                            } else {
-                                                // Loop through each feed item and display each item as a hyperlink.
-                                                foreach ( $rss_items as $item ) {
-                                                    echo '<li><a style="font-weight:bold;font-size:120%;" target="_blank" href="'. $item->get_permalink() .'" title="Posted">'.$item->get_title().'</a><br />'.$item->get_description().'</li>';
-                                                }
-                                            }
-                                        echo '</ul>';                                                    
-                                        ?>
-                                    <br/><br/>
-
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="grid_12">
-                            <div class="box">
-                                <h2>
-                                    <?php _e('wpStoreCart Upgrades', 'wpstorecart'); ?>
-                                </h2>
-                                <div class="block" id="articles">
-                                    <div class="first article">
-                                        <div class="sixteen_column section">
-                                            <div class="column_content">
-                                                <iframe src="https://wpstorecart.com/app/?wpsc-app-store=1" border="0" frameborder="0" style="border:none; width:100%; height:4500px; overflow:hidden; overflow-y: hidden; overflow-x: hidden;" scrolling="no" ></iframe>
-                                            </div>
-                                        </div>
-                                        <div class="clear"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <br style="clear:both;" />
-
-
-
-                </div>
-                <div class="clear"></div>
-
-
-
-            <?php
-            wpscAdminFooter();
-
-
-
+        echo '
+            <script type="text/javascript">
+            <!--
+                window.location = "'.get_admin_url().'/admin.php?page=wpstorecart-orders";
+"            //-->
+            </script>            
+            ';
         }
 
     }
