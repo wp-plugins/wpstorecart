@@ -2221,7 +2221,7 @@ if (!function_exists('wpscAdminPageMain')) {
             <script type="text/javascript">
             <!--
                 window.location = "'.get_admin_url().'/admin.php?page=wpstorecart-orders";
-"            //-->
+            //-->
             </script>            
             ';
         }
