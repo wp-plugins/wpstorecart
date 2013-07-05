@@ -345,38 +345,10 @@ if (!function_exists('wpscAdminPageWizard')) {
             <div id="main" role="main">
                 <div id="content">
                     <div>
-                        <div class="grid_4">
-                            <div class="box">
-                                <h2>
-                                    '.__('Available Wizards','wpstorecart').'
-                                </h2>                            
-                                <div class="block" id="list-items">
-                                        '.__('We provide several wizards to simplify many aspects of running your online shop.','wpstorecart').'
-                                    <ul>
-                                        <li><a href="admin.php?page=wpstorecart-wizard">'.__('Setup Wizard','wpstorecart').'</a></li>
-                                        <li><a href="admin.php?page=wpstorecart-wizard&wpsc-wizard=payment_wizard">'.__('Payment Wizard','wpstorecart').'</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="box">
-                                <h2>
-                                    '.__('Coming Soon','wpstorecart').'
-                                </h2>                            
-                                <div class="block" id="list-items">
-                                    <ul>
-                                        <li><a href="">'.__('Product Wizard','wpstorecart').'</a></li>
-                                        <li><a href="">'.__('Design Wizard','wpstorecart').'</a></li>
-                                        <li><a href="">'.__('Customer Wizard','wpstorecart').'</a></li>
-                                        <li><a href="">'.__('Marketing Wizard','wpstorecart').'</a></li>
-                                        <li><a href="">'.__('Alert Wizard','wpstorecart').'</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>   
+ 
                         
 
-                        <div class="grid_12">
+                        <div class="grid_16">
                             <div class="box">
                                 <h2>
                                     '.$wpsc_current_wizard_title.'

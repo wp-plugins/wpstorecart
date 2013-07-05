@@ -71,7 +71,7 @@ function wpscUpdate() {
     CHANGE `height` `height` DECIMAL( 22, 2 ) NOT NULL DEFAULT '0';");
     
     if(@$wpdb->get_var("show tables like '{$wpdb->prefix}wpstorecart_av'") == "{$wpdb->prefix}wpstorecart_av") { 
-        // This code block executes when a wpStoreCart 2.x installation is updated to wpStoreCart 3.x
+        // This code block executes when a wpStoreCart 2.x installation is updated to wpStoreCart 4.x
         $wpdb->query("DROP TABLE `{$wpdb->prefix}wpstorecart_av`;"); // Delete this table, it is no longer supported
         $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `producttype`='product' WHERE `producttype`='';"); // Lets make our productrs available
     }

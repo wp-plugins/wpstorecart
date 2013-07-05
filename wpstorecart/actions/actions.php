@@ -22,7 +22,7 @@
     }    
 
     /**
-    * Action hook for installing wpStoreCart 3
+    * Action hook for installing wpStoreCart 4
     */
     function wpsc_installer_install() {
     	do_action('wpsc_installer_install');

@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 3.9.31
+Stable tag: 4.0.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -84,8 +84,15 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.0.0 =
+* Updated: mp6 admin UI is now in place and the new default
+* Removed: Rotating wheel removed
+* Removed: Dashboard now redirects to the order page
+* Updated: Wizard page updated
+* Added: Store sales overview added to all admin pages
+
 = 3.9.31 =
-* Updated: Minor adjustments to make the addon wheel less intrusive.
+* Updated: Minor adjustments to make the addon wheel less intrusive
 
 = 3.9.30 =
 * Updated: Hiding the Custom product fields until they are ready

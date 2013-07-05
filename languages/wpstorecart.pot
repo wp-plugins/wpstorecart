@@ -547,7 +547,7 @@ msgid "UPS Shipping Quotes"
 msgstr ""
 
 #: wpstorecart/admin/admin.php:795
-msgid "What's new in wpStoreCart 3"
+msgid "What's new in wpStoreCart 4"
 msgstr ""
 
 #: wpstorecart/admin/admin.php:819
@@ -2566,7 +2566,7 @@ msgstr ""
 msgid ""
 "If you're upgrading from wpStoreCart 2.x, and your products had variations, "
 "you will notice that your variations disappeared.  Use this to recover your "
-"wpStoreCart 2.x variations and convert them into wpStoreCart 3.x format."
+"wpStoreCart 2.x variations and convert them into wpStoreCart 4.x format."
 msgstr ""
 
 #: wpstorecart/admin/admin.php:4649

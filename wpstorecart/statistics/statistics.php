@@ -75,11 +75,9 @@ function wpscBasicStatsWidgets() {
     $lastrecordssql = "SELECT * FROM `{$table_name_orders}` ORDER BY `date` DESC LIMIT 0, 30";
     $lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 
-    echo '<ul>';
-    echo '<li>30 days: <strong><span>'.$wpStoreCartOptions['currency_symbol'].number_format($totalearned).$wpStoreCartOptions['currency_symbol_right'].'</span></strong> ('.$wpStoreCartOptions['currency_symbol'].number_format($dailyAverage).$wpStoreCartOptions['currency_symbol_right'].'/day)</li>';
-    echo '<li>All Time: <strong><span>'.$wpStoreCartOptions['currency_symbol'].number_format($allTimeGrossRevenue).$wpStoreCartOptions['currency_symbol_right'].'</span></strong></li>';
-    echo "<li><span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"https://chart.googleapis.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div></li>";
-    echo '</ul>';    
+    echo '30 days: <strong><span>'.$wpStoreCartOptions['currency_symbol'].number_format($totalearned).$wpStoreCartOptions['currency_symbol_right'].'</span></strong> ('.$wpStoreCartOptions['currency_symbol'].number_format($dailyAverage).$wpStoreCartOptions['currency_symbol_right'].'/day) All Time: <strong><span>'.$wpStoreCartOptions['currency_symbol'].number_format($allTimeGrossRevenue).$wpStoreCartOptions['currency_symbol_right'].'</span></strong><br />';
+    echo "<span style=\"float:left;padding:0 0 0 10px;\"><strong>Sales last 30 days:</strong> <br /><img src=\"https://chart.googleapis.com/chart?chxt=y&chbh=a,2&chs=200x50&cht=bvg&chco=224499&chds=0,{$highestNumber}&chd=t:0";while($currentDay != $enddate) {echo $salesOnDay[$currentDay].',';$dayAgo--;$currentDay = date("Ymd", strtotime("{$dayAgo} days ago"));} echo"0\" alt=\"\" /></span><div style=\"clear:both;\"></div>";
+
     
 }
 

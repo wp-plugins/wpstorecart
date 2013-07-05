@@ -100,6 +100,133 @@ jQuery.editable.addInputType('orderstatus', {
     }
 });
 
+var wpscThisIsShow = false;
+var wpscBoxTimer;
+
+function wpscBoxGoForward() {
+    wpscThisIsShow = false
+
+    if (jQuery('#wpsc_box_10').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_10').hide();
+        jQuery('#wpsc_box_00').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_09').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_09').hide();
+        jQuery('#wpsc_box_10').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_08').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_08').hide();
+        jQuery('#wpsc_box_09').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_07').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_07').hide();
+        jQuery('#wpsc_box_08').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_06').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_06').hide();
+        jQuery('#wpsc_box_07').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_05').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_05').hide();
+        jQuery('#wpsc_box_06').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_04').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_04').hide();
+        jQuery('#wpsc_box_05').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_03').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_03').hide();
+        jQuery('#wpsc_box_04').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_02').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_02').hide();
+        jQuery('#wpsc_box_03').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_01').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_01').hide();
+        jQuery('#wpsc_box_02').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_00').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_00').hide();
+        jQuery('#wpsc_box_01').show();
+        wpscThisIsShow = true;
+    }
+
+}
+
+
+function wpscBoxGoBack() {
+    wpscThisIsShow = false
+
+    if (jQuery('#wpsc_box_10').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_10').hide();
+        jQuery('#wpsc_box_09').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_09').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_09').hide();
+        jQuery('#wpsc_box_08').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_08').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_08').hide();
+        jQuery('#wpsc_box_07').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_07').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_07').hide();
+        jQuery('#wpsc_box_06').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_06').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_06').hide();
+        jQuery('#wpsc_box_05').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_05').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_05').hide();
+        jQuery('#wpsc_box_04').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_04').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_04').hide();
+        jQuery('#wpsc_box_03').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_03').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_03').hide();
+        jQuery('#wpsc_box_02').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_02').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_02').hide();
+        jQuery('#wpsc_box_01').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_01').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_01').hide();
+        jQuery('#wpsc_box_00').show();
+        wpscThisIsShow = true;
+    }            
+    if (jQuery('#wpsc_box_00').is(':visible') && wpscThisIsShow == false) {
+        jQuery('#wpsc_box_00').hide();
+        jQuery('#wpsc_box_10').show();
+        wpscThisIsShow = true;
+    }
+
+}
+
+
 jQuery(document).ready(function() {
 
     jQuery('#wpstorecart_admin_content').fadeIn(2000);
@@ -141,10 +268,19 @@ jQuery(document).ready(function() {
             if( jQuery(window).width() > 902 ) {
                 jQuery('.wpsc-admin-menu-text-item').show();
                 jQuery('.wpsc-admin-menu-icon').hide();
-            }              
+            }   
             
         } 
-        
+
+        if( jQuery(window).width() <= 1330 ) {
+            jQuery('#wpsc_global_stats').hide();
+
+        }    
+        if( jQuery(window).width() > 1330 ) {
+            jQuery('#wpsc_global_stats').show();
+
+        } 
+
         if( jQuery(window).width() > 1275 ) {
             jQuery('.wpsc-admin-menu-text-item').show();
             jQuery('.wpsc-admin-menu-icon').show();
@@ -194,6 +330,26 @@ jQuery(document).ready(function() {
         stayOnContent: true
     });
 
+
+    
+    function wpscBoxTRRotate() {
+        wpscBoxTimer = setTimeout(function(){
+            wpscBoxGoForward();
+            wpscBoxTRRotate();
+        }, 6600);        
+    }
+
     jQuery('#wpstorecart_admin_loader2').fadeOut(500);
+    wpscBoxTRRotate();
+    
+    jQuery('.wpsc_ad_table').mouseover(function() {
+        wpscThisIsShow = true;
+        clearTimeout(wpscBoxTimer);
+    });    
+    
+    jQuery('.wpsc_ad_table').mouseout(function() {
+        wpscThisIsShow = false;
+        wpscBoxTRRotate();
+    });  
                                     
 });
