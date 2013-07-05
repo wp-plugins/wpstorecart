@@ -89,7 +89,7 @@ Or, if you want to install manually:
 * Removed: Rotating wheel removed
 * Removed: Dashboard now redirects to the order page
 * Updated: Wizard page updated
-* Added: Store sales overview added to all admin pages
+* Added: Store sales overview added to all admin pages.
 
 = 3.9.31 =
 * Updated: Minor adjustments to make the addon wheel less intrusive
