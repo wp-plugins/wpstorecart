@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.0.3 =
-* Removed: Deleted all unused javascript libraries
+* Removed: Deleted all unused javascript libraries.
 
 = 4.0.2 =
 * Updated: More minor admin CSS adjustments
