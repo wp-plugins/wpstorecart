@@ -35,7 +35,7 @@ It is easy to use, lightweight, heavily supported and constantly updated with ne
 * Products support limited or unlimited quantities
 * Advanced group settings, including groups discounts, group only products, unlimited groups
 * PayPal payments (Authorize.NET, 2CheckOut, Quickbooks, Skrill/Moneybookers also available)
-* Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
+* Tested on IE 7,8,9,10,11, Opera, Chrome 27, Firefox 18, 19, 20, 21, 22 and Safari 5
 * **and much, much MORE!**
 
 ![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
