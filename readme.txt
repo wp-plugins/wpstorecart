@@ -14,9 +14,6 @@ Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the s
 [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
 
-See whats new:
-[youtube http://www.youtube.com/watch?v=CqWI8nMs2Mg&hd=1]
-
 **Hightlighted Features:**
 
 * Web based "Setup Wizard"
