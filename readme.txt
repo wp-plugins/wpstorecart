@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.0.2 =
-* Updated: More minor admin CSS adjustments
+* Updated: More minor admin CSS adjustments.
 
 = 4.0.1 =
 * Updated: Minor admin CSS adjustments
