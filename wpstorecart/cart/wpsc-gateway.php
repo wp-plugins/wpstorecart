@@ -177,7 +177,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                     $wpscPaymentGateway['cart'][$wpscPaymentGateway['payment_gateway_item_count']]['url'] = $item['url'];
                     $wpscPaymentGateway['cart'][$wpscPaymentGateway['payment_gateway_item_count']]['img'] = $item['img'];
                     
-                    $wpscPaymentGateway['ordernote'] += $item['id']. '-' .$item['name'] . ' - '. $item['options'] . ' ';
+                    $wpscPaymentGateway['ordernote'] = $wpscPaymentGateway['ordernote'] . $item['id']. '-' .$item['name'] . ' - '. $item['options'] . ' ';
                     
                     // Implement shipping here if needed
                     $table_name = $wpdb->prefix . "wpstorecart_products";
