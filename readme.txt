@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.0.4 =
-* Added: Custom fields now save to Order Notes
+* Added: Custom fields now save to Order Notes.
 * Removed: References to deleted js files removed
 
 = 4.0.3 =
