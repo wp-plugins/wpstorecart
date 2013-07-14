@@ -2917,7 +2917,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     <li><a href="#tab5"><img src="'.plugins_url() . '/wpstorecart/images/cart_put.png" /> '.__('Accessories','wpstorecart').'</a></li>
                                     ';
                                 }
-                                //echo '<li><a href="#tab7"><img src="'.plugins_url() . '/wpstorecart/images/text_padding_top.png" /> '.__('Fields','wpstorecart').'</a></li>';                                
+                                echo '<li><a href="#tab7"><img src="'.plugins_url() . '/wpstorecart/images/text_padding_top.png" /> '.__('Fields','wpstorecart').'</a></li>';                                
                                 wpsc_admin_edit_product_tab_header();
                             echo '
                             </ul>';
@@ -4249,7 +4249,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             
 
                             echo '
-                            <div id="tab7" class="tab_content" style="display:none;">
+                            <div id="tab7" class="tab_content" >
                             <div class="box">';
                             
                             echo '<h2>'.__('Custom Product Fields', 'wpstorcart').'</h2>';
@@ -8245,10 +8245,6 @@ if(!function_exists('wpscAdminPageCategories')) {
             wp_enqueue_script('wpsc-jeditable', plugins_url() . '/wpstorecart/wpstorecart/admin/js/jquery.jeditable.mini.js');
             wp_enqueue_script('wpsc-admin', plugins_url() . '/wpstorecart/wpstorecart/admin/js/wpstorecart-admin.js');
             wp_enqueue_script('wpsc-gritter', plugins_url() . '/wpstorecart/js/gritter/js/jquery.gritter.min.js');
-            wp_enqueue_script('wpsc-roundabout', plugins_url(). '/wpstorecart/js/roundabout/jquery.roundabout.min.js' );
-            wp_enqueue_script('wpsc-eventdrag', plugins_url(). '/wpstorecart/js/roundabout/jquery.event.drag-2.2.js' );
-            wp_enqueue_script('wpsc-eventdrop', plugins_url(). '/wpstorecart/js/roundabout/jquery.event.drop-2.2.js' );
-            wp_enqueue_script('wpsc-easing', plugins_url(). '/wpstorecart/js/roundabout/jquery.easing.js' );
         }
 
     }

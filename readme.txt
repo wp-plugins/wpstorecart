@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.6
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -13,6 +13,9 @@ Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the s
 
 [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is a free, open source, and full featured e-commerce platform built atop of Wordpress.
 It is easy to use, lightweight, heavily supported and constantly updated with new features.
+
+See whats new:
+[youtube http://www.youtube.com/watch?v=CqWI8nMs2Mg&hd=1]
 
 **Hightlighted Features:**
 
@@ -35,7 +38,7 @@ It is easy to use, lightweight, heavily supported and constantly updated with ne
 * Products support limited or unlimited quantities
 * Advanced group settings, including groups discounts, group only products, unlimited groups
 * PayPal payments (Authorize.NET, 2CheckOut, Quickbooks, Skrill/Moneybookers also available)
-* Tested on IE 7,8,9,10,11, Opera, Chrome 27, Firefox 18, 19, 20, 21, 22 and Safari 5
+* Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
 * **and much, much MORE!**
 
 ![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
@@ -81,8 +84,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.0.4 =
+* Added: Custom fields now save to Order Notes
+* Removed: References to deleted js files removed
+
 = 4.0.3 =
-* Removed: Deleted all unused javascript libraries.
+* Removed: Deleted all unused javascript libraries
 
 = 4.0.2 =
 * Updated: More minor admin CSS adjustments

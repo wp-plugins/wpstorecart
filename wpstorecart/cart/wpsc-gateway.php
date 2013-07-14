@@ -163,6 +163,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 $wpscPaymentGateway['customer_username'] = $purchasing_display_name; // The display name of the customer.  This is their username, not their actual names
                 $wpscPaymentGateway['affiliate_user_id'] = 0; // The Wordpress user id of the affiliate who is credited with referring the order, where 0 means no affiliate is credited
                 $wpscPaymentGateway['order_id'] = 0; // The unique key associated with this order
+                $wpscPaymentGateway['ordernote'] = null; // Order note with custom information
                 
                 foreach ($wpsc_shoppingcart->get_contents() as $item) {
 
@@ -175,6 +176,8 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                     $wpscPaymentGateway['cart'][$wpscPaymentGateway['payment_gateway_item_count']]['qty'] = $item['qty']; 
                     $wpscPaymentGateway['cart'][$wpscPaymentGateway['payment_gateway_item_count']]['url'] = $item['url'];
                     $wpscPaymentGateway['cart'][$wpscPaymentGateway['payment_gateway_item_count']]['img'] = $item['img'];
+                    
+                    $wpscPaymentGateway['ordernote'] += $item['id']. '-' .$item['name'] . ' - '. $item['options'] . ' ';
                     
                     // Implement shipping here if needed
                     $table_name = $wpdb->prefix . "wpstorecart_products";
@@ -274,6 +277,13 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
 
                 $results = $wpdb->query( $insert );
                 $wpscPaymentGateway['order_id'] = $wpdb->insert_id;
+                
+                
+                // Order note:
+                if($wpscPaymentGateway['ordernote']!=null) {
+                    $sql = "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$wpscPaymentGateway['ordernote']}', 'ordernote', '{$wpscPaymentGateway['order_id']}');";
+                    $wpdb->query( $sql );                
+                }
                 
                 if(@isset($_COOKIE['wpscPROaff']) || @is_numeric($_COOKIE['wpscPROaff'])) { // More affiliate code
                     $wpdb->query( "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '0.00', 'affiliatepayment', '{$wpscPaymentGateway['order_id']}');");
