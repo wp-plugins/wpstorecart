@@ -85,8 +85,8 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.1.0 =
-* Fixed: Patched an issue where saving products on Physical Only stores was not functioning
-* Added: Ads are removed if you've already purchased everything and have them uploaded
+* Fixed: Patched an issue where saving products on Physical Only stores was not functioning.
+* Added: Ads are removed if you've already purchased everything and have them uploaded.
 
 = 4.0.4 =
 * Added: Custom fields now save to Order Notes
