@@ -694,7 +694,7 @@ if (!function_exists('wpscAdminHeader')) {
         
         <div class="container_16">
             <header>
-        <div class="grid_16" style="float:left;width:98%;position:relative;top:50px;">
+        <div class="grid_16" style="float:left;width:98%;position:relative;top:50px;<?php if(file_exists(WP_PLUGIN_DIR.'/wpsc-user-customize-products/wpsc-user-customize-products.php')) { echo 'display:none;'; } ?>">
                 <center>
                     <table class="widefat wpsc_ad_table" style="float:left;width:60%;margin-left:35px;" >
                         <thead style="min-height:24px;max-height:24px;height:24px;">
@@ -3417,29 +3417,36 @@ if(!function_exists('wpscAdminPageCategories')) {
                             var swfu2;
                             var swfu4;
                             
-                            window.onload = function () { 
-                                    var settings_object = { 
-                                            upload_url : "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/upload.php", 
-                                            post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$wpStoreCartOptions['wpstorecart_download_hash'].'"},
-                                            flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
-                                            file_size_limit : "2048 MB",
-                                            file_types : "*.*",
-                                            file_types_description : "Any file type",
-                                            file_upload_limit : "0",
-                                            file_post_name: "Filedata",					
-                                            button_placeholder_id : "spanSWFUploadButton",
-                                            button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
-                                            button_width: 61,
-                                            button_height: 22,
-                                            debug : true, 
-                                            debug_handler : debugSWFUpload,
-                                            file_dialog_complete_handler: beginTheUpload,
-                                            upload_progress_handler: uploadProgress,
-                                            upload_start_handler : productUploadStartEventHandler, 
-                                            upload_success_handler : productUploadSuccessEventHandler,
-                                            upload_error_handler : uploadError
-                                    }; 
-
+                            window.onload = function () {';
+                            
+                            if($wpStoreCartOptions['storetype']!='Physical Goods Only'){    
+                                // This is for uploading digital products
+                                echo '
+                                        var settings_object = { 
+                                                upload_url : "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/upload.php", 
+                                                post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$wpStoreCartOptions['wpstorecart_download_hash'].'"},
+                                                flash_url : "'.get_option( 'siteurl' ).'/wp-includes/js/swfupload/swfupload.swf", 
+                                                file_size_limit : "2048 MB",
+                                                file_types : "*.*",
+                                                file_types_description : "Any file type",
+                                                file_upload_limit : "0",
+                                                file_post_name: "Filedata",					
+                                                button_placeholder_id : "spanSWFUploadButton",
+                                                button_image_url : "'.plugins_url().'/wpstorecart/images/XPButtonUploadText_61x22.png",
+                                                button_width: 61,
+                                                button_height: 22,
+                                                debug : true, 
+                                                debug_handler : debugSWFUpload,
+                                                file_dialog_complete_handler: beginTheUpload,
+                                                upload_progress_handler: uploadProgress,
+                                                upload_start_handler : productUploadStartEventHandler, 
+                                                upload_success_handler : productUploadSuccessEventHandler,
+                                                upload_error_handler : uploadError
+                                        }; 
+                                ';
+                            }
+                            
+                                echo '
                                     var settings_object2 = { 
                                             upload_url : "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/upload.php", 
                                             post_params: {"PHPSESSID" : "'.session_id().'", "wpstorecart_download_hash" : "'.$wpStoreCartOptions['wpstorecart_download_hash'].'"},
@@ -3484,8 +3491,13 @@ if(!function_exists('wpscAdminPageCategories')) {
                                             upload_error_handler : uploadError
                                     };
 
-
+                                    ';
+                                if($wpStoreCartOptions['storetype']!='Physical Goods Only'){   
+                                    echo '
                                     swfu = new SWFUpload(settings_object); 
+                                   ';
+                                }
+                                echo '
                                     swfu2 = new SWFUpload(settings_object2);
                                     swfu4 = new SWFUpload(settings_object4);
 
