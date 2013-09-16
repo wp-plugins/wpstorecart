@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.0 =
-* Fixed: Can now delete custom product fields
+* Fixed: Can now delete custom product fields.
 
 = 4.1.0 =
 * Fixed: Patched an issue where saving products on Physical Only stores was not functioning
