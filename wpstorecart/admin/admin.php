@@ -4429,7 +4429,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             if(@isset($fieldresults[0]['primkey'])) {
                                 echo '<thead><tr><th>&nbsp;</th><th>'.__('Name', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Required', 'wpstorecart').'</th><th>'.__('Value/Default', 'wpstorecart').'</th><th>'.__('Description', 'wpstorecart').'</th><th>'.__('Activated', 'wpstorecart').'</th></tr></thead><tbody>';
                                 foreach( $fieldresults as $fieldresult ) {
-                                    echo "<tr><td>{$fieldresult['primkey']}</td><td>{$fieldresult['name']}</td><td>{$fieldresult['type']}</td><td>{$fieldresult['required']}</td><td>{$fieldresult['defaultvalue']}</td><td>{$fieldresult['desc']}</td><td>{$fieldresult['isactive']}</td></tr>";
+                                    echo "<tr id=\"wpsc-field-{$fieldresult['primkey']}\"><td><a href=\"#\" onclick=\"wpsc_del_field({$fieldresult['primkey']});\"><img src=\"".plugins_url()."/wpstorecart/images/cross.png\" alt=\"delete\" /></a> {$fieldresult['primkey']}</td><td>{$fieldresult['name']}</td><td>{$fieldresult['type']}</td><td>{$fieldresult['required']}</td><td>{$fieldresult['defaultvalue']}</td><td>{$fieldresult['desc']}</td><td>{$fieldresult['isactive']}</td></tr>";
                                 }
                                 echo '</tbody>';
                             }
