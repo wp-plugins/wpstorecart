@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.1 =
-* Fixed: Minor JS changes
+* Fixed: Minor JS changes.
 
 = 4.2.0 =
 * Fixed: Can now delete custom product fields
