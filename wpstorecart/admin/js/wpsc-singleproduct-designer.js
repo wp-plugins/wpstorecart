@@ -9,7 +9,7 @@ function wpscMakeProductSingleMockup() {
             scroll: false,
             tolerance: 'pointer',            
             start: function( event, ui ) {
-                jQuery( this ).sortable( 'refreshPositions' );
+                //jQuery( this ).sortable( 'refreshPositions' );
             },
             stop: function(event, ui) {
                 wpscMakeProductSingleMockup();
@@ -22,7 +22,7 @@ function wpscMakeProductSingleMockup() {
             scroll: false,
             tolerance: 'pointer',            
             start: function( event, ui ) {
-                jQuery( this ).sortable( 'refreshPositions' );
+                //jQuery( this ).sortable( 'refreshPositions' );
             },
             stop: function(event, ui) {
                 wpscMakeProductSingleMockup();
