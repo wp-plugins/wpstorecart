@@ -616,7 +616,7 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
 
 
         
-        //if(isset($_GET['wpStoreCartDesigner'])){
+        if(isset($_GET['wpStoreCartDesigner'])){
             wpscCheckAdminPermissions(); // Only users with manage_wpstorecart should have access
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-accordion');
@@ -652,7 +652,7 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
             if(is_page() && ($post->post_parent == $wpStoreCartOptions['mainpage'])) { // If we're editing the single product page
                 wp_enqueue_script('wpsc-singleproduct-designer', plugins_url() . '/wpstorecart/wpstorecart/admin/js/wpsc-singleproduct-designer.js');   
             }            
-        //}
+        }
     }
 }
 
