@@ -85,7 +85,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.2 =
-* Fixed: Patched a regression from 4.2.1
+* Fixed: Patched a regression from 4.2.1.
 
 = 4.2.1 =
 * Fixed: Minor JS changes
