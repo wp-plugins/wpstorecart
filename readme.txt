@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.3 =
-* Updates: Misc minor updates
+* Updates: Misc minor updates.
 
 = 4.2.2 =
 * Fixed: Patched a regression from 4.2.1
