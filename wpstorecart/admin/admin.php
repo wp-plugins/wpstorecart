@@ -152,7 +152,6 @@ if (!function_exists('wpscAdminMenu')) {
             <li id="wpsc-menu-help">
                 <a href="https://wpstorecart.com/help-support/"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_help.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Help', 'wpstorecart');?></span></a>
                 <ul>
-                    <li><a href="https://wpstorecart.com/forum/"  target="_blank"><?php _e('Support Forums', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/application_form_edit.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="https://wpstorecart.com/documentation/initial-settings/"  target="_blank"><?php _e('Initial Settings', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/basket_add.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="https://wpstorecart.com/documentation/adding-editing-products/"   target="_blank"><?php _e('Products', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/text_padding_top.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="https://wpstorecart.com/documentation/widgets/"   target="_blank"><?php _e('Widgets', 'wpstorecart');?></a></li>
