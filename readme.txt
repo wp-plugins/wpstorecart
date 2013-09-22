@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.4 =
-* Fixed: Corrected color issue on payment redirect
+* Fixed: Corrected color issue on payment redirect.
 
 = 4.2.3 =
 * Updates: Misc minor updates
