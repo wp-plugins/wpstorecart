@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.7
-Stable tag: 4.2.3
+Stable tag: 4.2.4
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,8 +83,11 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.2.4 =
+* Fixed: Corrected color issue on payment redirect
+
 = 4.2.3 =
-* Updates: Misc minor updates.
+* Updates: Misc minor updates
 
 = 4.2.2 =
 * Fixed: Patched a regression from 4.2.1

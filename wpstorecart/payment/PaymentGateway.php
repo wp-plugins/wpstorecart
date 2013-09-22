@@ -115,7 +115,7 @@ if(!class_exists('PaymentGateway')) {
 
             echo "<html>\n";
             echo "<head><title>".__('Processing Payment...','wpstorecart')."</title></head>\n";
-            echo "<body onload=\"document.forms['gateway_form'].submit();\">\n";
+            echo "<body onload=\"document.forms['gateway_form'].submit();\" style=\"background-color:#eeeeee;\">\n";
             
             
 
