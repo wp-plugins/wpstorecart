@@ -8350,7 +8350,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             $comboPage = add_submenu_page(NULL, __('Combos','wpstorecart').' - wpStoreCart ', __('Combos','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-combos', 'wpscAdminPageCombos');
             $affiliatesPage = add_submenu_page('wpstorecart-new-admin', __('Affiliates','wpstorecart').' - wpStoreCart ', __('Affiliates','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-affiliates', 'wpscAdminPageAffiliates');
             $statisticsPage = add_submenu_page('wpstorecart-new-admin', __('Statistics','wpstorecart').' - wpStoreCart ', __('Statistics','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-statistics', 'wpscAdminPageStatistics');
-            $appStorePage = add_submenu_page('wpstorecart-new-admin', __('Addons','wpstorecart'), __('Addons','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-appstore', 'wpscAdminAppStore');
+
             $importExportPage = add_submenu_page(NULL, __('Import/Export','wpstorecart'), __('Import/Export','wpstorecart'), 'manage_wpstorecart', 'wpstorecart-import', 'wpscAdminPageImport');
             
             add_action('admin_head-' . $addProductPage, 'wpscAdminHeadProducts');
@@ -8376,7 +8376,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             add_action('admin_head-' . $affiliatesPage, 'wpscAdminHead');
             add_action('admin_head-' . $groupPage, 'wpscAdminHead');
             add_action('admin_head-' . $comboPage, 'wpscAdminHead');
-            add_action('admin_head-' . $appStorePage, 'wpscAdminHead');
+
             
         }
 
