@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.2.5 =
-* Updated: Removed the addons page
+* Updated: Removed the addons page.
 
 = 4.2.4 =
 * Fixed: Corrected color issue on payment redirect
