@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.3.0 =
-* Added: Added the ability to create clones of product fields 
+* Added: Added the ability to create clones of product fields.
 * Added: Prompt added before deleting a custom field
 * Updated: Add a custom field now displays the custom field immediately after creating or editing
 * Updated: Added a form to easily edit custom fields
