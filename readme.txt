@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.7
-Stable tag: 4.2.5
+Stable tag: 4.3.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,8 +83,15 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.3.0 =
+* Added: Added the ability to create clones of product fields 
+* Added: Prompt added before deleting a custom field
+* Updated: Add a custom field now displays the custom field immediately after creating or editing
+* Updated: Added a form to easily edit custom fields
+* Fixed: Attempted to fix an issue with jQuery UI windows appearing below body content
+
 = 4.2.5 =
-* Updated: Removed the addons page.
+* Updated: Removed the addons page
 
 = 4.2.4 =
 * Fixed: Corrected color issue on payment redirect

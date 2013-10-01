@@ -4271,19 +4271,54 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     /* <![CDATA[ */
                                     
                                     function wpsc_del_field(keytodel) {
-                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/delproductfield.php", type:"POST", data:"delete="+keytodel'; if($wpsc_testing_mode){echo '+"&'.$wpStoreCartOptions['debug_parameter'].'"';}  echo', success: function(){
-                                            jQuery("#wpsc-field-"+keytodel).hide();
-                                        }});
+                                        if(confirm("'.__('Are you sure you wish to delete this custom field?','wpstorecart').'")) {
+                                            jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/delproductfield.php", type:"POST", data:"delete="+keytodel'; if($wpsc_testing_mode){echo '+"&'.$wpStoreCartOptions['debug_parameter'].'"';}  echo', success: function(){
+                                                jQuery("#wpsc-field-"+keytodel).remove();
+                                            }});
+                                        }
                                     }
 
                                     function wpsc_add_field() {
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addproductfield.php", type:"POST", data:"wpsc_fields_type="+jQuery("#wpsc_fields_type").val()+"&wpsc_fields_information_type="+jQuery("#wpsc_fields_information_type").val()+"&wpsc_fields_required="+jQuery("#wpsc_fields_required").val()+"&wpsc_fields_default_value="+jQuery("#wpsc_fields_default_value").val()+"&wpsc_fields_desc="+jQuery("#wpsc_fields_desc").val()+"&wpsc_fields_name="+jQuery("#wpsc_fields_name").val()+"&wpsc_fields_isactive="+jQuery("#wpsc_fields_isactive").val()+"&wpsc_fields_product_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
-                                            jQuery("#wpsc-fields-edit").append("");
+                                            jQuery("#wpsc-fields-edit").append("<tr id=\'wpsc-field-"+txt+"\'><td><a href=\'#\' onclick=\'wpsc_del_field("+txt+");\'><img src=\''.plugins_url().'/wpstorecart/images/cross.png\' alt=\'delete\' /></a> <a href=\'#\' onclick=\'wpsc_edit_field("+txt+");\'><img src=\''.plugins_url().'/wpstorecart/images/pencil.png\' alt=\'edit\' /></a> "+txt+"</td><td>"+jQuery("#wpsc_fields_name").val()+"</td><td>"+jQuery("#wpsc_fields_type").val()+"</td><td>"+jQuery("#wpsc_fields_required").val()+"</td><td>"+jQuery("#wpsc_fields_default_value").val()+"</td><td>"+jQuery("#wpsc_fields_desc").val()+"</td><td>"+jQuery("#wpsc_fields_isactive").val()+"</td></tr>");
 
                                         }});
                                         return false;
                                     }
                                     
+                                    function wpsc_edit_save_field() {
+                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addproductfield.php", type:"POST", data:"wpsc_fields_type="+jQuery("#wpsc_edit_fields_type").val()+"&wpsc_fields_information_type="+jQuery("#wpsc_edit_fields_information_type").val()+"&wpsc_fields_required="+jQuery("#wpsc_edit_fields_required").val()+"&wpsc_fields_default_value="+jQuery("#wpsc_edit_fields_default_value").val()+"&wpsc_fields_desc="+jQuery("#wpsc_edit_fields_desc").val()+"&wpsc_fields_name="+jQuery("#wpsc_edit_fields_name").val()+"&wpsc_fields_isactive="+jQuery("#wpsc_edit_fields_isactive").val()+"&wpsc_edit_field_primkey="+jQuery("#wpsc-edit-fields-primkey").val()+"&wpsc_fields_product_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
+                                            try {
+                                                jQuery("#wpsc-field-"+txt).remove();
+                                                jQuery("#wpsc-fields-edit").append("<tr id=\'wpsc-field-"+txt+"\'><td><a href=\'#\' onclick=\'wpsc_del_field("+txt+");\'><img src=\''.plugins_url().'/wpstorecart/images/cross.png\' alt=\'delete\' /></a> <a href=\'#\' onclick=\'wpsc_edit_field("+txt+");\'><img src=\''.plugins_url().'/wpstorecart/images/pencil.png\' alt=\'edit\' /></a> "+txt+"</td><td>"+jQuery("#wpsc_edit_fields_name").val()+"</td><td>"+jQuery("#wpsc_edit_fields_type").val()+"</td><td>"+jQuery("#wpsc_edit_fields_required").val()+"</td><td>"+jQuery("#wpsc_edit_fields_default_value").val()+"</td><td>"+jQuery("#wpsc_edit_fields_desc").val()+"</td><td>"+jQuery("#wpsc_edit_fields_isactive").val()+"</td></tr>");
+                                            } catch(e) {
+                                            
+                                            }                                                    
+                                        }});
+                                        return false;                                    
+                                    }
+                                    
+                                    function wpsc_load_field(primkey) {
+                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/loadproductfield.php", type:"POST", data:"wpsc_fields_edit_primkey="+primkey+"'; if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(resJson){
+                                            try {
+                                                jQuery("#wpsc-edit-fields-primkey").val(resJson.primkey);
+                                                jQuery("#wpsc_edit_fields_type").val(resJson.type);
+                                                jQuery("#wpsc_edit_fields_information_type").val(resJson.information);
+                                                jQuery("#wpsc_edit_fields_required").val(resJson.required);
+                                                jQuery("#wpsc_edit_fields_default_value").val(resJson.defaultvalue);
+                                                jQuery("#wpsc_edit_fields_desc").val(resJson.desc);
+                                                jQuery("#wpsc_edit_fields_name").val(resJson.name);                                                
+                                                jQuery("#wpsc_edit_fields_isactive").val(resJson.isactive);    
+                                            } catch(e) {
+                                            
+                                            }
+
+                                        }});
+                                        wpsc_edit_fields_type_change();
+                                        wpsc_edit_fields_required_change();                                         
+                                        return false;
+                                    }
+
                                     function wpsc_fields_type_change() {
                                         if ( jQuery("#wpsc_fields_type").val() == "information" ) {
                                             jQuery("#wpsc_fields_information_type_download").show();
@@ -4303,6 +4338,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         }                                        
                                     }
                                     
+                                   
                                     function wpsc_fields_required_change() {
                                         if ( jQuery("#wpsc_fields_type").val() == "prompt" ) {
                                         
@@ -4322,10 +4358,66 @@ if(!function_exists('wpscAdminPageCategories')) {
                                             jQuery("#wpsc_fields_default_value_div").show();
                                         }
                                     }
+                                    
+
+                                    function wpsc_edit_fields_type_change() {
+                                        if ( jQuery("#wpsc_edit_fields_type").val() == "information" ) {
+                                            jQuery("#wpsc_edit_fields_information_type_download").show();
+                                            jQuery("#wpsc_edit_fields_information_type_upload").hide();
+                                            jQuery("#wpsc_edit_fields_required_div").hide();
+                                            if ( jQuery("#wpsc_edit_fields_information_type").val() == "upload" ) {
+                                                jQuery("#wpsc_edit_fields_information_type").val("download");
+                                            }                                            
+                                        }
+                                        if ( jQuery("#wpsc_edit_fields_type").val() == "prompt" ) {
+                                            jQuery("#wpsc_edit_fields_information_type_upload").show();
+                                            jQuery("#wpsc_edit_fields_information_type_download").hide();
+                                            jQuery("#wpsc_edit_fields_required_div").show();
+                                            if ( jQuery("#wpsc_edit_fields_information_type").val() == "download" ) {
+                                                jQuery("#wpsc_edit_fields_information_type").val("upload");
+                                            }
+                                        }                                        
+                                    }
+                                    
+                                   
+                                    function wpsc_edit_fields_required_change() {
+                                        if ( jQuery("#wpsc_edit_fields_type").val() == "prompt" ) {
+                                        
+                                            jQuery("#wpsc_edit_fields_required_div").show();
+                                            jQuery("#wpsc_edit_fields_default_value_information_div").hide();
+                                            jQuery("#wpsc_edit_fields_default_value_prompt_div").show();
+                                            
+                                            if ( jQuery("#wpsc_edit_fields_required").val() == "optional" || jQuery("#wpsc_edit_fields_required").val() == "required" ) {
+                                                jQuery("#wpsc_edit_fields_default_value_div").hide();
+                                            }
+                                            if ( jQuery("#wpsc_edit_fields_required").val() == "defaultvalue" ) {
+                                                jQuery("#wpsc_edit_fields_default_value_div").show();
+                                            }
+                                        }
+                                        if ( jQuery("#wpsc_edit_fields_type").val() == "information" ) {
+                                            jQuery("#wpsc_edit_fields_default_value_information_div").show();
+                                            jQuery("#wpsc_edit_fields_default_value_prompt_div").hide();    
+                                            jQuery("#wpsc_edit_fields_default_value_div").show();
+                                        }
+                                    }
+                                    
+                                    function wpsc_edit_field(primkey) {
+                                        wpsc_load_field(primkey);
+                                        jQuery(\'#wpsc-edit-fields-dialog-form\' ).dialog( \'open\' );
+                                        return false;                                    
+                                    }
+                                    
+                                    function wpscCloneField() {
+                                        jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/cloneproductfield.php", type:"POST", data:"wpsc_fields_primkey="+jQuery("#wpsc-clone-field").val()+"&wpsc_fields_product_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
+                                            wpsc_edit_field(txt);
+                                        }});
+                                    }
 
                                     jQuery(document).ready(function() {
                                         wpsc_fields_type_change();
                                         wpsc_fields_required_change();
+                                        wpsc_edit_fields_type_change();
+                                        wpsc_edit_fields_required_change();                                        
                                         //jQuery( "#wpsc-fields-dialog-button" ).button();
                                         jQuery( "#wpsc-fields-dialog-form" ).dialog({
                                                 autoOpen: false,
@@ -4343,13 +4435,33 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         }
                                                 }
                                         });    
+                                        
+                                        jQuery( "#wpsc-edit-fields-dialog-form" ).dialog({
+                                                autoOpen: false,
+                                                height: 700,
+                                                width: 550,
+                                                modal: true,
+                                                buttons: {
+                                                        "'. __('Save Edit','wpstorecart').'": function() {
+                                                            wpsc_edit_save_field();
+                                                            jQuery( this ).dialog( "close" );
+                                                                                               
+                                                        },
+                                                        Cancel: function() {
+                                                                jQuery( this ).dialog( "close" );
+                                                        }
+                                                }
+                                        });
 
                                     });
 
                                     /* ]]> */
                                 </script>
-
-                            <div id="wpsc-fields-dialog-form" title="'.__('Fields', 'wpstorecart').'" ">
+                            <style type="text/css">
+                                .ui-dialog {z-index:999999 !important;}
+                            </style>
+                            
+                            <div id="wpsc-fields-dialog-form" title="'.__('Fields', 'wpstorecart').'" " style="z-index:999999 !important;">
                                     <form id="wpsc-fields-dialog-form-actual-form">
                                     <fieldset>
                                             <div>
@@ -4410,6 +4522,68 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     </form>
                             </div>
 
+                            <div id="wpsc-edit-fields-dialog-form" title="'.__('Fields', 'wpstorecart').'" " style="z-index:999999 !important;">
+                                    <form id="wpsc-edit-fields-dialog-form-actual-form">
+                                    <input type="hidden" name="wpsc-edit-fields-primkey" id="wpsc-edit-fields-primkey"  value="">
+                                    <fieldset>
+                                            <div>
+                                                <table class="widefat">
+                                                    <tbody>                                            
+                                                        <tr>
+                                                            <td>
+                                                                '.__('Does the field provide information or ask for it?', 'wpstorecart').': 
+                                                                <select name="wpsc_edit_fields_type" id="wpsc_edit_fields_type"  style="width:100%;" onclick="wpsc_edit_fields_type_change();wpsc_edit_fields_required_change();" onchange="wpsc_edit_fields_type_change();wpsc_edit_fields_required_change();" >
+                                                                    <option value="information">'.__('Provides information', 'wpstorecart').'</option>
+                                                                    <option value="prompt">'.__('Asks for information', 'wpstorecart').'</option>
+                                                                </select><br /><br />
+
+                                                                '.__('What type of information is in the field?', 'wpstorecart').': 
+                                                                <select name="wpsc_edit_fields_information_type"  id="wpsc_edit_fields_information_type" style="width:100%;" >
+                                                                    <option value="text">'.__('Text (any characters)', 'wpstorecart').'</option>
+                                                                    <option value="numbers">'.__('Numbers only', 'wpstorecart').'</option>
+                                                                    <!--<option value="upload" id="wpsc_fields_information_type_upload">'.__('File upload', 'wpstorecart').'</option>
+                                                                    <option value="download" id="wpsc_fields_information_type_download">'.__('File download', 'wpstorecart').'</option>
+                                                                    <option value="color">'.__('Color (select a color)', 'wpstorecart').'</option>-->                                                
+                                                                </select><br /><br />
+
+                                                                <div id="wpsc_edit_fields_required_div">
+                                                                    '.__('Are customers required to fill this out, or can it be optional or left to a default value?', 'wpstorecart').': 
+                                                                    <select name="wpsc_edit_fields_required" id="wpsc_edit_fields_required" style="width:100%;" onchange="wpsc_edit_fields_required_change();" onclick="wpsc_edit_fields_required_change();" >
+                                                                        <option value="optional">'.__('Not required, no default value', 'wpstorecart').'</option>
+                                                                        <option value="required">'.__('Is required, customer must provide information, no default value', 'wpstorecart').'</option>                                                    
+                                                                        <option value="defaultvalue">'.__('Is required, has the default I define below', 'wpstorecart').'</option>
+                                                                    </select><br /><br />
+                                                                </div>
+
+                                                                <div id="wpsc_edit_fields_default_value_div">
+                                                                    <div id="wpsc_edit_fields_default_value_prompt_div">'.__('The default value of the field', 'wpstorecart').': </div>
+                                                                    <div id="wpsc_edit_fields_default_value_information_div">'.__('The value of the field', 'wpstorecart').': </div>
+                                                                    <input type="text" value="" name="wpsc_edit_fields_default_value" id="wpsc_edit_fields_default_value" style="width:100%;" />  
+                                                                    <br /><br />
+                                                                </div>
+
+                                                                '.__('Write a description or directions to be displayed for your customers regarding this field', 'wpstorecart').': 
+                                                                <input type="text" value="" name="wpsc_edit_fields_desc" id="wpsc_edit_fields_desc" style="width:100%;" />
+                                                                <br /><br />
+
+                                                                '.__('What will you name this field (the customer never sees this name)', 'wpstorecart').': 
+                                                                <input type="text" value="" name="wpsc_edit_fields_name" id="wpsc_edit_fields_name" style="width:100%;"  />
+                                                                <br /><br />
+
+                                                                '.__('Is this field active &amp; displayed to customers?', 'wpstorecart').': 
+                                                                <select name="wpsc_edit_fields_isactive" id="wpsc_edit_fields_isactive"  style="width:100%;" >
+                                                                    <option value="1">'.__('Yes, field is active &amp; displayed.', 'wpstorecart').'</option>
+                                                                    <option value="0">'.__('No, field is inactive &amp; not displayed.', 'wpstorecart').'</option>
+                                                                </select><br /><br />
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                    </fieldset>
+                                    </form>
+                            </div>
+
                             <table class="widefat">
                             <tbody>
                                 <tr>
@@ -4417,6 +4591,19 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         '.__('Custom Product Fields allow you to give or receive information regarding this specific product.  This means that you can use these fields to provide vital product information, or to collect information regarding this product before the customer can add it their cart. ', 'wpstorecart').'
                                             <br />
                                             <button id="wpsc-fields-dialog-button" style="margin:10px;" class="button-secondary" onclick="jQuery(\'#wpsc-fields-dialog-form\' ).dialog( \'open\' );return false">'.__('Add New Field', 'wpstorecart').'</button>
+                                            ';
+                                        
+                                            $allfieldresults = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_field_def`;", ARRAY_A);
+                                            if(@isset($allfieldresults[0]['primkey'])) {
+                                                echo '<br />'.__('Clone this field into a new field: ','wpstorecart').' <select name="wpsc-clone-field" id="wpsc-clone-field">';
+                                                foreach ($allfieldresults as $allfieldresult) {
+                                                    echo '<option value="'.$allfieldresult['primkey'].'">'.$allfieldresult['name'].'</option>';
+                                                }
+                                                echo '</select> <button onclick="wpscCloneField();return false;" class="button-secondary">'.__('Create New Copy','wpstorecart').'</button>';
+                                            }
+                                        
+                                        
+                                        echo '
                                     </td>
                                 </tr>
                                 
@@ -4428,7 +4615,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                             if(@isset($fieldresults[0]['primkey'])) {
                                 echo '<thead><tr><th>&nbsp;</th><th>'.__('Name', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Required', 'wpstorecart').'</th><th>'.__('Value/Default', 'wpstorecart').'</th><th>'.__('Description', 'wpstorecart').'</th><th>'.__('Activated', 'wpstorecart').'</th></tr></thead><tbody>';
                                 foreach( $fieldresults as $fieldresult ) {
-                                    echo "<tr id=\"wpsc-field-{$fieldresult['primkey']}\"><td><a href=\"#\" onclick=\"wpsc_del_field({$fieldresult['primkey']});\"><img src=\"".plugins_url()."/wpstorecart/images/cross.png\" alt=\"delete\" /></a> {$fieldresult['primkey']}</td><td>{$fieldresult['name']}</td><td>{$fieldresult['type']}</td><td>{$fieldresult['required']}</td><td>{$fieldresult['defaultvalue']}</td><td>{$fieldresult['desc']}</td><td>{$fieldresult['isactive']}</td></tr>";
+                                    echo "<tr id=\"wpsc-field-{$fieldresult['primkey']}\"><td><a href=\"#\" onclick=\"wpsc_del_field({$fieldresult['primkey']});\"><img src=\"".plugins_url()."/wpstorecart/images/cross.png\" alt=\"delete\" /></a> <a href=\"#\" onclick=\"wpsc_edit_field({$fieldresult['primkey']});\"><img src=\"".plugins_url()."/wpstorecart/images/pencil.png\" alt=\"edit\" /></a> {$fieldresult['primkey']}</td><td>{$fieldresult['name']}</td><td>{$fieldresult['type']}</td><td>{$fieldresult['required']}</td><td>{$fieldresult['defaultvalue']}</td><td>{$fieldresult['desc']}</td><td>{$fieldresult['isactive']}</td></tr>";
                                 }
                                 echo '</tbody>';
                             }

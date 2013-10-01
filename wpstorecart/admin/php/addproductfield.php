@@ -25,26 +25,49 @@ if ( 0 == $current_user->ID ) {
     $wpsc_fields_name = $wpdb->escape($_POST['wpsc_fields_name']);
     $wpsc_fields_isactive = $wpdb->escape($_POST['wpsc_fields_isactive']);
     
-    $insert = "
-    INSERT INTO `{$table_name}` (
-        `primkey`, `productkey`, `type`, `information`, `required`, `defaultvalue`, `desc`, `name`, `availableoptions`, `isactive`
-    ) VALUES (
-        NULL, 
-        '{$wpsc_fields_product_primkey}', 
-        '{$wpsc_fields_type}', 
-        '{$wpsc_fields_information_type}', 
-        '{$wpsc_fields_required}', 
-        '{$wpsc_fields_default_value}', 
-        '{$wpsc_fields_desc}', 
-        '{$wpsc_fields_name}', 
-        '', 
-        '{$wpsc_fields_isactive}'
-    );
-    ";
+    if(@isset($_POST['wpsc_edit_field_primkey'])) {
+        $field_key = $wpdb->escape($_POST['wpsc_edit_field_primkey']);
+        $insert = "
+        UPDATE `{$table_name}` 
+            SET
+            `productkey`='{$wpsc_fields_product_primkey}', 
+            `type`='{$wpsc_fields_type}', 
+            `information`='{$wpsc_fields_information_type}', 
+            `required`='{$wpsc_fields_required}', 
+            `defaultvalue`='{$wpsc_fields_default_value}', 
+            `desc`='{$wpsc_fields_desc}', 
+            `name`='{$wpsc_fields_name}', 
+            `isactive`='{$wpsc_fields_isactive}' 
+            WHERE `primkey` = '{$field_key}';
+        ";
 
-    $wpdb->query($insert);
-    $lastID = $wpdb->insert_id;
-    echo $lastID;
+        $wpdb->query($insert);
+        echo $field_key;
+    } else {
+        $insert = "
+        INSERT INTO `{$table_name}` (
+            `primkey`, `productkey`, `type`, `information`, `required`, `defaultvalue`, `desc`, `name`, `availableoptions`, `isactive`
+        ) VALUES (
+            NULL, 
+            '{$wpsc_fields_product_primkey}', 
+            '{$wpsc_fields_type}', 
+            '{$wpsc_fields_information_type}', 
+            '{$wpsc_fields_required}', 
+            '{$wpsc_fields_default_value}', 
+            '{$wpsc_fields_desc}', 
+            '{$wpsc_fields_name}', 
+            '', 
+            '{$wpsc_fields_isactive}'
+        );
+        ";
+
+        $wpdb->query($insert);
+        $lastID = $wpdb->insert_id;
+        echo $lastID;        
+    }
+    
+    
+
 
 
 }
