@@ -85,6 +85,7 @@ Or, if you want to install manually:
 
 = 4.3.1 =
 * Fixed: Patched a complex issue that prevented multiple variations from loading when used from individual shortcodes
+* Fixed: More jQuery UI z-index fixes
 
 = 4.3.0 =
 * Added: Added the ability to create clones of product fields 
