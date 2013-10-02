@@ -13,33 +13,33 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
             var wpscStoreUseInventory = 0;
             
             //case "primkey":
-            jQuery(".wpstorecart-item-id").val(XreturnedData.primkey);
-            jQuery(".wpstorecart-item-primkey").val(XreturnedData.primkey);
+            jQuery("#wpstorecart-item-id-" + wpscParentKey).val(XreturnedData.primkey);
+            jQuery("#wpstorecart-item-primkey-" + wpscParentKey).val(XreturnedData.primkey);
 
             //case "name":
             if(XreturnedData.name != wpscParentName) {
-                jQuery(".wpsc-list-item-name").html(wpscParentName + ' - ' + XreturnedData.name);
-                jQuery(".wpstorecart-item-name").val(wpscParentName + ' - ' + XreturnedData.name);
+                jQuery(".wpsc-list-item-name-" + wpscParentKey).html(wpscParentName + ' - ' + XreturnedData.name);
+                jQuery("#wpstorecart-item-name-" + wpscParentKey).val(wpscParentName + ' - ' + XreturnedData.name);
             } else {
-                jQuery(".wpsc-list-item-name").html(wpscParentName);
-                jQuery(".wpstorecart-item-name").val(wpscParentName);                
+                jQuery(".wpsc-list-item-name-" + wpscParentKey).html(wpscParentName);
+                jQuery("#wpstorecart-item-name-" + wpscParentKey).val(wpscParentName);                
             }
             
             //case "introdescription":
-            jQuery(".wpsc-single-intro").html(XreturnedData.introdescription);
+            jQuery(".wpsc-single-intro-" + wpscParentKey).html(XreturnedData.introdescription);
 
             //case "description":
-            jQuery(".wpsc-single-description").html(XreturnedData.description);
+            jQuery(".wpsc-single-description-" + wpscParentKey).html(XreturnedData.description);
 
             //case "thumbnail":
-            jQuery(".wpstorecart-item-img").val(XreturnedData.thumbnail);
-            jQuery(".wpsc-product-img").attr("src", XreturnedData.thumbnail);
+            jQuery("#wpstorecart-item-img-" + wpscParentKey).val(XreturnedData.thumbnail);
+            jQuery(".wpsc-product-img-" + wpscParentKey).attr("src", XreturnedData.thumbnail);
 
             //case "price":
             wpscStoreRegularPrice = parseFloat(XreturnedData.price, 10);
 
             //case "shipping":
-            jQuery(".wpstorecart-item-shipping").val(XreturnedData.shipping);
+            jQuery("#wpstorecart-item-shipping-" + wpscParentKey).val(XreturnedData.shipping);
 
             //case "inventory":
             wpscStoreInventory = XreturnedData.inventory;
@@ -61,15 +61,15 @@ function wpscLoadProductVariation(wpscVarKey, wpscPluginsUrl, wpscParentKey, wps
             }
             
             if(wpscStoreDiscountPrice==0 || wpscStoreDiscountPrice=='0.00') {
-                jQuery(".wpstorecart-item-price").val(wpscStoreRegularPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight);
-                jQuery(".wpsc-oldprice").hide();
+                jQuery("#wpstorecart-item-price-" + wpscParentKey).val(wpscStoreRegularPrice);
+                jQuery(".wpsc-price-" + wpscParentKey).html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice-" + wpscParentKey).hide();
                 
             } else if (wpscStoreDiscountPrice > 0 && (wpscStoreDiscountPrice < wpscStoreRegularPrice)) {
-                jQuery(".wpsc-oldprice").show();
-                jQuery(".wpstorecart-item-price").val(wpscStoreDiscountPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
-                jQuery(".wpsc-oldprice").html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight+'</strike>');
+                jQuery(".wpsc-oldprice-" + wpscParentKey).show();
+                jQuery("#wpstorecart-item-price-" + wpscParentKey).val(wpscStoreDiscountPrice);
+                jQuery(".wpsc-price-" + wpscParentKey).html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice-" + wpscParentKey).html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2)  + wpscCurrencySymbolRight+'</strike>');
             }
             
         }
@@ -98,16 +98,16 @@ function wpscLoadProductAttribute(wpscPluginsUrl, wpscParentKey, wpscParentName,
             var wpscStoreUseInventory = 0;
             
             //case "primkey":
-            jQuery(".wpstorecart-item-id").val(XreturnedData.primkey);
-            jQuery(".wpstorecart-item-primkey").val(XreturnedData.primkey);
+            jQuery("#wpstorecart-item-id-" + wpscParentKey).val(XreturnedData.primkey);
+            jQuery("#wpstorecart-item-primkey-" + wpscParentKey).val(XreturnedData.primkey);
 
             //case "name":
             if(XreturnedData.name != wpscParentName) {
-                jQuery(".wpsc-list-item-name").html(wpscParentName + ' - ' + XreturnedData.name);
-                jQuery(".wpstorecart-item-name").val(wpscParentName + ' - ' + XreturnedData.name);
+                jQuery(".wpsc-list-item-name-" + wpscParentKey).html(wpscParentName + ' - ' + XreturnedData.name);
+                jQuery("#wpstorecart-item-name-" + wpscParentKey).val(wpscParentName + ' - ' + XreturnedData.name);
             } else {
-                jQuery(".wpsc-list-item-name").html(wpscParentName);
-                jQuery(".wpstorecart-item-name").val(wpscParentName);                
+                jQuery(".wpsc-list-item-name-" + wpscParentKey).html(wpscParentName);
+                jQuery("#wpstorecart-item-name-" + wpscParentKey).val(wpscParentName);                
             }
             
             //case "price":
@@ -135,16 +135,16 @@ function wpscLoadProductAttribute(wpscPluginsUrl, wpscParentKey, wpscParentName,
             
             if(wpscStoreDiscountPrice==0 || wpscStoreDiscountPrice=='0.00') {
                 jQuery(".wpstorecart-item-price").val(wpscStoreRegularPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight);
-                jQuery(".wpsc-oldprice").hide();
+                jQuery(".wpsc-price-" + wpscParentKey).html(wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice-" + wpscParentKey).hide();
                 
                 
             } 
             if (wpscStoreDiscountPrice > 0 && (wpscStoreDiscountPrice < wpscStoreRegularPrice)) {
-                jQuery(".wpsc-oldprice").show();
-                jQuery(".wpstorecart-item-price").val(wpscStoreDiscountPrice);
-                jQuery(".wpsc-price").html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
-                jQuery(".wpsc-oldprice").html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight+'</strike>');
+                jQuery(".wpsc-oldprice-" + wpscParentKey).show();
+                jQuery("#wpstorecart-item-price-" + wpscParentKey).val(wpscStoreDiscountPrice);
+                jQuery(".wpsc-price-" + wpscParentKey).html(wpscCurrencySymbol + (wpscStoreDiscountPrice).toFixed(2) + wpscCurrencySymbolRight);
+                jQuery(".wpsc-oldprice-" + wpscParentKey).html('<strike>'+wpscCurrencySymbol + (wpscStoreRegularPrice).toFixed(2) + wpscCurrencySymbolRight+'</strike>');
             }
             
         }
