@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.3.2 =
-* Removed: Piwik functionality that was never finished was removed
+* Removed: Piwik functionality that was never finished was removed.
 
 = 4.3.1 =
 * Fixed: Patched a complex issue that prevented multiple variations from loading when used from individual shortcodes
