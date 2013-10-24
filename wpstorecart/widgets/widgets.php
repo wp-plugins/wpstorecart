@@ -785,6 +785,158 @@ if (class_exists("WP_Widget")) {
 	// ------------------------------------------------------------------
 	// ------------------------------------------------------------------
 
+        
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------ 
+ 
+	class wpStoreCartFeaturedProductsWidget extends WP_Widget {
+		/** constructor */
+		function wpStoreCartFeaturedProductsWidget() {
+			parent::WP_Widget(false, $name = 'wpStoreCart Featured Products');
+		}
+
+		/** @see WP_Widget::widget */
+		function widget($args, $instance) {		
+			global $wpdb, $current_user;
+                        get_currentuserinfo();
+                        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
+			$output = NULL;
+			$table_name = $wpdb->prefix . "wpstorecart_products";
+		
+			extract( $args );
+			$title = apply_filters('widget_title', $instance['title']);
+			$numberOfproductsToDisplay = empty($instance['numberOfproductsToDisplay']) ? '10' : $instance['numberOfproductsToDisplay'];
+			$widgetShowproductImages = empty($instance['widgetShowproductImages']) ? 'false' : $instance['widgetShowproductImages'];
+                        $maxImageWidth = empty($instance['maxImageWidth']) ? 'false' : $instance['maxImageWidth'];
+                        $maxImageHeight = empty($instance['maxImageHeight']) ? 'false' : $instance['maxImageHeight'];
+                        $productsToFeature1 =  empty($instance['productsToFeature1']) ? '0' : $instance['productsToFeature1'];
+                        $productsToFeature2 =  empty($instance['productsToFeature1']) ? '0' : $instance['productsToFeature2'];
+                        $productsToFeature3 =  empty($instance['productsToFeature1']) ? '0' : $instance['productsToFeature3'];
+                        $productsToFeature4 =  empty($instance['productsToFeature1']) ? '0' : $instance['productsToFeature4'];
+                        $productsToFeature5 =  empty($instance['productsToFeature1']) ? '0' : $instance['productsToFeature5'];
+                        
+			echo $before_widget;
+			if ( $title ) { echo $before_title . $title . $after_title; }
+			if(is_numeric($numberOfproductsToDisplay)){
+				$sql = "SELECT * FROM `{$table_name}` WHERE `status`='publish' AND (`primkey`={$productsToFeature1} OR `primkey`={$productsToFeature2} OR `primkey`={$productsToFeature3} OR `primkey`={$productsToFeature4} OR `primkey`={$productsToFeature5}) LIMIT 0, {$numberOfproductsToDisplay};";
+				$results = $wpdb->get_results( $sql , ARRAY_A );
+				if(isset($results)) {
+					foreach ($results as $result) {
+                                            // Group code
+                                            $groupDiscount = wpscGroupDiscounts($result['category'], $current_user->ID);
+                                            if ($groupDiscount['can_see_this_category']==false && $wpStoreCartOptions['gd_enable']=='true') {
+
+                                            } else {
+                                                $permalink = get_permalink( $result['postid'] ); // Grab the permalink based on the post id associated with the product
+                                                if($widgetShowproductImages=='true') {
+                                                        $output .= '<a href="'.$permalink.'"><img src="'.$result['thumbnail'].'" alt="'.$result['name'].'"'; if($maxImageWidth>1 || $maxImageHeight>1) { $output.= ' style="max-width:'.$maxImageWidth.'px;max-height:'.$maxImageHeight.'px;"';} $output .= '/></a>';
+                                                }
+                                                $output .= '<p><a href="'.$permalink.'">'.stripslashes($result['name']).'</a></p>';
+                                            }
+					}
+				}
+			} else {
+				$output .= 'wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+			}
+			echo $output;
+			echo $after_widget;
+		}
+
+		/** @see WP_Widget::update */
+		function update($new_instance, $old_instance) {	
+			$instance['title']= strip_tags(stripslashes($new_instance['title']));
+			$instance['numberOfproductsToDisplay'] = strip_tags(stripslashes($new_instance['numberOfproductsToDisplay']));
+			$instance['widgetShowproductImages'] = strip_tags(stripslashes($new_instance['widgetShowproductImages']));
+                        $instance['maxImageWidth'] = strip_tags(stripslashes($new_instance['maxImageWidth']));
+                        $instance['maxImageHeight'] = strip_tags(stripslashes($new_instance['maxImageHeight']));
+                        $instance['productsToFeature1'] = strip_tags(stripslashes($new_instance['productsToFeature1']));
+                        $instance['productsToFeature2'] = strip_tags(stripslashes($new_instance['productsToFeature2']));
+                        $instance['productsToFeature3'] = strip_tags(stripslashes($new_instance['productsToFeature3']));
+                        $instance['productsToFeature4'] = strip_tags(stripslashes($new_instance['productsToFeature4']));
+                        $instance['productsToFeature5'] = strip_tags(stripslashes($new_instance['productsToFeature5']));
+			return $instance;
+		}
+
+		/** @see WP_Widget::form */
+		function form($instance) {	
+                        global $wpdb;
+			@$title = esc_attr($instance['title']);
+			@$numberOfproductsToDisplay = htmlspecialchars($instance['numberOfproductsToDisplay']);
+			@$widgetShowproductImages = htmlspecialchars($instance['widgetShowproductImages']);
+                        @$maxImageWidth = htmlspecialchars($instance['maxImageWidth']);
+                        @$maxImageHeight = htmlspecialchars($instance['maxImageHeight']);
+                        @$productsToFeature1 = htmlspecialchars($instance['productsToFeature1']);
+                        @$productsToFeature2 = htmlspecialchars($instance['productsToFeature2']);
+                        @$productsToFeature3 = htmlspecialchars($instance['productsToFeature3']);
+                        @$productsToFeature4 = htmlspecialchars($instance['productsToFeature4']);
+                        @$productsToFeature5 = htmlspecialchars($instance['productsToFeature5']);
+
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
+			echo '<p style="text-align:left;">' . __('Products to Feature') .' :' ;
+                        $table_name = $wpdb->prefix . "wpstorecart_products";
+                        $sql = "SELECT * FROM `{$table_name}` WHERE `status`='publish' AND `producttype`='product' ORDER BY `name` DESC;";
+                        $results = $wpdb->get_results( $sql , ARRAY_A );
+                        if(isset($results)) {
+                                echo '<select id="' . $this->get_field_id('productsToFeature1') . '" name="' . $this->get_field_name('productsToFeature1') . '">';
+                                echo '<option value="0">'.__('(None)').'</option>';
+                                foreach ($results as $result) {
+                                    echo '<option value="'.$result['primkey'].'"';
+                                    if(intval($productsToFeature1) == $result['primkey']) { echo ' selected="true" '; }
+                                    echo '>'.$result['name'].'</option>';
+                                }
+                                echo '</select>';
+                                
+                                echo '<select id="' . $this->get_field_id('productsToFeature2') . '" name="' . $this->get_field_name('productsToFeature2') . '">';
+                                echo '<option value="0">'.__('(None)').'</option>';
+                                foreach ($results as $result) {
+                                    echo '<option value="'.$result['primkey'].'"';
+                                    if(intval($productsToFeature2) == $result['primkey']) { echo ' selected="true" '; }
+                                    echo '>'.$result['name'].'</option>';
+                                }
+                                echo '</select>'; 
+                                
+                                echo '<select id="' . $this->get_field_id('productsToFeature3') . '" name="' . $this->get_field_name('productsToFeature3') . '">';
+                                echo '<option value="0">'.__('(None)').'</option>';
+                                foreach ($results as $result) {
+                                    echo '<option value="'.$result['primkey'].'"';
+                                    if(intval($productsToFeature3) == $result['primkey']) { echo ' selected="true" '; }
+                                    echo '>'.$result['name'].'</option>';
+                                }
+                                echo '</select>';                                
+                                
+                                echo '<select id="' . $this->get_field_id('productsToFeature4') . '" name="' . $this->get_field_name('productsToFeature4') . '">';
+                                echo '<option value="0">'.__('(None)').'</option>';
+                                foreach ($results as $result) {
+                                    echo '<option value="'.$result['primkey'].'"';
+                                    if(intval($productsToFeature4) == $result['primkey']) { echo ' selected="true" '; }
+                                    echo '>'.$result['name'].'</option>';
+                                }
+                                echo '</select>';   
+                                
+                                echo '<select id="' . $this->get_field_id('productsToFeature5') . '" name="' . $this->get_field_name('productsToFeature5') . '">';
+                                echo '<option value="0">'.__('(None)').'</option>';
+                                foreach ($results as $result) {
+                                    echo '<option value="'.$result['primkey'].'"';
+                                    if(intval($productsToFeature5) == $result['primkey']) { echo ' selected="true" '; }
+                                    echo '>'.$result['name'].'</option>';
+                                }
+                                echo '</select>';                                
+                                
+                                
+                        }
+
+                        echo '</p>';
+			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+		}
+
+	} 
+	// ------------------------------------------------------------------
+	// ------------------------------------------------------------------        
+        
+        
 
 }
 /**
@@ -799,6 +951,7 @@ if (class_exists("WP_Widget")) {
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartPaymentsWidget");')); // Register the widget: wpStoreCartCategoryWidget
         add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartAdvancedCategoryWidget");')); // Register the widget: wpStoreCartCategoryWidget
+        add_action('widgets_init', create_function('', 'return register_widget("wpStoreCartFeaturedProductsWidget");')); // Register the widget: wpStoreCartCategoryWidget
       
         
 // If there is no checkout widget used, we need to create a hidden cart so that wpStoreCart still works        
