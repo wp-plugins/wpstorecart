@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.0 =
-* Added: Featured Products Widget
+* Added: Featured Products Widget.
 
 = 4.3.2 =
 * Removed: Piwik functionality that was never finished was removed
