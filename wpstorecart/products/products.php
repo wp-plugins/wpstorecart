@@ -940,6 +940,7 @@ if (!function_exists('wpscProductGetPage')) {
                         var wpscProductDesignerCSS = "";
                         wpscProductDesignerCSS += " .wpsc-single-product {width:100%; margin: 0; padding: 0;} \n\ \n\ .wpsc-single-product img {border:none;}  \n\ \n\ .wpsc-thumbnail {width:50px;} \n\ \n\ #wpsc-product-info-sortable, #wpsc-product-info-sortable li { list-style: none; list-style-type: none; margin: 0px; padding: 0; } \n\ \n\ .wpsc-product-info-sortable li {margin: 0; padding: 0;} ";
                         wpscProductDesignerCSS += " \n\ \n\ ";
+                        wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-single-product");
                         wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-product-img");
                         wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-product-info-sortable");
                         wpscProductDesignerCSS += wpscListCSSAttributes(".wpsc-addtocart"); 
