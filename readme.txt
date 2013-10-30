@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.1 =
-* Fixed: Patched bug with Product Designer
+* Fixed: Patched bug with Product Designer.
 
 = 4.4.0 =
 * Added: Featured Products Widget
