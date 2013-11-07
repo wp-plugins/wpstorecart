@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.2 =
-* Updated: Alerts have left beta
+* Updated: Alerts have left beta.
 
 = 4.4.1 =
 * Fixed: Patched bug with Product Designer
