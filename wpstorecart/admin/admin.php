@@ -1973,7 +1973,7 @@ if (!function_exists('wpscAdminPageAlerts')) {
      */
     function wpscAdminPageAlerts() {
         wpscCheckAdminPermissions();
-        wpscAdminHeader(__('Alerts (BETA)','wpstorecart'), 'https://wpstorecart.com/documentation/admin-panel/alerts/');   
+        wpscAdminHeader(__('Alerts','wpstorecart'), 'https://wpstorecart.com/documentation/admin-panel/alerts/');   
         echo '<div class="grid_16">';
         wpscAdminAddNewAlertButton(__('Add New Alert','wpstorecart'));
         wpscAdminEditAlertSettingsButton(__('Edit My Alert Settings','wpstorecart'));
