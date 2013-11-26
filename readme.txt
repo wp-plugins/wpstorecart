@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.3 =
-* Updated: Legacy menu items updated
+* Updated: Legacy menu items updated.
 * Updated: added ob_flush to downloads per this thread: http://wordpress.org/support/topic/memory-issue-in-wpstorecart-version-371-for-large-files
 
 = 4.4.2 =
