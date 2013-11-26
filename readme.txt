@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
-Tested up to: 3.7
-Stable tag: 4.4.2
+Tested up to: 3.8
+Stable tag: 4.4.3
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,8 +83,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.4.3 =
+* Updated: Legacy menu items updated
+* Updated: added ob_flush to downloads per this thread: http://wordpress.org/support/topic/memory-issue-in-wpstorecart-version-371-for-large-files
+
 = 4.4.2 =
-* Updated: Alerts have left beta.
+* Updated: Alerts have left beta
 
 = 4.4.1 =
 * Fixed: Patched bug with Product Designer

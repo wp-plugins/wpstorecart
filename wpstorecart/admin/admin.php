@@ -76,7 +76,7 @@ if (!function_exists('wpscAdminMenu')) {
                 <a href="admin.php?page=wpstorecart-orders"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_dashboard.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Dashboard', 'wpstorecart');?></span></a>
                 <ul>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/controller.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-wizard"><?php _e('Wizard', 'wpstorecart');?></a></li>
-                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/cart_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-appstore"><?php _e('Addons', 'wpstorecart');?></a></li>
+                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/cart_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="http://wpstorecart.com/" target="_blank"><?php _e('Addons', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/lightbulb.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-alerts"><?php _e('Alerts', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/application_form_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-diagnostics"><?php _e('Diagnostics', 'wpstorecart');?></a></li>
                     <?php wpsc_admin_menu_inside_dashboard(); ?>

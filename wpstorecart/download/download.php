@@ -152,6 +152,7 @@ if ( 0 == $current_user->ID ) {
                 //reset time limit for big files
                 set_time_limit(0);
                 print(fread($stream,1024*8));
+                ob_flush();
                 flush();
             }
             fclose($stream);
