@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.4 =
-* Update: Minor cosmetic tweak
+* Update: Minor cosmetic tweak.
 
 = 4.4.3 =
 * Updated: Legacy menu items updated.
