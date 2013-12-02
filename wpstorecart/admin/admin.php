@@ -8349,7 +8349,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 $lastrecords = $wpdb->get_results( $lastrecordssql , ARRAY_A );
 
                 echo '<ul>';
-                echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart v'.$wpstorecart_version.' :</strong></span></u></li>';
+                echo '<li><u><span style="font-size:115%;"><strong>wpStoreCart '.$wpstorecart_version.' :</strong></span></u></li>';
                 echo '<li>'.__('Last 30 days','wpstorecart').': <strong><span style="font-size:140%;">'.$devOptions['currency_symbol'].number_format($totalearned).$devOptions['currency_symbol_right'].'</span></strong> ('.$devOptions['currency_symbol'].number_format($dailyAverage).$devOptions['currency_symbol_right'].' '.__('average per day','wpstorecart').')</li>';
                 echo '<li>'.__('All time','wpstorecart').': <strong><span style="font-size:140%;">'.$devOptions['currency_symbol'].number_format($allTimeGrossRevenue).$devOptions['currency_symbol_right'].'</span></strong></li>';
                 echo "<li><span style=\"float:left;padding:0 10px 0 0;border-right:1px #CCC solid;\"><strong>".__('Completed Orders / Total', 'wpstorecart').":</strong>  {$totalrecordsordercompleted}/{$totalrecordsorder} ({$orderpercentage}%) <br /><img src=\"https://chart.googleapis.com/chart?chs=200x50&cht=p3&chco=224499,BBCCED&chd=s:Uf&chdl=$totalrecordsordercompleted|$totalrecordsorder\"></span> </li>";
