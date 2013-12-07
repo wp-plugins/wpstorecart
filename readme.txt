@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.6 =
-* Fixed: Patched several small CSS errors
+* Fixed: Patched several small CSS errors.
 
 = 4.4.5 =
 * Updated: Language .POT file updated to the lastest revision
