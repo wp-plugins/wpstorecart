@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.7 =
-* Removed: Deleted some unused scripts
+* Removed: Deleted some unused scripts.
 
 = 4.4.6 =
 * Fixed: Patched several small CSS errors
