@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.8
-Stable tag: 4.4.7
+Stable tag: 4.4.8
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,8 +83,12 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.4.8 =
+* Updated: QueryLoader updated from 2.1 to 2.8.3
+* Updated: jQuery Superfish Menu Plugin updated from 1.4.8 to 1.7.3
+
 = 4.4.7 =
-* Removed: Deleted some unused scripts.
+* Removed: Deleted some unused scripts
 
 = 4.4.6 =
 * Fixed: Patched several small CSS errors
