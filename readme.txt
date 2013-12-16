@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.4.8 =
-* Updated: QueryLoader updated from 2.1 to 2.8.3
+* Updated: QueryLoader updated from 2.1 to 2.8.3.
 * Updated: jQuery Superfish Menu Plugin updated from 1.4.8 to 1.7.3
 
 = 4.4.7 =
