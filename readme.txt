@@ -85,7 +85,7 @@ Or, if you want to install manually:
 
 = 4.5.0 =
 * Removed: Got rid of the annoying ads!
-* Fixed: Patched an issue with order note's not being properly escaped
+* Fixed: Patched an issue with order note's not being properly escaped.
 * Added: Created a flat rate shipping plugin, and then auto integrated it into wpStoreCart core.
 * Fixed: Patched an issue where adding a new attribute group would cause the ajax to fail, meaning you could not edit the new attribute or group until refreshing the page
 * Fixed: Patched an issue where you could not immediately delete new product attributes unless you refreshed or reloaded the browser page
