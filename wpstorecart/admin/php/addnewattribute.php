@@ -42,7 +42,7 @@ if ( 0 == $current_user->ID ) {
     echo '
     {
         "primkey": "'.$lastID.'",
-        "group": "'.$group.'",            
+        "group": "'.wpscSlug($group).'",            
         "useinventory": "'.$useinventory.'",  
         "pricedifference": "'.$pricedifference.'",  
         "productkey": "'.$productkey.'", 

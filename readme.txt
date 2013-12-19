@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
-Tested up to: 3.8
-Stable tag: 4.4.8
+Tested up to: 3.9
+Stable tag: 4.5.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -83,8 +83,15 @@ Or, if you want to install manually:
 
 == Changelog ==
 
+= 4.5.0 =
+* Removed: Got rid of the annoying ads!
+* Fixed: Patched an issue with order note's not being properly escaped
+* Added: Created a flat rate shipping plugin, and then auto integrated it into wpStoreCart core.
+* Fixed: Patched an issue where adding a new attribute group would cause the ajax to fail, meaning you could not edit the new attribute or group until refreshing the page
+* Fixed: Patched an issue where you could not immediately delete new product attributes unless you refreshed or reloaded the browser page
+
 = 4.4.8 =
-* Updated: QueryLoader updated from 2.1 to 2.8.3.
+* Updated: QueryLoader updated from 2.1 to 2.8.3
 * Updated: jQuery Superfish Menu Plugin updated from 1.4.8 to 1.7.3
 
 = 4.4.7 =
@@ -94,7 +101,7 @@ Or, if you want to install manually:
 * Fixed: Patched several small CSS errors
 
 = 4.4.5 =
-* Updated: Language .POT file updated to the lastest revision
+* Updated: Language .POT file updated to the latest revision
 
 = 4.4.4 =
 * Update: Minor cosmetic tweak.

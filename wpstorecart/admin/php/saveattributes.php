@@ -24,7 +24,7 @@ if ( 0 == $current_user->ID ) {
     
     $icounter = 1;
     while($icounter < $wpscAccMaxItems) {
-        $wpscParentProductId = $_POST['wpsc-keytoedit'];
+        $wpscParentProductId = intval($_POST['wpsc-keytoedit']);
         $wpscParentProductPrice = wpscProductGetPrice($wpscParentProductId, true);
         $wpscThisAttributeCombosPrice = $wpscParentProductPrice['price']  + $_POST['wpsc_acc_combo_pricediff_'.$icounter];
         $wpscThisAttributeCombosDiscountPrice = $wpscParentProductPrice['discountprice']  + $_POST['wpsc_acc_combo_pricediff_'.$icounter];

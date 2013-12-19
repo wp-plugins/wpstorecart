@@ -693,239 +693,7 @@ if (!function_exists('wpscAdminHeader')) {
         
         <div class="container_16">
             <header>
-        <div class="grid_16" style="float:left;width:98%;position:relative;top:50px;<?php if(file_exists(WP_PLUGIN_DIR.'/wpsc-user-customize-products/wpsc-user-customize-products.php')) { echo 'display:none;'; } ?>">
-                <center>
-                    <table class="widefat wpsc_ad_table" style="float:left;width:60%;margin-left:35px;" >
-                        <thead style="min-height:24px;max-height:24px;height:24px;">
-                            <tr>
-                                <th><img src="<?php echo plugins_url(); ?>/wpstorecart/images/button_back.png" alt="" style="cursor:pointer;float:left;" onclick="wpscBoxGoBack();" /></th><th><?php _e('Addon', 'wpstorecart'); ?></th><th><?php _e('Description', 'wpstorecart'); ?></th><th><?php _e('1 Domain License', 'wpstorecart'); ?></th><th><?php _e('10 Domain License', 'wpstorecart'); ?></th><th><?php _e('Unlimited Domain License', 'wpstorecart'); ?> <img src="<?php echo plugins_url(); ?>/wpstorecart/images/button_forward.png" alt="" style="cursor:pointer;float:right;" onclick="wpscBoxGoForward();" /></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                                <tr id="wpsc_box_00"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/wpStoreCart_ENTERPRISE.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('wpStoreCart Enterprise Edition', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('This includes all plugins, both current and in the future.', 'wpstorecart'); ?></td><td><center><?php _e('$19.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="RAQ8J2DJPX7XJ">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form></center>
-</td><td><center><?php _e('$37.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="QNFV42YMSR962">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form></center>
-</td><td><center><?php _e('$137.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="5CRUD65N56SC2">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form></center>
-</td></tr>          
-                                <tr id="wpsc_box_01" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/free_shipping.jpg" class="wpscboximg" alt="" /></td><td><?php _e('wpsc Free Shipping', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('This plugin allows you to offer Free Shipping on one or more of your products if a customer spends over the amount you specify.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="LN4P4T6WBCURS">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="HAWCT49PE9RFU">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-    </center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="JMPBR8LYV858S">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>
-                                <tr id="wpsc_box_02" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/ups.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('UPS Shipping Quotes for wpStoreCart', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('This plugin adds the ability for your customer to calculate UPS shipping quotes at the end of checkout.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="3WAFTGGWDHPT8">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="4HNT72J4N6BGA">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="GK7J2QLJZY56Q">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                            
-                                <tr id="wpsc_box_03" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/AuthorizeNET_SIM.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('Authorize.NET SIM', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('This plugin adds the ability for you to accept payments using Authorize.NET SIM.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="T4EHHL4TMSAPU">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="DWB9LZ9CNWDNG">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="WB24JQGBRCFPW">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                            
-                                <tr id="wpsc_box_04" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/qbms.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('Quickbooks Merchant Services', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Adds the ability to accept Quickbooks Merchant Services (QBMS) on your wpStoreCart powered website.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="YN5B6C2LN7NAW">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="HU9CELL9GU2DW">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="6NPLGGGG2VVBG">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                            
-                                <tr id="wpsc_box_05" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/Skrill_Moneybookers.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('Skrill/Moneybookers', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Adds the ability to accept Skrill/Moneybookers payments on your wpStoreCart powered website.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="CHERRQEMQCRLA">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="FKS97KLTDAECC">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="MMDZR6WKARWQG">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                            
-                                <tr id="wpsc_box_06" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/2co.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('2Checkout', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Accept 2CheckOut on your wpStoreCart powered store.', 'wpstorecart'); ?></td><td><center><?php _e('$4.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="26RKVFBWHQDQW">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$24.95 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="AVN9GLSDNHPU6">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="EPTY2UDPB2E6E">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                            
-                                <tr id="wpsc_box_07" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/UserCustomizedProducts.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('User Customized Products', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Now you can sell products on your website which users can customize with their own images or text, like t-shirts, posters, mugs, etc.', 'wpstorecart'); ?></td><td><center><?php _e('$9.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="WH7UBBXWCRGRG">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="U7TV8L98NQ6YU">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$99.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="7RHF9BC7TH8SE">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>                                
-                                <tr id="wpsc_box_08" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/wpsc_Membership_PRO.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('wpsc Membership PRO', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Easily sell memberships & subscriptions that automatically rebill using PayPal.', 'wpstorecart'); ?></td><td><center><?php _e('$9.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="2U95QGPDP8TYC">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="RA9AP6RSVJVEQ">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$99.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="FLWLT2SFUKEWA">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>     
-                                <tr id="wpsc_box_09" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/wpsc_Affiliate_PRO.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('wpsc Affiliate PRO', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('Increase your sales, exposure, and community by offering a full professional affiliate system for wpStoreCart.', 'wpstorecart'); ?></td><td><center><?php _e('$9.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="LYT55C5JNXMPY">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="N79EHRR95MNGC">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$99.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="SUB6YTXCZTLSL">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>          
-                                <tr id="wpsc_box_10" style="display:none;"><td><img src="<?php echo plugins_url(); ?>/wpstorecart/images/products/wpsc_Statistics_PRO.jpg" class="wpscboximg"  alt="" /></td><td><?php _e('wpsc Statistics PRO', 'wpstorecart'); ?></td><td class="wpscboxdesc"><?php _e('This essential module that gives you full sales & ecommerce statistics.', 'wpstorecart'); ?></td><td><center><?php _e('$9.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="PM2B4KNQAHSH8">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$49.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="433KAAJM7P3H2">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td><td><center><?php _e('$99.99 USD', 'wpstorecart'); ?><br /><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="U3KJYUWEBVZUS">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynow_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-</center></td></tr>          
-
-                            </tr>
-                        </tbody>
-                    </table>
-                </center>
-                <div style="float:right;width:35%;font-size:90%;" id="wpsc_global_stats">
-
-                    <strong><?php _e('Recent Sales', 'wpstorecart');?></strong><br />
-                    <?php require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/statistics/statistics.php');
-                    wpscBasicStatsWidgets();
-
-                    ?>         
-                </div>                    
-            </div>    
+ 
                 <div class="clear" ></div>
                 <br />
                 <div class="grid_16">
@@ -2799,7 +2567,10 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         "'. __('Create Attribute', 'wpstorecart').'": function() {
                                             jQuery.ajax({type: "POST", url: "'. plugins_url().'/wpstorecart/wpstorecart/admin/php/addnewattribute.php", dataType:"json", data: {"wpscuseinventoryonattributes": jQuery("#wpscuseinventoryonattributes").prop("checked"), "wpsc-new-attribute-title" : jQuery("#wpsc-new-attribute-title").val(), "wpsc-new-attribute-price-difference" : jQuery("#wpsc-new-attribute-price-difference").val(), "wpsc-new-attribute-group" : jQuery("#wpsc-new-attribute-group").val(), "wpsc-new-attribute-parent-key" : jQuery("#wpsc-new-attribute-parent-key").val(), "wpsc-new-attribute-new-group" : jQuery("#wpsc-new-attribute-new-group").val(), "wpsc-new-attribute-inventory" : jQuery("#wpsc-new-attribute-inventory").val()}, success: function(data) {
                                                 var wpscTempVarGroup = wpscConvertToSlug(data.group);
-                                                jQuery("#wpsc-attribute-group-tbody-"+wpscTempVarGroup.toString()).append("<tr id=\'wpscid-wpstorecart_quickvar-"+data.primkey+"\'><td>"+data.primkey+"</td><td><div class=\'wpsc-edit-this\'>"+data.title+"</div></td><td><div class=\'wpsc-edit-this\'>"+data.pricedifference+"</div></td><td>dropdown</td><td> </td></tr>");
+                                                if(jQuery("#wpsc-attribute-group-tbody-"+wpscTempVarGroup.toString()).length==0) {
+                                                    jQuery("#wpscAPlaceToAppendTables").append("<legend>"+data.group+"</legend><table class=\'widefat\' id=\'wpsc-attribute-group-table-"+data.group+"\'><thead><tr><th>'.__('Key', 'wpstorecart').'</th><th>'.__('Attribute Name', 'wpstorecart').'</th><th>'.__('Price Difference', 'wpstorecart').'</th><th>'.__('Type', 'wpstorecart').'</th><th>'.__('Use Inventory?', 'wpstorecart').'</th></tr></thead><tbody id=\'wpsc-attribute-group-tbody-"+data.group+"\'> </tbody></table><br /><br />");
+                                                }
+                                                jQuery("#wpsc-attribute-group-tbody-"+wpscTempVarGroup.toString()).append("<tr id=\'wpscid-wpstorecart_quickvar-"+data.primkey+"\'><td><img src=\''.plugins_url().'/wpstorecart/images/cross.png\' alt=\'\' style=\'cursor:pointer;\' onclick=\'wpscDeleteAttribute("+data.primkey+");\' />  "+data.primkey+"</td><td><div class=\'wpsc-edit-this\'>"+data.title+"</div></td><td><div class=\'wpsc-edit-this\'>"+data.pricedifference+"</div></td><td>dropdown</td><td> </td></tr>");
                                                 jQuery("#wpsc-add-new-attribute-dialog-form").dialog("close");
                                             }
                                             });                                    
@@ -3764,7 +3535,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 
                                 echo '<h2>'.__('Attributes:','wpstorecart').'</h2>';
                                 echo '<a href="" onclick="wpscCreateNewAttribute();return false;" class="button-secondary" >'.__('Create a New Attribute','wpstorecart').'</a> <input type="checkbox" '.$checkedForAttributeInventory.' id="wpscuseinventoryonattributes" name="wpscuseinventoryonattributes" /> '.__('Use Inventory for attributes?','wpstorecart').'<br /><br />';
-
+                                echo '<div id="wpscAPlaceToAppendTables"></div>';
                                 $wpscAttributesResults = wpscProductGetAttributes($wpscVariationParent);
                                 $wpscAttributesGroup = wpscProductGetAttributeGroups($wpscAttributesResults);
                                 $wpscProductGetAttribute = wpscProductGetAttributeKeyArray($wpscAttributesGroup);

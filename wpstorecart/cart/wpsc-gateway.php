@@ -281,7 +281,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 
                 // Order note:
                 if($wpscPaymentGateway['ordernote']!=null) {
-                    $sql = "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$wpscPaymentGateway['ordernote']}', 'ordernote', '{$wpscPaymentGateway['order_id']}');";
+                    $sql = "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$wpdb->escape($wpscPaymentGateway['ordernote'])}', 'ordernote', '{$wpscPaymentGateway['order_id']}');";
                     $wpdb->query( $sql );                
                 }
                 
