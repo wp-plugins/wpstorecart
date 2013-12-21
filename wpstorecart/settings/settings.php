@@ -226,7 +226,8 @@ if(!class_exists('wpscSettings')) {
                                                     'alert_clear_period' => '1 hour',
                                                     'wpstorecart_download_hash' => sha1(rand(-4096, 4096)),
                                                     'wpsc3_first_run' => 'false',
-                                                    'enable_product_filters' => 'false'
+                                                    'enable_product_filters' => 'false',
+                                                    'enable_alerts' => 'true'
 			);
 		
 		
@@ -248,7 +249,6 @@ if(!class_exists('wpscSettings')) {
 				}
 			}
                         
-			//$apAdminOptions['menu_style']='version3'; // This hardcodes the new menu system as the default
 			update_option($this->adminOptionsName, $apAdminOptions);
 		
 			return $apAdminOptions;
@@ -781,6 +781,9 @@ if(!class_exists('wpscSettings')) {
                             if (isset($_POST['piwik_siteid'])) {
                                     $wpStoreCartOptions['piwik_siteid'] = $wpdb->escape($_POST['piwik_siteid']);
                             }  
+                            if (isset($_POST['enable_alerts'])) {
+                                    $wpStoreCartOptions['enable_alerts'] = $wpdb->escape($_POST['enable_alerts']);
+                            }                             
 
                             if (isset($_POST['admin_capability'])) {
                                     global $wp_roles;

@@ -633,6 +633,14 @@ if (!function_exists('wpscAdminHeader')) {
      * The admin header
      */
     function wpscAdminHeader($pageTitle='', $helpUrl='', $displaycarousel = true, $displayalerts=true) {
+        
+        $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
+        if ($wpStoreCartOptions['enable_alerts'] == "true") {
+            $displayalerts=true;
+        } else {
+            $displayalerts=false;
+        }
+        
         echo '
             <style type="text/css">
             .update-nag, .updated, .error {
@@ -4685,6 +4693,12 @@ if(!function_exists('wpscAdminPageCategories')) {
             }
 
             echo '
+
+            <tr><td><p>'.__('Enable Alert System', 'wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-1233463467347" /><div class="tooltip-content" id="example-content-1233463467347">'.__('If you set this to Yes, enables the Alerts system', 'wpstorecart').'</div></p></td>
+            <td class="tableDescription"><p>'.__('Selecting "No" will retain all alerts data, but will deactivate the Alert system.', 'wpstorecart').'</p></td>
+            <td><p><label for="enable_alerts_yes"><input type="radio" id="enable_alerts_yes" name="enable_alerts" value="true" '; if ($wpStoreCartOptions['enable_alerts'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enable_alerts_no"><input type="radio" id="enable_alerts_no" name="enable_alerts" value="false" '; if ($wpStoreCartOptions['enable_alerts'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p></td>
+            </td></tr>
+
             <tr><td><p>'.__('Delay before Alerts are redisplayed').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-334634673476551111" /><div class="tooltip-content" id="example-content-334634673476551111">'.__('Whenever you clear an alert, this is the amount of time wpStoreCart waits before alerting of you of the same alert that you cleared.', 'wpstorecart').'</div></p></td>
             <td class="tableDescription"><p>'.__('The period of time that wpStoreCart will ignore alerts that you previously cleared', 'wpstorecart').'</p></td>
             <td><input type="text" name="alert_clear_period" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['alert_clear_period']), 'wpStoreCart'); echo'" />
