@@ -5800,7 +5800,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             </td></tr>
             </table>
             <br />
-            <h2>Required Information At Checkout:</h2>
+            <h2>'.__('Required Information At Checkout:','wpstorecart').'</h2>
 
              <script type="text/javascript">
                 /* <![CDATA[ */
