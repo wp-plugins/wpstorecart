@@ -5533,57 +5533,57 @@ if(!function_exists('wpscAdminPageCategories')) {
             <td><input type="text" name="qty" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['qty']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Single Item</p></td>
+            <tr><td><p>'.__('Single Item','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Item</i></p></td>
             <td><input type="text" name="single_item" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['single_item']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Multiple Items</p></td>
+            <tr><td><p>'.__('Multiple Items','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Items</i></p></td>
             <td><input type="text" name="multiple_items" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['multiple_items']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Subtotal</p></td>
+            <tr><td><p>'.__('Subtotal','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Subtotal</i></p></td>
             <td><input type="text" name="subtotal" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['subtotal']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Total</p></td>
+            <tr><td><p>'.__('Total','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Total</i></p></td>
             <td><input type="text" name="total" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['total']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Tax</p></td>
+            <tr><td><p>'.__('Tax','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Tax</i></p></td>
             <td><input type="text" name="tax" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['tax']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Shipping</p></td>
+            <tr><td><p>'.__('Shipping','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Shipping</i></p></td>
             <td><input type="text" name="shipping" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['shipping']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Calculate Shipping</p></td>
+            <tr><td><p>'.__('Calculate Shipping','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Calculate Shipping</i></p></td>
             <td><input type="text" name="calculateshipping" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['calculateshipping']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Update Button</p></td>
+            <tr><td><p>'.__('Update Button','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>update</i></p></td>
             <td><input type="text" name="update_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['update_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Checkout Button</p></td>
+            <tr><td><p>'.__('Checkout Button','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>checkout</i></p></td>
             <td><input type="text" name="checkout_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Checkout Check/Money Order Button</p></td>
+            <tr><td><p>'.__('Checkout Check/Money Order Button','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with Check/Money Order</i></p></td>
             <td><input type="text" name="checkout_checkmoneyorder_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_checkmoneyorder_button']), 'wpStoreCart'); echo'" />
             </td></tr>
 
-            <tr><td><p>Checkout PayPal Button</p></td>
+            <tr><td><p>'.__('Checkout PayPal Button','wpstorecart').'</p></td>
             <td class="tableDescription"><p>'.__('Default','wpstorecart').': <i>Checkout with PayPal</i></p></td>
             <td><input type="text" name="checkout_paypal_button" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['checkout_paypal_button']), 'wpStoreCart'); echo'" />
             </td></tr>
