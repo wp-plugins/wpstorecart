@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.5.4 =
-* Updated: Security updates for securimage captcha library
+* Updated: Security updates for securimage captcha library.
 
 = 4.5.3 =
 * Fixed: Found a few untranslatable strings in the admin panel and fixed them
