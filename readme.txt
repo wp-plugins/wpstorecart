@@ -84,7 +84,7 @@ Or, if you want to install manually:
 == Changelog ==
 
 = 4.5.5 =
-* Updated: /languages/wpstorecart.pot file added for i18n translations
+* Updated: /languages/wpstorecart.pot file added for i18n translations.
 
 = 4.5.4 =
 * Updated: Security updates for securimage captcha library
