@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.9
-Stable tag: 4.5.6
+Stable tag: 4.5.7
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -82,6 +82,10 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 4.5.7 =
+* Fixed: Patched rare issue affecting the ability to upgrade from old 2.x versions of wpStoreCart to the current version
+* Removed: Deleted unused Piwik code
 
 = 4.5.6 =
 * Added: Added bug tracking & feature requests to the help menu

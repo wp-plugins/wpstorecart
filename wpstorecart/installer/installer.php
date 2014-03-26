@@ -258,7 +258,7 @@ if(!function_exists('wpscInstallerCheck')) {
 		
 		$wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
 
-                if(@$wpStoreCartOptions['database_version'] < $wpstorecart_version_int) {
+                if(@intval($wpStoreCartOptions['database_version']) < $wpstorecart_version_int) {
                     wpscUpdate();
                 }			
                 
