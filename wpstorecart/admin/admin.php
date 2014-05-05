@@ -4971,13 +4971,20 @@ if(!function_exists('wpscAdminPageCategories')) {
             <select name="frontpageDisplays">
 ';
 
-            //** @todo Not translatable yet **//
+
             $theOptions[0] = 'List all products';
             $theOptions[1] = 'List all products in custom order';
             $theOptions[2] = 'List all categories';
             $theOptions[3] = 'List all categories (Ascending)';
             $theOptions[4] = 'List newest products';
             $theOptions[5] = 'List most popular products';
+            $theOptionsZAQ[0] = __('List all products','wpstorecart');
+            $theOptionsZAQ[1] = __('List all products in custom order','wpstorecart');
+            $theOptionsZAQ[2] = __('List all categories','wpstorecart');
+            $theOptionsZAQ[3] = __('List all categories (Ascending)','wpstorecart');
+            $theOptionsZAQ[4] = __('List newest products','wpstorecart');
+            $theOptionsZAQ[5] = __('List most popular products','wpstorecart');      
+            $dsafcounter = 0;
             foreach ($theOptions as $theOption) {
 
                     $option = '<option value="'.$theOption.'"';
@@ -4985,9 +4992,10 @@ if(!function_exists('wpscAdminPageCategories')) {
                             $option .= ' selected="selected"';
                     }
                     $option .='>';
-                    $option .= $theOption;
+                    $option .= $theOptionsZAQ[$dsafcounter];
                     $option .= '</option>';
                     echo $option;
+                    $dsafcounter++;
             }
 
             echo '

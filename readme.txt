@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,paypal,shopping-cart,ecomm,e-commerce,authorize.net,affiliate,affiliates,2co,2checkout,shop,merchant,business,sales,sell,moneybookers,quickbooks,qbms,subscription,membership,subscribe,skrill,piwik
 Requires at least: 3.3.0
 Tested up to: 3.9
-Stable tag: 4.5.8
+Stable tag: 4.5.9
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -82,6 +82,9 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 4.5.9 =
+* Fixed: Found a few untranslatable strings in the admin panel and fixed them
 
 = 4.5.8 =
 * Added: Free Shipping is now an option out of the box, no PRO version required.  PRO users should disable the Free Shipping plugin
