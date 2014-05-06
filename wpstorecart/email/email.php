@@ -24,7 +24,7 @@ if(!function_exists('wpscEmail')) {
         } else {
             add_filter('wp_mail_content_type',create_function('', 'return "'.$contenttype.'";'));
         }
-        if($headers==NULL) {
+        if($headers==NULL && !headers_sent()) {
             $site_name = preg_replace("/[^a-zA-Z0-9\s]/", "", get_bloginfo('name'));
             $headers = 'From: '.$site_name.' <'.$wpStoreCartOptions['wpStoreCartEmail'].'>' . "\r\n".
                     'Reply-To: '.$wpStoreCartOptions['wpStoreCartEmail'] . "\r\n" .
