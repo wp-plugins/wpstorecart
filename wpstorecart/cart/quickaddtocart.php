@@ -27,7 +27,7 @@ $item_url = get_permalink($results[0]['postid']);
 
 $wpsc_shoppingcart = new wpsc_shoppingcart();
 
-$wpsc_shoppingcart->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping, NULL, $item_url, $item_img);
+$wpsc_shoppingcart->add_item($item_id, $item_qty, $item_price, $item_name, $item_shipping, $item_img, $item_url, $item_img);
 
 if(@isset($_GET['wpsc-app-store'])) {
     if(strpos(get_permalink($wpStoreCartOptions['checkoutpage']),'?')===false) {

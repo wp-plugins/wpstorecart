@@ -714,7 +714,6 @@ class wpsc_shoppingcart {
                 @$item_tax = $_POST[$item_tax];
                 @$item_url = $_POST[$item_url];
                 @$item_img = $_POST[$item_img];
-                @$item_img = $_POST[$item_img];
                 //@$options = $_POST['wpstorecart_product_options'];
                 foreach(@$_POST['wpstorecart_product_options'] as $value) {
                     @$options .= $value;
