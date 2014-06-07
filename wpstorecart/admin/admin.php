@@ -5881,7 +5881,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             echo'
             <table class="widefat">
-            <thead><tr><th>Add new field: <strong>Name: </strong><input type="text" name="createnewfieldname" id="createnewfieldname" value="" /> <strong>Type: </strong><select name="createnewfieldtype" id="createnewfieldtype">';
+            <thead><tr><th>'. __('Add new field', 'wpstorecart').': <strong>'. __('Name', 'wpstorecart').': </strong><input type="text" name="createnewfieldname" id="createnewfieldname" value="" /> <strong>'. __('Type', 'wpstorecart').': </strong><select name="createnewfieldtype" id="createnewfieldtype">';
 
             $icounter = 0;
             foreach ($theOptionszz as $theOption) {
@@ -5894,7 +5894,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                     $icounter++;
             }
 
-            echo '</select><label for="createnewfieldrequired_yes"><input type="radio" id="createnewfieldrequired_yes" name="createnewfieldrequired" value="required" checked="checked" /> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="createnewfieldrequired_no"><input type="radio" id="createnewfieldrequired_no" name="createnewfieldrequired" value="optional" /> Optional</label> <a href="#" onclick="addwpscfield();return false;"><button><img style="cursor:pointer;" src="'.plugins_url().'/wpstorecart/images/add.png" /> '.__('Save New Field', 'wpstorecart').'</button></a></th></tr></thead>
+            echo '</select><label for="createnewfieldrequired_yes"><input type="radio" id="createnewfieldrequired_yes" name="createnewfieldrequired" value="required" checked="checked" /> '. __('Required', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="createnewfieldrequired_no"><input type="radio" id="createnewfieldrequired_no" name="createnewfieldrequired" value="optional" /> '. __('Optional', 'wpstorecart').'</label> <a href="#" onclick="addwpscfield();return false;"><button><img style="cursor:pointer;" src="'.plugins_url().'/wpstorecart/images/add.png" /> '.__('Save New Field', 'wpstorecart').'</button></a></th></tr></thead>
             <tbody><tr><td>
             <div id="requiredsort" style="margin:0 auto 0 auto;">
                 <ul id="requiredul" style="margin:0 auto 0 auto;list-style:none;">
@@ -5924,7 +5924,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                     $icounter++;
                             }
 
-                            echo '</select><label for="required_info_required_'.$theKey.'"><input type="radio" id="required_info_required_'.$theKey.'_yes" name="required_info_required_'.$theKey.'" value="required" '; if ($exploder[1]=='required') { _e('checked="checked"', "wpstorecart"); }; echo '/> Required</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="required_info_required_'.$theKey.'_no"><input type="radio" id="required_info_required_'.$theKey.'_no" name="required_info_required_'.$theKey.'" value="optional" '; if ($exploder[1]=='optional') { _e('checked="checked"', "wpstorecart"); }; echo '/> Optional</label>'; echo '</li>
+                            echo '</select><label for="required_info_required_'.$theKey.'"><input type="radio" id="required_info_required_'.$theKey.'_yes" name="required_info_required_'.$theKey.'" value="required" '; if ($exploder[1]=='required') { _e('checked="checked"', "wpstorecart"); }; echo '/> '. __('Required', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="required_info_required_'.$theKey.'_no"><input type="radio" id="required_info_required_'.$theKey.'_no" name="required_info_required_'.$theKey.'" value="optional" '; if ($exploder[1]=='optional') { _e('checked="checked"', "wpstorecart"); }; echo '/> '. __('Optional', 'wpstorecart').'</label>'; echo '</li>
                                 ';
                         }
                 }
@@ -5943,7 +5943,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             ';
 
             echo '<div id="tab8" class="tab_content">
-            <h2 style="float:left;">Taxes</h2><a href="http://wpstorecart.com/documentation/settings/general-settings/" target="_blank"><img src="'.plugins_url() . '/wpstorecart/images/bighelp.png" style="float:left;" /></a>
+            <h2 style="float:left;">'. __('Taxes', 'wpstorecart').'</h2><a href="http://wpstorecart.com/documentation/settings/general-settings/" target="_blank"><img src="'.plugins_url() . '/wpstorecart/images/bighelp.png" style="float:left;" /></a>
             ';
 
             echo '
@@ -5992,7 +5992,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             <div id="taxsort" >
             <table class="widefat">
-                    <thead><tr><th>ID</th><th>Name</th><th>Tax Percent</th><th>Regions</th></tr></thead><tbody id="edittaxes">
+                    <thead><tr><th>'. __('ID', 'wpstorecart').'</th><th>'. __('Name', 'wpstorecart').'</th><th>'. __('Tax Percent', 'wpstorecart').'</th><th>'. __('Regions', 'wpstorecart').'</th></tr></thead><tbody id="edittaxes">
 
                 ';
 
@@ -6015,17 +6015,17 @@ if(!function_exists('wpscAdminPageCategories')) {
 
 
             <table class="widefat">
-            <thead><tr><th><p>Add/Edit tax</p><a href="#" onclick="jQuery(\'#taxprimkey\').val(\'0\');jQuery(\'#taxname\').val(\'New Tax\');jQuery(\'#countriestotax\').val(\'\');jQuery(\'#statestotax\').val(\'\');jQuery(\'#taxpercent\').val(\'0.0\');setMaps(\'\',\'\');return false;">Create New Tax</a><br />Use the image maps below, to select all applicable areas where this tax applies.</th></tr></thead><tbody><tr><td>
+            <thead><tr><th><p>Add/Edit tax</p><a href="#" onclick="jQuery(\'#taxprimkey\').val(\'0\');jQuery(\'#taxname\').val(\'New Tax\');jQuery(\'#countriestotax\').val(\'\');jQuery(\'#statestotax\').val(\'\');jQuery(\'#taxpercent\').val(\'0.0\');setMaps(\'\',\'\');return false;">'. __('Create new tax', 'wpstorecart').'</a><br />'. __('Use the image maps below, to select all applicable areas where this tax applies.', 'wpstorecart').'</th></tr></thead><tbody><tr><td>
             <table>
-            <tr><td>Name this tax: </td><td><input type="hidden" name="taxprimkey" id="taxprimkey" value="0" /><input type="text" name="taxname" id="taxname" value="New Tax" /></td></tr>
-            <tr><td>Countries: </td><td><input type="text" readonly="readonly" name="countriestotax" id="countriestotax" value="" style="width:700px;" /></td></tr>
-            <tr><td>US States: </td><td><input type="text" readonly="readonly" name="statestotax" id="statestotax" value="" style="width:700px;" /></td></tr>
-            <tr><td>Tax Percentage: </td><td><input type="text" name="taxpercent" id="taxpercent" value="0.00" style="width:145px;" />%</td></tr>
+            <tr><td>'. __('Name this tax', 'wpstorecart').': </td><td><input type="hidden" name="taxprimkey" id="taxprimkey" value="0" /><input type="text" name="taxname" id="taxname" value="New Tax" /></td></tr>
+            <tr><td>'. __('Countries', 'wpstorecart').': </td><td><input type="text" readonly="readonly" name="countriestotax" id="countriestotax" value="" style="width:700px;" /></td></tr>
+            <tr><td>'. __('US States', 'wpstorecart').': </td><td><input type="text" readonly="readonly" name="statestotax" id="statestotax" value="" style="width:700px;" /></td></tr>
+            <tr><td'. __('Tax Percentage', 'wpstorecart').'>: </td><td><input type="text" name="taxpercent" id="taxpercent" value="0.00" style="width:145px;" />%</td></tr>
             <tr><td></td><td><button class="button-primary" onclick="addwpsctax();return false;">Submit Tax</button></td></tr>
             </table>
             </td></tr></table>
 
-            <p>Tax By Country</p>
+            <p>'. __('Tax By Country', 'wpstorecart').'</p>
             <center>
             <img class="map" id="world_image" src="'.plugins_url().'/wpstorecart/images/world.png" width="800" height="400" usemap="#world">
             <img id="world_image2" src="'.plugins_url().'/images/world_highlight.png" width="800" height="400" style="display:none;" >
