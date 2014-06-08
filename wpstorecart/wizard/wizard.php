@@ -271,7 +271,7 @@ if (!function_exists('wpscAdminPageWizard')) {
                     $wpsc_current_wizard_form .= '
                     <fieldset>
                         <legend>'.__('Save','wpstorecart').'</legend>
-                        <label for="wpsc-wizard-save-setup-wizard">'.__('You have just finished the PAYMENT WIZARD.  If you are satisified with your choices, it is time to save and move onto the PRODUCT WIZARD.  Just click the "Save Your Settings" button below to finalize these settings and continue to the PRODUCT WIZARD.    ','wpstorecart').'</label>
+                        <label for="wpsc-wizard-save-setup-wizard">'.__('You have just finished the PAYMENT WIZARD.  If you are satisified with your choices, it is time to save.  Just click the "Save Your Settings" button below to finalize these settings.','wpstorecart').'</label>
                         <br /><br />
                     </fieldset>                
                     ';                     
