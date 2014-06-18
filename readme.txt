@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill
 Requires at least: 3.3.0
 Tested up to: 4.0
-Stable tag: 4.5.15
+Stable tag: 4.5.16
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -82,6 +82,10 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 4.5.16 =
+* Updated: A few untranslatable strings are now i18n ready
+* Updated: Fixed an if statement that was slightly malformed
 
 = 4.5.15 =
 * Updated: Updated readme.txt tags in order to be in compliance with Wordpress.org policies

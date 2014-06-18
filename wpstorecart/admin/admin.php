@@ -1052,7 +1052,7 @@ if(!function_exists('wpscAdminAddNewOrderButton')) {
         
         function wpscAdminAddNewOrderProducts() {
             var wpscProductNames=new Array();
-            if( (jQuery('#wpsc-new-order-cart-contents-select').val() != 0) && !isNaN(jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val()) && jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val() != '' && jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val() != 0 ) { // If the data is valid
+            if( (jQuery('#wpsc-new-order-cart-contents-select').val() !== 0) && !isNaN(jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val()) && jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val() !== '' && jQuery('#wpsc-new-order-cart-contents-qty-add-to-order').val() !== 0 ) { // If the data is valid
                 <?php
                 if(isset($results2)) {
                         foreach ($results2 as $pagg) {
@@ -6015,7 +6015,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
 
             <table class="widefat">
-            <thead><tr><th><p>Add/Edit tax</p><a href="#" onclick="jQuery(\'#taxprimkey\').val(\'0\');jQuery(\'#taxname\').val(\'New Tax\');jQuery(\'#countriestotax\').val(\'\');jQuery(\'#statestotax\').val(\'\');jQuery(\'#taxpercent\').val(\'0.0\');setMaps(\'\',\'\');return false;">'. __('Create new tax', 'wpstorecart').'</a><br />'. __('Use the image maps below, to select all applicable areas where this tax applies.', 'wpstorecart').'</th></tr></thead><tbody><tr><td>
+            <thead><tr><th><p>'. __('Add/Edit tax', 'wpstorecart').'</p><a href="#" onclick="jQuery(\'#taxprimkey\').val(\'0\');jQuery(\'#taxname\').val(\'New Tax\');jQuery(\'#countriestotax\').val(\'\');jQuery(\'#statestotax\').val(\'\');jQuery(\'#taxpercent\').val(\'0.0\');setMaps(\'\',\'\');return false;">'. __('Create new tax', 'wpstorecart').'</a><br />'. __('Use the image maps below, to select all applicable areas where this tax applies.', 'wpstorecart').'</th></tr></thead><tbody><tr><td>
             <table>
             <tr><td>'. __('Name this tax', 'wpstorecart').': </td><td><input type="hidden" name="taxprimkey" id="taxprimkey" value="0" /><input type="text" name="taxname" id="taxname" value="New Tax" /></td></tr>
             <tr><td>'. __('Countries', 'wpstorecart').': </td><td><input type="text" readonly="readonly" name="countriestotax" id="countriestotax" value="" style="width:700px;" /></td></tr>

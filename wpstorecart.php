@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart - Ajax Ecommerce
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use ecommerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 4.5.15
+Version: 4.5.16
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -41,8 +41,8 @@ global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $
 
 
 /* Global variables: */
-$wpstorecart_version = '4.5.15';
-$wpstorecart_version_int = 405015; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '4.5.16';
+$wpstorecart_version_int = 405016; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
 $wpsc_testing_mode = false; // Set to true if debugging.  Note, that this is for wpStoreCart core developers, and is not meant for addon developers
 $wpsc_wordpress_upload_dir = wp_upload_dir();
