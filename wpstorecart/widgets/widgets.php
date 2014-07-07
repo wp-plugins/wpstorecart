@@ -11,7 +11,7 @@ if (class_exists("WP_Widget")) {
 	class wpStoreCartCategoryWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartCategoryWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Simple Categories');
+			parent::WP_Widget(false, $name = __('wpStoreCart Simple Categories', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -55,7 +55,7 @@ if (class_exists("WP_Widget")) {
 					}
 				}
 			} else {
-				$output .= 'wpStoreCart did not like your widget!  The number of categories to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+				$output .= __('wpStoreCart did not like your widget!  The number of categories to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.', 'wpstorecart');
 			}
 			echo $output;
 			echo $after_widget;
@@ -405,11 +405,11 @@ if (class_exists("WP_Widget")) {
                         @$widgetShowTax = htmlspecialchars($instance['widgetShowTax']);
                         @$widgetShowTotal = htmlspecialchars($instance['widgetShowTotal']);
 			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Use as the final checkout:') . '<br /><label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowShipping') . '">' . __('Show shipping costs:') . '<br /><label for="' . $this->get_field_name('widgetShowShipping') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_yes" name="' . $this->get_field_name('widgetShowShipping') . '" value="true" '; if ($widgetShowShipping == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowShipping') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_no" name="' . $this->get_field_name('widgetShowShipping') . '" value="false" '; if ($widgetShowShipping == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowTax') . '">' . __('Show tax:') . '<br /><label for="' . $this->get_field_name('widgetShowTax') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowTax') . '_yes" name="' . $this->get_field_name('widgetShowTax') . '" value="true" '; if ($widgetShowTax == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowTax') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowTax') . '_no" name="' . $this->get_field_name('widgetShowTax') . '" value="false" '; if ($widgetShowTax == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowSubtotal') . '">' . __('Show subtotal without shipping:') . '<br /><label for="' . $this->get_field_name('widgetShowSubtotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_yes" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="true" '; if ($widgetShowSubtotal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowSubtotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_no" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="false" '; if ($widgetShowSubtotal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowTotal') . '">' . __('Show total, including any shipping:') . '<br /><label for="' . $this->get_field_name('widgetShowTotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_yes" name="' . $this->get_field_name('widgetShowTotal') . '" value="true" '; if ($widgetShowTotal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowTotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_no" name="' . $this->get_field_name('widgetShowTotal') . '" value="false" '; if ($widgetShowTotal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Use as the final checkout:', 'wpstorecart') . '<br /><label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowShipping') . '">' . __('Show shipping costs:', 'wpstorecart') . '<br /><label for="' . $this->get_field_name('widgetShowShipping') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_yes" name="' . $this->get_field_name('widgetShowShipping') . '" value="true" '; if ($widgetShowShipping == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowShipping') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowShipping') . '_no" name="' . $this->get_field_name('widgetShowShipping') . '" value="false" '; if ($widgetShowShipping == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowTax') . '">' . __('Show tax:', 'wpstorecart') . '<br /><label for="' . $this->get_field_name('widgetShowTax') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowTax') . '_yes" name="' . $this->get_field_name('widgetShowTax') . '" value="true" '; if ($widgetShowTax == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowTax') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowTax') . '_no" name="' . $this->get_field_name('widgetShowTax') . '" value="false" '; if ($widgetShowTax == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowSubtotal') . '">' . __('Show subtotal without shipping:', 'wpstorecart') . '<br /><label for="' . $this->get_field_name('widgetShowSubtotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_yes" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="true" '; if ($widgetShowSubtotal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowSubtotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowSubtotal') . '_no" name="' . $this->get_field_name('widgetShowSubtotal') . '" value="false" '; if ($widgetShowSubtotal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowTotal') . '">' . __('Show total, including any shipping:', 'wpstorecart') . '<br /><label for="' . $this->get_field_name('widgetShowTotal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_yes" name="' . $this->get_field_name('widgetShowTotal') . '" value="true" '; if ($widgetShowTotal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowTotal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowTotal') . '_no" name="' . $this->get_field_name('widgetShowTotal') . '" value="false" '; if ($widgetShowTotal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
 		}
 
 	}
@@ -421,7 +421,7 @@ if (class_exists("WP_Widget")) {
         class wpStoreCartLoginWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartLoginWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart User Account/Login');
+			parent::WP_Widget(false, $name = __('wpStoreCart User Account/Login', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -513,7 +513,7 @@ if (class_exists("WP_Widget")) {
 		function form($instance) {				
 			@$title = esc_attr($instance['title']);
 
-			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
 
 		}
 
@@ -525,7 +525,7 @@ if (class_exists("WP_Widget")) {
 	class wpStoreCartTopproductsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartTopproductsWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Top Products');
+			parent::WP_Widget(false, $name = __('wpStoreCart Top Products', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -564,7 +564,7 @@ if (class_exists("WP_Widget")) {
 					}
 				}
 			} else {
-				$output .= 'wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+				$output .= __('wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.', 'wpstorecart');
 			}
 			echo $output;
 			echo $after_widget;
@@ -588,12 +588,12 @@ if (class_exists("WP_Widget")) {
                         @$maxImageWidth = htmlspecialchars($instance['maxImageWidth']);
                         @$maxImageHeight = htmlspecialchars($instance['maxImageHeight']);
 
-			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
-			//echo '<p style="text-align:left;"><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . ' <input style="width: 200px;" id="' . $this->get_field_id('widgetShowproductImages') . '" name="' . $this->get_field_name('widgetShowproductImages') . '" type="text" value="' . $widgetShowproductImages . '" /></label></p>';
-			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
+			//echo '<p style="text-align:left;"><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:', 'wpstorecart') . ' <input style="width: 200px;" id="' . $this->get_field_id('widgetShowproductImages') . '" name="' . $this->get_field_name('widgetShowproductImages') . '" type="text" value="' . $widgetShowproductImages . '" /></label></p>';
+			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
 		}
 
 	} 
@@ -603,7 +603,7 @@ if (class_exists("WP_Widget")) {
 	class wpStoreCartRecentproductsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartRecentproductsWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Recent Products');
+			parent::WP_Widget(false, $name = __('wpStoreCart Recent Products', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -642,7 +642,7 @@ if (class_exists("WP_Widget")) {
 					}
 				}
 			} else {
-				$output .= 'wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+				$output .= __('wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.', 'wpstorecart');
 			}
 			echo $output;
 			echo $after_widget;
@@ -667,12 +667,12 @@ if (class_exists("WP_Widget")) {
                         @$maxImageWidth = htmlspecialchars($instance['maxImageWidth']);
                         @$maxImageHeight = htmlspecialchars($instance['maxImageHeight']);
 
-			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
-			//echo '<p style="text-align:left;"><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . ' <input style="width: 200px;" id="' . $this->get_field_id('widgetShowproductImages') . '" name="' . $this->get_field_name('widgetShowproductImages') . '" type="text" value="' . $widgetShowproductImages . '" /></label></p>';
-			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
+			//echo '<p style="text-align:left;"><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:', 'wpstorecart') . ' <input style="width: 200px;" id="' . $this->get_field_id('widgetShowproductImages') . '" name="' . $this->get_field_name('widgetShowproductImages') . '" type="text" value="' . $widgetShowproductImages . '" /></label></p>';
+			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
 
 		}
 
@@ -685,7 +685,7 @@ if (class_exists("WP_Widget")) {
 	class wpStoreCartPaymentsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartPaymentsWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Payments Accepted');
+			parent::WP_Widget(false, $name = __('wpStoreCart Payments Accepted', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -766,19 +766,19 @@ if (class_exists("WP_Widget")) {
                         if(!is_numeric($maxImageWidth) || $maxImageWidth=='') {$maxImageWidth = '50';}
                         if(!is_numeric($maxImageHeight) || $maxImageHeight=='') {$maxImageHeight = '30';}
 
-			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowVisa') . '">' . __('VISA:') . '<label for="' . $this->get_field_name('widgetShowVisa') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_yes" name="' . $this->get_field_name('widgetShowVisa') . '" value="true" '; if ($widgetShowVisa == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowVisa') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_no" name="' . $this->get_field_name('widgetShowVisa') . '" value="false" '; if ($widgetShowVisa == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowMasterCard') . '">' . __('MasterCard:') . '<label for="' . $this->get_field_name('widgetShowMasterCard') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_yes" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="true" '; if ($widgetShowMasterCard == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowMasterCard') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_no" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="false" '; if ($widgetShowMasterCard == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowAmericanExpress') . '">' . __('American Express:') . '<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_yes" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="true" '; if ($widgetShowAmericanExpress == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_no" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="false" '; if ($widgetShowAmericanExpress == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowDiscover') . '">' . __('Discover:') . '<label for="' . $this->get_field_name('widgetShowDiscover') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_yes" name="' . $this->get_field_name('widgetShowDiscover') . '" value="true" '; if ($widgetShowDiscover == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDiscover') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_no" name="' . $this->get_field_name('widgetShowDiscover') . '" value="false" '; if ($widgetShowDiscover == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowDinersClub') . '">' . __('Diners Club:') . '<label for="' . $this->get_field_name('widgetShowDinersClub') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_yes" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="true" '; if ($widgetShowDinersClub == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDinersClub') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_no" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="false" '; if ($widgetShowDinersClub == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowJCB') . '">' . __('JCB:') . '<label for="' . $this->get_field_name('widgetShowJCB') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_yes" name="' . $this->get_field_name('widgetShowJCB') . '" value="true" '; if ($widgetShowJCB == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowJCB') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_no" name="' . $this->get_field_name('widgetShowJCB') . '" value="false" '; if ($widgetShowJCB == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowPayPal') . '">' . __('PayPal:') . '<label for="' . $this->get_field_name('widgetShowPayPal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_yes" name="' . $this->get_field_name('widgetShowPayPal') . '" value="true" '; if ($widgetShowPayPal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowPayPal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_no" name="' . $this->get_field_name('widgetShowPayPal') . '" value="false" '; if ($widgetShowPayPal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '">' . __('Authorize.Net:') . '<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_yes" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="true" '; if ($widgetShowAuthorizeNet == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_no" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="false" '; if ($widgetShowAuthorizeNet == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="' . $this->get_field_name('widgetShow2Checkout') . '">' . __('2Checkout:') . '<label for="' . $this->get_field_name('widgetShow2Checkout') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_yes" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="true" '; if ($widgetShow2Checkout == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShow2Checkout') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_no" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="false" '; if ($widgetShow2Checkout == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p><label for="'. $this->get_field_id('widgetStyle') .'">'; _e('Inline CSS:'); echo ' <input class="widefat" id="'. $this->get_field_id('widgetStyle') .'" name="'. $this->get_field_name('widgetStyle') .'" type="text" value="'. $widgetStyle .'" /></label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowVisa') . '">' . __('VISA:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowVisa') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_yes" name="' . $this->get_field_name('widgetShowVisa') . '" value="true" '; if ($widgetShowVisa == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowVisa') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowVisa') . '_no" name="' . $this->get_field_name('widgetShowVisa') . '" value="false" '; if ($widgetShowVisa == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowMasterCard') . '">' . __('MasterCard:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowMasterCard') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_yes" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="true" '; if ($widgetShowMasterCard == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowMasterCard') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowMasterCard') . '_no" name="' . $this->get_field_name('widgetShowMasterCard') . '" value="false" '; if ($widgetShowMasterCard == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowAmericanExpress') . '">' . __('American Express:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_yes" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="true" '; if ($widgetShowAmericanExpress == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAmericanExpress') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAmericanExpress') . '_no" name="' . $this->get_field_name('widgetShowAmericanExpress') . '" value="false" '; if ($widgetShowAmericanExpress == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowDiscover') . '">' . __('Discover:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowDiscover') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_yes" name="' . $this->get_field_name('widgetShowDiscover') . '" value="true" '; if ($widgetShowDiscover == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDiscover') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDiscover') . '_no" name="' . $this->get_field_name('widgetShowDiscover') . '" value="false" '; if ($widgetShowDiscover == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowDinersClub') . '">' . __('Diners Club:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowDinersClub') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_yes" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="true" '; if ($widgetShowDinersClub == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowDinersClub') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowDinersClub') . '_no" name="' . $this->get_field_name('widgetShowDinersClub') . '" value="false" '; if ($widgetShowDinersClub == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowJCB') . '">' . __('JCB:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowJCB') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_yes" name="' . $this->get_field_name('widgetShowJCB') . '" value="true" '; if ($widgetShowJCB == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowJCB') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowJCB') . '_no" name="' . $this->get_field_name('widgetShowJCB') . '" value="false" '; if ($widgetShowJCB == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowPayPal') . '">' . __('PayPal:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowPayPal') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_yes" name="' . $this->get_field_name('widgetShowPayPal') . '" value="true" '; if ($widgetShowPayPal == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowPayPal') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowPayPal') . '_no" name="' . $this->get_field_name('widgetShowPayPal') . '" value="false" '; if ($widgetShowPayPal == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '">' . __('Authorize.Net:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_yes" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="true" '; if ($widgetShowAuthorizeNet == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowAuthorizeNet') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowAuthorizeNet') . '_no" name="' . $this->get_field_name('widgetShowAuthorizeNet') . '" value="false" '; if ($widgetShowAuthorizeNet == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="' . $this->get_field_name('widgetShow2Checkout') . '">' . __('2Checkout:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShow2Checkout') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_yes" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="true" '; if ($widgetShow2Checkout == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShow2Checkout') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShow2Checkout') . '_no" name="' . $this->get_field_name('widgetShow2Checkout') . '" value="false" '; if ($widgetShow2Checkout == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p><label for="'. $this->get_field_id('widgetStyle') .'">'; _e('Inline CSS:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('widgetStyle') .'" name="'. $this->get_field_name('widgetStyle') .'" type="text" value="'. $widgetStyle .'" /></label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
 		}
 
 	}
@@ -792,7 +792,7 @@ if (class_exists("WP_Widget")) {
 	class wpStoreCartFeaturedProductsWidget extends WP_Widget {
 		/** constructor */
 		function wpStoreCartFeaturedProductsWidget() {
-			parent::WP_Widget(false, $name = 'wpStoreCart Featured Products');
+			parent::WP_Widget(false, $name = __('wpStoreCart Featured Products', 'wpstorecart'));
 		}
 
 		/** @see WP_Widget::widget */
@@ -836,7 +836,7 @@ if (class_exists("WP_Widget")) {
 					}
 				}
 			} else {
-				$output .= 'wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.';
+				$output .= __('wpStoreCart did not like your widget!  The number of products to display contained non-numeric data. Please fix your widget or consult the wpStoreCart documentation for help.', 'wpstorecart');
 			}
 			echo $output;
 			echo $after_widget;
@@ -871,15 +871,15 @@ if (class_exists("WP_Widget")) {
                         @$productsToFeature4 = htmlspecialchars($instance['productsToFeature4']);
                         @$productsToFeature5 = htmlspecialchars($instance['productsToFeature5']);
 
-			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
-			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
-			echo '<p style="text-align:left;">' . __('Products to Feature') .' :' ;
+			echo '<p><label for="'. $this->get_field_id('title') .'">'; _e('Title:', 'wpstorecart'); echo ' <input class="widefat" id="'. $this->get_field_id('title') .'" name="'. $this->get_field_name('title') .'" type="text" value="'. $title .'" /></label></p>';
+			echo '<p style="text-align:left;"><label for="' . $this->get_field_name('numberOfproductsToDisplay') . '">' . __('Number of products to display:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('numberOfproductsToDisplay') . '" name="' . $this->get_field_name('numberOfproductsToDisplay') . '" type="text" value="' . $numberOfproductsToDisplay . '" /></label></p>';
+			echo '<p style="text-align:left;">' . __('Products to Feature', 'wpstorecart') .' :' ;
                         $table_name = $wpdb->prefix . "wpstorecart_products";
                         $sql = "SELECT * FROM `{$table_name}` WHERE `status`='publish' AND `producttype`='product' ORDER BY `name` DESC;";
                         $results = $wpdb->get_results( $sql , ARRAY_A );
                         if(isset($results)) {
                                 echo '<select id="' . $this->get_field_id('productsToFeature1') . '" name="' . $this->get_field_name('productsToFeature1') . '">';
-                                echo '<option value="0">'.__('(None)').'</option>';
+                                echo '<option value="0">'.__('(None)', 'wpstorecart').'</option>';
                                 foreach ($results as $result) {
                                     echo '<option value="'.$result['primkey'].'"';
                                     if(intval($productsToFeature1) == $result['primkey']) { echo ' selected="true" '; }
@@ -888,7 +888,7 @@ if (class_exists("WP_Widget")) {
                                 echo '</select>';
                                 
                                 echo '<select id="' . $this->get_field_id('productsToFeature2') . '" name="' . $this->get_field_name('productsToFeature2') . '">';
-                                echo '<option value="0">'.__('(None)').'</option>';
+                                echo '<option value="0">'.__('(None)', 'wpstorecart').'</option>';
                                 foreach ($results as $result) {
                                     echo '<option value="'.$result['primkey'].'"';
                                     if(intval($productsToFeature2) == $result['primkey']) { echo ' selected="true" '; }
@@ -897,7 +897,7 @@ if (class_exists("WP_Widget")) {
                                 echo '</select>'; 
                                 
                                 echo '<select id="' . $this->get_field_id('productsToFeature3') . '" name="' . $this->get_field_name('productsToFeature3') . '">';
-                                echo '<option value="0">'.__('(None)').'</option>';
+                                echo '<option value="0">'.__('(None)', 'wpstorecart').'</option>';
                                 foreach ($results as $result) {
                                     echo '<option value="'.$result['primkey'].'"';
                                     if(intval($productsToFeature3) == $result['primkey']) { echo ' selected="true" '; }
@@ -906,7 +906,7 @@ if (class_exists("WP_Widget")) {
                                 echo '</select>';                                
                                 
                                 echo '<select id="' . $this->get_field_id('productsToFeature4') . '" name="' . $this->get_field_name('productsToFeature4') . '">';
-                                echo '<option value="0">'.__('(None)').'</option>';
+                                echo '<option value="0">'.__('(None)', 'wpstorecart').'</option>';
                                 foreach ($results as $result) {
                                     echo '<option value="'.$result['primkey'].'"';
                                     if(intval($productsToFeature4) == $result['primkey']) { echo ' selected="true" '; }
@@ -915,7 +915,7 @@ if (class_exists("WP_Widget")) {
                                 echo '</select>';   
                                 
                                 echo '<select id="' . $this->get_field_id('productsToFeature5') . '" name="' . $this->get_field_name('productsToFeature5') . '">';
-                                echo '<option value="0">'.__('(None)').'</option>';
+                                echo '<option value="0">'.__('(None)', 'wpstorecart').'</option>';
                                 foreach ($results as $result) {
                                     echo '<option value="'.$result['primkey'].'"';
                                     if(intval($productsToFeature5) == $result['primkey']) { echo ' selected="true" '; }
@@ -927,9 +927,9 @@ if (class_exists("WP_Widget")) {
                         }
 
                         echo '</p>';
-			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> No</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
-                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
+			echo '<p><label for="' . $this->get_field_name('widgetShowproductImages') . '">' . __('Show images:', 'wpstorecart') . '<label for="' . $this->get_field_name('widgetShowproductImages') . '_yes"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_yes" name="' . $this->get_field_name('widgetShowproductImages') . '" value="true" '; if ($widgetShowproductImages == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes', 'wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="' . $this->get_field_name('widgetShowproductImages') . '_no"><input type="radio" id="' . $this->get_field_id('widgetShowproductImages') . '_no" name="' . $this->get_field_name('widgetShowproductImages') . '" value="false" '; if ($widgetShowproductImages == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No', 'wpstorecart').'</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageWidth') . '">' . __('Max thumb width:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageWidth') . '" name="' . $this->get_field_name('maxImageWidth') . '" type="text" value="' . $maxImageWidth . '" /> px</label></p>';
+                        echo '<p style="text-align:left;"><label for="' . $this->get_field_name('maxImageHeight') . '">' . __('Max thumb height:', 'wpstorecart') . ' <input style="width: 80px;" id="' . $this->get_field_id('maxImageHeight') . '" name="' . $this->get_field_name('maxImageHeight') . '" type="text" value="' . $maxImageHeight . '" /> px</label></p>';
 		}
 
 	} 
