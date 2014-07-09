@@ -2229,24 +2229,28 @@ if(!function_exists('wpscAdminPageCategories')) {
                     jQuery("#wpstorecartaddproductform").bind("submit",function() { wpscSubmitCategory(); return false; });
 
                     function wpscSubmitCategory() {
-                        jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/addcat.php", data:jQuery("#wpstorecartaddproductform").serialize(), success: function(response) {
-                            jQuery( "#wpscCategorySavedDialog" ).dialog("open");
-                            ';
-            
-                            if(!$isanedit) {
-                                echo '
-                                
-                                jQuery("<tr id=\\"wpsc-edit-category-"+response+"\\"><td>[ "+response+" | <a href=\\"admin.php?page=wpstorecart-edit-categories&keytoedit="+response+"\\">'.__('Edit', 'wpstorecart').' </a> | <a onclick=\\"wpscDeleteCategory("+response+"); return false;\\" href=\\"#\\">'. __('Delete', 'wpstorecart') .'</a> ]</td><td><a href=\\"admin.php?page=wpstorecart-categories&keytoedit="+response+"\\">"+jQuery("#wpStoreCartCategory").val()+"</a></td><td><div style=\\"width:300px;\\"> </div></td></tr>").appendTo("#wpsc-edit-categories-table");
-
+                        if (jQuery("#wpStoreCartCategory").val() != "") {
+                            jQuery.ajax({type:"POST", url: "'.plugins_url() . '/wpstorecart/wpstorecart/admin/php/addcat.php", data:jQuery("#wpstorecartaddproductform").serialize(), success: function(response) {
+                                jQuery( "#wpscCategorySavedDialog" ).dialog("open");
                                 ';
-                            }
-                            
-                            echo '
-                                jQuery("#wpscCategorySavedDialog").fadeTo(2700, 0.2, function() {
-                                    jQuery("#wpscCategorySavedDialog").dialog("close");
-                                    jQuery("#wpscCategorySavedDialog").css({ opacity: 1.0 });
-                                });                                
-                        }});
+
+                                if(!$isanedit) {
+                                    echo '
+
+                                    jQuery("<tr id=\\"wpsc-edit-category-"+response+"\\"><td>[ "+response+" | <a href=\\"admin.php?page=wpstorecart-edit-categories&keytoedit="+response+"\\">'.__('Edit', 'wpstorecart').' </a> | <a onclick=\\"wpscDeleteCategory("+response+"); return false;\\" href=\\"#\\">'. __('Delete', 'wpstorecart') .'</a> ]</td><td><a href=\\"admin.php?page=wpstorecart-categories&keytoedit="+response+"\\">"+jQuery("#wpStoreCartCategory").val()+"</a></td><td><div style=\\"width:300px;\\"> </div></td></tr>").appendTo("#wpsc-edit-categories-table");
+
+                                    ';
+                                }
+
+                                echo '
+                                    jQuery("#wpscCategorySavedDialog").fadeTo(2700, 0.2, function() {
+                                        jQuery("#wpscCategorySavedDialog").dialog("close");
+                                        jQuery("#wpscCategorySavedDialog").css({ opacity: 1.0 });
+                                    });                                
+                            }});
+                        } else {
+                            alert("'.__('Category names cannot be blank.  Please fill out the category name and try again.', 'wpstorecart').'");
+                        }
                     }
 
                 });
