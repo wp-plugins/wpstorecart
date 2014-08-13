@@ -7581,7 +7581,7 @@ if(!function_exists('wpscAdminPageCategories')) {
     if (!function_exists('wpscAdminPageAffiliates')) {
         function wpscAdminPageAffiliates() {
             wpscCheckAdminPermissions();
-            wpscAdminHeader(__('wpsc Affiliates PRO','wpstorecart'));
+            wpscAdminHeader(__('Affiliates','wpstorecart'));
             
             $devOptions = get_option('wpStoreCartAdminOptions');    
             
@@ -7593,15 +7593,6 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             $allowedToAccess = true;
 
-            if(!file_exists(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php')) {
-
-                echo '
-                <center><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=9&wpsc_qty=1"><img src="'.plugins_url().'/wpstorecart/images/upgrade_affiliates.png" alt="" style="position:relative;top:100px;z-index:999;"  /></a></center>
-                <center><img src="'.plugins_url().'/wpstorecart/images/affiliates.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
-
-                ';
-
-            } else {
 
                 if(@isset($_POST['minimumAffiliatePayment']) || @isset($_POST['minimumDaysBeforePaymentEligable'])) {
                     if (isset($_POST['minimumAffiliatePayment'])) {
@@ -7644,8 +7635,78 @@ if(!function_exists('wpscAdminPageCategories')) {
                     @$affiliatepurchases[$icounter]['affiliatecustomer'] = $userinfo2->user_login;
                     $icounter++;
                 }
-                require_once(WP_PLUGIN_DIR.'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php');
-            }
+                
+global $allowedToAccess, $affiliatepurchases, $affiliatesettings, $affiliatemanager,$wpscAffiliateVersion,$wpstorecart_version;
+error_reporting(0);
+
+$wpscAffiliateVersion = 1.4;
+
+/*
+ * Process affiliate links
+ */
+if(@isset($_GET['p']) && @is_numeric($_GET['p']) && @isset($_GET['u']) && @isset($_GET['a'])) {
+	$productNumber = $_GET['p'];
+	$url = $_GET['u'];
+	$affiliate = $_GET['a'];
+	setcookie("wpscPROaff", $affiliate, time()+3600*24*30, "/"); // 30 day cookies time
+	header("HTTP/1.1 301 Moved Permanently");
+	header ("Location: $url");
+}
+
+/*
+ * Page for end user affiliates to check their status and affiliate information such as URLs
+ */
+function wpscAffiliates() {
+    global $affiliatemanager, $affiliatesettings, $affiliatepurchases;
+    $output = '';
+    if($affiliatemanager==true) {
+        $output .= $affiliatesettings['affiliateInstructions'];
+
+        $output .= '<table class="wpsc-table"><th>Order ID</th><th>Cart Contents</th><th>Price</th><th>Date</th><th>Your Payment</th><th>Amount Paid to You</th></tr>';
+        $colorstripe = true;
+        foreach ($affiliatepurchases as $affiliatepurchase) {
+            $output .= '<tr'; if($colorstripe==true){$output .= ' class="wpsc-table-tr-colorstrip"';$colorstripe=false; }else{$output .= ' class="wpsc-table-tr"';$colorstripe=true;} $output .= '><td>'.$affiliatepurchase['primkey']. '</td><td>'.$affiliatepurchase['cartcontents'].'</td><td>'.$affiliatepurchase['price'].'</td><td>'.$affiliatepurchase['date'].'</td><td>'.number_format(round($affiliatesettings['minimumAffiliatePayment'] * $affiliatepurchase['price'] / 100, 2), 2, '.', '').'</td><td>'.$affiliatepurchase['amountpaid'].'</td>';
+        }
+        $output .= '</table>';
+
+        $products = explode(',',$affiliatesettings['available_products']);
+        $product_url = explode('|Z|Z|Z|',$affiliatesettings['product_urls']);
+        $icounter = 0;
+        $output .='<ul>';
+        foreach ($products as $product) {
+            $output .= '<li><a href="'.$affiliatesettings['base_url'] .'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php?a='.$affiliatesettings['current_user'].'&amp;p='.$product.'&amp;u='.$product_url[$icounter].'">'.$affiliatesettings['base_url'] .'/wpsc-affiliates-pro/saStoreCartPro/affiliates.pro.php?a='.$affiliatesettings['current_user'].'&amp;p='.$product.'&amp;u='.$product_url[$icounter].'</a></li>';
+            $icounter++;
+        }
+        $output .= '</ul>';
+    }
+    
+    return $output;
+}
+
+/*
+ *  Admin Page
+ */
+if ($allowedToAccess==true) {
+
+    echo '<h3>Settings</h3><form action="" method="post">';
+    echo '<ul>';
+    echo '<li>Affiliate Payment Percentage: <input type="text" style="width:45px;" value="'.$affiliatesettings['minimumAffiliatePayment'].'" name="minimumAffiliatePayment" />%</li>';
+    echo '<li>Number of Days Before Eligable for Payment: <input type="text" style="width:40px;" value="'.$affiliatesettings['minimumDaysBeforePaymentEligable'].'" name="minimumDaysBeforePaymentEligable" /></li>';
+    echo '<li><textarea name="affiliateInstructions" style="width:750px;height:75px;">'.$affiliatesettings['affiliateInstructions'].'</textarea></li>';
+    echo '</ul>';
+    echo '<input type="submit" value="Update" /></form>';
+    echo '<h3>Sales With Affiliate Commissions</h3>';
+    echo '<form action="" method="post">';
+    echo '<table style="font-size:14px; font-face:\'Segoe UI\', Verdana, Arial, sans-serif;padding:5px;"><tr  style="font:11px \'Segoe UI\', Verdana, Arial, sans-serif;padding:5px;"><th>Order ID</th><th>Affiliate</th><th>Customer</th><th>Cart Contents</th><th>Price</th><th>Affiliate\'s Payment</th><th>Date</th><th>Order Status</th><th>Affiliate Payment Status</th></tr>';
+    $colorstripe = true;
+    if((is_array($affiliatepurchases) || is_resource($affiliatepurchases) || is_object($affiliatepurchases)) && @isset($affiliatepurchases[0]) ) {
+        foreach ($affiliatepurchases as $affiliatepurchase) {
+            echo '<tr'; if($colorstripe==true){echo ' style="background-color:#D8D8D8;"';$colorstripe=false; }else{$colorstripe=true;} echo '><td style="padding:5px;">'.$affiliatepurchase['primkey']. '</td><td style="padding:5px;">'. $affiliatepurchase['affiliateusername'] . '</td><td style="padding:5px;">'. $affiliatepurchase['affiliatecustomer'] . '</td><td style="padding:5px;">'.$affiliatepurchase['cartcontents'].'</td><td style="padding:5px;">'.$affiliatepurchase['price'].'</td><td style="padding:5px;">'.number_format(round($affiliatesettings['minimumAffiliatePayment'] * $affiliatepurchase['price'] / 100, 2), 2, '.', '').'</td><td style="padding:5px;">'.$affiliatepurchase['date'].'</td><td style="padding:5px;">'.$affiliatepurchase['orderstatus'].'</td><td><!--Affiliate Payment Status--> <input type="text" name="amountpaid'.$affiliatepurchase['primkey'].'" value="'.$affiliatepurchase['amountpaid'].'" /></td>';
+        }
+    }
+    echo '</table><br /><input type="submit" value="Update" /></form>';
+}
+                
             
             
             echo '</div>';
@@ -7657,7 +7718,7 @@ if(!function_exists('wpscAdminPageCategories')) {
     if (!function_exists('wpscAdminPageStatistics')) {
         function wpscAdminPageStatistics() {
             wpscCheckAdminPermissions();
-            wpscAdminHeader(__('wpsc Statistics PRO','wpstorecart'));
+            wpscAdminHeader(__('Statistics','wpstorecart'));
             
             $devOptions = get_option('wpStoreCartAdminOptions');    
             
@@ -7667,46 +7728,885 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             echo '<div class="grid_16">';    
             
-            if(!file_exists(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php')) {
+            echo '                            <script type="text/javascript">
+                        /* <![CDATA[ */
+                        // Run capabilities test
 
-                echo '
-                <center><a href="https://wpstorecart.com/wp-content/plugins/wpstorecart/wpstorecart/cart/quickaddtocart.php?wpsc_pid=9&wpsc_qty=1"><img src="'.plugins_url().'/wpstorecart/images/upgrade_statistics.png" alt="" style="position:relative;top:100px;z-index:999;" /></a></center>
-                <center><img src="'.plugins_url().'/wpstorecart/images/statistics.jpg" alt="" style="position:relative;top:-120px;z-index:500;" /></center>
-                
-                ';
+                        jQuery(document).ready(function($) {
+                                        enhance({
+                                                loadScripts: [
+                                                        \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/excanvas.js\',
+                                                        \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/visualize.jQuery.js\',
+                                                        \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/example.js\'
+                                                ],
+                                                loadStyles: [
+                                                        \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize.css\',
+                                                        \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize-light.css\'
+                                                ]
+                                        });
+                        });
+                        /* ]]> */
+                        </script>
+                            ';
+
+            $statsOptions['databasename'] = DB_NAME;
+            $statsOptions['databaseuser'] = DB_USER;
+            $statsOptions['databasepass'] = DB_PASSWORD;
+            $statsOptions['databasehost'] =DB_HOST;
+            $statsOptions['databaseprefix'] = $wpdb->prefix;
+            $statsOptions['databasetable'] = $statsOptions['databaseprefix'] . 'wpstorecart_log';
+            $statsOptions['databaseproductstable'] = $statsOptions['databaseprefix'] . 'wpstorecart_products';
+
+
+global $allowedToAccess, $statsOptions, $link, $dbi;
+
+//error_reporting(E_ALL);
+
+if ($allowedToAccess==true) {
+    // Database stuff
+
+    if (!defined('PHP_VERSION_ID')) {
+        $version = explode('.', PHP_VERSION);
+
+        define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+    }
+
+
+
+    if(!function_exists('mysqli_pconnect')) {
+        function mysqli_pconnect($host, $username, $password, $new_link = false, $port = 0)
+        {
+            if(PHP_VERSION_ID >= 50300) {
+                $persistant = 'p:';
             } else {
-                echo '                            <script type="text/javascript">
-                            /* <![CDATA[ */
-                            // Run capabilities test
+                $persistant = '';
+            }
+            if($port) {
+                return @mysqli_connect($persistant.$host, $username, $password, $new_link, $port);
+            } else {
+                return @mysqli_connect($persistant.$host, $username, $password, $new_link);
+            }
+        }
+    }
 
-                            jQuery(document).ready(function($) {
-                                            enhance({
-                                                    loadScripts: [
-                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/excanvas.js\',
-                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/visualize.jQuery.js\',
-                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/js/example.js\'
-                                                    ],
-                                                    loadStyles: [
-                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize.css\',
-                                                            \''.plugins_url() . '/wpstorecart/js/jqVisualize/charting/css/visualize-light.css\'
-                                                    ]
-                                            });
-                            });
-                            /* ]]> */
-                            </script>
-                                ';
-                
-                $statsOptions['databasename'] = DB_NAME;
-                $statsOptions['databaseuser'] = DB_USER;
-                $statsOptions['databasepass'] = DB_PASSWORD;
-                $statsOptions['databasehost'] =DB_HOST;
-                $statsOptions['databaseprefix'] = $wpdb->prefix;
-                $statsOptions['databasetable'] = $statsOptions['databaseprefix'] . 'wpstorecart_log';
-                $statsOptions['databaseproductstable'] = $statsOptions['databaseprefix'] . 'wpstorecart_products';
+    $link = @mysqli_pconnect($statsOptions['databasehost'], $statsOptions['databaseuser'], $statsOptions['databasepass'], $statsOptions['databasename']);
+    $dbi = 'mysqli';
+    if (!$link) {
+        $link = @mysql_pconnect($statsOptions['databasehost'], $statsOptions['databaseuser'], $statsOptions['databasepass']);
+        $dbi = 'mysql';
+        if (!$link) {
+            die('Could not connect: ' .$dbi. mysql_error());
+        }
+    }
+
+    if($dbi == 'mysqli') {
+        $db_selected = mysqli_select_db($link, $statsOptions['databasename']);
+        if (!$db_selected) {
+            echo 'Can\'t use '.$statsOptions['databasename'].': ' .$dbi.' '.mysqli_errno().' '. mysqli_error();
+        }
+    } else {
+        $db_selected = mysql_select_db($statsOptions['databasename'], $link);
+        if (!$db_selected) {
+            echo 'Can\'t use '.$statsOptions['databasename'].': ' .$dbi. mysql_error();
+        }
+    }
+
+    function lookUpProductName($primkey) {
+        global $dbi, $link, $statsOptions;
+            $output = 'Unknown or deleted product';
+            $table_name = $statsOptions['databaseprefix'] . "wpstorecart_orders";
+            $grabrecord = "SELECT `name` FROM `{$statsOptions['databaseproductstable']}` WHERE `primkey`='{$primkey}';";
+            if($dbi == 'mysqli') {
+                $result = mysqli_query($link, $grabrecord);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if(!isset($row['name'])) {
+                        $output = 'Unknown or deleted product';
+                    } else {
+                        $output = $row['name'];
+                    }
+                }
+
+            } else {
+                $result = mysql_query($grabrecord);
+                while ($row = mysql_fetch_assoc($result)) {
+                    if(!isset($row['name'])) {
+                        $output = 'Unknown or deleted product';
+                    } else {
+                        $output = $row['name'];
+                    }
+                }
+            }
+
+            return $output;
+    }
 
 
-                require_once(WP_PLUGIN_DIR.'/wpsc-statistics-pro/saStoreCartPro/statistics.pro.php');
-            }            
+    $statsOptions['databaseproductstable'];
+
+    function numberOfSales($dateToLookup, $typeToLookup = 'sales') {
+        global $dbi, $link, $statsOptions;
+        $output = 0;
+        $grabrecord = NULL;
+        if($typeToLookup=='sales') {
+            $table_name = $statsOptions['databaseprefix'] . "wpstorecart_orders";
+            $grabrecord = "SELECT COUNT(primkey) AS `num` FROM `{$table_name}` WHERE `orderstatus`='Completed' AND `date`='$dateToLookup';";
+            if($dbi == 'mysqli') {
+                $result = mysqli_query($link, $grabrecord);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+
+            } else {
+                $result = mysql_query($grabrecord);
+                while ($row = mysql_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+            }
+
+        }
+        if($typeToLookup=='cart') {
+            $table_name = $statsOptions['databaseprefix'] . "wpstorecart_log";
+            $grabrecord = "SELECT COUNT(primkey) AS `num` FROM `{$table_name}` WHERE `action`='addtocart' AND `date`='$dateToLookup';";
+            if($dbi == 'mysqli') {
+                $result = mysqli_query($link, $grabrecord);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+
+            } else {
+                $result = mysql_query($grabrecord);
+                while ($row = mysql_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+            }
+        }
+        if($typeToLookup=='views') {
+            $table_name = $statsOptions['databaseprefix'] . "wpstorecart_log";
+            $grabrecord = "SELECT COUNT(primkey) AS `num` FROM `{$table_name}` WHERE `action`='productview' AND `date`='$dateToLookup';";
+            if($dbi == 'mysqli') {
+                $result = mysqli_query($link, $grabrecord);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+
+            } else {
+                $result = mysql_query($grabrecord);
+                while ($row = mysql_fetch_assoc($result)) {
+                    if(!isset($row['num'])) {
+                        $output = 0;
+                    } else {
+                        $output = $row['num'];
+                    }
+                }
+            }
+        }
+
+
+
+        return $output;
+    }
+
+
+    // Date stuff
+    function makeMonth($month) {
+        if($month=='01') {
+            return 'January';
+        }
+        if($month=='02') {
+            return 'February';
+        }
+        if($month=='03') {
+            return 'March';
+        }
+        if($month=='04') {
+            return 'April';
+        }
+        if($month=='05') {
+            return 'May';
+        }
+        if($month=='06') {
+            return 'June';
+        }
+        if($month=='07') {
+            return 'July';
+        }
+        if($month=='08') {
+            return 'August';
+        }
+        if($month=='09') {
+            return 'September';
+        }
+        if($month=='10') {
+            return 'October';
+        }
+        if($month=='11') {
+            return 'November';
+        }
+        if($month=='12') {
+            return 'December';
+        }
+
+    }
+    if(@isset($_POST['startdate']) && @isset($_POST['enddate'])) {
+        $startdate = $_POST['startdate'];
+        $enddate = $_POST['enddate'];
+    } else {
+        $startdate =date("Ymd", strtotime("30 days ago"));
+        $enddate = date("Ymd");
+    }
+
+
+
+    $startdate_time = strtotime(substr($startdate, -2), makeMonth(substr($startdate, 4, 2)), substr($startdate, 0, 4)); // in Unix timestamp
+    $enddate_time = strtotime(substr($enddate, -2), makeMonth(substr($enddate, 4, 2)), substr($enddate, 0, 4)); // In Unix timestamp
+    $theStartDate = new DateTime(substr($startdate, 0, 4).'-'.substr($startdate, 4, 2).'-'.substr($startdate, -2)); // In DateTime object
+    $theEndDate = new DateTime(substr($enddate, 0, 4).'-'.substr($enddate, 4, 2).'-'.substr($enddate, -2)); // In DateTime object
+
+    if(PHP_VERSION_ID >= 50300) {
+        $interval = $theStartDate->diff($theEndDate);
+        $daystocompare = $interval->d + ($interval->y * 365) + ($interval->m * 31) ; // The number of days we're comparing.
+    } else {
+        $theIntervalYears = substr($enddate, 0, 4) - substr($startdate, 0, 4);
+        $theIntervalMonths = substr($enddate, 4, 2) - substr($startdate, 4, 2);
+        $theIntervalDays = substr($enddate, -2) - substr($startdate, -2);
+        $daystocompare = $theIntervalDays + ($theIntervalYears * 365) + ($theIntervalMonths * 31) ; // The number of days we're comparing.
+    }
+
+
+    
+
+    
+    echo '
+    <form action="#" method="post">
+    <label>Start Date: <input name="startdate" type="text" value="';  if (@isset($_POST['startdate'])) {echo $_POST['startdate']; } else { echo date("Ymd", strtotime("30 days ago"));}; echo '" /></label>
+    <label>End Date: <input name="enddate" type="text" value="';  if (@isset($_POST['enddate'])) {echo $_POST['enddate']; } else {echo  date("Ymd");} echo '" /></label><br />
+    <label>Select a stat: <select name="wpscstat">
+                             <option value=""></option>';
+                            $results2[0]['stat'] = 'pvacctr';$results2[0]['name'] = '"Product Views" to "Add to Cart" conversion rate (CTR)';
+                            $results2[1]['stat'] = 'accsctr';$results2[1]['name'] = '"Add to Cart" to Completed Sale" conversion rate (CTR)';
+                            $results2[2]['stat'] = 'pvcsctr';$results2[2]['name'] = '"Product Views" to "Completed Sale" conversion rate (CTR)';
+                            $results2[3]['stat'] = 'acp';$results2[3]['name'] = 'Abandoned cart percentage';
+                            $results2[4]['stat'] = 'mvp';$results2[4]['name'] = 'Most viewed products';
+                            $results2[5]['stat'] = 'macp';$results2[5]['name'] = 'Most added to cart products';
+                            $results2[6]['stat'] = 'mpp';$results2[6]['name'] = 'Most purchased products';
+                            //$results2[7]['stat'] = 'hcp';$results2[7]['name'] = 'Highest converting products';
+                            //$results2[8]['stat'] = 'prcsvcr';$results2[8]['name'] = 'Projected revenue based on current sales volume and conversion rates';
+                            //$results2[9]['stat'] = 'prhsvcr';$results2[9]['name'] = 'Projected revenue based on higher sales volume and conversion rates then current';
+                            //$results2[10]['stat'] = 'prehsvcr';$results2[10]['name'] = 'Projected revenue based on even higher sales volume and conversion rates then current';
+                            //$results2[11]['stat'] = 'prlsvcr';$results2[11]['name'] = 'Projected revenue based on lower sales volume and conversion rates then current';
+                            //$results2[12]['stat'] = 'prelsvcr';$results2[12]['name'] = 'Projected revenue based on even lower sales volume and conversion rates then current';
+                            //$results2[13]['stat'] = 'ppvacc';$results2[13]['name'] = 'Projected product views/add to cart based on current data';
+                            //$results2[14]['stat'] = 'ppvach';$results2[14]['name'] = 'Projected product views/add to cart based on higher data then current';
+                            //$results2[15]['stat'] = 'ppvaceh';$results2[15]['name'] = 'Projected product views/add to cart based on even higher data then current';
+                            //$results2[16]['stat'] = 'ppvacl';$results2[16]['name'] = 'Projected product views/add to cart based on lower data then current';
+                            //$results2[17]['stat'] = 'ppvacel';$results2[17]['name'] = 'Projected product views/add to cart based on even lower data then current';
+                            if(isset($results2)) {
+                                    foreach ($results2 as $pagg) {
+                                            $option = '<option value="'.$pagg['stat'].'"';
+                                            if(@$_POST['wpscstat']==$pagg['stat']) {
+                                                    $option .= ' selected="selected"';
+                                            }
+                                            $option .='>';
+                                            $option .= $pagg['name'];
+                                            $option .= '</option>';
+                                            echo $option;
+                                    }
+                            }
+                            echo '
+                            </select></label><input type="submit" value="View >" />
+    </form>
+            ';
+    if(@!isset($_POST['wpscstat']) || @$_POST['wpscstat']=='') {
+        echo '<h3>Welcome</h3>';
+        echo '<p>In the world of ecommerce, increasing sales conversions by half a percent can be the difference between making no profit and pocketing thousands of dollars.  Knowing exactly how your site is performing in all critical areas allows you to set goals, and with the tools, and charts below, you are able to not only see how well your site is doing, but you can also do sales projections and view your revenue in best and worst case scenarios. </p>';
+    }
+
+// ---------------------------------------------------------------------------------------------------------------
+    if(@$_POST['wpscstat']=='pvacctr') { // "Product Views" to "Add to Cart" conversion rate (CTR)
+        echo '<h3>"Product Views" to "Add to Cart" conversion rate (CTR)</h3>';
+        $theSQL = "SELECT * FROM `{$statsOptions['databasetable']}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `action`='productview' OR `action`='addtocart' ORDER BY `date` DESC;";
+        if($dbi == 'mysqli') {
+            $theResults = mysqli_query($link, $theSQL);
+        } else {
+            $theResults = mysql_query($theSQL);
+        }
+        $icounter=0;
+
+        
+        if(@isset($theResults)) {
+
+            if($dbi == 'mysqli') {
+                while ($row = mysqli_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+
+
+                    if ($row['action']=='productview') {
+                        $views[$daystosubtract] = $views[$daystosubtract] + 1;
+                    }
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            } else {
+                while ($row = mysql_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='productview') {
+                        $views[$daystosubtract] = $views[$daystosubtract] + 1;
+                    }
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            }
+             echo '
+            <table >
+                    <caption>"Product Views" VS "Add to Cart"</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">Product Views</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';if(@isset($views[$icounter])){echo $views[$icounter];} else {echo '0';}; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                            <tr>
+                                    <th scope="row">Add To Cart</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';if(@isset($addtocart[$icounter])){echo $addtocart[$icounter];} else {echo '0';}; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                      </tbody>
+            </table>
+            ';
+             echo '
+                 <br /><br />
+            <table >
+                    <caption>CTR %</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">"Product Views" VS "Add to Cart" CTR %</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';
+                                            if(@isset($addtocart[$icounter])){
+                                                if(is_numeric(round((($addtocart[$icounter] / $views[$icounter]) * 100), 2))) {
+                                                   $amount = ($addtocart[$icounter] / $views[$icounter]) * 100;
+                                                    echo (int) (  round($amount, 2) );
+                                                } else {
+                                                    echo '0';
+                                                }
+                                            } else {
+                                                echo '0';
+                                            }; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                    </tbody>
+            </table>
+            ';
+        }
+    }
+// ---------------------------------------------------------------------------------------------------------------
+    if(@$_POST['wpscstat']=='accsctr') { // '"Add to Cart" to Completed Sale" conversion rate (CTR)';
+        echo '<h3>"Add to Cart" to Completed Sale" conversion rate (CTR)</h3>';
+        $theSQL = "SELECT * FROM `{$statsOptions['databasetable']}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `action`='addtocart' ORDER BY `date` DESC;";
+        if($dbi == 'mysqli') {
+            $theResults = mysqli_query($link, $theSQL);
+        } else {
+            $theResults = mysql_query($theSQL);
+        }
+        $icounter=0;
+
+
+        if(@isset($theResults)) {
+
+
+
+            if($dbi == 'mysqli') {
+                while ($row = mysqli_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            } else {
+                while ($row = mysql_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            }
+             echo '
+            <table >
+                    <caption>"Add to Cart" VS "Completed Sale"</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">Purchases</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>'.numberOfSales(date("Ymd", strtotime("{$icounter} days ago"))).'</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                            <tr>
+                                    <th scope="row">Add To Cart</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';if(@isset($addtocart[$icounter])){echo $addtocart[$icounter];} else {echo '0';}; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                      </tbody>
+            </table>
+            ';
+             echo '
+                 <br /><br />
+            <table >
+                    <caption>CTR %</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">"Add to Cart" VS "Completed Sale" CTR %</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';
+                                            if(@isset($addtocart[$icounter])){
+                                                $sales[$icounter] = numberOfSales(date("Ymd", strtotime("{$icounter} days ago")));
+                                                if(is_numeric(round((($sales[$icounter] / $addtocart[$icounter]) * 100), 2))) {
+                                                   $amount = ($sales[$icounter] / $addtocart[$icounter] ) * 100;
+                                                    echo (int) (  round($amount, 2) );
+                                                } else {
+                                                    echo '0';
+                                                }
+                                            } else {
+                                                echo '0';
+                                            }; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                    </tbody>
+            </table>
+            ';
+        }
+
+
+    }
+// ---------------------------------------------------------------------------------------------------------------
+    if(@$_POST['wpscstat']=='pvcsctr') { //  '"Product Views" to "Completed Sale" conversion rate (CTR)';
+        echo  '<h3>"Product Views" to "Completed Sale" conversion rate (CTR)</h3>';
+        $theSQL = "SELECT * FROM `{$statsOptions['databasetable']}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `action`='productview' ORDER BY `date` DESC;";
+        if($dbi == 'mysqli') {
+            $theResults = mysqli_query($link, $theSQL);
+        } else {
+            $theResults = mysql_query($theSQL);
+        }
+        $icounter=0;
+
+
+        if(@isset($theResults)) {
+
+
+
+            if($dbi == 'mysqli') {
+                while ($row = mysqli_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='productview') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            } else {
+                while ($row = mysql_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='productview') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            }
+             echo '
+            <table >
+                    <caption>"Product Views" VS "Completed Sale"</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">Purchases</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>'.numberOfSales(date("Ymd", strtotime("{$icounter} days ago"))).'</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                            <tr>
+                                    <th scope="row">Product Views</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';if(@isset($addtocart[$icounter])){echo $addtocart[$icounter];} else {echo '0';}; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                      </tbody>
+            </table>
+            ';
+             echo '
+                 <br /><br />
+            <table >
+                    <caption>CTR %</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">"Product Views" VS "Completed Sale" CTR %</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<td>';
+                                            if(@isset($addtocart[$icounter])){
+                                                $sales[$icounter] = numberOfSales(date("Ymd", strtotime("{$icounter} days ago")));
+                                                if(is_numeric(round((($sales[$icounter] / $addtocart[$icounter]) * 100), 2))) {
+                                                   $amount = ($sales[$icounter] / $addtocart[$icounter] ) * 100;
+                                                    echo (int) (  round($amount, 2) );
+                                                } else {
+                                                    echo '0';
+                                                }
+                                            } else {
+                                                echo '0';
+                                            }; echo '</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                    </tbody>
+            </table>
+            ';
+        }
+
+    }
+    if(@$_POST['wpscstat']=='acp') { //  'Abandoned cart percentage';
+        echo  '<h3>Abandoned cart percentage</h3>';
+        $theSQL = "SELECT * FROM `{$statsOptions['databasetable']}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `action`='addtocart' ORDER BY `date` DESC;";
+        if($dbi == 'mysqli') {
+            $theResults = mysqli_query($link, $theSQL);
+        } else {
+            $theResults = mysql_query($theSQL);
+        }
+        $icounter=0;
+
+
+        if(@isset($theResults)) {
+
+
+
+            if($dbi == 'mysqli') {
+                while ($row = mysqli_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            } else {
+                while ($row = mysql_fetch_assoc($theResults)) {
+                    $theCurrentRowDate = new DateTime(substr($row['date'], 0, 4).'-'.substr($row['date'], 4, 2).'-'.substr($row['date'], -2)); // In DateTime object
+                    if(PHP_VERSION_ID >= 50300) {
+                        $currentinterval = $theCurrentRowDate->diff($theEndDate);
+                        $daystosubtract = $currentinterval->d + ($currentinterval->y * 365) + ($currentinterval->m * 31) ; // The number of days we're comparing.
+                    } else {
+                        $currentintervalYears = substr($enddate, 0, 4) - substr($row['date'], 0, 4);
+                        $currentintervalMonths = substr($enddate, 4, 2) - substr($row['date'], 4, 2);
+                        $currentintervalDays = substr($enddate, -2) - substr($row['date'], -2);
+                        $daystosubtract = $currentintervalDays + ($currentintervalYears * 365) + ($currentintervalMonths * 31) ; // The number of days we're comparing.
+                    }
+
+                    if ($row['action']=='addtocart') {
+                        $addtocart[$daystosubtract] = $addtocart[$daystosubtract] + 1;
+                    }
+                }
+            }
+             echo '
+            <table >
+                    <caption>% of Users Who Abandonned Their Shopping Cart Before Paying</caption>
+                    <thead>
+                            <tr>
+                                    <td></td>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        echo '<th scope="col">'.substr(date("D", strtotime("{$icounter} days ago")),0,2).'</th>';
+                                        $icounter--;
+                                    }
+                            echo '
+                            </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                    <th scope="row">%</th>';
+                                    $icounter = $daystocompare;
+                                    while($icounter > 0) {
+                                        if(@isset($addtocart[$icounter])){
+                                            $perc = (($addtocart[$icounter] - numberOfSales(date("Ymd", strtotime("{$icounter} days ago")))) / $addtocart[$icounter]) * 100;
+                                        } else {
+                                            $perc = '0';
+                                        }
+                                        echo '<td>'.round($perc,1).'</td>';
+                                        $icounter--;
+                                    }
+                                    echo '
+                            </tr>
+                      </tbody>
+            </table>
+            ';
+            
+        }
+
+
+    }
+// ---------------------------------------------------------------------------------------------------------------
+    if(@$_POST['wpscstat']=='mvp') { //  'Most viewed products';
+        echo  '<h3>Most viewed products</h3>';
+        $theSQL = "SELECT * FROM `{$statsOptions['databasetable']}` WHERE `date` > {$startdate} AND `date` < {$enddate} AND `action`='productview' ORDER BY `date` DESC;";
+        if($dbi == 'mysqli') {
+            $theResults = mysqli_query($link, $theSQL);
+        } else {
+            $theResults = mysql_query($theSQL);
+        }
+        $icounter=0;
+
+        $mvproduct = array();
+        if(@isset($theResults)) {
+
+            if($dbi == 'mysqli') {
+                while ($row = mysqli_fetch_assoc($theResults)) {
+                    if(!isset($mvproduct[$row['foreignkey']]['count'])){$mvproduct[$row['foreignkey']]['count']==0;}
+                    $mvproduct[$row['foreignkey']]['count'] = $mvproduct[$row['foreignkey']]['count'] + 1;
+                    $mvproduct[$row['foreignkey']]['name'] = $row['foreignkey'];
+                }
+            } else {
+                while ($row = mysql_fetch_assoc($theResults)) {
+                    if(!isset($mvproduct[$row['foreignkey']]['count'])){$mvproduct[$row['foreignkey']]['count']==0;}
+                    $mvproduct[$row['foreignkey']]['count'] = $mvproduct[$row['foreignkey']]['count'] + 1;
+                    $mvproduct[$row['foreignkey']]['name'] = $row['foreignkey'];
+                }
+            }
+
+            foreach($mvproduct as $currentproduct) {
+                echo '<h3>'.lookUpProductName($currentproduct['name']).': Viewed ' .$currentproduct['count']. ' times.</h3>';
+            }
+
+
+        }
+    }
+    if(@$_POST['wpscstat']=='macp') { // 'Most added to cart products';
+        echo '<h3>Most added to cart products</h3>';
+    }
+    if(@$_POST['wpscstat']=='mpp') { // 'Most purchased products';
+        echo '<h3>Most purchased products</h3>';
+    }
+    if(@$_POST['wpscstat']=='hcp') { // 'Highest converting products';
+        echo '<h3>Highest converting products</h3>';
+    }
+
+    if(@$_POST['wpscstat']=='prcsvcr') { // 'Projected revenue based on current sales volume and conversion rates';
+        echo '<h3>Projected revenue based on current sales volume and conversion rates</h3>';
+    }
+    if(@$_POST['wpscstat']=='prhsvcr') { //  'Projected revenue based on higher sales volume and conversion rates then current';
+        echo  '<h3>Projected revenue based on higher sales volume and conversion rates then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='prehsvcr') { //  'Projected revenue based on even higher sales volume and conversion rates then current';
+        echo  '<h3>Projected revenue based on even higher sales volume and conversion rates then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='prlsvcr') { // 'Projected revenue based on lower sales volume and conversion rates then current';
+        echo '<h3>Projected revenue based on lower sales volume and conversion rates then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='prelsvcr') { // 'Projected revenue based on even lower sales volume and conversion rates then current';
+        echo '<h3>Projected revenue based on even lower sales volume and conversion rates then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='ppvacc') { // 'Projected product views/add to cart based on current data';
+        echo '<h3>Projected product views/add to cart based on current data</h3>';
+    }
+    if(@$_POST['wpscstat']=='ppvach') { // 'Projected product views/add to cart based on higher data then current';
+        echo '<h3>Projected product views/add to cart based on higher data then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='ppvaceh') { //  'Projected product views/add to cart based on even higher data then current';
+        echo  '<h3>Projected product views/add to cart based on even higher data then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='ppvacl') { // 'Projected product views/add to cart based on lower data then current';
+        echo '<h3>Projected product views/add to cart based on lower data then current</h3>';
+    }
+    if(@$_POST['wpscstat']=='ppvacel') { // 'Projected product views/add to cart based on even lower data then current';
+        echo '<h3>Projected product views/add to cart based on even lower data then current</h3>';
+    }
+
+    echo '<i>Comparing '.$daystocompare.' day(s), from '.substr($startdate, -2). ' '.makeMonth(substr($startdate, 4, 2)).' '.substr($startdate, 0, 4).' to '.substr($enddate, -2). ' '.makeMonth(substr($enddate, 4, 2)).' '.substr($enddate, 0, 4).'</i>';
+
+
+ 
+    if($dbi == 'mysqli') {
+        mysqli_close($link);
+    } else {
+        mysql_close($link);
+    }
+}            
+                       
             
             echo '</div>';
             

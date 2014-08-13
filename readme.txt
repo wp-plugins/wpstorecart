@@ -4,7 +4,7 @@ Donate link: http://wpstorecart.com/
 Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill
 Requires at least: 3.3.0
 Tested up to: 4.0
-Stable tag: 4.5.20
+Stable tag: 4.6.0
 License: LGPL
 
 Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
@@ -82,6 +82,11 @@ Or, if you want to install manually:
 
 
 == Changelog ==
+
+= 4.6.0 =
+* Added: Affiliate functionality is now open source and included in wpStoreCart by default
+* Added: Statistic functionality is now open source and included in wpStoreCart by default
+* Update: Removed the hard coded debugging tools I used in the code
 
 = 4.5.20 =
 * Update: Finally remembered to update the .POT file so that all the new translatable strings are available for translation

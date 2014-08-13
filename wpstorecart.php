@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart - Ajax Ecommerce
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use ecommerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 4.5.20
+Version: 4.6.0
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart 4
  *
  * @package wpstorecart
- * @version 4.5.19
+ * @version 4.6.0
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010-2014 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -41,22 +41,17 @@ global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $
 
 
 /* Global variables: */
-$wpstorecart_version = '4.5.20';
-$wpstorecart_version_int = 405020; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '4.6.0';
+$wpstorecart_version_int = 406000; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
-$wpsc_testing_mode = false; // Set to true if debugging.  Note, that this is for wpStoreCart core developers, and is not meant for addon developers
+$wpsc_testing_mode = false; // Depreciated in 4.6.0
 $wpsc_wordpress_upload_dir = wp_upload_dir();
 $wpstorecart_upload_dir = $wpsc_wordpress_upload_dir['basedir'].'/wpstorecart';
 //@include_once($wpstorecart_upload_dir.'/customize.php'); // <-- In this file, end users can over ride virtually any wpStoreCart function
 
-if($wpsc_testing_mode) {error_reporting(E_ALL);}
-
 if(@is_object($wp_roles)) {@$wp_roles->add_cap( 'administrator', 'manage_wpstorecart' ); } // Administrator always has manage_wpstorecart capability 
 require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/log/log.php'); // Logging is loaded first
 require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/benchmarks/benchmarks.php'); // Loads the wpStoreCart benchmarks
-if($wpsc_testing_mode) {
-    require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/debugger/debugger.php'); // Provides debugging
-}
 require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/language/language.php'); // Allows multiple translations
 require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/actions/actions.php'); // Loads all the wpStoreCart actions
 
