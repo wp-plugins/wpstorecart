@@ -44,9 +44,11 @@ if (!function_exists('wpscCheckAdminPermissions')) {
      * Checks for appropriate permissions and kills Wordpress if they're not found.
      */
     function wpscCheckAdminPermissions() {
-        if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) {
-            wp_die(__('wpStoreCart: You do not have sufficient permissions to access this page.', 'wpstorecart'));
-        }
+		if (!is_super_admin()) {
+			if (function_exists('current_user_can') && !current_user_can('manage_wpstorecart')) {
+				wp_die(__('wpStoreCart: You do not have sufficient permissions to access this page.', 'wpstorecart'));
+			}
+		}
     }
 
 }
