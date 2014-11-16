@@ -3,7 +3,7 @@
 Plugin Name: wpStoreCart - Ajax Ecommerce
 Plugin URI: http://wpstorecart.com/
 Description: <a href="http://wpstorecart.com/" target="blank">wpStoreCart</a> is a powerful, yet simple to use ecommerce Wordpress plugin that accepts PayPal & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, and works using Wordpress pages to keep everything nice and simple.
-Version: 4.6.2
+Version: 4.6.3
 Author: wpStoreCart, LLC
 Author URI: http://wpstorecart.com/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * wpStoreCart 4
  *
  * @package wpstorecart
- * @version 4.6.2
+ * @version 4.6.3
  * @author wpStoreCart, LLC <admin@wpstorecart.com>
  * @copyright Copyright &copy; 2010-2014 wpStoreCart, LLC.  All rights reserved.
  * @link http://wpstorecart.com/
@@ -41,8 +41,8 @@ global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $
 
 
 /* Global variables: */
-$wpstorecart_version = '4.6.2';
-$wpstorecart_version_int = 406002; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version = '4.6.3';
+$wpstorecart_version_int = 406003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
 $wpsc_testing_mode = false; // Depreciated in 4.6.0
 $wpsc_wordpress_upload_dir = wp_upload_dir();
@@ -54,7 +54,15 @@ require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/log/log.php'); // Logging
 if($wpstorecart_benchmark) {
 	require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/benchmarks/benchmarks.php'); // Loads the wpStoreCart benchmarks
 }
-require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/language/language.php'); // Allows multiple translations
+
+/**
+ * Sets up wpStoreCart to use multiple languages
+ */
+function wpscLanguageInit() {
+    load_plugin_textdomain( 'wptorecart', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+add_action('init', 'wpscLanguageInit');
+
 require_once(WP_PLUGIN_DIR . '/wpstorecart/wpstorecart/actions/actions.php'); // Loads all the wpStoreCart actions
 
 wpsc_loaded(); // Action hook, once we've established some of the basics, in case something needs to go here
