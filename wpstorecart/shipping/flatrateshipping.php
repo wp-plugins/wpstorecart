@@ -6,8 +6,8 @@ function wpscFlatRateShippingOptionsFunction() {
     $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
 
     echo '<br />
-    <p>'.__('Flat Rate Shipping','wpstorecart').'</p>
-    <table class="widefat">
+    <h2>'.__('Flat Rate Shipping','wpstorecart').'</h2>
+    <table class="widefat wpsc5table">
     <thead><tr><th>'.__('Option','wpstorecart').'</th><th class="tableDescription">'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
 
     <tr><td><p>'.__('Allow Flat Rate Shipping','wpstorecart').'</p></td>

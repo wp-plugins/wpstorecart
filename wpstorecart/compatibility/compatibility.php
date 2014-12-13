@@ -2,6 +2,20 @@
 
 wpsc_compatibility(); // Hook for compatibility
 
+if(!function_exists('wpscRecursivelyDeleteFolder')) {
+    function wpscRecursivelyDeleteFolder($directory) { 
+        foreach(glob("{$directory}/*") as $file)
+        {
+            if(is_dir($file)) { 
+                @wpscRecursivelyDeleteFolder($file);
+            } else {
+                @unlink($file);
+            }
+        }
+        @rmdir($directory);
+    }
+}
+
 if(!function_exists('wpscCompatibilitySettings')) {
         /**
          * Sets up a compatible environment for wpStoreCart
@@ -12,6 +26,44 @@ if(!function_exists('wpscCompatibilitySettings')) {
 
             // Make sure pluggable has already been called
             if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {require_once(ABSPATH . 'wp-includes/pluggable.php');}
+            
+            // Deletes old out of date PRO plugins that are now integrated into the core
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-2co/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-2co/');
+            }
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-affiliates-pro/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-affiliates-pro/');
+            }            
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-flatrate-shipping/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-flatrate-shipping/');
+            }    
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-liberty-reserve/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-liberty-reserve/');
+            }            
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-membership-pro/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-membership-pro/');
+            }                    
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-payments-pro/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-payments-pro/');
+            }        
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-qbms/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-qbms/');
+            }             
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-statistics-pro/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-statistics-pro/');
+            }     
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-ups-shipping/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-ups-shipping/');
+            }            
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-user-customize-products/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-user-customize-products/');
+            }     
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-authorize-net/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-authorize-net/');
+            }        
+            if(is_dir(WP_PLUGIN_DIR .'/wpsc-free-shipping/') ) {
+               @wpscRecursivelyDeleteFolder(WP_PLUGIN_DIR .'/wpsc-free-shipping/');
+            }              
             
 	    // Create the proper directory structure if it is not already created
 	    if(!is_dir($wpsc_wordpress_upload_dir['basedir'].'/')) {

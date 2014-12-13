@@ -15,7 +15,7 @@ Grey Box Method - Layout CSS
 
 /* headings
 ----------------------------------------------- */
-h1, h2, h3, h4, h5, h6 {line-height:1.5em; margin-bottom:.3em;}
+h1, h2, h3, h4, h5, h6 {line-height:1.5em; margin-bottom:.3em; color:#FFF;}
 h2 {margin-top:1em;}
 h5 {font-size:1.2em;}
 h6 {font-size:1em; }
@@ -50,7 +50,8 @@ h2#page-heading {
 	font-weight:bold;
 	padding:.5em;
 	padding-top:55px;
-	margin:0;	
+	margin:0;
+	color:#000;	
 }
 
 h2.page-heading-left{
@@ -157,9 +158,9 @@ div.menu .block {
 	background:#f4f4f4;
 	margin-bottom:20px;
 	margin-top:14px;
-	/*padding:10px 10px 1px 10px;*/
-	/*padding:5px 10px 5px 10px;
-	box-shadow: 0 0 3px #ccc;*/
+	padding:10px 10px 1px 10px;
+	padding:5px 10px 5px 10px;
+	box-shadow: 0 0 3px #ccc;
 }
 .boxSpecial h2 {
 	color:#666;
@@ -372,6 +373,7 @@ td.currency {
 ----------------------------------------------- */
 form {
 	overflow:hidden;
+	color:#000;
 }
 fieldset {
 	border:1px solid #d3d3d3;
@@ -379,16 +381,19 @@ fieldset {
 	position:relative;
 	background:#f1f1f1;
 	margin-bottom:10px;
+	color:#000;
 }
 legend {
 	font-size:1.1em;
 	padding:.3em 1em;
 	background:url("custom-theme/images/ui-bg_highlight-hard_75_ebebeb_1x100.png") repeat-x scroll 50% 50% #fff;
 	border:1px solid #d3d3d3;
+	color:#000;
 }
 fieldset.login p {
 	margin-bottom:1em;
 	margin-top:0pt;
+	color:#000;
 }
 fieldset p label {
 	width:98%;
@@ -398,6 +403,7 @@ fieldset p input {
 }
 fieldset p select {
 	width:99%;
+	color:#000;
 }
 fieldset.login p label {
 	float:left;
@@ -405,6 +411,7 @@ fieldset.login p label {
 	margin-right:3%;
 	text-align:right;
 	width:32%;
+	color:#000;
 }
 fieldset.login p input {
 	width:60%;
@@ -414,9 +421,11 @@ fieldset.login input.button {
 }
 form p.notice {
 	font-weight:bold;
+	color:#000;
 }
 input.search.text {
 	width:66%;
+	color:#000;
 }
 input.search.button {
 	width:28%;
@@ -746,14 +755,16 @@ label.floatRight{
     margin-top: 2px;
 }
 
-.tab_content .widefat input, .tab_content .widefat select, .tab_content .widefat textarea, .tab_content .widefat label {
+.tab_content .widefat wpsc5table input, .tab_content .widefat wpsc5table select, .tab_content .widefat wpsc5table textarea, .tab_content .widefat wpsc5table label {
     font-size:16px;
     padding: 5px;
     width:auto;
+	color:#000;
 }
 
-.tab_content .widefat input, .tab_content .widefat select, .tab_content .widefat label {
+.tab_content .widefat wpsc5table input, .tab_content .widefat wpsc5table select, .tab_content .widefat wpsc5table label {
     height:36px !important;
+	color:#000;
 }
 
 .tableDescription {

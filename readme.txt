@@ -1,31 +1,32 @@
-=== wpStoreCart - Ajax Ecommerce===
+=== IDB Ecommerce (wpStoreCart 5) ===
 Contributors: jquindlen
-Donate link: http://wpstorecart.com/
-Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill
+Donate link: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/
+Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill,wpstorecart
 Requires at least: 3.3.0
 Tested up to: 4.0
-Stable tag: 4.6.4
+Stable tag: 5.0.0
 License: LGPL
 
-Ajax enhanced Wordpress ecommerce.  Easy to use & fully customizable, it's the store front of the future; today.
+Selling customizable t-shirts, physical or digital items like software or games, subscriptions or anything else?  IDB Ecommerce has you covered.
 
 == Description ==
 
-[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is a free, open source, and full featured e-commerce platform built atop of Wordpress.
-It is easy to use, lightweight, heavily supported and constantly updated with new features.
-
-See whats new:
-[youtube http://www.youtube.com/watch?v=CqWI8nMs2Mg&hd=1]
+IDB Ecommerce is the name of wpStoreCart 5. Fulfilling the promise we made when wpStoreCart first launched, we have now made all of our paid plugins 
+free & open source, to make our full featured Wordpress e-commerce solution even more powerful. It is easy to use, lightweight, heavily supported and 
+constantly updated with new features for over 4 years.
 
 **Hightlighted Features:**
 
+* Included payment gateways with the plugin are PayPal, Authorize.NET SIM, 2CheckOut, Quickbooks, and Skrill/Moneybookers
 * Web based "Setup Wizard"
 * Unlimited number of products &amp; categories
 * Product Variations such as size & color
+* Define products that are customizable by users, including uploading pictures & custom text
 * Product properties such as weight & dimensions
 * Fully configurable product & category display
 * Search products using default Wordpress search
-* Track ecommerce statistics with Google Analytics & Piwik ecommerce integration
+* Track ecommerce statistics
+* Affiliate system included
 * USPS & UPS shipping integration
 * Multi-language & currency support
 * Works with any theme
@@ -37,14 +38,14 @@ See whats new:
 * Run your shop as "Digital Products Only", "Physical Products Only" or with both
 * Products support limited or unlimited quantities
 * Advanced group settings, including groups discounts, group only products, unlimited groups
-* PayPal payments (Authorize.NET, 2CheckOut, Quickbooks, Skrill/Moneybookers also available)
 * Tested on IE 7,8,9, Opera 11, Chrome 7 and 11, Firefox 3.6, 4, 5, 6, & 7, and Safari 5
 * **and much, much MORE!**
 
-![The wpStoreCart Setup Wizard allows you to easily get wpStoreCart setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The wpStoreCart Setup Wizard")
+![The IDB Ecommerce Setup Wizard allows you to easily get IDB Ecommerce setup to sell your products.](http://wpstorecart.com/wp-content/plugins/wpstorecart/screenshot-1.jpg "The IDB Ecommerce Setup Wizard")
 
-**About wpStoreCart:**
-[wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") is an open source eCommerce solution for WordPress that allows you to quickly and easily sell your physical and digital downloads using your new or existing WordPress website. [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") was developed only after we had spent a few years being totally frustrated with other WordPress eCommerce plugins, which we found to be generally either unprofessional, hard to use, or would break every time we’d upgrade the plugin, not to mention most of them cost a lot money. So, in March 2010, we began developing [wpStoreCart](http://wpstorecart.com/ "Wordpress eCommerce Plugin") to be THE free, open source, easy to use, yet extremely powerful eCommerce plugin for WordPress that everyone has always dreamed of.  That's a difficult thing to achieve, and to that end, we're always looking for criticisms, suggestions, and tips on how we can make our plugin the best.  Please feel free to contact us on our [support forums](http://wpstorecart.com/forum/ "wpStoreCart Support Forums").  We also do custom Wordpress themes, plugins, modifications, consultation, business support, and more.  [Contact us by clicking here](http://wpstorecart.com/design-mods-support/ " ") today with your requirements.
+**About IDB Ecommerce:**
+[IDB Ecommerce](http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/ "Wordpress eCommerce Plugin") is an open source eCommerce solution for WordPress that allows you to quickly and easily sell your physical and digital downloads using your new or existing WordPress website. [IDB Ecommerce](http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/ "Wordpress eCommerce Plugin") was developed only after we had spent a few years being totally frustrated with other WordPress eCommerce plugins, which we found to be generally either unprofessional, hard to use, or would break every time we’d upgrade the plugin, not to mention most of them cost a lot money. So, in March 2010, we began developing [IDB Ecommerce](http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/ "Wordpress eCommerce Plugin") to be THE free, open source, easy to use, yet extremely powerful ecommerce plugin for WordPress that everyone has always dreamed of.  That's a difficult thing to achieve, and to that end, we're always looking for criticisms, suggestions, and tips on how we can make our plugin the best.
+
 == Installation ==
 
 For complete detail and initial configuration tutorials and documentation, please visit the [Installation Documentation](http://wpstorecart.com/documentation/installation/ "wpStoreCart Installation")
@@ -62,13 +63,35 @@ Or, if you want to install manually:
 1. Create a new page, call it something like Store
 1. Visit the wpStoreCart admin page and select a "mainpage" for wpStoreCart to use, like the Store page we told you to create in the last step
 
+== Documentation ==
+
+= Initial Settings =
+IDB Ecommerce/wpStoreCart requires a few initial settings to be configured before it will function correctly. We will discuss those initial settings and point you to the information regarding the rest of the configuration of the plugin.
+
+If you use the included Setup Wizard, you can have IDB Ecommerce/wpStoreCart walk you through the initial setup which is described in this document. The Setup Wizard is available by clicking wp-admin > IDB Ecommerce > Wizard >
+
+1. The first thing you’ll need to do is access your WordPress admin panel. If IDB Ecommerce hasn’t been activated, do so now. Inside the admin panel, in the left side menu, scroll down until you reach IDB Ecommerce, then click Settings.  We'll start in the General tab.
+1. "IDB Ecommerce Main Page" setting – This setting should be pointed to a pre-existing WordPress page that will act as the main storefront if you will. This page must already exist, but we recommend creating a new WordPress page with the title "Store", or something similar. All products that you add will have subpages that descend from the IDB Ecommerce Main Page that you set here.
+1. "Checkout Page" setting – Like the IDB Ecommerce Main Page setting, this setting is also asking for a WordPress page. This should be a different page then the IDB Ecommerce Main Page, and we recommend that you call the page Checkout to make it clear what it does.
+1. Click on the "Payments" tab so begin accepting payments 
+
 == Frequently Asked Questions ==
 
-= I have questions, where do I get answers? =
-- FAQ: http://wpstorecart.com/faq/
-- DOCUMENTATION: http://wpstorecart.com/documentation/
-- INSTALLATION: http://wpstorecart.com/documentation/installation/
-- HELP: http://wpstorecart.com/help-support/
+= **Does IDB Ecommerce/wpStoreCart have any incompatibilities with other plugins?** =
+There have been reports of incompatibility with the following plugins:
+ -   Wibstats
+ -   Register Plus
+ -   Broken Link Checker
+ -   Track That Stat (only breaks wpStoreCart coupon system)
+
+= **What are the minimum requirements to use IDB Ecommerce/wpStoreCart?** =
+ - PHP 5.2+, MySQL 5+, WordPress 3.0+
+
+= **Why is my IDB Ecommerce/wpStoreCart mainpage empty, & what should I put there?** =
+You have to create and/or select a WordPress page to act as the base or “mainpage” of IDB Ecommerce/wpStoreCart. All products that you add will be created as child pages of this page. It is up to what you place on the mainpage, but we recommend using the IDB Ecommerce/wpStoreCart shortcodes to insure that the default IDB Ecommerce/wpStoreCart pages will work.
+
+= **How come the Checkout button does not redirect to my checkout page?** =
+Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page setting under the General tab. In the drop down list, select your checkout page and then click "Update"
 
 == Screenshots ==
  
@@ -83,11 +106,17 @@ Or, if you want to install manually:
 
 == Changelog ==
 
-= 4.6.4 =
-* Updated: Countries updated
-
-= 4.6.3 =
-* Updated: Eliminated a file/disk call
+= 5.0.0 =
+* Fixed: Adding a new Category now correctly adds the category to the drop down list of available parent categories instantly
+* Added: User Customized Products is now included in the open source edition of wpStoreCart
+* Added: Free Shipping is now included in the open source edition of wpStoreCart
+* Added: PayPal Memberships are now included in the open source edition of wpStoreCart
+* Added: Skrill/Moneybookers payment gateway is now included in the open source edition of wpStoreCart
+* Added: Authorize.NET SIM payment gateway is now included in the open source edition of wpStoreCart
+* Added: Quickbooks QBMS payment gateway is now included in the open source edition of wpStoreCart
+* Added: UPS Shipping is now included in the open source edition of wpStoreCart
+* Updated: Admin UI revised, refined, and polished
+* Updated: Rebranded for new website
 
 = 4.6.2 =
 * Updated: Only loads benchmarking if benchmarking is enabled

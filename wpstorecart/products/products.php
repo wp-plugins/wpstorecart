@@ -427,7 +427,7 @@ if(!function_exists('wpscProductGetCatalog')) {
                                 // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
                                 $wpsc_price_type = 'charge';
                                 $membership_value = '';
-                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+                                if($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true'){
                                     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
                                     $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$wpsc_result['primkey']};";
                                     $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
@@ -999,7 +999,7 @@ if (!function_exists('wpscProductGetPage')) {
                 // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
                 $wpsc_price_type = 'charge';
                 $membership_value = '';
-                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+                if( ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
                     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
                     $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$primkey};";
                     $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
@@ -1938,7 +1938,7 @@ if(!function_exists('wpscProductIsMembership')) {
         // This code checks to see if we will be potentially displaying subscription products with either the price or add to cart button visible.  If so, we query each product for subscription information
         $wpsc_price_type = 'charge';
         $membership_value = '';
-        if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+        if( ($primkey!=0 && $primkey!=NULL) && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
             $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
             $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$primkey};";
             $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
@@ -2013,7 +2013,7 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
 
                             if(wpscProductIsMembership($primkey)) { // If this product is a membership
                                 $membership_value = '';
-                                if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php') && ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
+                                if( ($wpStoreCartOptions['displaypriceonview']=='true' || $wpStoreCartOptions['displayAddToCart']=='true')){
                                     $table_name_meta = $wpdb->prefix . "wpstorecart_meta";
                                     $grabmember = "SELECT * FROM `{$table_name_meta}` WHERE `type`='membership' AND `foreignkey`={$results[0]['primkey']};";
                                     $resultsMembership = $wpdb->get_results( $grabmember , ARRAY_A );
@@ -2085,10 +2085,10 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
                                         $wpsc_button_classes = $wpStoreCartOptions['button_classes_addtocart'];
                                         $wpsc_paypal_ipn = $wpStoreCartOptions['paypalipnurl'];
                                         $wpsc_paypal_testmode = $wpStoreCartOptions['paypaltestmode'];
-                                        $wpsc_self_path = plugins_url().'/wpsc-membership-pro/';
+                                        $wpsc_self_path = plugins_url().'/wpstorecart/plugins/wpsc-membership-pro/';
                                         $wpsc_table_name = $wpdb->prefix .'wpstorecart_meta';
                                         $wpsc_buy_now = $wpStoreCartOptions['buy_now'];
-                                        require(WP_PLUGIN_DIR.'/wpsc-membership-pro/paypal.php');
+                                        @require(WP_PLUGIN_DIR.'/wpstorecart/plugins/wpsc-membership-pro/paypal.php');
                                         $output .= wpscMembershipButton();
 
                                   } else {
@@ -2704,12 +2704,12 @@ if(!function_exists('wpscProductListProductDownloads')) {
                                 $downloadcount = 0;
                                 foreach($multidownloads as $multidownload) {
                                         if($multidownload!='') {
-                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
+                                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'" class="wpsc-downloads-list"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$multidownload.'</a><br />';
                                         }
                                                 $downloadcount++;
                                 }
                         } else {
-                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
+                                $output .= '<a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'" class="wpsc-downloads-list"><img src="'.plugins_url().'/wpstorecart/images/disk.png"> '.$moreresults[0]['download'].'</a>';
                         }
                 }
 
@@ -2728,12 +2728,12 @@ if(!function_exists('wpscProductListProductDownloads')) {
                                 $downloadcount = 0;
                                 foreach($multidownloads as $multidownload) {
                                         if($multidownload!='') {
-                                                $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div><br />';
+                                                $output .= '<div id="'.md5($multidownload).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($multidownload).'" class="wpsc-downloads-list"> '.$multidownload.'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($multidownload).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($multidownload).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div><br />';
                                         }
                                                 $downloadcount++;
                                 }
                         } else {
-                                $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div>';
+                                $output .= '<div id="'.md5($moreresults[0]['download']).'"><a href="'.WP_CONTENT_URL . '/uploads/wpstorecart/'.stripslashes($moreresults[0]['download']).'" class="wpsc-downloads-list"> '.$moreresults[0]['download'].'</a> <a href="#" onclick="var answer = confirm(\'Are you sure you want to delete this download?\');if (answer){jQuery.post(\''.plugins_url().'/wpstorecart/wpstorecart/admin/php/deldownload.php\', { delete: \''.base64_encode($moreresults[0]['download']).'\', type: \'single\', primkey: \''.$primkey.'\' }, function(data) {document.wpstorecartaddproductform.wpStoreCartproduct_download.value = str_replace(\''.$multidownload.'||\', \'\', document.wpstorecartaddproductform.wpStoreCartproduct_download.value);jQuery(\'#'.md5($moreresults[0]['download']).'\').hide(\'slow\');});}else{return false;};"><img src="'.plugins_url().'/wpstorecart/images/cross.png"></a></div>';
                         }
                 }
 

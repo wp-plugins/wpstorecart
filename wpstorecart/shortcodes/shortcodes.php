@@ -658,6 +658,8 @@ if(!function_exists('wpscProductMainPageEnqueue')) {
 
 
 add_shortcode('wpstorecart', 'wpStoreCartMainShortcode');
+add_shortcode('idbecommerce', 'wpStoreCartMainShortcode');
+
 add_action('wp_enqueue_scripts', 'wpscProductMainPageEnqueue');
 
 ?>

@@ -68,7 +68,6 @@ if ( 0 == $current_user->ID ) {
             $isanedit = true;
 
             // Membership
-            if(file_exists(WP_PLUGIN_DIR.'/wpsc-membership-pro/wpsc-membership-pro.php')) {
                 if(@$_POST['wpsc-price-type2']=='membership' || @$_POST['wpsc-price-type']=='charge') {
 
                     $wpsc_membership_trial1_allow = 'no';
@@ -94,7 +93,7 @@ if ( 0 == $current_user->ID ) {
                 } elseif ($_POST['wpsc-price-type']=='charge') {
                     //
                 }
-            }               
+                         
             
             
             // Attributes inventory toggle

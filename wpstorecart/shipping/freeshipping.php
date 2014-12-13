@@ -9,9 +9,9 @@
 
 		echo '
 		<br /><br />
-		Free Shipping On Orders Over _____.
+		<h2>Free Shipping On Orders Over _____.</h2>
 		
-		<table class="widefat">
+		<table class="widefat wpsc5table">
 		<thead><tr><th>'.__('Option','wpstorecart').'</th><th class="tableDescription">'.__('Description','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>
 		
 		<tr><td><p>'.__('Enable Free Shipping Threshold?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-81235090909" /><div class="tooltip-content" id="example-content-81235090909">'.__('This allows you automatically enable free shipping when the total value of the order meets or exceeds the threshold that you set.','wpstorecart').'</div></p></td>

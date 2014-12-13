@@ -41,6 +41,9 @@ function wpscAddColumnIfNotExist($db, $column, $column_attr = "VARCHAR( 255 ) NU
 function wpscUpdate() {
     global $wpdb, $wpstorecart_version_int;
 
+    // 5.0.0
+    //wpscCustomizeProductInstallWpms(); // Install User Customized Products
+    
     // 3.0.7
     wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_categories", "lineage", "TEXT NOT NULL" );
     wpscAddColumnIfNotExist($wpdb->prefix . "wpstorecart_categories", "depth", "INT NOT NULL" );
