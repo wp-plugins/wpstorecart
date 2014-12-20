@@ -152,8 +152,8 @@ if (!function_exists('wpscAdminMenu')) {
             </li> 
             <?php wpsc_admin_menu_before_help(); ?>
             <li id="wpsc-menu-help">
-                <a href="https://wpstorecart.com/help-support/"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_help.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Help', 'wpstorecart');?></span></a>
-                <ul>
+                <a href="http://indiedevbundle.com/app/idb-ultimate-wordpress-bundle/#Documentation"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_help.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Help', 'wpstorecart');?></span></a>
+                <!--<ul>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/bug.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="http://wpbugtracktor.com/bug-tracker/?issue_tracker=bug&wpbt_project=1"  target="_blank"><?php _e('Report a Bug', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/lightbulb.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="http://wpbugtracktor.com/bug-tracker/?issue_tracker=feature&wpbt_project=1"  target="_blank"><?php _e('Feature Request', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/application_form_edit.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="https://wpstorecart.com/documentation/initial-settings/"  target="_blank"><?php _e('Initial Settings', 'wpstorecart');?></a></li>
@@ -166,7 +166,7 @@ if (!function_exists('wpscAdminMenu')) {
                     <li><img src="<?php echo plugins_url().'/wpstorecart/images/help.png'; ?>"  class="wpsc-admin-submenu-icon"  /><a href="https://wpstorecart.com/faq/"   target="_blank"><?php _e('FAQ', 'wpstorecart');?></a></li>
                     <li><a href="https://wpstorecart.com/help-support/"  target="_blank"><?php _e('More Help', 'wpstorecart');?></a></li>                    
                 <?php wpsc_admin_menu_inside_help(); ?>
-                </ul>    
+                </ul>-->    
             </li>                          
         </ul>
         <?php
@@ -4611,7 +4611,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             </td></tr>
 
             <tr><td><p>'.__('Checkout Page:', 'wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-2" /><div class="tooltip-content" id="example-content-2">'.__('The checkout page can be any page you specify.  This is the page customers will visit to pay for the products they have added to their cart.', 'wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>'.__('The page that customers will use during checkout.  The page must have this shortcode in it: ', 'wpstorecart').'[wpstorecart display="checkout"]</p></td>
+            <td class="tableDescription"><p>'.__('The page that customers will use during checkout.  The page must have this shortcode in it: ', 'wpstorecart').'[idbecommerce display=checkout]</p></td>
             <td><select name="checkoutpage"> 
              <option value="">
                                     ';
@@ -4636,7 +4636,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             </td></tr>
 
             <tr><td><p>'.__('Orders Page:', 'wpstorecart').' <i>('.__('optional', 'wpstorecart').')</i> <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-211145" /><div class="tooltip-content" id="example-content-211145">'.__('The Orders &amp; Downloads page, which is optional.  However, if you wish to use the [downloadurl] code in emails, to tell your customers the URL they need to visit in order to download their orders, then this setting must be set.', 'wpstorecart').'</div></p></td>
-            <td class="tableDescription"><p>'.__('The page where customers can view their orders, must have this shortcode in it:', 'wpstorecart').' [wpstorecart display="orders"]</p></td>
+            <td class="tableDescription"><p>'.__('The page where customers can view their orders, must have this shortcode in it:', 'wpstorecart').' [idbecommerce display=orders]</p></td>
             <td><select name="orderspage">
              <option value="">
                                     ';

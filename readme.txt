@@ -3,8 +3,8 @@ Contributors: jquindlen
 Donate link: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/
 Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill,wpstorecart
 Requires at least: 3.3.0
-Tested up to: 4.0
-Stable tag: 5.0.0
+Tested up to: 4.2
+Stable tag: 5.0.1
 License: LGPL
 
 Selling customizable t-shirts, physical or digital items like software or games, subscriptions or anything else?  IDB Ecommerce has you covered.
@@ -82,10 +82,10 @@ There have been reports of incompatibility with the following plugins:
  -   Wibstats
  -   Register Plus
  -   Broken Link Checker
- -   Track That Stat (only breaks wpStoreCart coupon system)
+ -   Track That Stat (only breaks coupon system)
 
 = **What are the minimum requirements to use IDB Ecommerce/wpStoreCart?** =
- - PHP 5.2+, MySQL 5+, WordPress 3.0+
+ - PHP 5.3+, MySQL 5+, WordPress 4.0+
 
 = **Why is my IDB Ecommerce/wpStoreCart mainpage empty, & what should I put there?** =
 You have to create and/or select a WordPress page to act as the base or “mainpage” of IDB Ecommerce/wpStoreCart. All products that you add will be created as child pages of this page. It is up to what you place on the mainpage, but we recommend using the IDB Ecommerce/wpStoreCart shortcodes to insure that the default IDB Ecommerce/wpStoreCart pages will work.
@@ -106,6 +106,9 @@ Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page sett
 
 == Changelog ==
 
+= 5.0.1 =
+* Updated: Compatible with 4.1 and 4.2 nightly build
+
 = 5.0.0 =
 * Fixed: Adding a new Category now correctly adds the category to the drop down list of available parent categories instantly
 * Added: User Customized Products is now included in the open source edition of wpStoreCart
@@ -120,6 +123,7 @@ Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page sett
 
 = 4.6.2 =
 * Updated: Only loads benchmarking if benchmarking is enabled
+* Updated: Some links are fixed, shortcode documentation updated
 
 = 4.6.1 =
 * Fixed: Super Admin are now able to use admin panels for wpStoreCart
