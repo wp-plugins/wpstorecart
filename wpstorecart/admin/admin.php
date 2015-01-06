@@ -3072,7 +3072,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                 max-width:200px;
                                 min-height:20px;
                                 max-height:20px;
-                                background-color:#f9f9f9;
+                                background-color:#eeeeee;
                                 display:block;
                             }
                             #upload-progressbar, #upload-progressbar2, #upload-progressbar3, #upload-progressbar4 {
@@ -4977,7 +4977,7 @@ if(!function_exists('wpscAdminPageCategories')) {
 
             echo '
 
-            <tr><td><p>'.__('Enable Product Filtering (BETA)?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554909090" /><div class="tooltip-content" id="example-content-5554909090">'.__('Enables an ajax based filtering system, so customers can sort and filter products by various criteria.','wpstorecart').'</div></p></td>
+            <tr><td><p>'.__('Enable Product Filtering?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-5554909090" /><div class="tooltip-content" id="example-content-5554909090">'.__('Enables an ajax based filtering system, so customers can sort and filter products by various criteria.','wpstorecart').'</div></p></td>
             <td class="tableDescription"><p>'.__('If set to Yes, customers can sort &amp; filter products.','wpstorecart').'</p></td>
             <td><p><label for="enable_product_filters"><input type="radio" id="enable_product_filters_yes" name="enable_product_filters" value="true" '; if ($wpStoreCartOptions['enable_product_filters'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enable_product_filters_no"><input type="radio" id="enable_product_filters_no" name="enable_product_filters" value="false" '; if ($wpStoreCartOptions['enable_product_filters'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
             </td></tr>
@@ -8737,7 +8737,7 @@ if ($allowedToAccess==true) {
                                 max-width:200px;
                                 min-height:20px;
                                 max-height:20px;
-                                background-color:#FFF;
+                                background-color:#eeeeee;
                                 display:block;
                             }
                             #upload-progressbar4 {

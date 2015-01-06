@@ -4,7 +4,7 @@ Donate link: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bun
 Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill,wpstorecart
 Requires at least: 3.3.0
 Tested up to: 4.2
-Stable tag: 5.0.1
+Stable tag: 5.0.2
 License: LGPL
 
 Selling customizable t-shirts, physical or digital items like software or games, subscriptions or anything else?  IDB Ecommerce has you covered.
@@ -106,8 +106,13 @@ Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page sett
 
 == Changelog ==
 
+= 5.0.2 =
+* Fixed: Cosmetic fix for empty progress bars
+* Updated: Text change
+
 = 5.0.1 =
 * Updated: Compatible with 4.1 and 4.2 nightly build
+* Updated: Some links are fixed, shortcode documentation updated
 
 = 5.0.0 =
 * Fixed: Adding a new Category now correctly adds the category to the drop down list of available parent categories instantly
@@ -123,7 +128,6 @@ Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page sett
 
 = 4.6.2 =
 * Updated: Only loads benchmarking if benchmarking is enabled
-* Updated: Some links are fixed, shortcode documentation updated
 
 = 4.6.1 =
 * Fixed: Super Admin are now able to use admin panels for wpStoreCart
