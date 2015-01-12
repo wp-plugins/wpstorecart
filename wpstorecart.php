@@ -3,7 +3,7 @@
 Plugin Name: IDB Ecommerce (wpStoreCart 5)
 Plugin URI: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/
 Description: <a href="http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/idb-ecommerce-wordpress-plugin/" target="blank">IDB Ecommerce</a> is a feature packed ecommerce Wordpress plugin that accepts PayPal, Authorize.NET, Skrill & more out of the box. It includes multiple widgets, dashboard widgets, shortcodes, statistics, affiliates, customizable products and works using Wordpress pages to keep everything nice and simple.
-Version: 5.0.3
+Version: 5.0.4
 Author: IndieDevBundle.com
 Author URI: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/
 License: LGPL
@@ -29,7 +29,7 @@ Boston, MA 02111-1307 USA
  * IDB Ecommerce (wpStoreCart 5)
  *
  * @package wpstorecart
- * @version 5.0.3
+ * @version 5.0.4
  * @author IndieDevBundle.com
  * @copyright Copyright &copy; 2010-2015 Jeff Quindlen.  All rights reserved.
  * @link http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bundle/
@@ -42,7 +42,7 @@ global $wpstorecart_version, $wpstorecart_version_int, $wpstorecart_benchmark, $
 
 /* Global variables: */
 $wpstorecart_version = '5.0';
-$wpstorecart_version_int = 500003; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
+$wpstorecart_version_int = 500004; // Mm_p__ which is 1 digit for Major, 2 for minor, and 3 digits for patch updates, so version 2.0.14 would be 200014
 $wpstorecart_benchmark = false; // This does a basic benchmark on how long wpStoreCart takes to execute
 $wpsc_testing_mode = false; // Depreciated in 4.6.0
 $wpsc_wordpress_upload_dir = wp_upload_dir();
