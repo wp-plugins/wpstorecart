@@ -1125,7 +1125,7 @@ function wpscCustomizeProductDisplayCustomizationsJS($wpsc_first_results) {
 function wpscCustomizeProductDisplayCustomizationsRawData($wpsc_first_results) {
     global $wpsc_wordpress_upload_dir;
     // Just the data
-    $output = '<h3>Raw Data:</h3><table class="widefat wpsc5table">';
+    $output = '<h2 class="dark-text">Raw Data:</h2><table class="widefat wpsc5table">';
     $output .= '<tr><th>Custom Text</th><th>textformat</th><th>textx</th><th>texty</th><th>textwidth</th><th>textheight</th><th>image</th><th>imagex</th><th>imagey</th><th>imagewidth</th><th>imageheight</th></tr>';
     foreach ($wpsc_first_results as $wpsc_first_result) {
         $output .= "<tr><td>{$wpsc_first_result['customtext']}</td><td>{$wpsc_first_result['textformat']}</td><td>{$wpsc_first_result['textx']}</td><td>{$wpsc_first_result['texty']}</td><td>{$wpsc_first_result['textwidth']}</td><td>{$wpsc_first_result['textheight']}</td>";

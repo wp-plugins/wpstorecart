@@ -53,6 +53,14 @@ h2#page-heading {
 	color:#000;	
 }
 
+.dark-text {
+    color:#000;
+}
+
+.light-text {
+    color:#FFF;
+}
+
 h2.page-heading-left{
 	font-weight:bold;
 	padding:.3em;

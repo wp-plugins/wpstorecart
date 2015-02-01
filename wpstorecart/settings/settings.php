@@ -249,6 +249,7 @@ if(!class_exists('wpscSettings')) {
 				}
 			}
                         
+                        $this->adminOptionsName['enableusps'] = 'false'; // Over ride for now, added in 5.0.5
 			update_option($this->adminOptionsName, $apAdminOptions);
 		
 			return $apAdminOptions;

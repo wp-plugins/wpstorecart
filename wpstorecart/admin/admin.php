@@ -78,7 +78,7 @@ if (!function_exists('wpscAdminMenu')) {
                 <a href="admin.php?page=wpstorecart-orders"><img src="<?php echo plugins_url() . '/wpstorecart/wpstorecart/admin/img/wpsc_dashboard.png'; ?>" class="wpsc-admin-menu-icon" /> <span class="wpsc-admin-menu-text-item"><?php _e('Dashboard', 'wpstorecart');?></span></a>
                 <ul>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/controller.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-wizard"><?php _e('Wizard', 'wpstorecart');?></a></li>
-                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/cart_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="http://wpstorecart.com/" target="_blank"><?php _e('Addons', 'wpstorecart');?></a></li>
+                    <li><img src="<?php echo plugins_url() . '/wpstorecart/images/cart_go.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="http://indiedevbundle.com/app/idb-ultimate-wordpress-bundle/" target="_blank"><?php _e('Addons', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/lightbulb.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-alerts"><?php _e('Alerts', 'wpstorecart');?></a></li>
                     <li><img src="<?php echo plugins_url() . '/wpstorecart/images/application_form_edit.png'; ?>" class="wpsc-admin-submenu-icon" /> <a href="admin.php?page=wpstorecart-diagnostics"><?php _e('Diagnostics', 'wpstorecart');?></a></li>
                     <?php wpsc_admin_menu_inside_dashboard(); ?>
@@ -268,7 +268,7 @@ if(!function_exists('wpscAdminDataTable')) {
                         <input type="text" name="wpsc-product-qty-add-to-order" id="wpsc-product-qty-add-to-order" value="1" style="width:35px;" class="text ui-widget-content ui-corner-all" />
                 </fieldset>
                     <div style="float:right;">
-                        <label for="wpsc-product-decrease-inventory-add-to-order"><i><?php _e('Decrease inventory?','wpstorecart'); ?></i></label>
+                        <label for="wpsc-product-decrease-inventory-add-to-order" class="light-text"><i><?php _e('Decrease inventory?','wpstorecart'); ?></i></label>
                         <input name="wpsc-product-decrease-inventory-add-to-order" id="wpsc-product-decrease-inventory-add-to-order" type="checkbox" value="yes" class="text ui-widget-content ui-corner-all" />
                     </div>
                 </form>
@@ -1382,7 +1382,7 @@ if(!function_exists('wpscAdminEditAlertSettingsButton')) {
 
             jQuery( "#wpsc-add-edit-alert-settings-dialog-form" ).dialog({
                     autoOpen: false,
-                    height: 250,
+                    height: 290,
                     width: 700,
                     modal: true,
                     buttons: {
@@ -1519,8 +1519,8 @@ if(!function_exists('wpscAdminAddNewAlertButton')) {
 
             jQuery( "#wpsc-add-new-alert-dialog-form" ).dialog({
                     autoOpen: false,
-                    height: 600,
-                    width: 600,
+                    height: 700,
+                    width: 630,
                     modal: true,
                     buttons: {
                             "<?php _e('Create Alert', 'wpstorecart'); ?>": function() {
@@ -5400,7 +5400,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 <td><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="text" name="shipping_zip_origin" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['shipping_zip_origin']), 'IDB Ecommerce'); echo'" />
                 </td></tr>
 
-                <tr><td><p>'.__('Enable USPS Shipping?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-81234" /><div class="tooltip-content" id="example-content-81234">'.__('If your business is based out of the United States, this allows you to ship via USPS and allows the customer to calculate the shipping rates before purchase.','wpstorecart').'</div></p></td>
+                <tr style="display:none;"><td><p>'.__('Enable USPS Shipping?','wpstorecart').' <img src="'.plugins_url() . '/wpstorecart/images/help.png" class="tooltip-target" id="example-target-81234" /><div class="tooltip-content" id="example-content-81234">'.__('If your business is based out of the United States, this allows you to ship via USPS and allows the customer to calculate the shipping rates before purchase.','wpstorecart').'</div></p></td>
                 <td class="tableDescription"><p>'.__('If set to Yes, will allow customers to select USPS as a shipping option and will give shipping price quotes for USPS.','wpstorecart').'</p></td>
                 <td><p><label for="enableusps"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableusps_yes" name="enableusps" value="true" '; if ($wpStoreCartOptions['enableusps'] == "true") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('Yes','wpstorecart').'</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="enableusps_no"><input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="radio" id="enableusps_no" name="enableusps" value="false" '; if ($wpStoreCartOptions['enableusps'] == "false") { _e('checked="checked"', "wpstorecart"); }; echo '/> '.__('No','wpstorecart').'</label></p>
                     Username: <input ';if($curl_is_disabled == true) {echo ' disabled="disabled"';}echo 'type="text" name="uspsapiname" value="'; _e(apply_filters('format_to_edit',$wpStoreCartOptions['uspsapiname']), 'IDB Ecommerce'); echo'" />
@@ -6526,7 +6526,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 }   
             } else {
                 $permalink = '#';
-                $no_main_action_js = ' onclick="alert(\''.__('You must first set a page as the Main Page and in that page, put the [wpstorecart] shortcode before you can use the Main Page Designer.', 'wpstorecart').'\'); return false;" ';
+                $no_main_action_js = ' onclick="alert(\''.__('You must first set a page as the Main Page and in that page, put the [idbecommerce] shortcode before you can use the Main Page Designer.', 'wpstorecart').'\'); return false;" ';
             }
             
             $no_page_action_js = null;
@@ -6548,9 +6548,10 @@ if(!function_exists('wpscAdminPageCategories')) {
                     <div class="box" id="kwick-box">
                         <h2><?php _e('Choose to design your','wpstorecart'); ?></h2>
                             <div id="kwick">
-                                    <ul class="kwicks">
-                                            <li>
-                                                    <a class="kwick one" href="<?php echo $permalink; ?>" target="_blank" <?php echo$no_main_action_js;?> >
+                                    <ul style="list-style: none;margin: 0 auto;">
+                                            <li style="width:47%;height:400px;min-width:256px;min-height:400px;border:1px solid #DDD;display:block;float:left;position:relative;margin: 0 1%;">
+                                                    <br />
+                                                    <a  href="<?php echo $permalink; ?>" target="_blank" <?php echo$no_main_action_js;?> >
                                                         <center><span><?php _e('Store Front','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/sitemap.png" alt=""/>
@@ -6563,8 +6564,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         
                                                     </a>
                                             </li>
-                                            <li>
-                                                    <a class="kwick two" href="<?php echo $permalink2; ?>" target="_blank" <?php echo $no_page_action_js; ?> >
+                                            <li style="width:47%;height:400px;min-width:256px;min-height:400px;border:1px solid #DDD;display:block;float:right;position:relative;margin: 0 1%;">
+                                                    <br />
+                                                    <a href="<?php echo $permalink2; ?>" target="_blank" <?php echo $no_page_action_js; ?> >
                                                         <center><span><?php _e('Products','wpstorecart'); ?></span>
                                                         <br />
                                                         <img src="<?php echo plugins_url(); ?>/wpstorecart/images/photo.png" alt=""/>
@@ -6575,31 +6577,8 @@ if(!function_exists('wpscAdminPageCategories')) {
                                                         </center>                                                        
                                                     </a>
                                             </li>
-                                            <li style="opacity:0.2;">
-                                                    <a class="kwick three" href="#"  style="cursor:default;">
-                                                        <center><span><?php _e('User Pages','wpstorecart'); ?></span>
-                                                        <br />
-                                                        <img src="<?php echo plugins_url(); ?>/wpstorecart/images/contact.png" alt=""/>
-                                                        <br />
-                                                        
-                                                        <h2><?php _e('Order history, registration','wpstorecart'); ?><br />
-                                                        <?php _e('&amp; other end user pages','wpstorecart'); ?></h2>
-                                                        
-                                                        </center>                                                        
-                                                    </a>
-                                            </li>
-                                            <li  style="opacity:0.2;">
-                                                    <a class="kwick four" href="#"  style="cursor:default;">
-                                                        <center><span><?php _e('Checkout','wpstorecart'); ?></span>
-                                                        <br />
-                                                        <img src="<?php echo plugins_url(); ?>/wpstorecart/images/shopping_cart.png" alt=""/>
-                                                        <br />
-                                                        
-                                                        <h2><?php _e('The checkout page &amp; process','wpstorecart'); ?></h2>
-                                                        
-                                                        </center>                                                        
-                                                    </a>
-                                            </li>
+                                            
+
                                     </ul>
                                     <center><h1><?php _e('User Pages &amp; Checkout Designers coming soon.','wpstorecart'); ?></h1></center>
                             </div>
@@ -7044,7 +7023,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             echo '<div class="grid_16">';
             echo '<img style="float:left;" src="'.$grav_url.'" alt="" /><br style="clear:both;" />';
             echo '<table class="widefat wpsc5table"><thead><tr><th><a href="user-edit.php?user_id='.$user->ID.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/user_suit.png" alt="" style="float:left;margin-right:4px;" /> '.__('Edit', 'wpstorecart').'</button></a>  <a href="admin.php?page=wpstorecart-email&email_address='.$user->user_email.'"><button class="button-secondary"><img src="'.plugins_url().'/wpstorecart/images/email.png" alt="" style="float:left;margin-right:4px;" /> '.__('Email', 'wpstorecart').'</button></a>  </th></tr></thead></table><br />';
-            echo '<strong>'.__('Completed Orders', 'wpstorecart').'</strong>';
+            echo '<h2 class="dark-text">'.__('Completed Orders', 'wpstorecart').'</h2>';
             echo '<table class="widefat wpsc5table">
             <thead><tr><th></th><th>'.__('Date', 'wpstorecart').'<br />'.__('Order #', 'wpstorecart').'</th><th>'.__('Order Status', 'wpstorecart').'</th><th>'.__('Cart Contents', 'wpstorecart').'</th><th>'.__('Processor', 'wpstorecart').'</th><th>'.__('Price', 'wpstorecart').'<br /><i>('.__('Shipping', 'wpstorecart').')</i></th><th>'.__('User', 'wpstorecart').'<br /><i>'.__('Email', 'wpstorecart').'</i></th><th>'.__('Affiliate', 'wpstorecart').'</th></tr></thead><tbody>
             ';
@@ -7195,7 +7174,7 @@ if(!function_exists('wpscAdminPageCategories')) {
             $results = $wpdb->get_results( $sql , ARRAY_A );
 
             if(isset($results[0]['primkey'])) {
-                echo '<h2>'.__('Users Current Cart', 'wpstorecart').'</h2>';
+                echo '<h2 class="dark-text">'.__('Users Current Cart', 'wpstorecart').'</h2>';
                 echo '<table class="widefat wpsc5table"><thead><tr><th>'.__('Total', 'wpstorecart').'</th><th>'.__('# of Items', 'wpstorecart').'</th><th>'.__('Items', 'wpstorecart').'</th><th>'.__('Prices', 'wpstorecart').'</th><th>'.__('Qtys', 'wpstorecart').'</th></tr></thead><tbody><tr>';
                 echo '<td>'. $results[0]['total'];
                 echo '</td><td>'. $results[0]['itemcount'];
@@ -7226,7 +7205,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 echo '</td></tr></tbody></table><br />';
             }
 
-            echo '<strong>'.__('Full User Information','wpstorecart').'</strong>';
+            echo '<h2 class="dark-text">'.__('Full User Information','wpstorecart').'</h2>';
             echo '<table class="widefat wpsc5table"><thead><tr><th>'.__('Field','wpstorecart').'</th><th>'.__('Value','wpstorecart').'</th></tr></thead><tbody>';
             $user = get_userdata( $i_users_id );
             foreach($user as $key => $value) {
