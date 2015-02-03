@@ -4,7 +4,7 @@ Donate link: http://indiedevbundle.com/bundles/webdev/idb-ultimate-wordpress-bun
 Tags: cart,ecommerce,store,shop,merchant,paypal,shopping-cart,ecomm,e-commerce,authorize.net,2checkout,qbms,skrill,wpstorecart
 Requires at least: 3.3.0
 Tested up to: 4.2
-Stable tag: 5.0.5
+Stable tag: 5.0.6
 License: LGPL
 
 Selling customizable t-shirts, physical or digital items like software or games, subscriptions or anything else?  IDB Ecommerce has you covered.
@@ -105,6 +105,9 @@ Goto the admin panel, then IDB Ecommerce > Settings. Find the Checkout Page sett
 
 
 == Changelog ==
+
+= 5.0.6 =
+* Updated: The .POT file has been updated to the latest version
 
 = 5.0.5 =
 * Updated: Design your store page updated
