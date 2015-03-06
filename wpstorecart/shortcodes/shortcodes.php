@@ -195,12 +195,12 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                                         if (@$securimage->check($_POST['captcha_code']) == false && (@extension_loaded('gd') && @function_exists('gd_info') && wpscGdCheck() )) {
                                             $output .= __('CAPTCHA failed!', 'wpstorecart').'<br /><br />';
                                         } else {
-                                            $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);                                                                
+                                            $_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']);                                                                
                                         } 
                                     }
 
                                     if(@!is_object($securimage)) { // If captcha failed
-                                        $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']); 
+                                        $_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']); 
                                     }
 
                                 }
@@ -218,12 +218,12 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                                             if (@$securimage->check($_POST['captcha_code']) == false && (@extension_loaded('gd') && @function_exists('gd_info') && wpscGdCheck())) {
                                                 $output .= '<br />'.__('CAPTCHA failed!', 'wpstorecart').'<br /><br />';
                                             } else {
-                                                @$_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);                                                                
+                                                @$_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']);                                                                
                                             } 
                                         }
 
                                         if(@!is_object($securimage)) { // If captcha failed
-                                            @$_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']); 
+                                            @$_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']); 
                                         }                        
                                     }
                                     if((@extension_loaded('gd') && @function_exists('gd_info') && wpscGdCheck())) {
@@ -534,11 +534,11 @@ if(!function_exists('wpStoreCartMainShortcode')) {
                             if($allowguests=='true') {
                                 if($wpStoreCartOptions['requireregistration']=='false' || $wpStoreCartOptions['requireregistration']=='disable') {
                                     if(@isset($_POST['guest_email'])) {
-                                        $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
+                                        $_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']);
                                     }
                                     if(@isset($_SESSION['wpsc_email'])) {
                                         $isLoggedIn = true;
-                                        $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `email`='{$wpdb->escape($_SESSION['wpsc_email'])}';";
+                                        $sql = "SELECT `cartcontents`, `orderstatus` FROM `{$table_name99}` WHERE `email`='".esc_sql($_SESSION['wpsc_email'])."';";
                                     } else {
                                         $output .= '
                                             <form name="wpsc-nonregisterform" id="wpsc-nonregisterform" action="#" method="post">

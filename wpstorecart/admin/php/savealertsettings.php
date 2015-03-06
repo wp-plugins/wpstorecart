@@ -17,12 +17,12 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    @add_user_meta( $current_user->ID, 'wpsc_alert_text_phone_number', $wpdb->escape($_POST['wpsc-alert-text-phone-number']), true);
-    @update_user_meta($current_user->ID, 'wpsc_alert_text_phone_number', $wpdb->escape($_POST['wpsc-alert-text-phone-number']));
-    @add_user_meta( $current_user->ID, 'wpsc_alert_carrier', $wpdb->escape($_POST['wpsc-alert-carrier']), true);
-    @update_user_meta( $current_user->ID, 'wpsc_alert_carrier', $wpdb->escape($_POST['wpsc-alert-carrier']));
-    @add_user_meta( $current_user->ID, 'wpsc_full_alert_email', $wpdb->escape($_POST['wpsc-full-alert-email'], true));
-    @update_user_meta( $current_user->ID, 'wpsc_full_alert_email', $wpdb->escape($_POST['wpsc-full-alert-email']));
+    @add_user_meta( $current_user->ID, 'wpsc_alert_text_phone_number', esc_sql($_POST['wpsc-alert-text-phone-number']), true);
+    @update_user_meta($current_user->ID, 'wpsc_alert_text_phone_number', esc_sql($_POST['wpsc-alert-text-phone-number']));
+    @add_user_meta( $current_user->ID, 'wpsc_alert_carrier', esc_sql($_POST['wpsc-alert-carrier']), true);
+    @update_user_meta( $current_user->ID, 'wpsc_alert_carrier', esc_sql($_POST['wpsc-alert-carrier']));
+    @add_user_meta( $current_user->ID, 'wpsc_full_alert_email', esc_sql($_POST['wpsc-full-alert-email'], true));
+    @update_user_meta( $current_user->ID, 'wpsc_full_alert_email', esc_sql($_POST['wpsc-full-alert-email']));
 
 
 }

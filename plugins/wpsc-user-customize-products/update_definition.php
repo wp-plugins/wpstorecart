@@ -23,7 +23,7 @@ if ( 0 == $current_user->ID ) {
     $wpsc_cust_updated_y = intval($_POST['wpsc_cust_updated_y']);
     $wpsc_cust_updated_width = intval($_POST['wpsc_cust_updated_width']);
     $wpsc_cust_updated_height = intval($_POST['wpsc_cust_updated_height']);
-    $wpsc_cust_updated_types = $wpdb->escape($_POST['wpsc_cust_updated_types']);
+    $wpsc_cust_updated_types = esc_sql($_POST['wpsc_cust_updated_types']);
 
     $table_name = $wpdb->prefix . "wpstorecart_custom_def";
 

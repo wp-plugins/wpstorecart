@@ -15,7 +15,7 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $delete = $wpdb->escape($_POST['delete']);
+    $delete = esc_sql($_POST['delete']);
 
     $table_name = $wpdb->prefix . "wpstorecart_meta";
     $insert = "DELETE FROM `{$table_name}` WHERE `primkey`={$delete};";

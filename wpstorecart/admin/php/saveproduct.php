@@ -229,28 +229,28 @@ if ( 0 == $current_user->ID ) {
 
 
                     $wpStoreCartproduct_name = esc_attr($_POST['wpStoreCartproduct_name']);
-                    $wpStoreCartproduct_introdescription = $wpdb->escape($_POST['wpStoreCartproduct_introdescription']);
-                    $wpStoreCartproduct_description = $wpdb->escape($_POST['wpStoreCartproduct_description']);
-                    $wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
-                    $wpStoreCartproduct_price = $wpdb->escape($_POST['wpStoreCartproduct_price']);
-                    @$wpStoreCartproduct_shipping = $wpdb->escape($_POST['wpStoreCartproduct_shipping']);
-                    $wpStoreCartproduct_download = $wpdb->escape($_POST['wpStoreCartproduct_download']);	
+                    $wpStoreCartproduct_introdescription = esc_sql($_POST['wpStoreCartproduct_introdescription']);
+                    $wpStoreCartproduct_description = esc_sql($_POST['wpStoreCartproduct_description']);
+                    $wpStoreCartproduct_thumbnail = esc_sql($_POST['wpStoreCartproduct_thumbnail']);
+                    $wpStoreCartproduct_price = esc_sql($_POST['wpStoreCartproduct_price']);
+                    @$wpStoreCartproduct_shipping = esc_sql($_POST['wpStoreCartproduct_shipping']);
+                    $wpStoreCartproduct_download = esc_sql($_POST['wpStoreCartproduct_download']);	
                     $timestamp = date('Ymd');
-                    $wpStoreCartproduct_tags = $wpdb->escape($_POST['wpStoreCartproduct_tags']);
-                    $wpStoreCartproduct_category = $wpdb->escape($_POST['wpStoreCartproduct_category']);
-                    $wpStoreCartproduct_inventory = $wpdb->escape($_POST['wpStoreCartproduct_inventory']);
-                    $wpStoreCartproduct_useinventory = $wpdb->escape($_POST['wpStoreCartproduct_useinventory']);
-                    $wpStoreCartproduct_donation = $wpdb->escape($_POST['wpStoreCartproduct_donation']);
+                    $wpStoreCartproduct_tags = esc_sql($_POST['wpStoreCartproduct_tags']);
+                    $wpStoreCartproduct_category = esc_sql($_POST['wpStoreCartproduct_category']);
+                    $wpStoreCartproduct_inventory = esc_sql($_POST['wpStoreCartproduct_inventory']);
+                    $wpStoreCartproduct_useinventory = esc_sql($_POST['wpStoreCartproduct_useinventory']);
+                    $wpStoreCartproduct_donation = esc_sql($_POST['wpStoreCartproduct_donation']);
                     $wpStoreCartproduct_weight = 0;
                     $wpStoreCartproduct_length = 0;
                     $wpStoreCartproduct_width = 0;
                     $wpStoreCartproduct_height = 0;
-                    $wpStoreCartproduct_discountprice = $wpdb->escape($_POST['wpStoreCartproduct_discountprice']);
-                    $wpStoreCartSelectedPage = $wpdb->escape($_POST['wpStoreCartSelectedPage']);
-                    $wpStoreCartProductStatus = $wpdb->escape($_POST['wpStoreCartProductStatus']);
-                    $cleanKey = $wpdb->escape($_POST['wpsc-keytoedit']);
+                    $wpStoreCartproduct_discountprice = esc_sql($_POST['wpStoreCartproduct_discountprice']);
+                    $wpStoreCartSelectedPage = esc_sql($_POST['wpStoreCartSelectedPage']);
+                    $wpStoreCartProductStatus = esc_sql($_POST['wpStoreCartProductStatus']);
+                    $cleanKey = esc_sql($_POST['wpsc-keytoedit']);
 
-                    $wpscVariationGrouping = $wpdb->escape($_POST['wpscVariationGrouping']);
+                    $wpscVariationGrouping = esc_sql($_POST['wpscVariationGrouping']);
 
                     $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `options`='{$wpscVariationGrouping}' WHERE `producttype`='variation' AND `postid`='{$cleanKey}';");                    
                     

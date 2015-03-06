@@ -16,11 +16,11 @@ if ( 0 == $current_user->ID ) {
     }
 
     $table_name = $wpdb->prefix . "wpstorecart_meta";
-    $taxname = $wpdb->escape($_POST['taxname']);
-    $countriestotax = $wpdb->escape($_POST['countriestotax']);
-    $statestotax = $wpdb->escape($_POST['statestotax']);
-    $taxpercent = $wpdb->escape($_POST['taxpercent']);
-    $taxprimkey = $wpdb->escape($_POST['taxprimkey']);
+    $taxname = esc_sql($_POST['taxname']);
+    $countriestotax = esc_sql($_POST['countriestotax']);
+    $statestotax = esc_sql($_POST['statestotax']);
+    $taxpercent = esc_sql($_POST['taxpercent']);
+    $taxprimkey = esc_sql($_POST['taxprimkey']);
 
     $insert = NULL;
     if($taxprimkey==0) {

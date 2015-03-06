@@ -53,7 +53,7 @@ function wpscFreeShippingOverXSaveShippingFunction() {
             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
         }
         if(isset($_POST['enableFreeShippingOverX'])) { // Here's where you update the value of the variable
-            $wpStoreCartOptions['enableFreeShippingOverX'] = $wpdb->escape($_POST['enableFreeShippingOverX']); // Changes the variable in the settings
+            $wpStoreCartOptions['enableFreeShippingOverX'] = esc_sql($_POST['enableFreeShippingOverX']); // Changes the variable in the settings
             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
         }
 
@@ -62,7 +62,7 @@ function wpscFreeShippingOverXSaveShippingFunction() {
             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
         }
         if(isset($_POST['FreeShippingOverXThreshold'])) { // Here's where you update the value of the variable
-            $wpStoreCartOptions['FreeShippingOverXThreshold'] = $wpdb->escape($_POST['FreeShippingOverXThreshold']); // Changes the variable in the settings
+            $wpStoreCartOptions['FreeShippingOverXThreshold'] = esc_sql($_POST['FreeShippingOverXThreshold']); // Changes the variable in the settings
             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
         }    
 

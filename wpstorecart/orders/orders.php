@@ -202,7 +202,7 @@ if(!function_exists('wpscHasPurchased')) {
     function wpscHasPurchased($primkey, $email=NULL) {
         global $wpdb, $current_user;
         
-        $email = $wpdb->escape($email);
+        $email = esc_sql($email);
         $haspurchased = false;
 	
         wp_get_current_user();

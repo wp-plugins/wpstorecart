@@ -17,16 +17,16 @@ if ( 0 == $current_user->ID ) {
 
     $table_name = $wpdb->prefix . "wpstorecart_field_def";
     $wpsc_fields_product_primkey = intval($_POST['wpsc_fields_product_primkey']);
-    $wpsc_fields_type = $wpdb->escape($_POST['wpsc_fields_type']);
-    $wpsc_fields_information_type = $wpdb->escape($_POST['wpsc_fields_information_type']);
-    $wpsc_fields_required = $wpdb->escape($_POST['wpsc_fields_required']);
-    $wpsc_fields_default_value = $wpdb->escape($_POST['wpsc_fields_default_value']);
-    $wpsc_fields_desc = $wpdb->escape($_POST['wpsc_fields_desc']);
-    $wpsc_fields_name = $wpdb->escape($_POST['wpsc_fields_name']);
-    $wpsc_fields_isactive = $wpdb->escape($_POST['wpsc_fields_isactive']);
+    $wpsc_fields_type = esc_sql($_POST['wpsc_fields_type']);
+    $wpsc_fields_information_type = esc_sql($_POST['wpsc_fields_information_type']);
+    $wpsc_fields_required = esc_sql($_POST['wpsc_fields_required']);
+    $wpsc_fields_default_value = esc_sql($_POST['wpsc_fields_default_value']);
+    $wpsc_fields_desc = esc_sql($_POST['wpsc_fields_desc']);
+    $wpsc_fields_name = esc_sql($_POST['wpsc_fields_name']);
+    $wpsc_fields_isactive = esc_sql($_POST['wpsc_fields_isactive']);
     
     if(@isset($_POST['wpsc_edit_field_primkey'])) {
-        $field_key = $wpdb->escape($_POST['wpsc_edit_field_primkey']);
+        $field_key = esc_sql($_POST['wpsc_edit_field_primkey']);
         $insert = "
         UPDATE `{$table_name}` 
             SET

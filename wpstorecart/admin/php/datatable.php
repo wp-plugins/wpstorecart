@@ -51,7 +51,7 @@ if ( 0 == $current_user->ID ) {
     $sLimit = "";
     if ( isset( $_POST['iDisplayStart'] ) && $_POST['iDisplayLength'] != '-1' )
     {
-            $sLimit = "LIMIT ".$wpdb->escape( $_POST['iDisplayStart'] ).", ".$wpdb->escape( $_POST['iDisplayLength'] );
+            $sLimit = "LIMIT ".esc_sql( $_POST['iDisplayStart'] ).", ".esc_sql( $_POST['iDisplayLength'] );
     }
 
 
@@ -66,7 +66,7 @@ if ( 0 == $current_user->ID ) {
                     if ( $_POST[ 'bSortable_'.intval($_POST['iSortCol_'.$i]) ] == "true" )
                     {
                             $sOrder .= $aColumns[ intval( $_POST['iSortCol_'.$i] ) ]."
-                                    ".$wpdb->escape( $_POST['sSortDir_'.$i] ) .", ";
+                                    ".esc_sql( $_POST['sSortDir_'.$i] ) .", ";
                     }
             }
 
@@ -90,7 +90,7 @@ if ( 0 == $current_user->ID ) {
             $sWhere = "WHERE (";
             for ( $i=0 ; $i<count($aColumns) ; $i++ )
             {
-                    $sWhere .= $aColumns[$i]." LIKE '%".$wpdb->escape( $_POST['sSearch'] )."%' OR ";
+                    $sWhere .= $aColumns[$i]." LIKE '%".esc_sql( $_POST['sSearch'] )."%' OR ";
             }
             $sWhere = substr_replace( $sWhere, "", -3 );
             $sWhere .= ')';
@@ -109,7 +109,7 @@ if ( 0 == $current_user->ID ) {
                     {
                             $sWhere .= " AND ";
                     }
-                    $sWhere .= $aColumns[$i]." LIKE '%".$wpdb->escape($_POST['sSearch_'.$i])."%' ";
+                    $sWhere .= $aColumns[$i]." LIKE '%".esc_sql($_POST['sSearch_'.$i])."%' ";
             }
     }
 

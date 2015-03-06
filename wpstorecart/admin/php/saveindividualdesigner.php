@@ -22,8 +22,8 @@ if ( 0 == $current_user->ID ) {
     $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
     
     // Grab the POST data
-    $wpscProductDesignerCSSFilename = $wpdb->escape($_POST['wpscProductDesignerCSSFilename']);
-    $wpscProductDesignerCSS = $wpdb->escape($_POST['wpscProductDesignerCSS']);
+    $wpscProductDesignerCSSFilename = esc_sql($_POST['wpscProductDesignerCSSFilename']);
+    $wpscProductDesignerCSS = esc_sql($_POST['wpscProductDesignerCSS']);
     $wpscProductDesignerElementOrder = array(); // Grab the order data
 
     // Create the output

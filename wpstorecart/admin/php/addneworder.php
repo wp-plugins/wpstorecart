@@ -17,15 +17,15 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $wpscneworderaffiliate = $wpdb->escape($_POST['wpsc-new-order-affiliate']);
-    $wpscnewordercartcontents = $wpdb->escape($_POST['wpsc-new-order-cart-contents']);
-    $wpscneworderdate = $wpdb->escape($_POST['wpsc-new-order-date']);
-    $wpscneworderemail = $wpdb->escape($_POST['wpsc-new-order-email']);
-    $wpscneworderpaymentprocessor = $wpdb->escape($_POST['wpsc-new-order-payment-processor']);
-    $wpscneworderprice = $wpdb->escape($_POST['wpsc-new-order-price']);
-    $wpscnewordershipping = $wpdb->escape($_POST['wpsc-new-order-shipping']);
-    $wpscneworderstatus = $wpdb->escape($_POST['wpsc-new-order-status']);
-    $wpscneworderuser = $wpdb->escape($_POST['wpsc-new-order-user']);
+    $wpscneworderaffiliate = esc_sql($_POST['wpsc-new-order-affiliate']);
+    $wpscnewordercartcontents = esc_sql($_POST['wpsc-new-order-cart-contents']);
+    $wpscneworderdate = esc_sql($_POST['wpsc-new-order-date']);
+    $wpscneworderemail = esc_sql($_POST['wpsc-new-order-email']);
+    $wpscneworderpaymentprocessor = esc_sql($_POST['wpsc-new-order-payment-processor']);
+    $wpscneworderprice = esc_sql($_POST['wpsc-new-order-price']);
+    $wpscnewordershipping = esc_sql($_POST['wpsc-new-order-shipping']);
+    $wpscneworderstatus = esc_sql($_POST['wpsc-new-order-status']);
+    $wpscneworderuser = esc_sql($_POST['wpsc-new-order-user']);
     $wpscproductdecreaseinventoryneworder = $_POST['wpsc-product-decrease-inventory-new-order'];
     
     $table_name = $wpdb->prefix . "wpstorecart_orders";

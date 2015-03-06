@@ -18,9 +18,9 @@ if ( 0 == $current_user->ID ) {
     }
 
     $table_name = $wpdb->prefix . "wpstorecart_meta";
-    $createnewfieldname = $wpdb->escape($_POST['createnewfieldname']);
-    $createnewfieldtype = $wpdb->escape($_POST['createnewfieldtype']);
-    $createnewfieldrequired = $wpdb->escape($_POST['createnewfieldrequired']);
+    $createnewfieldname = esc_sql($_POST['createnewfieldname']);
+    $createnewfieldtype = esc_sql($_POST['createnewfieldtype']);
+    $createnewfieldrequired = esc_sql($_POST['createnewfieldrequired']);
 
     $insert = "
     INSERT INTO `{$table_name}` (

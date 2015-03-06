@@ -17,10 +17,10 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $title = $wpdb->escape($_POST['wpsc-new-attribute-title']);
-    $group = $wpdb->escape($_POST['wpsc-new-attribute-group']);
+    $title = esc_sql($_POST['wpsc-new-attribute-title']);
+    $group = esc_sql($_POST['wpsc-new-attribute-group']);
     if($group=='CREATENEWGROUP') {
-        $group = $wpdb->escape($_POST['wpsc-new-attribute-new-group']);
+        $group = esc_sql($_POST['wpsc-new-attribute-new-group']);
     }
     
     // Attributes inventory toggle
@@ -30,8 +30,8 @@ if ( 0 == $current_user->ID ) {
         $useinventory = 0;
     }       
     
-    $pricedifference = $wpdb->escape($_POST['wpsc-new-attribute-price-difference']);
-    $productkey = $wpdb->escape($_POST['wpsc-new-attribute-parent-key']);
+    $pricedifference = esc_sql($_POST['wpsc-new-attribute-price-difference']);
+    $productkey = esc_sql($_POST['wpsc-new-attribute-parent-key']);
     
     
     $insert = "INSERT INTO `{$wpdb->prefix}wpstorecart_quickvar` (`primkey`, `productkey`, `values`, `price`, `type`, `title`, `group`, `useinventory`) VALUES (NULL, {$productkey}, '', '{$pricedifference}', 'dropdown', '{$title}', '{$group}', '{$useinventory}');";

@@ -260,111 +260,111 @@ if(!class_exists('wpscSettings')) {
                     global $wpdb;
                             $wpStoreCartOptions = get_option($this->adminOptionsName);
                             if (isset($_POST['enable_product_filters'])) {
-                                    $wpStoreCartOptions['enable_product_filters'] = $wpdb->escape($_POST['enable_product_filters']);
+                                    $wpStoreCartOptions['enable_product_filters'] = esc_sql($_POST['enable_product_filters']);
                             }                       
                             if (isset($_POST['alert_clear_period'])) {
-                                    $wpStoreCartOptions['alert_clear_period'] = $wpdb->escape($_POST['alert_clear_period']);
+                                    $wpStoreCartOptions['alert_clear_period'] = esc_sql($_POST['alert_clear_period']);
                             }                             
                             if (isset($_POST['wpStoreCartmainpage'])) {
-                                    $wpStoreCartOptions['mainpage'] = $wpdb->escape($_POST['wpStoreCartmainpage']);
+                                    $wpStoreCartOptions['mainpage'] = esc_sql($_POST['wpStoreCartmainpage']);
                             } 		
                             if (isset($_POST['checkoutpage'])) {
-                                    $wpStoreCartOptions['checkoutpage'] = $wpdb->escape($_POST['checkoutpage']);
+                                    $wpStoreCartOptions['checkoutpage'] = esc_sql($_POST['checkoutpage']);
                                     $wpStoreCartOptions['checkoutpageurl'] = get_permalink($wpStoreCartOptions['checkoutpage']);
                             }
                             if (isset($_POST['orderspage'])) {
-                                    $wpStoreCartOptions['orderspage'] = $wpdb->escape($_POST['orderspage']);
+                                    $wpStoreCartOptions['orderspage'] = esc_sql($_POST['orderspage']);
                             }
                             if (isset($_POST['turnwpStoreCartOn'])) {
-                                    $wpStoreCartOptions['turnon_wpstorecart'] = $wpdb->escape($_POST['turnwpStoreCartOn']);
+                                    $wpStoreCartOptions['turnon_wpstorecart'] = esc_sql($_POST['turnwpStoreCartOn']);
                             }   
                             if (isset($_POST['wpStoreCartEmail'])) {
-                                    $wpStoreCartOptions['wpStoreCartEmail'] = $wpdb->escape($_POST['wpStoreCartEmail']);
+                                    $wpStoreCartOptions['wpStoreCartEmail'] = esc_sql($_POST['wpStoreCartEmail']);
                             }   				
                             if (isset($_POST['wpStoreCartwidth'])) {
-                                    $wpStoreCartOptions['wpStoreCartwidth'] = $wpdb->escape($_POST['wpStoreCartwidth']);
+                                    $wpStoreCartOptions['wpStoreCartwidth'] = esc_sql($_POST['wpStoreCartwidth']);
                             }
                             if (isset($_POST['wpscCss'])) {
-                                    $wpStoreCartOptions['wpscCss'] = $wpdb->escape($_POST['wpscCss']);
+                                    $wpStoreCartOptions['wpscCss'] = esc_sql($_POST['wpscCss']);
                             }
 
                             if (isset($_POST['frontpageDisplays'])) {
-                                    $wpStoreCartOptions['frontpageDisplays'] = $wpdb->escape($_POST['frontpageDisplays']);
+                                    $wpStoreCartOptions['frontpageDisplays'] = esc_sql($_POST['frontpageDisplays']);
                             }
                             if (isset($_POST['displayThumb'])) {
-                                    $wpStoreCartOptions['displayThumb'] = $wpdb->escape($_POST['displayThumb']);
+                                    $wpStoreCartOptions['displayThumb'] = esc_sql($_POST['displayThumb']);
                             }
                             if (isset($_POST['displayTitle'])) {
-                                    $wpStoreCartOptions['displayTitle'] = $wpdb->escape($_POST['displayTitle']);
+                                    $wpStoreCartOptions['displayTitle'] = esc_sql($_POST['displayTitle']);
                             }
                             if (isset($_POST['displayintroDesc'])) {
-                                    $wpStoreCartOptions['displayintroDesc'] = $wpdb->escape($_POST['displayintroDesc']);
+                                    $wpStoreCartOptions['displayintroDesc'] = esc_sql($_POST['displayintroDesc']);
                             }
                             if (isset($_POST['displayFullDesc'])) {
-                                    $wpStoreCartOptions['displayFullDesc'] = $wpdb->escape($_POST['displayFullDesc']);
+                                    $wpStoreCartOptions['displayFullDesc'] = esc_sql($_POST['displayFullDesc']);
                             }
                             if (isset($_POST['displayType'])) {
-                                    $wpStoreCartOptions['displayType'] = $wpdb->escape($_POST['displayType']);
+                                    $wpStoreCartOptions['displayType'] = esc_sql($_POST['displayType']);
                             }
                             if (isset($_POST['displayAddToCart'])) {
-                                    $wpStoreCartOptions['displayAddToCart'] = $wpdb->escape($_POST['displayAddToCart']);
+                                    $wpStoreCartOptions['displayAddToCart'] = esc_sql($_POST['displayAddToCart']);
                             }
                             if (isset($_POST['displayBuyNow'])) {
-                                    $wpStoreCartOptions['displayBuyNow'] = $wpdb->escape($_POST['displayBuyNow']);
+                                    $wpStoreCartOptions['displayBuyNow'] = esc_sql($_POST['displayBuyNow']);
                             }
                             if (isset($_POST['displayPrice'])) {
-                                    $wpStoreCartOptions['displayPrice'] = $wpdb->escape($_POST['displayPrice']);
+                                    $wpStoreCartOptions['displayPrice'] = esc_sql($_POST['displayPrice']);
                             }
 
                             if (isset($_POST['wpStoreCartheight'])) {
-                                    $wpStoreCartOptions['wpStoreCartheight'] = $wpdb->escape($_POST['wpStoreCartheight']);
+                                    $wpStoreCartOptions['wpStoreCartheight'] = esc_sql($_POST['wpStoreCartheight']);
                             }		
                             if (isset($_POST['showproductthumbnail'])) {
-                                    $wpStoreCartOptions['showproductthumbnail'] = $wpdb->escape($_POST['showproductthumbnail']);
+                                    $wpStoreCartOptions['showproductthumbnail'] = esc_sql($_POST['showproductthumbnail']);
                             }
                             if (isset($_POST['showproductdescription'])) {
-                                    $wpStoreCartOptions['showproductdescription'] = $wpdb->escape($_POST['showproductdescription']);
+                                    $wpStoreCartOptions['showproductdescription'] = esc_sql($_POST['showproductdescription']);
                             }
 
                             if (isset($_POST['allowcheckmoneyorder'])) {
-                                    $wpStoreCartOptions['allowcheckmoneyorder'] = $wpdb->escape($_POST['allowcheckmoneyorder']);
+                                    $wpStoreCartOptions['allowcheckmoneyorder'] = esc_sql($_POST['allowcheckmoneyorder']);
                             }
                             if (isset($_POST['checkmoneyordertext'])) {
-                                    $wpStoreCartOptions['checkmoneyordertext'] = $wpdb->escape($_POST['checkmoneyordertext']);
+                                    $wpStoreCartOptions['checkmoneyordertext'] = esc_sql($_POST['checkmoneyordertext']);
                             }
 
                             if (isset($_POST['allowpaypal'])) {
-                                    $wpStoreCartOptions['allowpaypal'] = $wpdb->escape($_POST['allowpaypal']);
+                                    $wpStoreCartOptions['allowpaypal'] = esc_sql($_POST['allowpaypal']);
                             }
                             if (isset($_POST['paypalemail'])) {
-                                    $wpStoreCartOptions['paypalemail'] = $wpdb->escape($_POST['paypalemail']);
+                                    $wpStoreCartOptions['paypalemail'] = esc_sql($_POST['paypalemail']);
                             }
                             if (isset($_POST['paypaltestmode'])) {
-                                    $wpStoreCartOptions['paypaltestmode'] = $wpdb->escape($_POST['paypaltestmode']);
+                                    $wpStoreCartOptions['paypaltestmode'] = esc_sql($_POST['paypaltestmode']);
                             }
 
                             if (isset($_POST['allowauthorizenet'])) {
-                                    $wpStoreCartOptions['allowauthorizenet'] = $wpdb->escape($_POST['allowauthorizenet']);
+                                    $wpStoreCartOptions['allowauthorizenet'] = esc_sql($_POST['allowauthorizenet']);
                             }
                             if (isset($_POST['authorizenettestmode'])) {
-                                    $wpStoreCartOptions['authorizenettestmode'] = $wpdb->escape($_POST['authorizenettestmode']);
+                                    $wpStoreCartOptions['authorizenettestmode'] = esc_sql($_POST['authorizenettestmode']);
                             }
                             if (isset($_POST['authorizenetemail'])) {
-                                    $wpStoreCartOptions['authorizenetemail'] = $wpdb->escape($_POST['authorizenetemail']);
+                                    $wpStoreCartOptions['authorizenetemail'] = esc_sql($_POST['authorizenetemail']);
                             }
                             if (isset($_POST['authorizenetsecretkey'])) {
-                                    $wpStoreCartOptions['authorizenetsecretkey'] = $wpdb->escape($_POST['authorizenetsecretkey']);
+                                    $wpStoreCartOptions['authorizenetsecretkey'] = esc_sql($_POST['authorizenetsecretkey']);
                             }
 
 
                             if (isset($_POST['allow2checkout'])) {
-                                    $wpStoreCartOptions['allow2checkout'] = $wpdb->escape($_POST['allow2checkout']);
+                                    $wpStoreCartOptions['allow2checkout'] = esc_sql($_POST['allow2checkout']);
                             }
                             if (isset($_POST['2checkouttestmode'])) {
-                                    $wpStoreCartOptions['2checkouttestmode'] = $wpdb->escape($_POST['2checkouttestmode']);
+                                    $wpStoreCartOptions['2checkouttestmode'] = esc_sql($_POST['2checkouttestmode']);
                             }
                             if (isset($_POST['2checkoutemail'])) {
-                                    $wpStoreCartOptions['2checkoutemail'] = $wpdb->escape($_POST['2checkoutemail']);
+                                    $wpStoreCartOptions['2checkoutemail'] = esc_sql($_POST['2checkoutemail']);
                             }
 
 
@@ -384,411 +384,411 @@ if(!class_exists('wpscSettings')) {
                                     $wpStoreCartOptions['emailserialnumber'] = esc_attr($_POST['emailserialnumber']);
                             }
                             if (isset($_POST['cart_title'])) {
-                                    $wpStoreCartOptions['cart_title'] = $wpdb->escape($_POST['cart_title']);
+                                    $wpStoreCartOptions['cart_title'] = esc_sql($_POST['cart_title']);
                             }
                             if (isset($_POST['single_item'])) {
-                                    $wpStoreCartOptions['single_item'] = $wpdb->escape($_POST['single_item']);
+                                    $wpStoreCartOptions['single_item'] = esc_sql($_POST['single_item']);
                             }
                             if (isset($_POST['multiple_items'])) {
-                                    $wpStoreCartOptions['multiple_items'] = $wpdb->escape($_POST['multiple_items']);
+                                    $wpStoreCartOptions['multiple_items'] = esc_sql($_POST['multiple_items']);
                             }
                             if (isset($_POST['currency_symbol'])) {
-                                    $wpStoreCartOptions['currency_symbol'] = $wpdb->escape($_POST['currency_symbol']);
+                                    $wpStoreCartOptions['currency_symbol'] = esc_sql($_POST['currency_symbol']);
                             }
                             if (isset($_POST['currency_symbol_right'])) {
-                                    $wpStoreCartOptions['currency_symbol_right'] = $wpdb->escape($_POST['currency_symbol_right']);
+                                    $wpStoreCartOptions['currency_symbol_right'] = esc_sql($_POST['currency_symbol_right']);
                             }
                             if (isset($_POST['subtotal'])) {
-                                    $wpStoreCartOptions['subtotal'] = $wpdb->escape($_POST['subtotal']);
+                                    $wpStoreCartOptions['subtotal'] = esc_sql($_POST['subtotal']);
                             }
                             if (isset($_POST['update_button'])) {
-                                    $wpStoreCartOptions['update_button'] = $wpdb->escape($_POST['update_button']);
+                                    $wpStoreCartOptions['update_button'] = esc_sql($_POST['update_button']);
                             }
                             if (isset($_POST['checkout_button'])) {
-                                    $wpStoreCartOptions['checkout_button'] = $wpdb->escape($_POST['checkout_button']);
+                                    $wpStoreCartOptions['checkout_button'] = esc_sql($_POST['checkout_button']);
                             }
                             if (isset($_POST['currency_code'])) {
-                                    $wpStoreCartOptions['currency_code'] = $wpdb->escape($_POST['currency_code']);
+                                    $wpStoreCartOptions['currency_code'] = esc_sql($_POST['currency_code']);
                             }
 
                             if (isset($_POST['checkout_checkmoneyorder_button'])) {
-                                    $wpStoreCartOptions['checkout_checkmoneyorder_button'] = $wpdb->escape($_POST['checkout_checkmoneyorder_button']);
+                                    $wpStoreCartOptions['checkout_checkmoneyorder_button'] = esc_sql($_POST['checkout_checkmoneyorder_button']);
                             }
 
                             if (isset($_POST['checkout_paypal_button'])) {
-                                    $wpStoreCartOptions['checkout_paypal_button'] = $wpdb->escape($_POST['checkout_paypal_button']);
+                                    $wpStoreCartOptions['checkout_paypal_button'] = esc_sql($_POST['checkout_paypal_button']);
                             }
                             if (isset($_POST['checkout_authorizenet_button'])) {
-                                    $wpStoreCartOptions['checkout_authorizenet_button'] = $wpdb->escape($_POST['checkout_authorizenet_button']);
+                                    $wpStoreCartOptions['checkout_authorizenet_button'] = esc_sql($_POST['checkout_authorizenet_button']);
                             }
                             if (isset($_POST['checkout_2checkout_button'])) {
-                                    $wpStoreCartOptions['checkout_2checkout_button'] = $wpdb->escape($_POST['checkout_2checkout_button']);
+                                    $wpStoreCartOptions['checkout_2checkout_button'] = esc_sql($_POST['checkout_2checkout_button']);
                             }
                             if (isset($_POST['remove_link'])) {
-                                    $wpStoreCartOptions['remove_link'] = $wpdb->escape($_POST['remove_link']);
+                                    $wpStoreCartOptions['remove_link'] = esc_sql($_POST['remove_link']);
                             }
                             if (isset($_POST['empty_button'])) {
-                                    $wpStoreCartOptions['empty_button'] = $wpdb->escape($_POST['empty_button']);
+                                    $wpStoreCartOptions['empty_button'] = esc_sql($_POST['empty_button']);
                             }
                             if (isset($_POST['empty_message'])) {
-                                    $wpStoreCartOptions['empty_message'] = $wpdb->escape($_POST['empty_message']);
+                                    $wpStoreCartOptions['empty_message'] = esc_sql($_POST['empty_message']);
                             }
                             if (isset($_POST['item_added_message'])) {
-                                    $wpStoreCartOptions['item_added_message'] = $wpdb->escape($_POST['item_added_message']);
+                                    $wpStoreCartOptions['item_added_message'] = esc_sql($_POST['item_added_message']);
                             }
                             if (isset($_POST['enter_coupon'])) {
-                                    $wpStoreCartOptions['enter_coupon'] = $wpdb->escape($_POST['enter_coupon']);
+                                    $wpStoreCartOptions['enter_coupon'] = esc_sql($_POST['enter_coupon']);
                             }
                             if (isset($_POST['price_error'])) {
-                                    $wpStoreCartOptions['price_error'] = $wpdb->escape($_POST['price_error']);
+                                    $wpStoreCartOptions['price_error'] = esc_sql($_POST['price_error']);
                             }
                             if (isset($_POST['quantity_error'])) {
-                                    $wpStoreCartOptions['quantity_error'] = $wpdb->escape($_POST['quantity_error']);
+                                    $wpStoreCartOptions['quantity_error'] = esc_sql($_POST['quantity_error']);
                             }
                             if (isset($_POST['checkout_error'])) {
-                                    $wpStoreCartOptions['checkout_error'] = $wpdb->escape($_POST['checkout_error']);
+                                    $wpStoreCartOptions['checkout_error'] = esc_sql($_POST['checkout_error']);
                             }
                             if (isset($_POST['success_text'])) {
-                                    $wpStoreCartOptions['success_text'] = $wpdb->escape($_POST['success_text']);
+                                    $wpStoreCartOptions['success_text'] = esc_sql($_POST['success_text']);
                             }
                             if (isset($_POST['failed_text'])) {
-                                    $wpStoreCartOptions['failed_text'] = $wpdb->escape($_POST['failed_text']);
+                                    $wpStoreCartOptions['failed_text'] = esc_sql($_POST['failed_text']);
                             }
                             if (isset($_POST['add_to_cart'])) {
-                                    $wpStoreCartOptions['add_to_cart'] = $wpdb->escape($_POST['add_to_cart']);
+                                    $wpStoreCartOptions['add_to_cart'] = esc_sql($_POST['add_to_cart']);
                             }
                             if (isset($_POST['out_of_stock'])) {
-                                    $wpStoreCartOptions['out_of_stock'] = $wpdb->escape($_POST['out_of_stock']);
+                                    $wpStoreCartOptions['out_of_stock'] = esc_sql($_POST['out_of_stock']);
                             }
                             if (isset($_POST['ga_trackingnum'])) {
-                                    $wpStoreCartOptions['ga_trackingnum'] = $wpdb->escape($_POST['ga_trackingnum']);
+                                    $wpStoreCartOptions['ga_trackingnum'] = esc_sql($_POST['ga_trackingnum']);
                             }
                             if (isset($_POST['wpscjQueryUITheme'])) {
-                                    $wpStoreCartOptions['wpscjQueryUITheme'] = $wpdb->escape($_POST['wpscjQueryUITheme']);
+                                    $wpStoreCartOptions['wpscjQueryUITheme'] = esc_sql($_POST['wpscjQueryUITheme']);
                             }
                             if (isset($_POST['shipping_zip_origin'])) {
-                                    $wpStoreCartOptions['shipping_zip_origin'] = $wpdb->escape($_POST['shipping_zip_origin']);
+                                    $wpStoreCartOptions['shipping_zip_origin'] = esc_sql($_POST['shipping_zip_origin']);
                             }
                             if (isset($_POST['enableusps'])) {
-                                    $wpStoreCartOptions['enableusps'] = $wpdb->escape($_POST['enableusps']);
+                                    $wpStoreCartOptions['enableusps'] = esc_sql($_POST['enableusps']);
                             }
                             if (isset($_POST['enableups'])) {
-                                    $wpStoreCartOptions['enableups'] = $wpdb->escape($_POST['enableups']);
+                                    $wpStoreCartOptions['enableups'] = esc_sql($_POST['enableups']);
                             }
                             if (isset($_POST['enablefedex'])) {
-                                    $wpStoreCartOptions['enablefedex'] = $wpdb->escape($_POST['enablefedex']);
+                                    $wpStoreCartOptions['enablefedex'] = esc_sql($_POST['enablefedex']);
                             }
                             if (isset($_POST['storetype'])) {
-                                    $wpStoreCartOptions['storetype'] = $wpdb->escape($_POST['storetype']);
+                                    $wpStoreCartOptions['storetype'] = esc_sql($_POST['storetype']);
                             }
                             if (isset($_POST['uspsapiname'])) {
-                                    $wpStoreCartOptions['uspsapiname'] = $wpdb->escape($_POST['uspsapiname']);
+                                    $wpStoreCartOptions['uspsapiname'] = esc_sql($_POST['uspsapiname']);
                             }
 
                             if (isset($_POST['displayshipping'])) {
-                                    $wpStoreCartOptions['displayshipping'] = $wpdb->escape($_POST['displayshipping']);
+                                    $wpStoreCartOptions['displayshipping'] = esc_sql($_POST['displayshipping']);
                             }
                             if (isset($_POST['displaysubtotal'])) {
-                                    $wpStoreCartOptions['displaysubtotal'] = $wpdb->escape($_POST['displaysubtotal']);
+                                    $wpStoreCartOptions['displaysubtotal'] = esc_sql($_POST['displaysubtotal']);
                             }
                             if (isset($_POST['displaytotal'])) {
-                                    $wpStoreCartOptions['displaytotal'] = $wpdb->escape($_POST['displaytotal']);
+                                    $wpStoreCartOptions['displaytotal'] = esc_sql($_POST['displaytotal']);
                             }
                             if (isset($_POST['total'])) {
-                                    $wpStoreCartOptions['total'] = $wpdb->escape($_POST['total']);
+                                    $wpStoreCartOptions['total'] = esc_sql($_POST['total']);
                             }
                             if (isset($_POST['shipping'])) {
-                                    $wpStoreCartOptions['shipping'] = $wpdb->escape($_POST['shipping']);
+                                    $wpStoreCartOptions['shipping'] = esc_sql($_POST['shipping']);
                             }
 
                             if (isset($_POST['requireregistration'])) {
-                                    $wpStoreCartOptions['requireregistration'] = $wpdb->escape($_POST['requireregistration']);
+                                    $wpStoreCartOptions['requireregistration'] = esc_sql($_POST['requireregistration']);
                             }
                             if (isset($_POST['enablecoupons'])) {
-                                    $wpStoreCartOptions['enablecoupons'] = $wpdb->escape($_POST['enablecoupons']);
+                                    $wpStoreCartOptions['enablecoupons'] = esc_sql($_POST['enablecoupons']);
                             }
                             if (isset($_POST['login'])) {
-                                    $wpStoreCartOptions['login'] = $wpdb->escape($_POST['login']);
+                                    $wpStoreCartOptions['login'] = esc_sql($_POST['login']);
                             }
                             if (isset($_POST['register'])) {
-                                    $wpStoreCartOptions['register'] = $wpdb->escape($_POST['register']);
+                                    $wpStoreCartOptions['register'] = esc_sql($_POST['register']);
                             }
 
                             if (isset($_POST['logout'])) {
-                                    $wpStoreCartOptions['logout'] = $wpdb->escape($_POST['logout']);
+                                    $wpStoreCartOptions['logout'] = esc_sql($_POST['logout']);
                             }
                             if (isset($_POST['username'])) {
-                                    $wpStoreCartOptions['username'] = $wpdb->escape($_POST['username']);
+                                    $wpStoreCartOptions['username'] = esc_sql($_POST['username']);
                             }
                             if (isset($_POST['password'])) {
-                                    $wpStoreCartOptions['password'] = $wpdb->escape($_POST['password']);
+                                    $wpStoreCartOptions['password'] = esc_sql($_POST['password']);
                             }
                             if (isset($_POST['email'])) {
-                                    $wpStoreCartOptions['email'] = $wpdb->escape($_POST['email']);
+                                    $wpStoreCartOptions['email'] = esc_sql($_POST['email']);
                             }
                             if (isset($_POST['myordersandpurchases'])) {
-                                    $wpStoreCartOptions['myordersandpurchases'] = $wpdb->escape($_POST['myordersandpurchases']);
+                                    $wpStoreCartOptions['myordersandpurchases'] = esc_sql($_POST['myordersandpurchases']);
                             }
 
                             if (isset($_POST['required_symbol'])) {
-                                    $wpStoreCartOptions['required_symbol'] = $wpdb->escape($_POST['required_symbol']);
+                                    $wpStoreCartOptions['required_symbol'] = esc_sql($_POST['required_symbol']);
                             }
                             if (isset($_POST['required_help'])) {
-                                    $wpStoreCartOptions['required_help'] = $wpdb->escape($_POST['required_help']);
+                                    $wpStoreCartOptions['required_help'] = esc_sql($_POST['required_help']);
                             }
 
                             if (isset($_POST['flatrateshipping'])) {
-                                    $wpStoreCartOptions['flatrateshipping'] = $wpdb->escape($_POST['flatrateshipping']);
+                                    $wpStoreCartOptions['flatrateshipping'] = esc_sql($_POST['flatrateshipping']);
                             }
                             if (isset($_POST['flatrateamount'])) {
-                                    $wpStoreCartOptions['flatrateamount'] = $wpdb->escape($_POST['flatrateamount']);
+                                    $wpStoreCartOptions['flatrateamount'] = esc_sql($_POST['flatrateamount']);
                             }
                             if (isset($_POST['calculateshipping'])) {
-                                    $wpStoreCartOptions['calculateshipping'] = $wpdb->escape($_POST['calculateshipping']);
+                                    $wpStoreCartOptions['calculateshipping'] = esc_sql($_POST['calculateshipping']);
                             }
                             if (isset($_POST['itemsperpage'])) {
-                                    $wpStoreCartOptions['itemsperpage'] = $wpdb->escape($_POST['itemsperpage']);
+                                    $wpStoreCartOptions['itemsperpage'] = esc_sql($_POST['itemsperpage']);
                             }
                             if (isset($_POST['allowlibertyreserve'])) {
-                                    $wpStoreCartOptions['allowlibertyreserve'] = $wpdb->escape($_POST['allowlibertyreserve']);
+                                    $wpStoreCartOptions['allowlibertyreserve'] = esc_sql($_POST['allowlibertyreserve']);
                             }
                             if (isset($_POST['allowqbms'])) {
-                                    $wpStoreCartOptions['allowqbms'] = $wpdb->escape($_POST['allowqbms']);
+                                    $wpStoreCartOptions['allowqbms'] = esc_sql($_POST['allowqbms']);
                             }
                             if (isset($_POST['qbms_ticket'])) {
-                                    $wpStoreCartOptions['qbms_ticket'] = $wpdb->escape($_POST['qbms_ticket']);
+                                    $wpStoreCartOptions['qbms_ticket'] = esc_sql($_POST['qbms_ticket']);
                             }
                             if (isset($_POST['qbms_login'])) {
-                                    $wpStoreCartOptions['qbms_login'] = $wpdb->escape($_POST['qbms_login']);
+                                    $wpStoreCartOptions['qbms_login'] = esc_sql($_POST['qbms_login']);
                             }
                             if (isset($_POST['qbms_testingmode'])) {
-                                    $wpStoreCartOptions['qbms_testingmode'] = $wpdb->escape($_POST['qbms_testingmode']);
+                                    $wpStoreCartOptions['qbms_testingmode'] = esc_sql($_POST['qbms_testingmode']);
                             }
 
                             if (isset($_POST['libertyreserveaccount'])) {
-                                    $wpStoreCartOptions['libertyreserveaccount'] = $wpdb->escape($_POST['libertyreserveaccount']);
+                                    $wpStoreCartOptions['libertyreserveaccount'] = esc_sql($_POST['libertyreserveaccount']);
                             }
                             if (isset($_POST['libertyreservestore'])) {
-                                    $wpStoreCartOptions['libertyreservestore'] = $wpdb->escape($_POST['libertyreservestore']);
+                                    $wpStoreCartOptions['libertyreservestore'] = esc_sql($_POST['libertyreservestore']);
                             }
                             if (isset($_POST['checkout_libertyreserve_button'])) {
-                                    $wpStoreCartOptions['checkout_libertyreserve_button'] = $wpdb->escape($_POST['checkout_libertyreserve_button']);
+                                    $wpStoreCartOptions['checkout_libertyreserve_button'] = esc_sql($_POST['checkout_libertyreserve_button']);
                             }
                             if (isset($_POST['libertyreservesecretword'])) {
-                                    $wpStoreCartOptions['libertyreservesecretword'] = $wpdb->escape($_POST['libertyreservesecretword']);
+                                    $wpStoreCartOptions['libertyreservesecretword'] = esc_sql($_POST['libertyreservesecretword']);
                             }
                             if (isset($_POST['guestcheckout'])) {
-                                    $wpStoreCartOptions['guestcheckout'] = $wpdb->escape($_POST['guestcheckout']);
+                                    $wpStoreCartOptions['guestcheckout'] = esc_sql($_POST['guestcheckout']);
                             }
                             if (isset($_POST['useimagebox'])) {
-                                    $wpStoreCartOptions['useimagebox'] = $wpdb->escape($_POST['useimagebox']);
+                                    $wpStoreCartOptions['useimagebox'] = esc_sql($_POST['useimagebox']);
                             }
                             if (isset($_POST['showproductgallery'])) {
-                                    $wpStoreCartOptions['showproductgallery'] = $wpdb->escape($_POST['showproductgallery']);
+                                    $wpStoreCartOptions['showproductgallery'] = esc_sql($_POST['showproductgallery']);
                             }
                             if (isset($_POST['showproductgallerywhere'])) {
-                                    $wpStoreCartOptions['showproductgallerywhere'] = $wpdb->escape($_POST['showproductgallerywhere']);
+                                    $wpStoreCartOptions['showproductgallerywhere'] = esc_sql($_POST['showproductgallerywhere']);
                             }
 
                             if (isset($_POST['displaytaxes'])) {
-                                    $wpStoreCartOptions['displaytaxes'] = $wpdb->escape($_POST['displaytaxes']);
+                                    $wpStoreCartOptions['displaytaxes'] = esc_sql($_POST['displaytaxes']);
                             }
                             if (isset($_POST['tax'])) {
-                                    $wpStoreCartOptions['tax'] = $wpdb->escape($_POST['tax']);
+                                    $wpStoreCartOptions['tax'] = esc_sql($_POST['tax']);
                             }
                             if (isset($_POST['checkoutimages'])) {
-                                    $wpStoreCartOptions['checkoutimages'] = $wpdb->escape($_POST['checkoutimages']);
+                                    $wpStoreCartOptions['checkoutimages'] = esc_sql($_POST['checkoutimages']);
                             }
                             if (isset($_POST['checkoutimagewidth'])) {
-                                    $wpStoreCartOptions['checkoutimagewidth'] = $wpdb->escape($_POST['checkoutimagewidth']);
+                                    $wpStoreCartOptions['checkoutimagewidth'] = esc_sql($_POST['checkoutimagewidth']);
                             }
                             if (isset($_POST['checkoutimageheight'])) {
-                                    $wpStoreCartOptions['checkoutimageheight'] = $wpdb->escape($_POST['checkoutimageheight']);
+                                    $wpStoreCartOptions['checkoutimageheight'] = esc_sql($_POST['checkoutimageheight']);
                             }
                             if (isset($_POST['checkoutlinktoproduct'])) {
-                                    $wpStoreCartOptions['checkoutlinktoproduct'] = $wpdb->escape($_POST['checkoutlinktoproduct']);
+                                    $wpStoreCartOptions['checkoutlinktoproduct'] = esc_sql($_POST['checkoutlinktoproduct']);
                             }
                             if (isset($_POST['displaypriceonview'])) {
-                                    $wpStoreCartOptions['displaypriceonview'] = $wpdb->escape($_POST['displaypriceonview']);
+                                    $wpStoreCartOptions['displaypriceonview'] = esc_sql($_POST['displaypriceonview']);
                             }
                             if (isset($_POST['menu_style'])) {
-                                    $wpStoreCartOptions['menu_style'] = $wpdb->escape($_POST['menu_style']);
+                                    $wpStoreCartOptions['menu_style'] = esc_sql($_POST['menu_style']);
                             }
                             if (isset($_POST['orders_profile'])) {
-                                    $wpStoreCartOptions['orders_profile'] = $wpdb->escape($_POST['orders_profile']);
+                                    $wpStoreCartOptions['orders_profile'] = esc_sql($_POST['orders_profile']);
                             }
                             if (isset($_POST['cc_name'])) {
-                                    $wpStoreCartOptions['cc_name'] = $wpdb->escape($_POST['cc_name']);
+                                    $wpStoreCartOptions['cc_name'] = esc_sql($_POST['cc_name']);
                             }
                             if (isset($_POST['cc_number'])) {
-                                    $wpStoreCartOptions['cc_number'] = $wpdb->escape($_POST['cc_number']);
+                                    $wpStoreCartOptions['cc_number'] = esc_sql($_POST['cc_number']);
                             }
                             if (isset($_POST['cc_expires'])) {
-                                    $wpStoreCartOptions['cc_expires'] = $wpdb->escape($_POST['cc_expires']);
+                                    $wpStoreCartOptions['cc_expires'] = esc_sql($_POST['cc_expires']);
                             }
                             if (isset($_POST['cc_expires_month'])) {
-                                    $wpStoreCartOptions['cc_expires_month'] = $wpdb->escape($_POST['cc_expires_month']);
+                                    $wpStoreCartOptions['cc_expires_month'] = esc_sql($_POST['cc_expires_month']);
                             }
                             if (isset($_POST['cc_expires_year'])) {
-                                    $wpStoreCartOptions['cc_expires_year'] = $wpdb->escape($_POST['cc_expires_year']);
+                                    $wpStoreCartOptions['cc_expires_year'] = esc_sql($_POST['cc_expires_year']);
                             }
                             if (isset($_POST['cc_address'])) {
-                                    $wpStoreCartOptions['cc_address'] = $wpdb->escape($_POST['cc_address']);
+                                    $wpStoreCartOptions['cc_address'] = esc_sql($_POST['cc_address']);
                             }
                             if (isset($_POST['cc_postalcode'])) {
-                                    $wpStoreCartOptions['cc_postalcode'] = $wpdb->escape($_POST['cc_postalcode']);
+                                    $wpStoreCartOptions['cc_postalcode'] = esc_sql($_POST['cc_postalcode']);
                             }
                             if (isset($_POST['cc_cvv'])) {
-                                    $wpStoreCartOptions['cc_cvv'] = $wpdb->escape($_POST['cc_cvv']);
+                                    $wpStoreCartOptions['cc_cvv'] = esc_sql($_POST['cc_cvv']);
                             }
                             if (isset($_POST['checkout_xhtml_type'])) {
-                                    $wpStoreCartOptions['checkout_xhtml_type'] = $wpdb->escape($_POST['checkout_xhtml_type']);
+                                    $wpStoreCartOptions['checkout_xhtml_type'] = esc_sql($_POST['checkout_xhtml_type']);
                             }
                             if (isset($_POST['disable_inline_styles'])) {
-                                    $wpStoreCartOptions['disable_inline_styles'] = $wpdb->escape($_POST['disable_inline_styles']);
+                                    $wpStoreCartOptions['disable_inline_styles'] = esc_sql($_POST['disable_inline_styles']);
                             }
                             if (isset($_POST['field_order_0'])) {
-                                    $wpStoreCartOptions['field_order_0'] = $wpdb->escape($_POST['field_order_0']);
+                                    $wpStoreCartOptions['field_order_0'] = esc_sql($_POST['field_order_0']);
                             }
                             if (isset($_POST['field_order_1'])) {
-                                    $wpStoreCartOptions['field_order_1'] = $wpdb->escape($_POST['field_order_1']);
+                                    $wpStoreCartOptions['field_order_1'] = esc_sql($_POST['field_order_1']);
                             }
                             if (isset($_POST['field_order_2'])) {
-                                    $wpStoreCartOptions['field_order_2'] = $wpdb->escape($_POST['field_order_2']);
+                                    $wpStoreCartOptions['field_order_2'] = esc_sql($_POST['field_order_2']);
                             }
                             if (isset($_POST['field_order_3'])) {
-                                    $wpStoreCartOptions['field_order_3'] = $wpdb->escape($_POST['field_order_3']);
+                                    $wpStoreCartOptions['field_order_3'] = esc_sql($_POST['field_order_3']);
                             }
                             if (isset($_POST['field_order_4'])) {
-                                    $wpStoreCartOptions['field_order_4'] = $wpdb->escape($_POST['field_order_4']);
+                                    $wpStoreCartOptions['field_order_4'] = esc_sql($_POST['field_order_4']);
                             }
                             if (isset($_POST['pcicompliant'])) {
-                                    $wpStoreCartOptions['pcicompliant'] = $wpdb->escape($_POST['pcicompliant']);
+                                    $wpStoreCartOptions['pcicompliant'] = esc_sql($_POST['pcicompliant']);
                             }
                             if (isset($_POST['paypalipnurl'])) {
-                                    $wpStoreCartOptions['paypalipnurl'] = $wpdb->escape($_POST['paypalipnurl']);
+                                    $wpStoreCartOptions['paypalipnurl'] = esc_sql($_POST['paypalipnurl']);
                             }
 
                             if (isset($_POST['button_classes_addtocart'])) {
-                                    $wpStoreCartOptions['button_classes_addtocart'] = $wpdb->escape($_POST['button_classes_addtocart']);
+                                    $wpStoreCartOptions['button_classes_addtocart'] = esc_sql($_POST['button_classes_addtocart']);
                             }
                             if (isset($_POST['button_classes_checkout'])) {
-                                    $wpStoreCartOptions['button_classes_checkout'] = $wpdb->escape($_POST['button_classes_checkout']);
+                                    $wpStoreCartOptions['button_classes_checkout'] = esc_sql($_POST['button_classes_checkout']);
                             }
                             if (isset($_POST['button_classes_meta'])) {
-                                    $wpStoreCartOptions['button_classes_meta'] = $wpdb->escape($_POST['button_classes_meta']);
+                                    $wpStoreCartOptions['button_classes_meta'] = esc_sql($_POST['button_classes_meta']);
                             }
 
                             if (isset($_POST['trial_period_1'])) {
-                                    $wpStoreCartOptions['trial_period_1'] = $wpdb->escape($_POST['trial_period_1']);
+                                    $wpStoreCartOptions['trial_period_1'] = esc_sql($_POST['trial_period_1']);
                             }
                             if (isset($_POST['trial_period_2'])) {
-                                    $wpStoreCartOptions['trial_period_2'] = $wpdb->escape($_POST['trial_period_2']);
+                                    $wpStoreCartOptions['trial_period_2'] = esc_sql($_POST['trial_period_2']);
                             }
                             if (isset($_POST['subscription_price'])) {
-                                    $wpStoreCartOptions['subscription_price'] = $wpdb->escape($_POST['subscription_price']);
+                                    $wpStoreCartOptions['subscription_price'] = esc_sql($_POST['subscription_price']);
                             }
                             if (isset($_POST['for'])) {
-                                    $wpStoreCartOptions['for'] = $wpdb->escape($_POST['for']);
+                                    $wpStoreCartOptions['for'] = esc_sql($_POST['for']);
                             }
                             if (isset($_POST['afterwards'])) {
-                                    $wpStoreCartOptions['afterwards'] = $wpdb->escape($_POST['afterwards']);
+                                    $wpStoreCartOptions['afterwards'] = esc_sql($_POST['afterwards']);
                             }
                             if (isset($_POST['every'])) {
-                                    $wpStoreCartOptions['every'] = $wpdb->escape($_POST['every']);
+                                    $wpStoreCartOptions['every'] = esc_sql($_POST['every']);
                             }
                             if (isset($_POST['free'])) {
-                                    $wpStoreCartOptions['free'] = $wpdb->escape($_POST['free']);
+                                    $wpStoreCartOptions['free'] = esc_sql($_POST['free']);
                             }
 
                             if (isset($_POST['day'])) {
-                                    $wpStoreCartOptions['day'] = $wpdb->escape($_POST['day']);
+                                    $wpStoreCartOptions['day'] = esc_sql($_POST['day']);
                             }
                             if (isset($_POST['week'])) {
-                                    $wpStoreCartOptions['week'] = $wpdb->escape($_POST['week']);
+                                    $wpStoreCartOptions['week'] = esc_sql($_POST['week']);
                             }
                             if (isset($_POST['month'])) {
-                                    $wpStoreCartOptions['month'] = $wpdb->escape($_POST['month']);
+                                    $wpStoreCartOptions['month'] = esc_sql($_POST['month']);
                             }
                             if (isset($_POST['year'])) {
-                                    $wpStoreCartOptions['year'] = $wpdb->escape($_POST['year']);
+                                    $wpStoreCartOptions['year'] = esc_sql($_POST['year']);
                             }
                             if (isset($_POST['buy_now'])) {
-                                    $wpStoreCartOptions['buy_now'] = $wpdb->escape($_POST['buy_now']);
+                                    $wpStoreCartOptions['buy_now'] = esc_sql($_POST['buy_now']);
                             }
 
                             if (isset($_POST['allowmb'])) {
-                                    $wpStoreCartOptions['allowmb'] = $wpdb->escape($_POST['allowmb']);
+                                    $wpStoreCartOptions['allowmb'] = esc_sql($_POST['allowmb']);
                             }
                             if (isset($_POST['mb_login'])) {
-                                    $wpStoreCartOptions['mb_login'] = $wpdb->escape($_POST['mb_login']);
+                                    $wpStoreCartOptions['mb_login'] = esc_sql($_POST['mb_login']);
                             }
                             if (isset($_POST['mb_secretword'])) {
-                                    $wpStoreCartOptions['mb_secretword'] = $wpdb->escape($_POST['mb_secretword']);
+                                    $wpStoreCartOptions['mb_secretword'] = esc_sql($_POST['mb_secretword']);
                             }
                             if (isset($_POST['mb_logo'])) {
-                                    $wpStoreCartOptions['mb_logo'] = $wpdb->escape($_POST['mb_logo']);
+                                    $wpStoreCartOptions['mb_logo'] = esc_sql($_POST['mb_logo']);
                             }
                             if (isset($_POST['mb_currency'])) {
-                                    $wpStoreCartOptions['mb_currency'] = $wpdb->escape($_POST['mb_currency']);
+                                    $wpStoreCartOptions['mb_currency'] = esc_sql($_POST['mb_currency']);
                             }
 
                             if (isset($_POST['checkout_moneybookers_button'])) {
-                                    $wpStoreCartOptions['checkout_moneybookers_button'] = $wpdb->escape($_POST['checkout_moneybookers_button']);
+                                    $wpStoreCartOptions['checkout_moneybookers_button'] = esc_sql($_POST['checkout_moneybookers_button']);
                             }
 
                             if (isset($_POST['show_price_to_guests'])) {
-                                    $wpStoreCartOptions['show_price_to_guests'] = $wpdb->escape($_POST['show_price_to_guests']);
+                                    $wpStoreCartOptions['show_price_to_guests'] = esc_sql($_POST['show_price_to_guests']);
                             }
                             if (isset($_POST['logged_out_price'])) {
-                                    $wpStoreCartOptions['logged_out_price'] = $wpdb->escape($_POST['logged_out_price']);
+                                    $wpStoreCartOptions['logged_out_price'] = esc_sql($_POST['logged_out_price']);
                             }
                             if (isset($_POST['uninstall'])) {
-                                    $wpStoreCartOptions['uninstall'] = $wpdb->escape($_POST['uninstall']);
+                                    $wpStoreCartOptions['uninstall'] = esc_sql($_POST['uninstall']);
                             }
                             if (isset($_POST['qty'])) {
-                                    $wpStoreCartOptions['qty'] = $wpdb->escape($_POST['qty']);
+                                    $wpStoreCartOptions['qty'] = esc_sql($_POST['qty']);
                             }                                
                             if (isset($_POST['combo_enable'])) {
-                                    $wpStoreCartOptions['combo_enable'] = $wpdb->escape($_POST['combo_enable']);
+                                    $wpStoreCartOptions['combo_enable'] = esc_sql($_POST['combo_enable']);
                             }  
                             if (isset($_POST['combo_display_prices'])) {
-                                    $wpStoreCartOptions['combo_display_prices'] = $wpdb->escape($_POST['combo_display_prices']);
+                                    $wpStoreCartOptions['combo_display_prices'] = esc_sql($_POST['combo_display_prices']);
                             }  
                             if (isset($_POST['combo_display_links'])) {
-                                    $wpStoreCartOptions['combo_display_links'] = $wpdb->escape($_POST['combo_display_links']);
+                                    $wpStoreCartOptions['combo_display_links'] = esc_sql($_POST['combo_display_links']);
                             }  
                             if (isset($_POST['combo_display_thumbs'])) {
-                                    $wpStoreCartOptions['combo_display_thumbs'] = $wpdb->escape($_POST['combo_display_thumbs']);
+                                    $wpStoreCartOptions['combo_display_thumbs'] = esc_sql($_POST['combo_display_thumbs']);
                             }                                  
                             if (isset($_POST['redirect_to_checkout'])) {
-                                    $wpStoreCartOptions['redirect_to_checkout'] = $wpdb->escape($_POST['redirect_to_checkout']);
+                                    $wpStoreCartOptions['redirect_to_checkout'] = esc_sql($_POST['redirect_to_checkout']);
                             }        
                             if (isset($_POST['debug_parameter'])) {
-                                    $wpStoreCartOptions['debug_parameter'] = $wpdb->escape($_POST['debug_parameter']);
+                                    $wpStoreCartOptions['debug_parameter'] = esc_sql($_POST['debug_parameter']);
                             }               
                             if (isset($_POST['where_to_display_accessories'])) {
-                                    $wpStoreCartOptions['where_to_display_accessories'] = $wpdb->escape($_POST['where_to_display_accessories']);
+                                    $wpStoreCartOptions['where_to_display_accessories'] = esc_sql($_POST['where_to_display_accessories']);
                             }                            
                             if (isset($_POST['completely_disable_shareyourcart'])) {
-                                    $wpStoreCartOptions['completely_disable_shareyourcart'] = $wpdb->escape($_POST['completely_disable_shareyourcart']);
+                                    $wpStoreCartOptions['completely_disable_shareyourcart'] = esc_sql($_POST['completely_disable_shareyourcart']);
                             }   
                             if (isset($_POST['piwik_url'])) {
-                                    $wpStoreCartOptions['piwik_url'] = $wpdb->escape($_POST['piwik_url']);
+                                    $wpStoreCartOptions['piwik_url'] = esc_sql($_POST['piwik_url']);
                             }                            
                             if (isset($_POST['piwik_enabled'])) {
-                                    $wpStoreCartOptions['piwik_enabled'] = $wpdb->escape($_POST['piwik_enabled']);
+                                    $wpStoreCartOptions['piwik_enabled'] = esc_sql($_POST['piwik_enabled']);
                             }                  
                             if (isset($_POST['piwik_siteid'])) {
-                                    $wpStoreCartOptions['piwik_siteid'] = $wpdb->escape($_POST['piwik_siteid']);
+                                    $wpStoreCartOptions['piwik_siteid'] = esc_sql($_POST['piwik_siteid']);
                             }  
                             if (isset($_POST['enable_alerts'])) {
-                                    $wpStoreCartOptions['enable_alerts'] = $wpdb->escape($_POST['enable_alerts']);
+                                    $wpStoreCartOptions['enable_alerts'] = esc_sql($_POST['enable_alerts']);
                             }                             
 
                             if (isset($_POST['admin_capability'])) {
                                     global $wp_roles;
-                                    $wpStoreCartOptions['admin_capability'] = $wpdb->escape($_POST['admin_capability']);
+                                    $wpStoreCartOptions['admin_capability'] = esc_sql($_POST['admin_capability']);
                                     if($wpStoreCartOptions['admin_capability']=='administrator') {
                                         $wp_roles->remove_cap( 'editor', 'manage_wpstorecart' );
                                         $wp_roles->remove_cap( 'author', 'manage_wpstorecart' );

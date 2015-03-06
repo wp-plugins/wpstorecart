@@ -10,7 +10,7 @@ if (!function_exists('add_action')) {
 
 $wpStoreCartOptions = get_option('wpStoreCartAdminOptions'); 
 
-$alert_id = intval($wpdb->escape($_POST['alert_id'])); // The Alert we're dealing with
+$alert_id = intval(esc_sql($_POST['alert_id'])); // The Alert we're dealing with
 
 $curAlerts = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_alerts` WHERE `primkey`='{$alert_id}';", ARRAY_A);
 if(isset($curAlerts[0])) {

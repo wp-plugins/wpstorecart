@@ -18,9 +18,9 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $primkey = $wpdb->escape($_POST['primkey']);
-    $orderid = $wpdb->escape($_POST['orderid']);
-    $qty = $wpdb->escape($_POST['qty']);
+    $primkey = esc_sql($_POST['primkey']);
+    $orderid = esc_sql($_POST['orderid']);
+    $qty = esc_sql($_POST['qty']);
 
     $table_name = $wpdb->prefix . "wpstorecart_orders";
     $findx = $wpdb->get_results("SELECT `cartcontents` FROM `{$table_name}` WHERE `primkey`='{$orderid}';", ARRAY_A);

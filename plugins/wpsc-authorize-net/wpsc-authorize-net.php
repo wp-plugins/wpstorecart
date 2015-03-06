@@ -61,25 +61,25 @@ function wpscAuthorizeNetSimSaveFunction() {
 
     if(isset($_POST['allowauthorizenet'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['allowauthorizenet'] = $wpdb->escape($_POST['allowauthorizenet']); // Changes the variable in the settings
+        $wpStoreCartOptions['allowauthorizenet'] = esc_sql($_POST['allowauthorizenet']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 	
     if(isset($_POST['authorizenettestmode'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['authorizenettestmode'] = $wpdb->escape($_POST['authorizenettestmode']); // Changes the variable in the settings
+        $wpStoreCartOptions['authorizenettestmode'] = esc_sql($_POST['authorizenettestmode']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['authorizenetemail'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['authorizenetemail'] = $wpdb->escape($_POST['authorizenetemail']); // Changes the variable in the settings
+        $wpStoreCartOptions['authorizenetemail'] = esc_sql($_POST['authorizenetemail']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['authorizenetsecretkey'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['authorizenetsecretkey'] = $wpdb->escape($_POST['authorizenetsecretkey']); // Changes the variable in the settings
+        $wpStoreCartOptions['authorizenetsecretkey'] = esc_sql($_POST['authorizenetsecretkey']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }		
 }

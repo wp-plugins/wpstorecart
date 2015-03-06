@@ -36,7 +36,7 @@ if(!function_exists('wpscAddCustomContactMethod')) {
             $specific_items = explode("||", $field['value']);
                 if($specific_items[2]!='separator' && $specific_items[2]!='header' && $specific_items[2]!='text') {
                     $slug = wpscSlug($specific_items[0]);
-                    $contactmethods[$slug] = $wpdb->escape($specific_items[0]); // This makes something like this: $contactmethods['address'] = 'Address';
+                    $contactmethods[$slug] = esc_sql($specific_items[0]); // This makes something like this: $contactmethods['address'] = 'Address';
                 }
 
         }
@@ -948,7 +948,7 @@ if(!function_exists('wpscRegisterExtraFields')) {
                 $specific_items = explode("||", $field['value']);
                 foreach ($specific_items as $specific_item) {
                     if($specific_item[2]!='separator' && $specific_item[2]!='header' && $specific_item[2]!='text') {
-                        update_usermeta( $user_id, wpscSlug($specific_item[0]), $wpdb->escape($_POST[wpscSlug($specific_item[0])]) );
+                        update_usermeta( $user_id, wpscSlug($specific_item[0]), esc_sql($_POST[wpscSlug($specific_item[0])]) );
                     }
                 }
             }
@@ -975,69 +975,69 @@ if(!function_exists('wpscSaveFields')) {
         // Firstname shipping
         if(@isset($_POST['wpsc_shipping_firstname'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_shipping_firstname', $wpdb->escape($_POST['wpsc_shipping_firstname']) );
+                update_usermeta( $user_id, 'wpsc_shipping_firstname', esc_sql($_POST['wpsc_shipping_firstname']) );
             }   
-            $_SESSION['wpsc_shipping_firstname'] = $wpdb->escape($_POST['wpsc_shipping_firstname']);
+            $_SESSION['wpsc_shipping_firstname'] = esc_sql($_POST['wpsc_shipping_firstname']);
         }
 
         // lastname shipping
         if(@isset($_POST['wpsc_shipping_lastname'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_shipping_lastname', $wpdb->escape($_POST['wpsc_shipping_lastname']) );
+                update_usermeta( $user_id, 'wpsc_shipping_lastname', esc_sql($_POST['wpsc_shipping_lastname']) );
             }   
-            $_SESSION['wpsc_shipping_lastname'] = $wpdb->escape($_POST['wpsc_shipping_lastname']);
+            $_SESSION['wpsc_shipping_lastname'] = esc_sql($_POST['wpsc_shipping_lastname']);
         }    
 
         // address shipping
         if(@isset($_POST['wpsc_shipping_address'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_shipping_address', $wpdb->escape($_POST['wpsc_shipping_address']) );
+                update_usermeta( $user_id, 'wpsc_shipping_address', esc_sql($_POST['wpsc_shipping_address']) );
             }   
-            $_SESSION['wpsc_shipping_address'] = $wpdb->escape($_POST['wpsc_shipping_address']);
+            $_SESSION['wpsc_shipping_address'] = esc_sql($_POST['wpsc_shipping_address']);
         }            
 
         // zipcode shipping
         if(@isset($_POST['wpsc_shipping_zipcode'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_shipping_zipcode', $wpdb->escape($_POST['wpsc_shipping_zipcode']) );
+                update_usermeta( $user_id, 'wpsc_shipping_zipcode', esc_sql($_POST['wpsc_shipping_zipcode']) );
             }   
-            $_SESSION['wpsc_shipping_zipcode'] = $wpdb->escape($_POST['wpsc_shipping_zipcode']);
+            $_SESSION['wpsc_shipping_zipcode'] = esc_sql($_POST['wpsc_shipping_zipcode']);
         }  
 
 
         // states shipping
         if(@isset($_POST['taxstate'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_taxstates', $wpdb->escape($_POST['taxstate']) );
+                update_usermeta( $user_id, 'wpsc_taxstates', esc_sql($_POST['taxstate']) );
             }   
-            $_SESSION['wpsc_taxstates'] = $wpdb->escape($_POST['taxstate']);
+            $_SESSION['wpsc_taxstates'] = esc_sql($_POST['taxstate']);
         } 
 
         // city shipping
         if(@isset($_POST['wpsc_shipping_city'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_shipping_city', $wpdb->escape($_POST['wpsc_shipping_city']) );
+                update_usermeta( $user_id, 'wpsc_shipping_city', esc_sql($_POST['wpsc_shipping_city']) );
             }   
-            $_SESSION['wpsc_shipping_city'] = $wpdb->escape($_POST['wpsc_shipping_city']);
+            $_SESSION['wpsc_shipping_city'] = esc_sql($_POST['wpsc_shipping_city']);
         }         
 
         // countries shipping
         if(@isset($_POST['taxcountries'])) {
             if($user_id > 0) { // If we're dealing with a logged in user:
-                update_usermeta( $user_id, 'wpsc_taxcountries', $wpdb->escape($_POST['taxcountries']) );
+                update_usermeta( $user_id, 'wpsc_taxcountries', esc_sql($_POST['taxcountries']) );
             }   
-            $_SESSION['wpsc_taxcountries'] = $wpdb->escape($_POST['taxcountries']);
+            $_SESSION['wpsc_taxcountries'] = esc_sql($_POST['taxcountries']);
         }          
       
         foreach ($fields as $field) {
             $specific_items = explode("||", $field['value']);
             if(@isset($_POST[wpscSlug($specific_items[0])])) {
                 if($user_id > 0) { // If we're dealing with a logged in user:
-                    update_usermeta( $user_id, wpscSlug($specific_items[0]), $wpdb->escape($_POST[wpscSlug($specific_items[0])]) );
+                    update_usermeta( $user_id, wpscSlug($specific_items[0]), esc_sql($_POST[wpscSlug($specific_items[0])]) );
                 }
                 //  Session data should be saved regardless of if logged in
-                $_SESSION['wpsc_'.wpscSlug($specific_items[0])] = $wpdb->escape($_POST[wpscSlug($specific_items[0])]);
-                //echo 'SAVE: wpsc_'.wpscSlug($specific_items[0]) .' : '.$wpdb->escape($_POST[wpscSlug($specific_items[0])]) .'<br />';
+                $_SESSION['wpsc_'.wpscSlug($specific_items[0])] = esc_sql($_POST[wpscSlug($specific_items[0])]);
+                //echo 'SAVE: wpsc_'.wpscSlug($specific_items[0]) .' : '.esc_sql($_POST[wpscSlug($specific_items[0])]) .'<br />';
             } 
             
         }

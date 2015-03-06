@@ -113,8 +113,8 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 if($wpStoreCartOptions['requireregistration']=='false' || $wpStoreCartOptions['requireregistration']=='disable') {
                     if(@isset($_SESSION['wpsc_email'])) {
                         $purchaser_user_id = 0;
-                        $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
-                        $purchasing_display_name = 'Guest ('.$wpdb->escape($_SERVER['REMOTE_ADDR']).')';
+                        $purchaser_email = esc_sql($_SESSION['wpsc_email']);
+                        $purchasing_display_name = 'Guest ('.esc_sql($_SERVER['REMOTE_ADDR']).')';
                     } 
                     if ( @isset($current_user->ID) && ( @$current_user->ID > 0 )){
                         $purchaser_user_id = $current_user->ID;
@@ -134,7 +134,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 $wpscPaymentGateway = array(); 
                 
                 if(@isset($_POST['paymentGateway'])) {
-                    $wpscPaymentGateway['payment_gateway'] = $wpdb->escape($_POST['paymentGateway']);
+                    $wpscPaymentGateway['payment_gateway'] = esc_sql($_POST['paymentGateway']);
                 } else {
                     exit(); // if we have no payment gateway to process, then lets exit
                 }
@@ -281,7 +281,7 @@ if (isset($_POST['wpsc_update_cart'])  || isset($_POST['wpsc_empty'])) {
                 
                 // Order note:
                 if($wpscPaymentGateway['ordernote']!=null) {
-                    $sql = "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '{$wpdb->escape($wpscPaymentGateway['ordernote'])}', 'ordernote', '{$wpscPaymentGateway['order_id']}');";
+                    $sql = "INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey` ,`value` ,`type` ,`foreignkey`)VALUES (NULL , '".esc_sql($wpscPaymentGateway['ordernote'])."', 'ordernote', '{$wpscPaymentGateway['order_id']}');";
                     $wpdb->query( $sql );                
                 }
                 

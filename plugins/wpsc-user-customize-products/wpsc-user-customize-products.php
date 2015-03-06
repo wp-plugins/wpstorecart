@@ -721,11 +721,11 @@ function wpscCustomizeProductSaveCustomization($primkey) {
     }         
     
     if ( isset($_SERVER["REMOTE_ADDR"]) )    {
-        $wpsc_c_ip_address = $wpdb->escape($_SERVER["REMOTE_ADDR"]);
+        $wpsc_c_ip_address = esc_sql($_SERVER["REMOTE_ADDR"]);
     } else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) )    {
-        $wpsc_c_ip_address =  $wpdb->escape($_SERVER["HTTP_X_FORWARDED_FOR"]);
+        $wpsc_c_ip_address =  esc_sql($_SERVER["HTTP_X_FORWARDED_FOR"]);
     } else if ( isset($_SERVER["HTTP_CLIENT_IP"]) )    {
-        $wpsc_c_ip_address =  $wpdb->escape($_SERVER["HTTP_CLIENT_IP"]);
+        $wpsc_c_ip_address =  esc_sql($_SERVER["HTTP_CLIENT_IP"]);
     }    
     
     $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
@@ -750,7 +750,7 @@ function wpscCustomizeProductSaveCustomization($primkey) {
                 $first = '1';
             }
             
-            @$output .= "jQuery.post('".plugins_url()."/wpstorecart/plugins/wpsc-user-customize-products/save_custom_order.php', {first: {$first}, wpstorecartitemqty: jQuery('.wpstorecart-item-qty').val(), productkey: jQuery('.wpstorecart-item-id').val(), userid: {$theuser}, custdefkey: {$result['custkey']}, ipaddress: '{$wpsc_c_ip_address}', guestemail: '{$wpdb->escape($_SESSION['wpsc_email'])}', customtext: jQuery('#wpsc-custom-selected-customtext-{$result['custkey']}').val(), textformat: jQuery('#wpsc-custom-selected-textformat-{$result['custkey']}').val(), textx: jQuery('#wpsc-custom-selected-textx-{$result['custkey']}').val(), texty: jQuery('#wpsc-custom-selected-texty-{$result['custkey']}').val(), textwidth: jQuery('#wpsc-custom-selected-textwidth-{$result['custkey']}').val(), textheight: jQuery('#wpsc-custom-selected-textheight-{$result['custkey']}').val(), image: jQuery('#wpsc-custom-selected-image-{$result['custkey']}').val(), imagex: jQuery('#wpsc-custom-selected-image-x-{$result['custkey']}').val(), imagey: jQuery('#wpsc-custom-selected-image-y-{$result['custkey']}').val(), imagewidth: jQuery('#wpsc-custom-selected-image-width-{$result['custkey']}').val(), imageheight: jQuery('#wpsc-custom-selected-image-height-{$result['custkey']}').val()  }, function(data) {
+            @$output .= "jQuery.post('".plugins_url()."/wpstorecart/plugins/wpsc-user-customize-products/save_custom_order.php', {first: {$first}, wpstorecartitemqty: jQuery('.wpstorecart-item-qty').val(), productkey: jQuery('.wpstorecart-item-id').val(), userid: {$theuser}, custdefkey: {$result['custkey']}, ipaddress: '{$wpsc_c_ip_address}', guestemail: '".esc_sql($_SESSION['wpsc_email'])."', customtext: jQuery('#wpsc-custom-selected-customtext-{$result['custkey']}').val(), textformat: jQuery('#wpsc-custom-selected-textformat-{$result['custkey']}').val(), textx: jQuery('#wpsc-custom-selected-textx-{$result['custkey']}').val(), texty: jQuery('#wpsc-custom-selected-texty-{$result['custkey']}').val(), textwidth: jQuery('#wpsc-custom-selected-textwidth-{$result['custkey']}').val(), textheight: jQuery('#wpsc-custom-selected-textheight-{$result['custkey']}').val(), image: jQuery('#wpsc-custom-selected-image-{$result['custkey']}').val(), imagex: jQuery('#wpsc-custom-selected-image-x-{$result['custkey']}').val(), imagey: jQuery('#wpsc-custom-selected-image-y-{$result['custkey']}').val(), imagewidth: jQuery('#wpsc-custom-selected-image-width-{$result['custkey']}').val(), imageheight: jQuery('#wpsc-custom-selected-image-height-{$result['custkey']}').val()  }, function(data) {
             ";
 
             if ($i == $len - 1) {

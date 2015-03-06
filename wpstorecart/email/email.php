@@ -111,9 +111,9 @@ if(!function_exists('wpscSendSuccessfulPurchaseEmail')) {
                 wpscEmail($wpscEmail, 'Your order has been fulfilled!', $message, $headers);
             } else {                
                 if(@isset($_SESSION['wpsc_email'])) {
-                    wpscEmail($wpdb->escape($_SESSION['wpsc_email']), __('Your order has been fulfilled!','wpstorecart'), $message, $headers);
+                    wpscEmail(esc_sql($_SESSION['wpsc_email']), __('Your order has been fulfilled!','wpstorecart'), $message, $headers);
                 } elseif(@isset($_POST['payer_email'])) {
-                    wpscEmail($wpdb->escape($_POST['payer_email']), __('Your order has been fulfilled!','wpstorecart'), $message, $headers);
+                    wpscEmail(esc_sql($_POST['payer_email']), __('Your order has been fulfilled!','wpstorecart'), $message, $headers);
                 }
             }
         }

@@ -15,9 +15,9 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $wpscorderid = $wpdb->escape($_POST['wpsc-orderid']);
-    $wpscaddnewproduct = $wpdb->escape($_POST['wpsc-add-new-product']);
-    $wpscproductqtyaddtoorder = $wpdb->escape($_POST['wpsc-product-qty-add-to-order']);    
+    $wpscorderid = esc_sql($_POST['wpsc-orderid']);
+    $wpscaddnewproduct = esc_sql($_POST['wpsc-add-new-product']);
+    $wpscproductqtyaddtoorder = esc_sql($_POST['wpsc-product-qty-add-to-order']);    
     $wpscDecreaseInventory = $_POST['wpsc-product-decrease-inventory-add-to-order'];
     if($wpscDecreaseInventory=='yes') {
         wpscProductDecreaseProductInventory($wpscaddnewproduct, $wpscproductqtyaddtoorder);

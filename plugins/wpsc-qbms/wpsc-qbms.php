@@ -62,25 +62,25 @@ function wpscQBMSSaveFunction() {
 
     if(isset($_POST['allowqbms'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['allowqbms'] = $wpdb->escape($_POST['allowqbms']); // Changes the variable in the settings
+        $wpStoreCartOptions['allowqbms'] = esc_sql($_POST['allowqbms']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 	
     if(isset($_POST['qbms_login'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['qbms_login'] = $wpdb->escape($_POST['qbms_login']); // Changes the variable in the settings
+        $wpStoreCartOptions['qbms_login'] = esc_sql($_POST['qbms_login']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['qbms_ticket'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['qbms_ticket'] = $wpdb->escape($_POST['qbms_ticket']); // Changes the variable in the settings
+        $wpStoreCartOptions['qbms_ticket'] = esc_sql($_POST['qbms_ticket']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 
     if(isset($_POST['qbms_testingmode'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['qbms_testingmode'] = $wpdb->escape($_POST['qbms_testingmode']); // Changes the variable in the settings
+        $wpStoreCartOptions['qbms_testingmode'] = esc_sql($_POST['qbms_testingmode']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 }

@@ -35,7 +35,7 @@ function wpscFlatRateSaveShippingFunction() {
     }
     if(isset($_POST['allowwpscFlatRate'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['allowwpscFlatRate'] = $wpdb->escape($_POST['allowwpscFlatRate']); // Changes the variable in the settings
+        $wpStoreCartOptions['allowwpscFlatRate'] = esc_sql($_POST['allowwpscFlatRate']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 }

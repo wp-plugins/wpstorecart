@@ -1858,7 +1858,7 @@ if(!function_exists('wpscProductIncreaseProductStatistic')) {
                             if($stat == 'timesviewed') {$stat2 = 'productview';}
                             if($stat == 'timesaddedtocart') {$stat2 = 'addtocart';}
                             if($stat == 'timespurchased') {$stat2 = 'purchase';}
-                            wpscLog(NULL, $stat2, $wpdb->escape($_SERVER['REMOTE_ADDR']), $primkey, date('Ymd')); // write it to the log
+                            wpscLog(NULL, $stat2, esc_sql($_SERVER['REMOTE_ADDR']), $primkey, date('Ymd')); // write it to the log
                     }
             }
 
@@ -1907,7 +1907,7 @@ if(!function_exists('wpscProductDecreaseProductInventory')) {
             if($select[0]['useinventory']==1) { // If we're using inventory on this product
                 if($select[0]['inventory']<=0) { // We are out of product.  Never the less, we will still decrease the inventory into negative numbers
                     $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `inventory`='{$newInventoryAmount}' WHERE `primkey`='{$primkey}';");
-                    wpscLog(NULL, 'oversold', $wpdb->escape($_SERVER['REMOTE_ADDR']), $primkey, date('Ymd')); // write it to the log
+                    wpscLog(NULL, 'oversold', esc_sql($_SERVER['REMOTE_ADDR']), $primkey, date('Ymd')); // write it to the log
                     return true; // Returns true because there was no issue.
                 } else { // We're fine.  Let's get it over with.
                     $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `inventory`='{$newInventoryAmount}' WHERE `primkey`='{$primkey}';");
@@ -2066,8 +2066,8 @@ if(!function_exists('wpscProductGetAddToCartButton')) {
                                         if($wpStoreCartOptions['requireregistration']=='false') {
                                             if(@isset($_SESSION['wpsc_email'])) {
                                                 $purchaser_user_id = 0;
-                                                $purchaser_email = $wpdb->escape($_SESSION['wpsc_email']);
-                                                $purchasing_display_name = 'Guest ('.$wpdb->escape($_SERVER['REMOTE_ADDR']).')';
+                                                $purchaser_email = esc_sql($_SESSION['wpsc_email']);
+                                                $purchasing_display_name = 'Guest ('.esc_sql($_SERVER['REMOTE_ADDR']).')';
                                             } else {
                                                 $purchaser_user_id = $current_user->ID;
                                                 $purchaser_email = $current_user->user_email;

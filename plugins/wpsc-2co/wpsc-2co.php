@@ -57,19 +57,19 @@ function wpsc2COSaveFunction() {
 
     if(isset($_POST['allow2checkout'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['allow2checkout'] = $wpdb->escape($_POST['allow2checkout']); // Changes the variable in the settings
+        $wpStoreCartOptions['allow2checkout'] = esc_sql($_POST['allow2checkout']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 	
     if(isset($_POST['2checkouttestmode'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['2checkouttestmode'] = $wpdb->escape($_POST['2checkouttestmode']); // Changes the variable in the settings
+        $wpStoreCartOptions['2checkouttestmode'] = esc_sql($_POST['2checkouttestmode']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['2checkoutemail'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['2checkoutemail'] = $wpdb->escape($_POST['2checkoutemail']); // Changes the variable in the settings
+        $wpStoreCartOptions['2checkoutemail'] = esc_sql($_POST['2checkoutemail']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 }

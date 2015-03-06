@@ -21,8 +21,8 @@ if ( 0 == $current_user->ID ) {
     }
 
     $table_name = $wpdb->prefix . "wpstorecart_meta";
-    $primkeys = $wpdb->escape($_POST['primkeys']);
-    $combopackname = $wpdb->escape($_POST['combopackname']);
+    $primkeys = esc_sql($_POST['primkeys']);
+    $combopackname = esc_sql($_POST['combopackname']);
     $isanedit = false;
     if(isset($_POST['isanedit'])) {
         $isanedit = intval($_POST['isanedit']);

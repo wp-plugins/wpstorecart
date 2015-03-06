@@ -45,7 +45,7 @@
 				update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
 			}
 			if(isset($_POST['enableFreeShippingOverXX'])) { // Here's where you update the value of the variable
-				$wpStoreCartOptions['enableFreeShippingOverXX'] = $wpdb->escape($_POST['enableFreeShippingOverXX']); // Changes the variable in the settings
+				$wpStoreCartOptions['enableFreeShippingOverXX'] = esc_sql($_POST['enableFreeShippingOverXX']); // Changes the variable in the settings
 				update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
 			}
 
@@ -54,7 +54,7 @@
 				update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
 			}
 			if(isset($_POST['FreeShippingOverXXThreshold'])) { // Here's where you update the value of the variable
-				$wpStoreCartOptions['FreeShippingOverXXThreshold'] = $wpdb->escape($_POST['FreeShippingOverXXThreshold']); // Changes the variable in the settings
+				$wpStoreCartOptions['FreeShippingOverXXThreshold'] = esc_sql($_POST['FreeShippingOverXXThreshold']); // Changes the variable in the settings
 				update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
 			}    
 

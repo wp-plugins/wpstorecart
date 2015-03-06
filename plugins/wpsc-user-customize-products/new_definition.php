@@ -20,7 +20,7 @@ if ( 0 == $current_user->ID ) {
     
     $current = intval($_POST['wpsc-rect-count']);
     $productkey = intval($_POST['wpsc-keytoedit']);
-    $allowed = $wpdb->escape($_POST['wpsc-customize-edit-record-allowed-types-val-'.$current]);
+    $allowed = esc_sql($_POST['wpsc-customize-edit-record-allowed-types-val-'.$current]);
     $x = intval($_POST['wpsc-customize-edit-record-x-val-'.$current]);
     $y = intval($_POST['wpsc-customize-edit-record-y-val-'.$current]);
     $width = intval($_POST['wpsc-customize-edit-record-width-val-'.$current]);

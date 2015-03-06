@@ -762,7 +762,7 @@ if (!function_exists('wpscAdminPageCoupons')) {
 
         // Allows us to turn the coupon system off or on from this page
         if(@isset($_POST['enablecoupons'])) {
-            $wpStoreCartOptions['enablecoupons'] = $wpdb->escape($_POST['enablecoupons']);
+            $wpStoreCartOptions['enablecoupons'] = esc_sql($_POST['enablecoupons']);
             update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
         }
 
@@ -795,14 +795,14 @@ if (!function_exists('wpscAdminPageCoupons')) {
                 $isanedit = true;
 
                 if (isset($_POST['wpStoreCartcode']) && isset($_POST['wpStoreCartamount']) && isset($_POST['wpStoreCartpercent']) && isset($_POST['wpStoreCartdescription']) && isset($_POST['wpStoreCartproduct']) && isset($_POST['wpStoreCartstartdate']) && isset($_POST['wpStoreCartenddate'])) {
-                        $wpStoreCartcode = $wpdb->escape($_POST['wpStoreCartcode']);
-                        $wpStoreCartamount = $wpdb->escape($_POST['wpStoreCartamount']);
-                        $wpStoreCartpercent = $wpdb->escape($_POST['wpStoreCartpercent']);
-                        $wpStoreCartdescription = $wpdb->escape($_POST['wpStoreCartdescription']);
-                        $wpStoreCartproduct = $wpdb->escape($_POST['wpStoreCartproduct']);
-                        $wpStoreCartstartdate = $wpdb->escape($_POST['wpStoreCartstartdate']);
-                        $wpStoreCartenddate = $wpdb->escape($_POST['wpStoreCartenddate']);
-                        $cleanKey = $wpdb->escape($_GET['keytoedit']);
+                        $wpStoreCartcode = esc_sql($_POST['wpStoreCartcode']);
+                        $wpStoreCartamount = esc_sql($_POST['wpStoreCartamount']);
+                        $wpStoreCartpercent = esc_sql($_POST['wpStoreCartpercent']);
+                        $wpStoreCartdescription = esc_sql($_POST['wpStoreCartdescription']);
+                        $wpStoreCartproduct = esc_sql($_POST['wpStoreCartproduct']);
+                        $wpStoreCartstartdate = esc_sql($_POST['wpStoreCartstartdate']);
+                        $wpStoreCartenddate = esc_sql($_POST['wpStoreCartenddate']);
+                        $cleanKey = esc_sql($_GET['keytoedit']);
 
 
                         $updateSQL = "
@@ -858,13 +858,13 @@ if (!function_exists('wpscAdminPageCoupons')) {
         if (isset($_POST['addNewwpStoreCart_product']) && $isanedit == false) {
 
                 if (isset($_POST['wpStoreCartcode']) && isset($_POST['wpStoreCartamount']) && isset($_POST['wpStoreCartpercent']) && isset($_POST['wpStoreCartdescription']) && isset($_POST['wpStoreCartproduct']) && isset($_POST['wpStoreCartstartdate'])&& isset($_POST['wpStoreCartenddate'])) {
-                        $wpStoreCartcode = $wpdb->escape($_POST['wpStoreCartcode']);
-                        $wpStoreCartamount = $wpdb->escape($_POST['wpStoreCartamount']);
-                        $wpStoreCartpercent = $wpdb->escape($_POST['wpStoreCartpercent']);
-                        $wpStoreCartdescription = $wpdb->escape($_POST['wpStoreCartdescription']);
-                        $wpStoreCartproduct = $wpdb->escape($_POST['wpStoreCartproduct']);
-                        $wpStoreCartstartdate = $wpdb->escape($_POST['wpStoreCartstartdate']);
-                        $wpStoreCartenddate = $wpdb->escape($_POST['wpStoreCartenddate']);
+                        $wpStoreCartcode = esc_sql($_POST['wpStoreCartcode']);
+                        $wpStoreCartamount = esc_sql($_POST['wpStoreCartamount']);
+                        $wpStoreCartpercent = esc_sql($_POST['wpStoreCartpercent']);
+                        $wpStoreCartdescription = esc_sql($_POST['wpStoreCartdescription']);
+                        $wpStoreCartproduct = esc_sql($_POST['wpStoreCartproduct']);
+                        $wpStoreCartstartdate = esc_sql($_POST['wpStoreCartstartdate']);
+                        $wpStoreCartenddate = esc_sql($_POST['wpStoreCartenddate']);
 
                         $wpStoreCartOptions = get_option('wpStoreCartAdminOptions');
 
@@ -2522,7 +2522,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                         }
 
                        
-                        $keytoedit=$wpdb->escape($_GET['keytoedit']);	
+                        $keytoedit=esc_sql($_GET['keytoedit']);	
                         $grabrecord = "SELECT * FROM {$table_name} WHERE `primkey`={$keytoedit};";					
 
                         $results = $wpdb->get_results( $grabrecord , ARRAY_A );		
@@ -3877,7 +3877,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                                         jQuery.ajax({ url: "'.plugins_url().'/wpstorecart/wpstorecart/admin/php/addcombo.php", type:"POST", data:"wpsc_combo_product_names="+jQuery("#wpsc_combo_product_names").val()+"&wpsc_combo_discount_price="+jQuery("#wpsc_combo_discount_price").val()+"&wpsc_combo_primkey='.intval($_GET['keytoedit']); if($wpsc_testing_mode){echo '&'.$wpStoreCartOptions['debug_parameter'];}  echo'", success: function(txt){
                                             var stringToSplit = jQuery("#wpsc_combo_product_names").val();
                                             var Exploder = stringToSplit.split("||");
-                                            jQuery("#wpsc_combo_tbody").append("<tr id=\'combo-"+txt+"\'><td><img onclick=\'delcombo("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>'.$wpdb->escape($wpStoreCartOptions['currency_symbol']).'"+jQuery("#wpsc_combo_discount_price").val()+"'.$wpdb->escape($wpStoreCartOptions['currency_symbol_right']).'</p></td></tr>");
+                                            jQuery("#wpsc_combo_tbody").append("<tr id=\'combo-"+txt+"\'><td><img onclick=\'delcombo("+txt+");\' style=\'cursor:pointer;\' src=\''.plugins_url().'/wpstorecart/images/cross.png\' /> <p id=\'varcat_"+txt+"\' class=\'edit\'></p></td><td><p class=\'edit\' id=\'varvalue_"+txt+"\'>"+Exploder[1]+"</p></td><td><p class=\'edit\' id=\'varprice_"+txt+"\'>'.esc_sql($wpStoreCartOptions['currency_symbol']).'"+jQuery("#wpsc_combo_discount_price").val()+"'.esc_sql($wpStoreCartOptions['currency_symbol_right']).'</p></td></tr>");
 
                                         }});
                                         return false;
@@ -7259,7 +7259,7 @@ if(!function_exists('wpscAdminPageCategories')) {
                 $criteria = " `orderstatus`='Completed' "; 
 
             } else {
-                $theSearch = $wpdb->escape($_POST['wpsc-customer-search']);
+                $theSearch = esc_sql($_POST['wpsc-customer-search']);
                 if($_POST['wpsc-customer-search-completed']=='Completed') {
                     $criteria = " `orderstatus`='Completed' "; 
                 } else {
@@ -7319,10 +7319,10 @@ if(!function_exists('wpscAdminPageCategories')) {
             
             echo '<div class="grid_16">';     
                 if(isset($_POST['combo_enable']) && isset($_POST['combo_display_prices']) && isset($_POST['combo_display_links']) && isset($_POST['combo_display_thumbs'])){
-                    $devOptions['combo_enable'] = $wpdb->escape($_POST['combo_enable']);
-                    $devOptions['combo_display_prices'] = $wpdb->escape($_POST['combo_display_prices']);
-                    $devOptions['combo_display_links'] = $wpdb->escape($_POST['combo_display_links']);
-                    $devOptions['combo_display_thumbs'] = $wpdb->escape($_POST['combo_display_thumbs']);
+                    $devOptions['combo_enable'] = esc_sql($_POST['combo_enable']);
+                    $devOptions['combo_display_prices'] = esc_sql($_POST['combo_display_prices']);
+                    $devOptions['combo_display_links'] = esc_sql($_POST['combo_display_links']);
+                    $devOptions['combo_display_thumbs'] = esc_sql($_POST['combo_display_thumbs']);
 
                     update_option('wpStoreCartAdminOptions', $devOptions);
                 }
@@ -7499,9 +7499,9 @@ if(!function_exists('wpscAdminPageCategories')) {
             echo '<div class="grid_16">'; 
 
                 if(isset($_POST['gd_enable']) && isset($_POST['gd_display']) && isset($_POST['gd_saleprice'])){
-                    $devOptions['gd_enable'] = $wpdb->escape($_POST['gd_enable']);
-                    $devOptions['gd_display'] = $wpdb->escape($_POST['gd_display']);
-                    $devOptions['gd_saleprice'] = $wpdb->escape($_POST['gd_saleprice']);
+                    $devOptions['gd_enable'] = esc_sql($_POST['gd_enable']);
+                    $devOptions['gd_display'] = esc_sql($_POST['gd_display']);
+                    $devOptions['gd_saleprice'] = esc_sql($_POST['gd_saleprice']);
 
                     update_option($this->adminOptionsName, $devOptions);
                 }
@@ -7520,9 +7520,9 @@ if(!function_exists('wpscAdminPageCategories')) {
                 }
 
                 if(isset($_POST['formtype']) && $_POST['formtype']=='groups' && isset($_POST['groupname']) && trim($_POST['groupname'])!='') { // New Groups code here
-                    $groupname = $wpdb->escape($_POST['groupname']);
+                    $groupname = esc_sql($_POST['groupname']);
                     $discount = intval($_POST['discount']);
-                    $enable = $wpdb->escape($_POST['enable']);
+                    $enable = esc_sql($_POST['enable']);
                     $wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_meta` (`primkey`, `value`, `type`, `foreignkey`) VALUES (NULL, '{$groupname}||{$discount}||{$enable}', 'groupdiscount', '0');");
                 }
 
@@ -7588,13 +7588,13 @@ if(!function_exists('wpscAdminPageCategories')) {
 
                 if(@isset($_POST['minimumAffiliatePayment']) || @isset($_POST['minimumDaysBeforePaymentEligable'])) {
                     if (isset($_POST['minimumAffiliatePayment'])) {
-                            $devOptions['minimumAffiliatePayment'] = $wpdb->escape($_POST['minimumAffiliatePayment']);
+                            $devOptions['minimumAffiliatePayment'] = esc_sql($_POST['minimumAffiliatePayment']);
                     }
                     if (isset($_POST['minimumDaysBeforePaymentEligable'])) {
-                            $devOptions['minimumDaysBeforePaymentEligable'] = $wpdb->escape($_POST['minimumDaysBeforePaymentEligable']);
+                            $devOptions['minimumDaysBeforePaymentEligable'] = esc_sql($_POST['minimumDaysBeforePaymentEligable']);
                     }
                     if (isset($_POST['affiliateInstructions'])) {
-                            $devOptions['affiliateInstructions'] = $wpdb->prepare($_POST['affiliateInstructions']);
+                            $devOptions['affiliateInstructions'] = esc_sql($_POST['affiliateInstructions']);
                     }
                     update_option('wpStoreCartAdminOptions', $devOptions);
                 }

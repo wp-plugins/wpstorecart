@@ -28,16 +28,16 @@ if ( 0 == $current_user->ID ) {
             $isanedit = true;
 
             if (isset($_POST['wpStoreCartCategory'])) {
-                    $wpStoreCartCategory = $wpdb->escape($_POST['wpStoreCartCategory']);
-                    $wpStoreCartCategoryParent = $wpdb->escape($_POST['wpStoreCartCategoryParent']);
-                    $wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
+                    $wpStoreCartCategory = esc_sql($_POST['wpStoreCartCategory']);
+                    $wpStoreCartCategoryParent = esc_sql($_POST['wpStoreCartCategoryParent']);
+                    $wpStoreCartproduct_thumbnail = esc_sql($_POST['wpStoreCartproduct_thumbnail']);
                     $wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
                     $wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);
                     $showtoall = $wpdb->prepare($_POST['showtoall']);
                     $showtowhichgroups = $wpdb->prepare(serialize($_POST['showtowhichgroups']));
                     $discountstoall = $wpdb->prepare($_POST['discountstoall']);
                     $discountstowhichgroups = $wpdb->prepare(serialize($_POST['discountstowhichgroups']));
-                    $cleanKey = $wpdb->escape($_POST['keytoedit']);
+                    $cleanKey = esc_sql($_POST['keytoedit']);
                     if(!is_numeric($wpStoreCartCategoryParent)) {
                             $wpStoreCartCategoryParent = 0;
                     }
@@ -96,15 +96,15 @@ if ( 0 == $current_user->ID ) {
     if ($isanedit == false) {
 
             if (isset($_POST['wpStoreCartCategoryParent']) && isset($_POST['wpStoreCartCategory'])) {
-                    $wpStoreCartCategoryParent = $wpdb->escape($_POST['wpStoreCartCategoryParent']);
-                    $wpStoreCartCategory = $wpdb->escape($_POST['wpStoreCartCategory']);
-                    $wpStoreCartproduct_thumbnail = $wpdb->escape($_POST['wpStoreCartproduct_thumbnail']);
-                    $wpStoreCartCategoryDescription = $wpdb->prepare($_POST['wpStoreCartCategoryDescription']);
-                    $wpStoreCartCategoryPostID = $wpdb->prepare($_POST['wpStoreCartCategoryPostID']);					
-                    $showtoall = $wpdb->prepare($_POST['showtoall']);
-                    $showtowhichgroups = $wpdb->prepare(serialize($_POST['showtowhichgroups']));
-                    $discountstoall = $wpdb->prepare($_POST['discountstoall']);
-                    $discountstowhichgroups = $wpdb->prepare(serialize($_POST['discountstowhichgroups']));
+                    $wpStoreCartCategoryParent = esc_sql($_POST['wpStoreCartCategoryParent']);
+                    $wpStoreCartCategory = esc_sql($_POST['wpStoreCartCategory']);
+                    $wpStoreCartproduct_thumbnail = esc_sql($_POST['wpStoreCartproduct_thumbnail']);
+                    $wpStoreCartCategoryDescription = esc_sql($_POST['wpStoreCartCategoryDescription']);
+                    $wpStoreCartCategoryPostID = esc_sql($_POST['wpStoreCartCategoryPostID']);					
+                    $showtoall = esc_sql($_POST['showtoall']);
+                    $showtowhichgroups = esc_sql(serialize($_POST['showtowhichgroups']));
+                    $discountstoall = esc_sql($_POST['discountstoall']);
+                    $discountstowhichgroups = esc_sql(serialize($_POST['discountstowhichgroups']));
 
                     if(!is_numeric($wpStoreCartCategoryParent)) {
                             $wpStoreCartCategoryParent = 0;

@@ -143,11 +143,11 @@ class wpsc_shoppingcart {
         function get_ip_address() {
             global $wpdb;
             if ( isset($_SERVER["REMOTE_ADDR"]) )    {
-                return $wpdb->escape($_SERVER["REMOTE_ADDR"]);
+                return esc_sql($_SERVER["REMOTE_ADDR"]);
             } else if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) )    {
-                return $wpdb->escape($_SERVER["HTTP_X_FORWARDED_FOR"]);
+                return esc_sql($_SERVER["HTTP_X_FORWARDED_FOR"]);
             } else if ( isset($_SERVER["HTTP_CLIENT_IP"]) )    {
-                return $wpdb->escape($_SERVER["HTTP_CLIENT_IP"]);
+                return esc_sql($_SERVER["HTTP_CLIENT_IP"]);
             }
             return 0;
         }
@@ -375,7 +375,7 @@ class wpsc_shoppingcart {
 		if(@isset($_POST['ccoupon'])) {
 			global $wpdb;
 
-			$thecoupon = $wpdb->escape($_POST['ccoupon']);
+			$thecoupon = esc_sql($_POST['ccoupon']);
 		
 			$table_name = $wpdb->prefix . "wpstorecart_coupons";
 			// Try adding the coupon hooks here
@@ -868,7 +868,7 @@ class wpsc_shoppingcart {
                         // ** Here's where we disable the user login system during checkout if registration is not required
                         if($wpStoreCartOptions['requireregistration']=='false' || $wpStoreCartOptions['requireregistration']=='disable') {
                             if(@isset($_POST['guest_email'])) {
-                                $_SESSION['wpsc_email'] = $wpdb->escape($_POST['guest_email']);
+                                $_SESSION['wpsc_email'] = esc_sql($_POST['guest_email']);
                             }
                             if(@isset($_SESSION['wpsc_email'])) {
                                 $isLoggedIn = true;

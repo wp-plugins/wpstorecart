@@ -138,7 +138,7 @@ function wpscUPSSaveShippingFunction() {
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);
     }
     if(isset($_POST['enableups'])) { // Here's where you update the value of the variable
-        $wpStoreCartOptions['enableups'] = $wpdb->escape($_POST['enableups']); // Changes the variable in the settings
+        $wpStoreCartOptions['enableups'] = esc_sql($_POST['enableups']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 

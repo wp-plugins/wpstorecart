@@ -17,7 +17,7 @@ if ( 0 == $current_user->ID ) {
 
     $table_name = $wpdb->prefix . "wpstorecart_field_def";
     $wpsc_fields_product_primkey = intval($_POST['wpsc_fields_product_primkey']);
-    $wpsc_fields_primkey = $wpdb->escape($_POST['wpsc_fields_primkey']);
+    $wpsc_fields_primkey = esc_sql($_POST['wpsc_fields_primkey']);
 
     $results = $wpdb->get_results("SELECT * FROM `{$table_name}` WHERE `primkey`='{$wpsc_fields_primkey}';", ARRAY_A);
     if (@isset($results[0]['primkey'])) {

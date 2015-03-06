@@ -213,10 +213,10 @@ function wpscUpdate() {
                     dbDelta($sql);
                     
                     $wpdb->query("INSERT INTO `{$table_name}` (`primkey`, `title`, `description`, `conditions`, `severity`, `image`, `url`, `qty`, `groupable`, `clearable`, `status`, `userid`, `adminpanel`, `textmessage`, `emailalert`, `desktop`) VALUES
-                    (null, '".$wpdb->escape(__('New sale!', 'wpstorecart'))."', '".$wpdb->escape(__('Triggered anytime there is a sale', 'wpstorecart'))."', 'newsales() = true;', 'Low', 'Badge.png', 'admin.php?page=wpstorecart-orders&wpsc_order_type=Completed', '', 0, 1, '".$wpdb->escape(__('You got new sale(s)', 'wpstorecart'))."', 1, 1, 0, 0, 0),
-                    (null, '".$wpdb->escape(__('3 Days', 'wpstorecart'))."', '".$wpdb->escape(__('No sales in 3 days', 'wpstorecart'))."', 'nosales() @ hours(72);', 'medium', 'SymbolRemove.png', 'admin.php?page=wpstorecart-orders', '', 0, 1, '".$wpdb->escape(__('No sales in 3 days', 'wpstorecart'))."', 1, 1, 0, 0, 0),
-                    (null, '".$wpdb->escape(__('1 Month', 'wpstorecart'))."', '".$wpdb->escape(__('No sales in 1 month', 'wpstorecart'))."', 'nosales() @ month(1);', 'High', 'SymbolDelete.png', 'admin.php?page=wpstorecart-orders', '', 0, 1, '".$wpdb->escape(__('No sales in 1 month', 'wpstorecart'))."', 1, 1, 0, 0, 0),
-                    (null, '".$wpdb->escape(__('No AddToCarts!', 'wpstorecart'))."', '".$wpdb->escape(__('No Add To Carts in the last day', 'wpstorecart'))."', 'noaddtocart() @ days(1);', '', 'Help.png', '', '', 0, 1, '".$wpdb->escape(__('No AddToCarts in last day', 'wpstorecart'))."', 1, 1, 0, 0, 0);
+                    (null, '".esc_sql(__('New sale!', 'wpstorecart'))."', '".esc_sql(__('Triggered anytime there is a sale', 'wpstorecart'))."', 'newsales() = true;', 'Low', 'Badge.png', 'admin.php?page=wpstorecart-orders&wpsc_order_type=Completed', '', 0, 1, '".esc_sql(__('You got new sale(s)', 'wpstorecart'))."', 1, 1, 0, 0, 0),
+                    (null, '".esc_sql(__('3 Days', 'wpstorecart'))."', '".esc_sql(__('No sales in 3 days', 'wpstorecart'))."', 'nosales() @ hours(72);', 'medium', 'SymbolRemove.png', 'admin.php?page=wpstorecart-orders', '', 0, 1, '".esc_sql(__('No sales in 3 days', 'wpstorecart'))."', 1, 1, 0, 0, 0),
+                    (null, '".esc_sql(__('1 Month', 'wpstorecart'))."', '".esc_sql(__('No sales in 1 month', 'wpstorecart'))."', 'nosales() @ month(1);', 'High', 'SymbolDelete.png', 'admin.php?page=wpstorecart-orders', '', 0, 1, '".esc_sql(__('No sales in 1 month', 'wpstorecart'))."', 1, 1, 0, 0, 0),
+                    (null, '".esc_sql(__('No AddToCarts!', 'wpstorecart'))."', '".esc_sql(__('No Add To Carts in the last day', 'wpstorecart'))."', 'noaddtocart() @ days(1);', '', 'Help.png', '', '', 0, 1, '".esc_sql(__('No AddToCarts in last day', 'wpstorecart'))."', 1, 1, 0, 0, 0);
                     ");                    
                     
     }

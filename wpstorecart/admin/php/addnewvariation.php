@@ -17,8 +17,8 @@ if ( 0 == $current_user->ID ) {
             die(__('Unauthorized Access - wpStoreCart', 'wpstorecart'));
     }
 
-    $parentPrimkey = $wpdb->escape($_POST['parentPrimkey']);
-    $wpscVariationGrouping = $wpdb->escape($_POST['wpscVariationGrouping']);
+    $parentPrimkey = esc_sql($_POST['parentPrimkey']);
+    $wpscVariationGrouping = esc_sql($_POST['wpscVariationGrouping']);
     
     $wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_products` SET `options`='{$wpscVariationGrouping}' WHERE `producttype`='variation' AND `postid`='$parentPrimkey';");
     

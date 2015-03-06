@@ -19,7 +19,7 @@ if(!function_exists('wpscLog')) {
         if($time==NULL) {
             $time = 'CURRENT_TIMESTAMP'; // If updating with the current timestamp
         } else {
-            $time = "'".$wpdb->escape($time)."'"; // If updating from the supplied parameter
+            $time = "'".esc_sql($time)."'"; // If updating from the supplied parameter
         }
         if($date==NULL) {
            $date = date('Ymd') ;  
@@ -36,13 +36,13 @@ if(!function_exists('wpscLog')) {
         }
         if($primkey==NULL) { // If no primkey is specified we create a new log entry
             try {
-                @$wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log`  (`primkey`, `action`, `data`, `foreignkey`, `date`, `userid`, `time`) VALUES (NULL, '".$wpdb->escape($action)."', '".$wpdb->escape($data)."', '".intval($foreignkey)."', '".$wpdb->escape($date)."', '".intval($userid)."', {$time});");
+                @$wpdb->query("INSERT INTO `{$wpdb->prefix}wpstorecart_log`  (`primkey`, `action`, `data`, `foreignkey`, `date`, `userid`, `time`) VALUES (NULL, '".esc_sql($action)."', '".esc_sql($data)."', '".intval($foreignkey)."', '".esc_sql($date)."', '".intval($userid)."', {$time});");
             } catch (Exception $e) {
                 return false;
             }            
         } else {
             try {
-                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_log` SET `action` = '".$wpdb->escape($action)."', `data` = '".$wpdb->escape($data)."', `foreignkey` = '".intval($foreignkey)."', `date` = '".$wpdb->escape($date)."', `userid` = '".intval($userid)."', `time` = {$time} WHERE `primkey` = ".intval($primkey).";");
+                @$wpdb->query("UPDATE `{$wpdb->prefix}wpstorecart_log` SET `action` = '".esc_sql($action)."', `data` = '".esc_sql($data)."', `foreignkey` = '".intval($foreignkey)."', `date` = '".esc_sql($date)."', `userid` = '".intval($userid)."', `time` = {$time} WHERE `primkey` = ".intval($primkey).";");
             } catch (Exception $e) {
                 return false;
             }                        

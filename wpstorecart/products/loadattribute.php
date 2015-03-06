@@ -10,7 +10,7 @@ if (!function_exists('add_action')) {
 
 global $wpdb;
  
-$wpscAttributeKey = $wpdb->escape($_POST['wpscAttributeKey']);
+$wpscAttributeKey = esc_sql($_POST['wpscAttributeKey']);
 
 $results = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}wpstorecart_products` WHERE `producttype`='attribute' AND `status`='{$wpscAttributeKey}';", ARRAY_A);
 if(isset($results[0]['primkey'])) {

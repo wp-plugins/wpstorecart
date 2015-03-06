@@ -106,31 +106,31 @@ function wpscMoneybookersSaveFunction() {
 
     if(isset($_POST['allowmb'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['allowmb'] = $wpdb->escape($_POST['allowmb']); // Changes the variable in the settings
+        $wpStoreCartOptions['allowmb'] = esc_sql($_POST['allowmb']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }
 	
     if(isset($_POST['mb_login'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['mb_login'] = $wpdb->escape($_POST['mb_login']); // Changes the variable in the settings
+        $wpStoreCartOptions['mb_login'] = esc_sql($_POST['mb_login']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['mb_secretword'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['mb_secretword'] = $wpdb->escape($_POST['mb_secretword']); // Changes the variable in the settings
+        $wpStoreCartOptions['mb_secretword'] = esc_sql($_POST['mb_secretword']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 	
     if(isset($_POST['mb_logo'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['mb_logo'] = $wpdb->escape($_POST['mb_logo']); // Changes the variable in the settings
+        $wpStoreCartOptions['mb_logo'] = esc_sql($_POST['mb_logo']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 
     if(isset($_POST['mb_currency'])) { // Here's where you update the value of the variable
         wpscCheckAdminPermissions(); // This insures that only wpStoreCart Managers can edit the settings
-        $wpStoreCartOptions['mb_currency'] = $wpdb->escape($_POST['mb_currency']); // Changes the variable in the settings
+        $wpStoreCartOptions['mb_currency'] = esc_sql($_POST['mb_currency']); // Changes the variable in the settings
         update_option('wpStoreCartAdminOptions', $wpStoreCartOptions);    
     }	
 }

@@ -18,10 +18,10 @@ if ( 0 == $current_user->ID ) {
     }
 
     $table_name = $wpdb->prefix . "wpstorecart_meta";
-    $wpsc_combo_product_names = $wpdb->escape($_POST['wpsc_combo_product_names']);
+    $wpsc_combo_product_names = esc_sql($_POST['wpsc_combo_product_names']);
     $exploded = explode('||', $wpsc_combo_product_names);
-    $wpsc_combo_discount_price = $wpdb->escape($_POST['wpsc_combo_discount_price']);
-    $wpsc_combo_primkey = $wpdb->escape($_POST['wpsc_combo_primkey']);
+    $wpsc_combo_discount_price = esc_sql($_POST['wpsc_combo_discount_price']);
+    $wpsc_combo_primkey = esc_sql($_POST['wpsc_combo_primkey']);
 
 
     $insert = "

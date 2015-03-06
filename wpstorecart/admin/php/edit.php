@@ -40,7 +40,7 @@ if ( 0 == $current_user->ID ) {
             $aColumns = array( 'primkey', 'productkey', 'values', 'price', 'type', 'title', 'group', 'useinventory' );
         }         
 
-        $value = $wpdb->escape($_POST['value']);
+        $value = esc_sql($_POST['value']);
 
         $wpdb->query("UPDATE `{$wpdb->prefix}{$exploded[1]}` SET `{$aColumns[$_POST['column']]}`='{$value}' WHERE `primkey`={$exploded[2]};");
        
